@@ -1,9 +1,11 @@
 import { Route, Routes, BrowserRouter } from "react-router-dom";
 import SingleVaultPage from "./pages/SingleVault";
 import DefaultPage from "./pages/Default";
+import {RPCProviderContextApp} from './context/useRpcProvider';
 
 function App() {
   return (
+    <RPCProviderContextApp>
     <div>
       <BrowserRouter>
         <Routes>
@@ -12,6 +14,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </div>
+    </RPCProviderContextApp>
   );
 }
 
