@@ -6,6 +6,7 @@ export const RPCProviderContextApp = ({ children }) => {
   const [useProvider, setUseProvider] = useState(null);
 
   const [tenderlyProvider, setTenderly] = useState(null);
+  const [defaultProvider, setDef] = useState(null);
 
   function initProvider() {
     const provider = new ethers.providers.WebSocketProvider(
@@ -13,7 +14,7 @@ export const RPCProviderContextApp = ({ children }) => {
     );
     console.log(provider);
     console.log("provider created");
-    setTenderly(provider);
+    setDef(provider);
     console.log(provider);
   }
 
@@ -47,7 +48,8 @@ export const RPCProviderContextApp = ({ children }) => {
         initProvider,
         closeProvider,
         setupTenderly,
-        tenderlyProvider
+        tenderlyProvider,
+        defaultProvider
       }}
     >
       {children}

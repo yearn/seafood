@@ -2,16 +2,21 @@ import ConnectR from "../ethereum/ConnectRpc"
 import ShowVault from "../ethereum/ShowVaults"
 
 import useRPCProvider from '../context/useRpcProvider'
+import { useState } from "react";
 
 
 
 function DefaultPage(){
-    const {tenderlyProvider, initProvider, closeProvider, setupTenderly} = useRPCProvider();
+    const {tenderlyProvider, initProvider, closeProvider, defaultProvider, setupTenderly} = useRPCProvider();
+    const [dfP, setupP] = useState(null);
+    initProvider()
+    if(!defaultProvider){
+        return(<div>loading...</div>)
+    }
     if(!tenderlyProvider){
         return(<div>
             {"no provider detected"}
             <button onClick={setupTenderly}> Set Up Tenderly</button>
-            <button onClick={initProvider}> Use Default Provider</button>
 
             
             </div>
