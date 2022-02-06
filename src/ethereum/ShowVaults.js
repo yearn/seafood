@@ -15,17 +15,6 @@ function ShowVault() {
 
     AllVaults().then(v => { setAllv(v)})
 
-    tenderlyProvider
-    .getBlockNumber()
-    .then((response) => {
-        console.log(response);
-      return response;
-      
-    })
-    .then((data) => {
-      console.log(data);
-    });
-
     if(allV.length ==0){
       return(
         <div>loading...</div>
@@ -40,7 +29,7 @@ function ShowVault() {
     }
 
     const listItems = allV.map((vault) =>
-    <div><button  onClick={() => setSingleVault(vault)}> {vault.name} - {vault.version} - {vault.address}</button></div>
+    <div key={vault.name}><button  onClick={() => setSingleVault(vault)}> {vault.name} - {vault.version} - {vault.address}</button></div>
   );
 
 
