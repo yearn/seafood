@@ -4,9 +4,11 @@ import React, { useContext, createContext, useState } from "react";
 const RPCProvider = createContext();
 export const RPCProviderContextApp = ({ children }) => {
   const [useProvider, setUseProvider] = useState(null);
+  const defaultProvider = new ethers.providers.WebSocketProvider(
+    "wss://erigon:iAlBsaOWZtIrYNMR4a4J@node.yearn.network"
+  );
 
   const [tenderlyProvider, setTenderly] = useState(null);
-  const [defaultProvider, setDef] = useState(null);
 
   function initProvider() {
     const provider = new ethers.providers.WebSocketProvider(
@@ -14,7 +16,7 @@ export const RPCProviderContextApp = ({ children }) => {
     );
     console.log(provider);
     console.log("provider created");
-    setDef(provider);
+    setTenderly(provider);
     console.log(provider);
   }
 
