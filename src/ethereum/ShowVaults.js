@@ -28,7 +28,7 @@ function ShowVault() {
         <div><button  onClick={() => setSingleVault(null)}>Close {singleVault.name} - {singleVault.version} - {singleVault.address}</button></div></div>
     )
     }
-
+    
     const listItems = allV.map((vault) =>
     <div key={vault.name}><button  onClick={() => setSingleVault(vault)}> {vault.name} - {vault.version} - {vault.address}</button></div>
   );
@@ -36,7 +36,11 @@ function ShowVault() {
 
 
     return(
+      
+        <div><h2>Preferred Vaults </h2>
         <div>{listItems}</div>
+        </div>
+        
     )
 
 }
