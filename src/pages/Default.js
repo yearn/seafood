@@ -23,7 +23,7 @@ function DefaultPage(){
     }else{
         return(
             <div><div>
-                {"Tenderly fork is: " + tenderlyProvider.connection.url}</div>
+                Tenderly fork is: <a target="_blank" href={"https://dashboard.tenderly.co/yearn/yearn-web/fork/" + tenderlyProvider.connection.url.substring(29)}>{"https://dashboard.tenderly.co/yearn/yearn-web/fork/" + tenderlyProvider.connection.url.substring(29)} </a></div>
                 <button onClick={closeProvider}> Close</button>
                 <div><ShowVault /></div>
             </div>
