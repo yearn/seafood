@@ -10,15 +10,20 @@ function SingleVaultPage({value}){
     const [allS, setAlls] = useState([])
     const [harvestedS, setHarvested] = useState([])
 
+    
+
     console.log("inputting ", value)
 
 	//Handle the setAll
 	const	onSetAll = useCallback(async () => {
 		const	_all = await AllStrats(value, defaultProvider);
+    console.log("changing!")
+    console.log(_all)
 		setAlls(_all || []);
     }, [value, defaultProvider]);
 	useEffect(() => onSetAll(), [onSetAll]);
 
+  
 	//Handle the button to harvest all
     const	onHarvestMultiple = useCallback(async () => {
 		const	_harvested = await HarvestMultiple(allS, value, tenderlyProvider);

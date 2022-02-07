@@ -4,16 +4,13 @@ const { ethers } = require("ethers");
 
 
 let all = []
-let strats = []
 
 
 async function AllStrats(vault, defaultProvider){
     console.log("All Strats");
- 
-    if(strats.length >0){
-        //console.log("hit all " +strats.length)  
-        return strats;
-    }
+
+    let strats = []
+    
     let currentTime = Date.now()/1000
     
 
