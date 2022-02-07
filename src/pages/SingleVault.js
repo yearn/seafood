@@ -1,6 +1,7 @@
 import {AllStrats} from  "../ethereum/EthHelpers"
 import HarvestMultiple from  "../ethereum/HarvestMultiple"
 import useRPCProvider from '../context/useRpcProvider'
+import RatioAdjust from './RatioAdjusters'
 import { useState, useEffect, useCallback } from "react";
 
 
@@ -9,6 +10,7 @@ function SingleVaultPage({value}){
 	const {tenderlyProvider, initProvider, closeProvider, defaultProvider, setupTenderly} = useRPCProvider();
     const [allS, setAlls] = useState([])
     const [harvestedS, setHarvested] = useState([])
+    const [showRatio, toggleRatios] = useState(false)
 
     
 
@@ -71,6 +73,9 @@ function SingleVaultPage({value}){
       
       <div>{value.name} - {value.version} - <a target="_blank" href={"https://etherscan.io/address/"+ value.address}> {value.address}</a> - {(value.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}% Allocated - Free Assets: {((value.totalAssets - value.totalDebt) / (10 ** value.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
 			{listItems}
+
+      <div>{showRatio && <RatioAdjust strats={allS} />}</div>
+      <div><button onClick={() => toggleRatios(!showRatio)}> Adjust Ratios?</button></div>
 		</div>
 	);
 }
