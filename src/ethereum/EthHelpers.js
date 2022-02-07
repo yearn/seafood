@@ -11,7 +11,7 @@ async function AllStrats(vault, defaultProvider){
     console.log("All Strats");
  
     if(strats.length >0){
-        console.log("hit all " +strats.length)  
+        //console.log("hit all " +strats.length)  
         return strats;
     }
     let currentTime = Date.now()/1000
@@ -19,11 +19,11 @@ async function AllStrats(vault, defaultProvider){
 
     
 
-    console.log("received ", vault)
+    //console.log("received ", vault)
     let con = vault.value.contract
     let totalAssets = await con.totalAssets()
     let gov = await con.governance()
-    console.log("gov is", gov)
+    //console.log("gov is", gov)
 
 
     for(let i = 0; i <20 ; i++){
@@ -42,16 +42,16 @@ async function AllStrats(vault, defaultProvider){
 
 
 async function AllVaults(defaultProvider){
-    console.log("All Vaults");
+    //console.log("All Vaults");
 
     if(all.length >0){
-        console.log("hit all " +all.length)  
+        //console.log("hit all " +all.length)  
         return all;
     }
 
     let privateKey = "0x0123456789012345678901234567890123456789012345678901234567890123";
 
-    let selectVaults = ["0xdA816459F1AB5631232FE5e97a05BBBb94970c95"]
+    let selectVaults = ["0xdA816459F1AB5631232FE5e97a05BBBb94970c95", "0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE", "0xa258C4606Ca8206D8aA700cE2143D7db854D168c", "0x7Da96a3891Add058AdA2E826306D812C638D87a7"]
 
 
     //let walletWithProvider = new ethers.Wallet(privateKey, tenderlyProvider);
@@ -70,7 +70,7 @@ async function AllVaults(defaultProvider){
     const vaults = [];
 
     const numTokens = await regist.numTokens();
-    console.log(numTokens)
+    //console.log(numTokens)
     /*for (let i = 0; i < numTokens; i++){
         /*for(let j = 0; j <20 ; j++){
             const token = await regist.tokens(i)
@@ -98,7 +98,7 @@ async function AllVaults(defaultProvider){
 
     all = vaults
     
-    console.log(all.length)  
+    //console.log(all.length)  
     return all
 
 }

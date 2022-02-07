@@ -35,6 +35,9 @@ async function HarvestMultiple(strats, vault, tenderlyProvider){
             success = false
         }
 
+        strat.tenderlyId = await tenderlyProvider.send("evm_getLatest", [])
+        strat.tenderlyURL = "https://dashboard.tenderly.co/yearn/yearn-web/fork/" + tenderlyProvider.connection.url.substring(29) +"/simulation/" + strat.tenderlyId
+
         strat.succeded = success
         
         //strat.tenderlyUrl = 
