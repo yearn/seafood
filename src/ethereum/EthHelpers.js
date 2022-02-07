@@ -37,6 +37,18 @@ async function AllStrats(vault, defaultProvider){
 
 }   
 
+async function AllRegistered(defaultProvider){
+    const regist = Registry( defaultProvider);
+    const vaults = [];
+    const numTokens = await regist.numTokens();
+    for (let i = 0; i < numTokens; i++){
+        const token = await regist.tokens(i)
+        const vault = regist.latestVault(token)
+        vaults.push(vault)
+    }
+    return vaults
+}
+
 
 async function AllVaults(defaultProvider){
     //console.log("All Vaults");
@@ -63,10 +75,8 @@ async function AllVaults(defaultProvider){
     
     
     
-    await regist.tokens(0)
     const vaults = [];
 
-    const numTokens = await regist.numTokens();
     //console.log(numTokens)
     /*for (let i = 0; i < numTokens; i++){
         /*for(let j = 0; j <20 ; j++){
@@ -111,8 +121,8 @@ async function GetVaultInfo(vault, provider){
     let token = await Erc20Info(await s.token(), provider)
     let totalAssets = await s.totalAssets()
     let totalDebt = await s.totalDebt()
-    console.log(totalAssets)
-    console.log(totalDebt)
+    //console.log(totalAssets)
+    //console.log(totalDebt)
 
     return {
         name: name,
@@ -128,7 +138,7 @@ async function GetVaultInfo(vault, provider){
 }
 
 async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
-    let s = new ethers.Contract(strat, erc20, provider);
+    let s = new ethers.Contract(strat, strategy, provider);
     let params = await vault.strategies(strat)
     //console.log(params)
     
