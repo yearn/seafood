@@ -14,7 +14,7 @@ function SingleVaultPage(singleVault){
     console.log("inputting ", singleVault)
     useEffect(() => {
       AllStrats(singleVault, defaultProvider).then(v => { setAlls(v)})
-    }, [singleVault.value.address]);
+    }, [singleVault]);
 
     const	onHarvestMultiple = useCallback(async () => {
       const	_harvested = await HarvestMultiple(allS, singleVault, tenderlyProvider);
