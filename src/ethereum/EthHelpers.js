@@ -110,18 +110,28 @@ async function GetVaultInfo(vault, provider){
         s = new ethers.Contract(vault, vault030, provider);
     }
     let name = await s.name()
+    let debtRatio = await s.debtRatio()
+    let token = await Erc20Info(await s.token(), provider)
+    let totalAssets = await s.totalAssets()
+    let totalDebt = await s.totalDebt()
+    console.log(totalAssets)
+    console.log(totalDebt)
 
     return {
         name: name,
         contract: s,
         address: vault,
-        version: version
+        version: version,
+        debtRatio: debtRatio,
+        token: token,
+        totalAssets: totalAssets,
+        totalDebt: totalDebt
     }
     
 }
 
 async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
-    let s = new ethers.Contract(strat, strategy, provider);
+    let s = new ethers.Contract(strat, erc20, provider);
     let params = await vault.strategies(strat)
     //console.log(params)
     
@@ -137,6 +147,21 @@ async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
         lastTime: (currentTime- params.lastReport)/60/60,
         vaultAssets: totalAssets,
         governance: gov
+    }
+    
+}
+
+async function Erc20Info(token, provider){
+    let s = new ethers.Contract(token, erc20, provider);
+    //console.log(params)
+    let decimals = await s.decimals()
+    
+    let name = await s.name()
+    return {
+        name: name,
+        contract: s,
+        address: token,
+        decimals: decimals
     }
     
 }
@@ -160,4 +185,4 @@ function Dai(provider){
     
 }
 
-export {AllVaults, AllStrats, StratInfo}
+export {AllVaults, AllStrats, StratInfo, Erc20Info}

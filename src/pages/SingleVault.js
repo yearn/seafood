@@ -54,7 +54,7 @@ function SingleVaultPage({value}){
     const listItems = allS.map((strat) => (
 		<div key={strat.address}> 
 			<br />
-			<div>Strat: {strat.name} - {strat.address}</div>
+			<div>Strat: {strat.name} - <a target="_blank" href={"https://etherscan.io/address/"+ strat.address}>{strat.address}</a></div>
     		<div>Lastharvest: {strat.lastTime.toLocaleString(undefined, {maximumFractionDigits:2})}h - Real ratio: {(100*strat.beforeDebt/strat.vaultAssets).toLocaleString(undefined, {maximumFractionDigits:2})}% - Desired ratio: {(strat.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}% </div>
 			<div>{harvestedS.length > 0 ? (strat.succeded ? showApr(strat) : "Failed Harvest ")  : ""} <a target="_blank" href={strat.tenderlyURL}>{harvestedS.length > 0 && "Tenderly Link"} </a></div>
       </div>
@@ -63,6 +63,8 @@ function SingleVaultPage({value}){
 	return(
 		<div>
 			<button disabled={!tenderlyProvider} onClick={onHarvestMultiple}> Harvest All?</button>
+      
+      <div>{value.name} - {value.version} - <a target="_blank" href={"https://etherscan.io/address/"+ value.address}> {value.address}</a> - {(value.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}% Allocated - Free Assets: {((value.totalAssets - value.totalDebt) / (10 ** value.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
 			{listItems}
 		</div>
 	);
