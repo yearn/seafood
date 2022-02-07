@@ -19,7 +19,13 @@ async function HarvestMultiple(strats){
         let x = await stratWithSigner.harvest({
             gasLimit: 8_000_000, gasPrice:0
         })
-        console.log(x)
+        let success = true;
+        try{
+            await x.wait()
+        }catch(e){
+            success = false
+        }
+        
     }
     
     return tenderlyProvider
