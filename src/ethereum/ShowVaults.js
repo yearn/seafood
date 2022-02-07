@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import {AllVaults} from  "../ethereum/EthHelpers"
 
 import useRPCProvider from '../context/useRpcProvider'
@@ -8,12 +8,13 @@ const { ethers } = require("ethers");
 
 
 function ShowVault() {
-    const {tenderlyProvider, initProvider, setupTenderly} = useRPCProvider();
+    const {tenderlyProvider, defaultProvider, initProvider, setupTenderly} = useRPCProvider();
 
     let [allV, setAllv] = useState([])
     let [singleVault, setSingleVault] = useState(null)
-
-    AllVaults().then(v => { setAllv(v)})
+    useEffect(() => {
+        AllVaults(defaultProvider).then(v => { setAllv(v)})
+    }, [defaultProvider]);
 
     if(allV.length ==0){
       return(

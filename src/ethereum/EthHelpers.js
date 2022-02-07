@@ -7,9 +7,9 @@ let all = []
 let strats = []
 
 
-async function AllStrats(vault){
-    
-    const {defaultProvider} = useRPCProvider();
+async function AllStrats(vault, defaultProvider){
+    console.log("All Strats");
+ 
     if(strats.length >0){
         console.log("hit all " +strats.length)  
         return strats;
@@ -41,9 +41,9 @@ async function AllStrats(vault){
 }   
 
 
-async function AllVaults(){
+async function AllVaults(defaultProvider){
+    console.log("All Vaults");
 
-    const {defaultProvider} = useRPCProvider();
     if(all.length >0){
         console.log("hit all " +all.length)  
         return all;
@@ -65,7 +65,7 @@ async function AllVaults(){
     })*/
     
     
-    console.log(regist);
+    
     await regist.tokens(0)
     const vaults = [];
 
@@ -160,4 +160,4 @@ function Dai(provider){
     
 }
 
-export {AllVaults, AllStrats}
+export {AllVaults, AllStrats, StratInfo}
