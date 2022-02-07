@@ -20,7 +20,7 @@ async function AllStrats(vault, defaultProvider){
     
 
     //console.log("received ", vault)
-    let con = vault.value.contract
+    let con = vault.contract
     let totalAssets = await con.totalAssets()
     let gov = await con.governance()
     //console.log("gov is", gov)

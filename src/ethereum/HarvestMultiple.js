@@ -11,7 +11,7 @@ async function HarvestMultiple(strats, vault, tenderlyProvider){
         return;
     }
     let stratsOutput = []
-    let con = vault.value.contract
+    let con = vault.contract
     let contractReadOnly = con.connect(tenderlyProvider);
 
     console.log(tenderlyProvider)
