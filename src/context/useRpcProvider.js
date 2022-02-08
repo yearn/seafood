@@ -28,7 +28,7 @@ export const RPCProviderContextApp = ({children}) => {
 		const fork_base_url = 'https://simulate.yearn.network/fork';
 		const payload = {network_id: '1'};
 		console.log('start');
-		const resp = fetch(fork_base_url, {
+		fetch(fork_base_url, {
 			method: 'POST',
 			body: JSON.stringify(payload),
 		})
