@@ -7,11 +7,15 @@ export const RPCProviderContextApp = ({children}) => {
 	const defaultProvider = new ethers.providers.WebSocketProvider(
 		'wss://erigon:iAlBsaOWZtIrYNMR4a4J@node.yearn.network'
 	);
-  console.log("ss");
+  const network = {
+    name: "fantom",
+    chainId: 250
+};
   const fantomProvider = new ethers.providers.JsonRpcProvider(
-    'https://opera:zgNmpZno8CFXCVvHm7I2JZ6NETmEotAA@fantom.yearn.science', 250
+    //'https://opera:zgNmpZno8CFXCVvHm7I2JZ6NETmEotAA@fantom.yearn.science', network
+    'https://rpcapi.fantom.network', network
 	);
-  console.log(fantomProvider);
+  console.log(fantomProvider.connection.url, "UR");
 
 	const [tenderlyProvider, setTenderly] = useState(null);
 

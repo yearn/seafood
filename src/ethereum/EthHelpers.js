@@ -29,9 +29,12 @@ async function AllStrats(vault, defaultProvider){
 }   
 
 async function GetMasterchef(strats, provider){
+    console.log(provider.anyNetwork);
+    
+    console.log(provider);
 	let masterChefs = [];
     for(let strat of strats){
-        console.log(strat);
+        
         let s = await Masterchefinfo(strat, provider);
         masterChefs.push(s);
     }
@@ -41,10 +44,12 @@ async function GetMasterchef(strats, provider){
 
 async function Masterchefinfo(strat, provider){
 	let s = new ethers.Contract(strat, masterchefstrat, provider);
+    let name = await s.name();
+
 	let masterchef = await s.masterchef();
 
     
-	let name = await s.name();
+	
 	return {
 		name: name,
 		contract: s,
