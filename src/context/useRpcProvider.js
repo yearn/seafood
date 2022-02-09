@@ -7,6 +7,11 @@ export const RPCProviderContextApp = ({children}) => {
 	const defaultProvider = new ethers.providers.WebSocketProvider(
 		'wss://erigon:iAlBsaOWZtIrYNMR4a4J@node.yearn.network'
 	);
+  console.log("ss");
+  const fantomProvider = new ethers.providers.JsonRpcProvider(
+    'https://opera:zgNmpZno8CFXCVvHm7I2JZ6NETmEotAA@fantom.yearn.science', 250
+	);
+  console.log(fantomProvider);
 
 	const [tenderlyProvider, setTenderly] = useState(null);
 
@@ -52,7 +57,8 @@ export const RPCProviderContextApp = ({children}) => {
 				closeProvider,
 				setupTenderly,
 				tenderlyProvider,
-				defaultProvider
+				defaultProvider,
+        fantomProvider
 			}}
 		>
 			{children}
