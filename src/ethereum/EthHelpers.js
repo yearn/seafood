@@ -1,4 +1,4 @@
-import {registry, erc20, vault030, vault043, strategy} from '../interfaces/interfaces';
+import {registry, erc20, vault030, vault043, strategy, masterchefstrat} from '../interfaces/interfaces';
 const {ethers} = require('ethers');
 
 let all = [];
@@ -10,9 +10,6 @@ async function AllStrats(vault, defaultProvider){
     
 	let currentTime = Date.now()/1000;
     
-
-    
-
 	//console.log("received ", vault)
 	let con = vault.contract;
 	let totalAssets = await con.totalAssets();
@@ -30,6 +27,33 @@ async function AllStrats(vault, defaultProvider){
 
 	return strats;
 }   
+
+async function GetMasterchef(strats, provider){
+	let masterChefs = [];
+    for(let strat of strats){
+        console.log(strat);
+        let s = await Masterchefinfo(strat, provider);
+        masterChefs.push(s);
+    }
+
+	return masterChefs;
+}   
+
+async function Masterchefinfo(strat, provider){
+	let s = new ethers.Contract(strat, masterchefstrat, provider);
+	let masterchef = await s.masterchef();
+
+    
+	let name = await s.name();
+	return {
+		name: name,
+		contract: s,
+		masterchef: masterchef
+	};
+    
+}
+
+
 
 // eslint-disable-next-line no-unused-vars
 async function AllRegistered(defaultProvider){
@@ -134,6 +158,8 @@ async function GetVaultInfo(vault, provider){
     
 }
 
+
+
 async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
 	let s = new ethers.Contract(strat, strategy, provider);
 	let params = await vault.strategies(strat);
@@ -191,4 +217,4 @@ function Dai(provider){
     
 }
 
-export {AllVaults, AllStrats, StratInfo, Erc20Info};
+export {AllVaults, AllStrats, StratInfo, Erc20Info, GetMasterchef};

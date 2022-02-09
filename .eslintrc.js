@@ -20,11 +20,9 @@ module.exports = {
 		'react'
 	],
 	'rules': {
-		'indent': [2, 'tab'],
 		'no-mixed-spaces-and-tabs': 1,
 		'react/prop-types': 0,
 		'no-async-promise-executor': 0,
-		'quotes': [2, 'single', {'avoidEscape': true}],
 		'object-curly-spacing': [2, 'never'],
 		'array-bracket-spacing': [2, 'never'],
 		'react/jsx-curly-brace-presence': ['error', {'props': 'always', 'children': 'always'}],
