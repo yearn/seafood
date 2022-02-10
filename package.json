@@ -11,13 +11,14 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
-	  "eslint": "^8.6.0",
-	  "eslint-plugin-react": "^7.28.0",
-	  "eslint-plugin-react-hooks": "^4.3.0",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
-    "@testing-library/user-event": "^13.5.0"
-	},
+    "@testing-library/user-event": "^13.5.0",
+    "dotenv": "^16.0.0",
+    "eslint": "^8.6.0",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

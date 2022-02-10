@@ -5,14 +5,14 @@ const RPCProvider = createContext();
 export const RPCProviderContextApp = ({children}) => {
 	const [useProvider, setUseProvider] = useState(null);
 	const defaultProvider = new ethers.providers.WebSocketProvider(
-		'wss://erigon:iAlBsaOWZtIrYNMR4a4J@node.yearn.network'
+		process.env.REACT_APP_ETH_WS_PROVIDER
 	);
 
 	const [tenderlyProvider, setTenderly] = useState(null);
 
 	function initProvider() {
 		const provider = new ethers.providers.WebSocketProvider(
-			'wss://erigon:iAlBsaOWZtIrYNMR4a4J@node.yearn.network'
+			process.env.REACT_APP_ETH_WS_PROVIDER
 		);
 		console.log(provider);
 		console.log('provider created');
