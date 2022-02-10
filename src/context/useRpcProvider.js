@@ -8,7 +8,7 @@ export const RPCProviderContextApp = ({children}) => {
 		process.env.REACT_APP_ETH_WS_PROVIDER
 	);
 	const network = {
-		name: "fantom",
+		name: 'fantom',
 		chainId: 250
 	};
 	const fantomProvider = new ethers.providers.StaticJsonRpcProvider(
