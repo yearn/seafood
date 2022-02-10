@@ -1,4 +1,4 @@
-import {registry, erc20, vault030, vault043, strategy} from '../interfaces/interfaces';
+import {registry, erc20, vault030, vault043, strategy,masterchef, masterchefstrat} from '../interfaces/interfaces';
 const {ethers} = require('ethers');
 
 let all = [];
@@ -10,14 +10,11 @@ async function AllStrats(vault, defaultProvider){
     
 	let currentTime = Date.now()/1000;
     
-
-    
-
-	//console.log("received ", vault)
+	//console.log('received ', vault)
 	let con = vault.contract;
 	let totalAssets = await con.totalAssets();
 	let gov = await con.governance();
-	//console.log("gov is", gov)
+	//console.log('gov is', gov)
 
 
 	for(let i = 0; i <20 ; i++){
@@ -30,6 +27,59 @@ async function AllStrats(vault, defaultProvider){
 
 	return strats;
 }   
+
+async function GetMasterchef(strats, provider){
+    
+    
+	let masterChefs = [];
+	for(let strat of strats){
+        
+		let s = await Masterchefinfo(strat, provider);
+		masterChefs.push(s);
+	}
+
+	return masterChefs;
+}  
+
+async function Masterchefinfo(strat, provider){
+	let s = new ethers.Contract(strat, masterchefstrat, provider);
+	let name = await s.name();
+	console.log(name);
+
+	let masterchef = await masterchefContract(await s.masterchef(), provider);
+	let pid = await s.pid();
+	let emissionToken = await Erc20Info(await s.emissionToken(), provider);
+	let vault =  new ethers.Contract(await s.vault(), vault043, provider);
+	let token = await Erc20Info(await vault.token(), provider);
+
+	let currentDeposits = await s.balanceOfStaked();
+
+	let totalMasterChefDeposits = await (token.contract).balanceOf(masterchef.address);
+	//let pair = null;
+	if(provider.network.chainId === 250){
+		//fantom
+		//spookyFacot
+	}
+
+    
+    
+	return {
+		name: name,
+		url: GetUrl(strat, provider),
+		address: strat,
+		contract: s,
+		masterchef: masterchef,
+		pid: pid,
+		wantToken: token,
+		emissionToken: emissionToken,
+		currentDeposits: currentDeposits / (10 ** token.decimals),
+		totalMasterChefDeposits: totalMasterChefDeposits / (10 ** token.decimals)
+
+	};
+    
+}
+
+
 
 // eslint-disable-next-line no-unused-vars
 async function AllRegistered(defaultProvider){
@@ -46,10 +96,10 @@ async function AllRegistered(defaultProvider){
 
 
 async function AllVaults(defaultProvider){
-	//console.log("All Vaults");
+	//console.log('All Vaults');
 
 	if(all.length >0){
-		//console.log("hit all " +all.length)  
+		//console.log('hit all ' +all.length)  
 		return all;
 	}
 
@@ -64,9 +114,9 @@ async function AllVaults(defaultProvider){
 	// eslint-disable-next-line no-unused-vars
 	const regist = Registry( defaultProvider);
 	//const dai = Dai(walletWithProvider)
-	//console.log(await dai.balanceOf("0x6B175474E89094C44Da98b954EedeAC495271d0F"));
+	//console.log(await dai.balanceOf('0x6B175474E89094C44Da98b954EedeAC495271d0F'));
 
-	/*await dai.approve("0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e", 100, {
+	/*await dai.approve('0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e', 100, {
         gasLimit: 0, gasPrice:0
     })*/
     
@@ -134,6 +184,8 @@ async function GetVaultInfo(vault, provider){
     
 }
 
+
+
 async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
 	let s = new ethers.Contract(strat, strategy, provider);
 	let params = await vault.strategies(strat);
@@ -159,13 +211,55 @@ async function Erc20Info(token, provider){
 	let s = new ethers.Contract(token, erc20, provider);
 	//console.log(params)
 	let decimals = await s.decimals();
+	console.log(provider);
     
 	let name = await s.name();
 	return {
 		name: name,
 		contract: s,
 		address: token,
-		decimals: decimals
+		decimals: decimals,
+		url: GetUrl(token, provider),
+		dexScreener: GetDexScreener(token, provider)
+        
+	};
+    
+}
+
+
+function GetUrl(address, provider){
+
+	if(provider.network.chainId === 250){
+		return 'https://ftmscan.com/address/' + address;
+	}
+
+	return 'https://etherscan.io/address/' + address;
+    
+}
+function GetDexScreener(address, provider){
+
+	if(provider.network.chainId === 250){
+		return 'https://dexscreener.com/fantom/' + address;
+	}
+
+	return 'https://dexscreener.com/ethereum/' + address;
+    
+}
+
+async function masterchefContract(address, provider){
+	console.log(address);
+	let s = new ethers.Contract(address, masterchef, provider);
+	console.log(s);
+	let endTime = await s.poolEndTime(); 
+    
+	let currentTime = Date.now()/1000;
+    
+	return {
+		contract: s,
+		address: address,
+		endTime: endTime,
+		timeLeft: endTime> currentTime ?  (endTime-currentTime)/60/60 : 0,
+		url: GetUrl(address, provider)
 	};
     
 }
@@ -173,7 +267,7 @@ async function Erc20Info(token, provider){
 function Registry(provider){
 	console.log('registering registry');
 	return new ethers.Contract('0x50c1a2eA0a861A967D9d0FFE2AE4012c2E053804', registry, provider);
-	//return new ethers.Contract("0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e", registry, provider);
+	//return new ethers.Contract('0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e', registry, provider);
     
 }
 
@@ -187,8 +281,8 @@ function Strategy(strat, provider){
 function Dai(provider){
 	console.log('registering Dai');
 	return new ethers.Contract('0x6B175474E89094C44Da98b954EedeAC495271d0F', erc20, provider);
-	//return new ethers.Contract("0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e", registry, provider);
+	//return new ethers.Contract('0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e', registry, provider);
     
 }
 
-export {AllVaults, AllStrats, StratInfo, Erc20Info};
+export {AllVaults, AllStrats, StratInfo, Erc20Info, GetMasterchef};

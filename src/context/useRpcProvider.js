@@ -7,6 +7,13 @@ export const RPCProviderContextApp = ({children}) => {
 	const defaultProvider = new ethers.providers.WebSocketProvider(
 		process.env.REACT_APP_ETH_WS_PROVIDER
 	);
+	const network = {
+		name: 'fantom',
+		chainId: 250
+	};
+	const fantomProvider = new ethers.providers.StaticJsonRpcProvider(
+		'https://rpcapi.fantom.network', network
+	);
 
 	const [tenderlyProvider, setTenderly] = useState(null);
 
@@ -52,7 +59,8 @@ export const RPCProviderContextApp = ({children}) => {
 				closeProvider,
 				setupTenderly,
 				tenderlyProvider,
-				defaultProvider
+				defaultProvider,
+				fantomProvider
 			}}
 		>
 			{children}
