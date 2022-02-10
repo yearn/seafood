@@ -25,7 +25,7 @@ export const RPCProviderContextApp = ({children}) => {
 	}
 
 	function setupTenderly() {
-		const fork_base_url = 'https://simulate.yearn.network/fork';
+		const fork_base_url = process.env.REACT_APP_FORK_BASE_URL;
 		const payload = {network_id: '1'};
 		console.log('start');
 		fetch(fork_base_url, {
