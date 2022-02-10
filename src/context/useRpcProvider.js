@@ -11,10 +11,14 @@ export const RPCProviderContextApp = ({children}) => {
     name: "fantom",
     chainId: 250
 };
-  const fantomProvider = new ethers.providers.JsonRpcProvider(
-    //'https://opera:zgNmpZno8CFXCVvHm7I2JZ6NETmEotAA@fantom.yearn.science', network
+  	const fantomProvider = new ethers.providers.StaticJsonRpcProvider(
+    //'https://opera:zgNmpZno8CFXCVvHm7I2JZ6NETmEotAA@fantom.yearn.science', 2
     'https://rpcapi.fantom.network', network
 	);
+	
+	/*const fantomProvider = new ethers.providers.WebSocketProvider (
+		'ws://opera:zgNmpZno8CFXCVvHm7I2JZ6NETmEotAA@fantom.yearn.science'
+	);*/
   console.log(fantomProvider.connection.url, "UR");
 
 	const [tenderlyProvider, setTenderly] = useState(null);

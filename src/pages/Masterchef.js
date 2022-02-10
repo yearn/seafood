@@ -13,9 +13,16 @@ function MasterchefPage(){
     useEffect(() => {
 		GetMasterchef(fantomstrats, fantomProvider).then(v => { setAllv(v);});
 	}, [fantomProvider]);
+
+
     console.log(allV);
     if(allV.length > 0){
-        return <div>{allV[0].name}</div>;
+        return <div>{allV.map((strat) => (
+            <div key={strat.address}> <h3>{strat.name}</h3>
+            <div>  {"Deposited: " + strat.currentDeposits.toLocaleString(undefined, {maximumFractionDigits:2}) + " "+ strat.wantToken.name + " which is " + ((strat.currentDeposits/ strat.totalMasterChefDeposits)*100).toLocaleString(undefined, {maximumFractionDigits:2}) + "% of total deposits" }  </div> 
+            <div>  {"Time left: " + strat.masterchef.timeLeft.toLocaleString(undefined, {maximumFractionDigits:2}) + "h "}  </div> <br /></div>
+            ))}
+            </div>;
     }else{
         return <div>{"loading..."}</div>;
     }

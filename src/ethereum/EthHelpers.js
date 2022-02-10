@@ -1,4 +1,4 @@
-import {registry, erc20, vault030, vault043, strategy, masterchefstrat} from '../interfaces/interfaces';
+import {registry, erc20, vault030, vault043, strategy,masterchef, masterchefstrat} from '../interfaces/interfaces';
 const {ethers} = require('ethers');
 
 let all = [];
@@ -29,9 +29,8 @@ async function AllStrats(vault, defaultProvider){
 }   
 
 async function GetMasterchef(strats, provider){
-    console.log(provider.anyNetwork);
+	
     
-    console.log(provider);
 	let masterChefs = [];
     for(let strat of strats){
         
@@ -40,20 +39,36 @@ async function GetMasterchef(strats, provider){
     }
 
 	return masterChefs;
-}   
+}  
 
 async function Masterchefinfo(strat, provider){
 	let s = new ethers.Contract(strat, masterchefstrat, provider);
     let name = await s.name();
+	console.log(name);
 
-	let masterchef = await s.masterchef();
+	let masterchef = await masterchefContract(await s.masterchef(), provider);
+	let pid = await s.pid();
+	let emissionToken = await Erc20Info(await s.emissionToken(), provider);
+	let vault =  new ethers.Contract(await s.vault(), vault043, provider);
+	let token = await Erc20Info(await vault.token(), provider);
+
+	let currentDeposits = await s.balanceOfStaked();
+
+	let totalMasterChefDeposits = await (token.contract).balanceOf(masterchef.address);
 
     
 	
 	return {
 		name: name,
+		address: strat,
 		contract: s,
-		masterchef: masterchef
+		masterchef: masterchef,
+		pid: pid,
+		wantToken: token,
+		emissionToken: emissionToken,
+		currentDeposits: currentDeposits / (10 ** token.decimals),
+		totalMasterChefDeposits: totalMasterChefDeposits / (10 ** token.decimals)
+
 	};
     
 }
@@ -197,6 +212,24 @@ async function Erc20Info(token, provider){
 		contract: s,
 		address: token,
 		decimals: decimals
+	};
+    
+}
+
+
+async function masterchefContract(address, provider){
+	console.log(address);
+	let s = new ethers.Contract(address, masterchef, provider);
+	console.log(s);
+	let endTime = await s.poolEndTime(); 
+	
+	let currentTime = Date.now()/1000;
+    
+	return {
+		contract: s,
+		address: address,
+		endTime: endTime,
+		timeLeft: endTime> currentTime ?  (endTime-currentTime)/60/60 : 0
 	};
     
 }
