@@ -13,7 +13,7 @@ export const RPCProviderContextApp = ({children}) => {
 	};
 	const fantomProvider = new ethers.providers.StaticJsonRpcProvider(
 		'https://rpcapi.fantom.network', network
-		);
+	);
 
 	const [tenderlyProvider, setTenderly] = useState(null);
 

@@ -20,6 +20,7 @@ module.exports = {
 		'react'
 	],
 	'rules': {
+		'indent': [2, 'tab'],
 		'no-mixed-spaces-and-tabs': 1,
 		'react/prop-types': 0,
 		'no-async-promise-executor': 0,

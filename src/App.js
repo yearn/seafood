@@ -13,7 +13,7 @@ function App() {
 					<Routes>
 						<Route path={'/'} exact={true} element={<DefaultPage />}></Route>
 						<Route path={'/vault'} element={<SingleVaultPage />}></Route>
-            <Route path={'/masterchef'} element={<MasterchefPage />}></Route>
+						<Route path={'/masterchef'} element={<MasterchefPage />}></Route>
 					</Routes>
 				</BrowserRouter>
 			</div>
