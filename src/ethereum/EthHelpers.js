@@ -1,4 +1,5 @@
 import {registry, erc20, vault030, vault043, strategy,masterchef, masterchefstrat} from '../interfaces/interfaces';
+//import {SpookySwapRouter, SpiritSwapRouter} from './Addresses';
 const {ethers} = require('ethers');
 
 let all = [];
@@ -55,14 +56,23 @@ async function Masterchefinfo(strat, provider){
 	let currentDeposits = await s.balanceOfStaked();
 
 	let totalMasterChefDeposits = await (token.contract).balanceOf(masterchef.address);
-	//let pair = null;
+	let price = 0;
 	if(provider.network.chainId === 250){
 		//fantom
-		//spookyFacot
+		//let router = new ethers.Contract(SpookySwapRouter(), univ2router, provider);
+		try{
+			if( await s.useSpiritPartOne()){
+				//router = new ethers.Contract(SpiritSwapRouter(), univ2router, provider);
+			}
+		}catch{
+			//do nothing
+		}
+		//price = router.getAmountsOut(1 * 10 ** emissionToken.decimals, [emissionToken.address, token.address] );
+
+
+        
 	}
 
-    
-    
 	return {
 		name: name,
 		url: GetUrl(strat, provider),
@@ -73,7 +83,8 @@ async function Masterchefinfo(strat, provider){
 		wantToken: token,
 		emissionToken: emissionToken,
 		currentDeposits: currentDeposits / (10 ** token.decimals),
-		totalMasterChefDeposits: totalMasterChefDeposits / (10 ** token.decimals)
+		totalMasterChefDeposits: totalMasterChefDeposits / (10 ** token.decimals),
+		price: price
 
 	};
     
@@ -250,7 +261,13 @@ async function masterchefContract(address, provider){
 	console.log(address);
 	let s = new ethers.Contract(address, masterchef, provider);
 	console.log(s);
-	let endTime = await s.poolEndTime(); 
+
+	let endTime =0;
+	try{
+		endTime = await s.poolEndTime(); 
+	} catch{
+		endTime = await s.endTime(); 
+	}
     
 	let currentTime = Date.now()/1000;
     

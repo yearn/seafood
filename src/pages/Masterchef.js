@@ -1,17 +1,28 @@
 import useRPCProvider from '../context/useRpcProvider';
 import {GetMasterchef} from  '../ethereum/EthHelpers';
+import {fantomMasterchefs} from  '../ethereum/Addresses';
 import React, {useState,useEffect} from 'react';
 
 
 function MasterchefPage(){
 	const {fantomProvider} = useRPCProvider();
 	let [allV, setAllv] = useState([]);
+	const [values, setValues] = useState({});
 
-	let fantomstrats = ['0x4cF620a388d36Fb527ddc03a515b8677c14A967a'];
+	const [nonce, setNonce] = useState(0);
+
+	const handleChange = (fieldId) => {
+		setValues(currentValues => {
+			currentValues[fieldId] = !currentValues[fieldId];
+			return currentValues;
+		});
+		setNonce(nonce+1); //need to force update because react is stupid
+	};
+
 
 
 	useEffect(() => {
-		GetMasterchef(fantomstrats, fantomProvider).then(v => { setAllv(v);});
+		GetMasterchef(fantomMasterchefs(), fantomProvider).then(v => { setAllv(v);});
 	}, [fantomProvider]);
 
 	const divStyle = {
@@ -31,7 +42,8 @@ function MasterchefPage(){
 					<li><a target={'_blank'} rel={'noreferrer'} href={strat.emissionToken.url}> {'EmissionToken ' + strat.emissionToken.name + ': '+ strat.emissionToken.address} </a></li>
 				</ul>
 				<br />
-				<iframe style={divStyle} src={strat.emissionToken.dexScreener}></iframe>
+				<button onClick={() => handleChange(strat.address)}> {'Toggle dexscreener'}</button>
+				{values[strat.address] && <iframe style={divStyle} src={strat.emissionToken.dexScreener}></iframe>}
 				<br /></div>
 		))}
 		</div>;
