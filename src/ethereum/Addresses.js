@@ -8,6 +8,8 @@ function SpiritSwapRouter(){
 function fantomMasterchefs(){
 	return [
 		'0x4cF620a388d36Fb527ddc03a515b8677c14A967a', //draco
+		'0x82CbD2AF730D3dC3715873eA030851D7f3206Bcd', //wftm scarface
+		'0x32aC76a38027C95662d727aee9D9Bb3028197ba7', //usdc scarface
 		'0xA36c91E38bf24E9F2df358E47D4134a8894C6a4c' //xboo oxdao
 	];
 }

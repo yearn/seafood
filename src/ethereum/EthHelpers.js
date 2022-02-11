@@ -48,7 +48,12 @@ async function GetMasterchef(strats, provider, allV){
 
 async function Masterchefinfo(strat, provider, filled){
 	let s = new ethers.Contract(strat, masterchefstrat, provider);
-	let name = await s.name();
+	let name = '';
+	if(strat != '0x32aC76a38027C95662d727aee9D9Bb3028197ba7'){
+		name = await s.name();
+	}else{
+		name = 'Scarface USDC Masterchef';
+	}
 	console.log(name);
 	console.log(filled);
 
