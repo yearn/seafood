@@ -1,5 +1,6 @@
 import {registry, erc20, vault030, vault043, strategy,masterchef, masterchefstrat} from '../interfaces/interfaces';
 //import {SpookySwapRouter, SpiritSwapRouter} from './Addresses';
+
 const {ethers} = require('ethers');
 
 let all = [];
@@ -111,7 +112,7 @@ async function AllRegistered(defaultProvider){
 }
 
 
-async function AllVaults(defaultProvider){
+async function AllVaults(vaultAddresses, defaultProvider){
 	//console.log('All Vaults');
 
 	if(all.length >0){
@@ -121,8 +122,6 @@ async function AllVaults(defaultProvider){
 
 	// eslint-disable-next-line no-unused-vars
 	let privateKey = '0x0123456789012345678901234567890123456789012345678901234567890123';
-
-	let selectVaults = ['0xdA816459F1AB5631232FE5e97a05BBBb94970c95', '0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE', '0xa258C4606Ca8206D8aA700cE2143D7db854D168c', '0x7Da96a3891Add058AdA2E826306D812C638D87a7'];
 
 
 	//let walletWithProvider = new ethers.Wallet(privateKey, tenderlyProvider);
@@ -161,7 +160,7 @@ async function AllVaults(defaultProvider){
 
         
     }*/
-	for(let v of selectVaults){
+	for(let v of vaultAddresses){
 		let vaultData = await GetVaultInfo(v, defaultProvider);
 		vaults.push(vaultData);
 	}
@@ -195,7 +194,8 @@ async function GetVaultInfo(vault, provider){
 		debtRatio: debtRatio,
 		token: token,
 		totalAssets: totalAssets,
-		totalDebt: totalDebt
+		totalDebt: totalDebt,
+		chainId: provider.network.chainId
 	};
     
 }
