@@ -44,7 +44,7 @@ function RatioAdjust({strats}){
 		let script = '\n@sign\ndef auto_debt_adjust():\n\tstrats=[]\n\t';
 
 		let scripts = sortedArray.map(strat =>{
-			return '\n\tstrat = safe.contract("' + strat.address + '")\n\tvault=safe.contract(strat.vault())\n\tvault.updateStrategyDebtRatio(strat, ' + strat.newRatio + ') #change of ' + strat.ratioChange + '\n\tstrats.append(strat)\n\t';
+			return '\n\tstrat = safe.contract("' + strat.address + '")\n\tvault=safe.contract(strat.vault())\n\tvault.updateStrategyDebtRatio(strat, ' + strat.newRatio + ') #change of ' + strat.ratioChange + ' name: ' + strat.name + '\n\tstrats.append(strat)\n\t';
 		});
 
 		script = script + scripts.join('') + '\n\tharvest_n_check_many(safe, strats)\n\n\n\n/robowoofy fn=auto_debt_adjust send=true\n';
