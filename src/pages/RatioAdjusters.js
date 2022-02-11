@@ -47,7 +47,7 @@ function RatioAdjust({strats}){
 			return '\n\tstrat = safe.contract("' + strat.address + '")\n\tvault=safe.contract(strat.vault())\n\tvault.updateStrategyDebtRatio(strat, ' + strat.newRatio + ') #change of ' + strat.ratioChange + '\n\tstrats.append(strat)\n\t';
 		});
 
-		script = script + scripts.join('') + '\n\tharvest_n_check_many(safe, strats)\n';
+		script = script + scripts.join('') + '\n\tharvest_n_check_many(safe, strats)\n\n\n\n/robowoofy fn=auto_debt_adjust send=true\n';
 
 		setScript(script);
 
