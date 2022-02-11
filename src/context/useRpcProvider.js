@@ -31,9 +31,10 @@ export const RPCProviderContextApp = ({children}) => {
 		setTenderly(null);
 	}
 
-	function setupTenderly() {
+	function setupTenderly(chainId) {
+		console.log(chainId);
 		const fork_base_url = process.env.REACT_APP_FORK_BASE_URL;
-		const payload = {network_id: '1'};
+		const payload = {network_id: chainId.toString()};
 		console.log('start');
 		fetch(fork_base_url, {
 			method: 'POST',

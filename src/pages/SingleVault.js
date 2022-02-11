@@ -3,22 +3,25 @@ import {AllStrats} from  '../ethereum/EthHelpers';
 import HarvestMultiple from  '../ethereum/HarvestMultiple';
 import useRPCProvider from '../context/useRpcProvider';
 import RatioAdjust from './RatioAdjusters';
+import TenderlySetup from '../ethereum/TenderlyConnect';
 
 function SingleVaultPage({value}){
-	const {tenderlyProvider, defaultProvider} = useRPCProvider();
+	const {tenderlyProvider, fantomProvider, defaultProvider} = useRPCProvider();
+	let provider = value.chainId == 250 ? fantomProvider : defaultProvider;
 	const [allS, setAlls] = useState([]);
 	const [harvestedS, setHarvested] = useState([]);
 	const [showRatio, toggleRatios] = useState(false);
+  
 
 	console.log('inputting ', value);
 
 	//Handle the setAll
 	const	onSetAll = useCallback(async () => {
-		const	_all = await AllStrats(value, defaultProvider);
+		const	_all = await AllStrats(value, provider);
 		console.log('changing!');
 		console.log(_all);
 		setAlls(_all || []);
-	}, [value, defaultProvider]);
+	}, [value, provider]);
 	useEffect(() => onSetAll(), [onSetAll]);
 
   
@@ -65,6 +68,7 @@ function SingleVaultPage({value}){
 
 	return(
 		<div>
+			<TenderlySetup chainId={value.chainId} />
 			<button disabled={!tenderlyProvider} onClick={onHarvestMultiple}>{' Harvest All?'}</button>
       
 			<div>{value.name}{' - '}{value.version}{' - '}<a target={'_blank'} href={'https://etherscan.io/address/'+ value.address} rel={'noreferrer'}> {value.address}</a>{' - '}{(value.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated - Free Assets: '}{((value.totalAssets - value.totalDebt) / (10 ** value.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
