@@ -29,25 +29,29 @@ async function AllStrats(vault, defaultProvider){
 	return strats;
 }   
 
-async function GetMasterchef(strats, provider){
+async function GetMasterchef(strats, provider, allV){
     
-    
+
 	let masterChefs = [];
-	for(let strat of strats){
-        
-		let s = await Masterchefinfo(strat, provider);
-		masterChefs.push(s);
+	for(let i =0; i< strats.length; i++){
+		if(allV.length == 0){
+			masterChefs.push(await Masterchefinfo(strats[i], provider));
+		}else{
+			masterChefs[i] = await Masterchefinfo(strats[i], provider, masterChefs[i]);
+		}
+
 	}
 
 	return masterChefs;
 }  
 
-async function Masterchefinfo(strat, provider){
+async function Masterchefinfo(strat, provider, filled){
 	let s = new ethers.Contract(strat, masterchefstrat, provider);
 	let name = await s.name();
 	console.log(name);
+	console.log(filled);
 
-	let masterchef = await masterchefContract(await s.masterchef(), provider);
+	let masterchef = await masterchefContract(await s.masterchef(), provider, filled);
 	let pid = await s.pid();
 	let emissionToken = await Erc20Info(await s.emissionToken(), provider);
 	let vault =  new ethers.Contract(await s.vault(), vault043, provider);
@@ -89,6 +93,7 @@ async function Masterchefinfo(strat, provider){
 	};
     
 }
+
 
 
 
@@ -198,6 +203,7 @@ async function GetVaultInfo(vault, provider){
 
 
 async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
+
 	let s = new ethers.Contract(strat, strategy, provider);
 	let params = await vault.strategies(strat);
 	//console.log(params)
@@ -257,27 +263,29 @@ function GetDexScreener(address, provider){
     
 }
 
-async function masterchefContract(address, provider){
-	console.log(address);
-	let s = new ethers.Contract(address, masterchef, provider);
-	console.log(s);
+async function masterchefContract(address, provider, masterchefContract){
+	let letToReturn = masterchefContract;
 
-	let endTime =0;
-	try{
-		endTime = await s.poolEndTime(); 
-	} catch{
-		endTime = await s.endTime(); 
-	}
-    
 	let currentTime = Date.now()/1000;
+	
+	if(!letToReturn){
+		console.log('entered');
+		letToReturn = {};
+		letToReturn.contract = new ethers.Contract(address, masterchef, provider);
+		try{
+			letToReturn.endTime = await letToReturn.contract.poolEndTime(); 
+		} catch{
+			letToReturn.endTime = await letToReturn.contract.endTime(); 
+		}
+		letToReturn.url = GetUrl(address, provider);
+		letToReturn.address = address;
+	}
+
+	letToReturn.timeLeft = letToReturn.endTime > currentTime ?  (letToReturn.endTime-currentTime)/60/60 : 0;
+	
     
-	return {
-		contract: s,
-		address: address,
-		endTime: endTime,
-		timeLeft: endTime> currentTime ?  (endTime-currentTime)/60/60 : 0,
-		url: GetUrl(address, provider)
-	};
+    
+	return letToReturn;
     
 }
 

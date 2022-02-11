@@ -19,11 +19,20 @@ function MasterchefPage(){
 		setNonce(nonce+1); //need to force update because react is stupid
 	};
 
-
+	function getAll(){
+		GetMasterchef(fantomMasterchefs(), fantomProvider, allV).then(v => { setAllv(v);});
+	}
 
 	useEffect(() => {
-		GetMasterchef(fantomMasterchefs(), fantomProvider).then(v => { setAllv(v);});
+		getAll();
 	}, [fantomProvider]);
+
+	const int = setInterval(() => {
+		//getAll();
+		console.log('int');
+		clearInterval(int);
+		//getAll();
+	}, 60_000); // update once a block
 
 	const divStyle = {
 		width: '100%',
