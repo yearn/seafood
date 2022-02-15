@@ -11,8 +11,16 @@ export const RPCProviderContextApp = ({children}) => {
 		name: 'fantom',
 		chainId: 250
 	};
-	const fantomProvider = new ethers.providers.StaticJsonRpcProvider(
-		'https://rpcapi.fantom.network', network
+	//console.log(base64.encode(process.env.REACT_APP_FTM_USER + ':' + process.env.REACT_APP_FTM_PASS));
+	const urlInfo = {
+		url: process.env.REACT_APP_FTM_WS_PROVIDER2,
+		user: process.env.REACT_APP_FTM_USER,
+		password: process.env.REACT_APP_FTM_PASS,
+		//headers: {'Authorization': 'Basic ' + base64.encode(process.env.REACT_APP_FTM_USER + ':' + process.env.REACT_APP_FTM_PASS)			
+		//}
+	};
+	const fantomProvider = new ethers.providers.JsonRpcProvider(
+		urlInfo, network
 	);
 
 	const [tenderlyProvider, setTenderly] = useState(null);
