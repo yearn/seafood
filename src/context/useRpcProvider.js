@@ -11,6 +11,7 @@ export const RPCProviderContextApp = ({children}) => {
 		name: 'fantom',
 		chainId: 250
 	};
+	/*
 	//console.log(base64.encode(process.env.REACT_APP_FTM_USER + ':' + process.env.REACT_APP_FTM_PASS));
 	const urlInfo = {
 		url: process.env.REACT_APP_FTM_WS_PROVIDER2,
@@ -21,6 +22,10 @@ export const RPCProviderContextApp = ({children}) => {
 	};
 	const fantomProvider = new ethers.providers.JsonRpcProvider(
 		urlInfo, network
+	);*/
+
+	const fantomProvider = new ethers.providers.WebSocketProvider(
+		process.env.REACT_APP_FTM_WS_PROVIDER3, network
 	);
 
 	const [tenderlyProvider, setTenderly] = useState(null);
