@@ -6,7 +6,7 @@
      { "src": "/api/app.js", "use": "@vercel/node" }
     ],
     "rewrites": [
-      { "source": "/api/(.*)", "destination": "/api/app.js" },
+      { "source": "/api/(.*)", "destination": "/api/bin/www" },
       { "source": "(.*)", "destination": "/index.html" }
      ]
     }
