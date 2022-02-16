@@ -1,0 +1,12 @@
+{
+    "version": 2,
+    "public": false,
+    "builds": [
+     { "src": "package.json", "use": "@vercel/static-build" },
+     { "src": "/api/app.js", "use": "@vercel/node" }
+    ],
+    "rewrites": [
+      { "source": "/api/(.*)", "destination": "/api/app.js" },
+      { "source": "(.*)", "destination": "/index.html" }
+     ]
+    }
