@@ -5,6 +5,7 @@ import MasterchefPage from './pages/Masterchef';
 import DefaultPage from './pages/Default';
 import TestAPI from './pages/TestAPI';
 import {RPCProviderContextApp} from './context/useRpcProvider';
+import Settings from './pages/Settings';
 
 function App() {
 	return (
@@ -16,6 +17,7 @@ function App() {
 						<Route path={'/vault'} element={<SingleVaultPage />}></Route>
 						<Route path={'/masterchef'} element={<MasterchefPage />}></Route>
 						<Route path={'/testAPI'} element={<TestAPI />}></Route>
+						<Route path={'/settings'} element={<Settings />}></Route>
 					</Routes>
 				</BrowserRouter>
 			</div>

@@ -104,14 +104,31 @@ async function Masterchefinfo(strat, provider, filled){
 
 
 // eslint-disable-next-line no-unused-vars
-async function AllRegistered(defaultProvider){
-	const regist = Registry( defaultProvider);
+async function AllRegistered(provider){
+	const regist = Registry( provider);
 	const vaults = [];
 	const numTokens = await regist.numTokens();
 	for (let i = 0; i < numTokens; i++){
 		const token = await regist.tokens(i);
-		const vault = regist.latestVault(token);
-		vaults.push(vault);
+		for(let j = 0; j <20 ; j++){
+           
+			const vault = await regist.vaults(token, j);
+			if(vault == '0x0000000000000000000000000000000000000000'){
+				break;
+			}
+			let s = new ethers.Contract(vault, vault043, provider);
+			const version = await s.apiVersion();
+			const name = await s.name();
+			console.log(vault);
+			vaults.push({
+				address: vault,
+				name: name,
+				want: token,
+				version: version,
+				chain: provider.network.chainId
+			});
+		}
+		
 	}
 	return vaults;
 }
@@ -126,13 +143,14 @@ async function AllVaults(vaultAddresses, defaultProvider){
 	}
 
 	// eslint-disable-next-line no-unused-vars
-	let privateKey = '0x0123456789012345678901234567890123456789012345678901234567890123';
+	console.log(vaultAddresses);
+	console.log(defaultProvider);
+	return await GetVaultInfo(vaultAddresses, defaultProvider);
 
 
 	//let walletWithProvider = new ethers.Wallet(privateKey, tenderlyProvider);
 
 	// eslint-disable-next-line no-unused-vars
-	const regist = Registry( defaultProvider);
 	//const dai = Dai(walletWithProvider)
 	//console.log(await dai.balanceOf('0x6B175474E89094C44Da98b954EedeAC495271d0F'));
 
@@ -142,50 +160,51 @@ async function AllVaults(vaultAddresses, defaultProvider){
     
     
     
-	const vaults = [];
+	// const vaults = [];
 
-	//console.log(numTokens)
-	/*for (let i = 0; i < numTokens; i++){
-        /*for(let j = 0; j <20 ; j++){
-            const token = await regist.tokens(i)
+	// //console.log(numTokens)
+	// /*for (let i = 0; i < numTokens; i++){
+	//     /*for(let j = 0; j <20 ; j++){
+	//         const token = await regist.tokens(i)
            
-            const vault = await regist.vaults(token, j)
-            if(vault == '0x0000000000000000000000000000000000000000'){
-                break;
-            }
-            console.log(vault)
-            let vaultData = await GetVaultInfo(vault, defaultProvider)
-            vaults.push(vaultData)
-        }/
-        const token = await regist.tokens(i)
-        const vault = await regist.latestVault(token)
-        console.log(vault)
-        let vaultData = await GetVaultInfo(vault, defaultProvider)
-        vaults.push(vaultData)
+	//         const vault = await regist.vaults(token, j)
+	//         if(vault == '0x0000000000000000000000000000000000000000'){
+	//             break;
+	//         }
+	//         console.log(vault)
+	//         let vaultData = await GetVaultInfo(vault, defaultProvider)
+	//         vaults.push(vaultData)
+	//     }/
+	//     const token = await regist.tokens(i)
+	//     const vault = await regist.latestVault(token)
+	//     console.log(vault)
+	//     let vaultData = await GetVaultInfo(vault, defaultProvider)
+	//     vaults.push(vaultData)
 
         
-    }*/
-	for(let v of vaultAddresses){
-		let vaultData = await GetVaultInfo(v, defaultProvider);
-		vaults.push(vaultData);
-	}
+	// }*/
+	// console.log(vaultAddresses);
+	// for(let v of vaultAddresses){
+	// 	console.log(v);
+	// 	let vaultData = await GetVaultInfo(v, defaultProvider);
+	// 	vaults.push(vaultData);
+	// }
 
-	all = vaults;
+	// all = vaults;
     
-	//console.log(all.length)  
-	return all;
+	// //console.log(all.length)  
+	// return all;
 
 }
 
 async function GetVaultInfo(vault, provider){
-	let s = new ethers.Contract(vault, vault043, provider);
-	let version = await s.apiVersion();
-	if( version.includes('0.3.0') || version.includes('0.3.1')){
-		s = new ethers.Contract(vault, vault030, provider);
+	let s = new ethers.Contract(vault.address, vault043, provider);
+	if( vault.version.includes('0.3.0') || vault.version.includes('0.3.1')){
+		s = new ethers.Contract(vault.address, vault030, provider);
 	}
-	let name = await s.name();
+	let name = vault.name;
 	let debtRatio = await s.debtRatio();
-	let token = await Erc20Info(await s.token(), provider);
+	let token = await Erc20Info(vault.want, provider);
 	let totalAssets = await s.totalAssets();
 	let totalDebt = await s.totalDebt();
 	//console.log(totalAssets)
@@ -195,7 +214,7 @@ async function GetVaultInfo(vault, provider){
 		name: name,
 		contract: s,
 		address: vault,
-		version: version,
+		version: vault.version,
 		debtRatio: debtRatio,
 		token: token,
 		totalAssets: totalAssets,
@@ -295,7 +314,11 @@ async function masterchefContract(address, provider, masterchefContract){
 }
 
 function Registry(provider){
-	console.log('registering registry');
+	console.log('registering network', provider.network.name);
+
+	if(provider._network.chainId == 250){
+		return new ethers.Contract('0x727fe1759430df13655ddb0731dE0D0FDE929b04', registry, provider);
+	}
 	return new ethers.Contract('0x50c1a2eA0a861A967D9d0FFE2AE4012c2E053804', registry, provider);
 	//return new ethers.Contract('0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e', registry, provider);
     
@@ -315,4 +338,4 @@ function Dai(provider){
     
 }
 
-export {AllVaults, AllStrats, StratInfo, Erc20Info, GetMasterchef};
+export {AllVaults, AllRegistered, AllStrats, StratInfo, Erc20Info, GetMasterchef};
