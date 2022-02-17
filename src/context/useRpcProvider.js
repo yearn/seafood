@@ -4,8 +4,13 @@ import React, {useContext, createContext, useState} from 'react';
 const RPCProvider = createContext();
 export const RPCProviderContextApp = ({children}) => {
 	const [useProvider, setUseProvider] = useState(null);
+
+	const def_network = {
+		name: 'ethereum',
+		chainId: 1
+	};
 	const defaultProvider = new ethers.providers.WebSocketProvider(
-		process.env.REACT_APP_ETH_WS_PROVIDER
+		process.env.REACT_APP_ETH_WS_PROVIDER, def_network
 	);
 	const network = {
 		name: 'fantom',
@@ -49,6 +54,7 @@ export const RPCProviderContextApp = ({children}) => {
 		const fork_base_url = process.env.REACT_APP_FORK_BASE_URL;
 		const payload = {network_id: chainId.toString()};
 		console.log('start');
+		console.log(fork_base_url);
 		fetch(fork_base_url, {
 			method: 'POST',
 			body: JSON.stringify(payload),
