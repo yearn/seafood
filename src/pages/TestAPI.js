@@ -4,14 +4,20 @@ import axios from '../axios';
 function TestAPI() {
 	const [result, setResult] = useState('');
 	useEffect(() => {
-		axios.get('api/testAPI').then((response) => {
+		axios.get('api/getVaults/All').then((response) => {
 			console.log(response.data);
 			setResult(response.data);
 		});
 	}, []);
 
+
+	let  ethItems ='';
+	if(result.length > 0){
+		ethItems = result.map(row => <div key={row.id}> {row.block}</div>);
+	}
+	 
 	return (
-		<div>{'Working ', result}</div>
+		<div>{ethItems}</div>
 	);
 }
 
