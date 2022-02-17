@@ -3,7 +3,10 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-        
+var getVaultsRouter = require('./routes/getVaults');
+
+app.use('/api/getVaults', getVaultsRouter);
+
 app.get('/api/', (req, res) => res.send('Home Page Route'));
 
 app.get('/api/about', (req, res) => res.send('About Page Route'));
