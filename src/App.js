@@ -6,12 +6,15 @@ import DefaultPage from './pages/Default';
 import TestAPI from './pages/TestAPI';
 import {RPCProviderContextApp} from './context/useRpcProvider';
 import Settings from './pages/Settings';
+import MainNavigation from './components/layout/MainNavigation';
 
 function App() {
 	return (
 		<RPCProviderContextApp>
 			<div>
+				
 				<BrowserRouter>
+					<MainNavigation />
 					<Routes>
 						<Route path={'/'} exact={true} element={<DefaultPage />}></Route>
 						<Route path={'/vault'} element={<SingleVaultPage />}></Route>
