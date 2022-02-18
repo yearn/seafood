@@ -2,6 +2,7 @@ import React, {useState,useEffect} from 'react';
 import useRPCProvider from '../context/useRpcProvider';
 import SingleVaultPage from '../pages/SingleVault';
 import axios from '../axios';
+import VaultButtons from '../components/VaultsList';
 
 
 function ShowVault() {
@@ -43,27 +44,6 @@ function ShowVault() {
 				<div><button  onClick={() => setSingleVault(null)}>{'Close '}{singleVault.name}{' - '}{singleVault.version}{' - '}{singleVault.address}</button></div></div>
 		);
 	}
-	function vaultButton(vault){
-		return <div key={vault.address}><button  onClick={() => setSingleVault(vault)}> {vault.name}{' - '}{vault.version}{' - '}{vault.address}</button></div>;
-	}
-    
-	const ethItems = allV.map((vault) => {
-		if(filterCurve && (vault.name.includes('urve') || vault.name.includes('crv'))){
-			return '';
-		}else{
-			return vaultButton(vault);
-		}
-			
-	});
-
-	const ftmItems = allFV.map((vault) => {
-		if(filterCurve && (vault.name.includes('urve') || vault.name.includes('crv'))){
-			return '';
-		}else{
-			return vaultButton(vault);
-		}
-			
-	});
 	
 
 
@@ -73,9 +53,9 @@ function ShowVault() {
 		<div>
 			<button  onClick={() => setFilterCurve(!filterCurve)}>{filterCurve ? 'Show Curve' : 'Hide Curve'}</button>
 			<h2>{'ETH Vaults '}</h2>
-			<div>{ethItems}</div>
+			<VaultButtons vaults={allV} clickFunction={setSingleVault} />
 			<h2>{'FTM Vaults '}</h2>
-			<div>{ftmItems}</div>
+			<VaultButtons vaults={allFV} clickFunction={setSingleVault} />
 		</div>
         
 	);
