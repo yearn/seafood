@@ -4,6 +4,7 @@ import HarvestMultiple from  '../ethereum/HarvestMultiple';
 import useRPCProvider from '../context/useRpcProvider';
 import RatioAdjust from './RatioAdjusters';
 import TenderlySetup from '../ethereum/TenderlyConnect';
+import {GetExplorerLink} from '../utils/utils';
 
 function SingleVaultPage({value}){
 	const {tenderlyProvider, fantomProvider, defaultProvider} = useRPCProvider();
@@ -66,7 +67,7 @@ function SingleVaultPage({value}){
 	const listItems = allS.map((strat) => (
 		<div key={strat.address}> 
 			<br />
-			<div>{'Strat: '}{strat.name}{' - '}<a target={'_blank'} href={'https://etherscan.io/address/'+ strat.address} rel={'noreferrer'}>{strat.address}</a></div>
+			<div>{'Strat: '}{strat.name}{' - '}<a target={'_blank'} href={GetExplorerLink(provider, strat.address)} rel={'noreferrer'}>{strat.address}</a></div>
 			<div>{'Lastharvest: '}{strat.lastTime.toLocaleString(undefined, {maximumFractionDigits:2})}{'h - Real ratio: '}{(100*strat.beforeDebt/strat.vaultAssets).toLocaleString(undefined, {maximumFractionDigits:2})}{'% - Desired ratio: '}{(strat.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% '}</div>
 			<div>{harvestedS.length > 0 ? (strat.succeded ? showApr(strat) : 'Failed Harvest ')  : ''} <a target={'_blank'} href={strat.tenderlyURL} rel={'noreferrer'}>{harvestedS.length > 0 && 'Tenderly Link'} </a></div>
 		</div>
@@ -77,7 +78,7 @@ function SingleVaultPage({value}){
 			<TenderlySetup chainId={value.chain} />
 			<button disabled={!tenderlyProvider} onClick={onHarvestMultiple}>{' Harvest All?'}</button>
 			
-			<div>{vault.name}{' - '}{vault.version}{' - '}<a target={'_blank'} href={'https://etherscan.io/address/'+ value.address} rel={'noreferrer'}> {value.address}</a>{' - '}{(vault.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated - Free Assets: '}{((vault.totalAssets - vault.totalDebt) / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
+			<div>{vault.name}{' - '}{vault.version}{' - '}<a target={'_blank'} href={GetExplorerLink(provider, value.address)} rel={'noreferrer'}> {value.address}</a>{' - '}{(vault.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated - Free Assets: '}{((vault.totalAssets - vault.totalDebt) / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
 			{console.log('sda2')}
 			{console.log(vault)}
 			{listItems}
