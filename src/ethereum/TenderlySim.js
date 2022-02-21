@@ -20,39 +20,46 @@ async function setupTenderly(chainId){
 
 }
 
-async function TenderlySim(block, tenderlyProvider){
+async function TenderlySim(blocks, tenderlyProvider){
 
-	
-	let gov = await block.contract.governance();
-	let signer = tenderlyProvider.getSigner(gov);
-	console.log('doing ', block.function.name);
-	const blockWithSigner = block.contract.connect(signer);
-	console.log(blockWithSigner);
+	let returnList = [];
 
-
-	let func = blockWithSigner.functions[block.function.name + '()'];
-	console.log(func);
-	console.log(block.function);
+	for(let block of blocks){
+		let gov = await block.contract.governance();
+		let signer = tenderlyProvider.getSigner(gov);
+		console.log('doing ', block.function.name);
+		const blockWithSigner = block.block.contract.connect(signer);
+		console.log(blockWithSigner);
 
 
-	let x = await func({
-		gasLimit: 8_000_000, gasPrice:0
-	});
+		let func = blockWithSigner.functions[block.function.name + '()'];
+		console.log(func);
+		console.log(block.function);
 
 
-	let success = true;
-	try{
-		await x.wait();
+		let x = await func({
+			gasLimit: 8_000_000, gasPrice:0
+		});
+
+
+		let success = true;
+		try{
+			await x.wait();
         
-	}catch(e){
-		success = false;
+		}catch(e){
+			success = false;
+		}
+
+		let toReturn = {success: success, block: block};
+
+		toReturn.tenderlyId = await tenderlyProvider.send('evm_getLatest', []);
+		toReturn.tenderlyURL = 'https://dashboard.tenderly.co/yearn/yearn-web/fork/' + tenderlyProvider.connection.url.substring(29) +'/simulation/' + toReturn.tenderlyId;
+		returnList.push(toReturn);
 	}
 
-	let toReturn = {success: success, block: block};
-
-	toReturn.tenderlyId = await tenderlyProvider.send('evm_getLatest', []);
-	toReturn.tenderlyURL = 'https://dashboard.tenderly.co/yearn/yearn-web/fork/' + tenderlyProvider.connection.url.substring(29) +'/simulation/' + toReturn.tenderlyId;
-	return toReturn;
+	
+	
+	return returnList;
 
 }
 

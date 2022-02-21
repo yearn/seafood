@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import VaultButtons from '../VaultsList';
 import ContractActions from '../ContractActions';
 import {GetVaultContract} from  '../../ethereum/EthHelpers';
+import StrategyButtons from '../StrategyList';
 
 
 
@@ -19,6 +20,7 @@ function BuildingBlock({provider, addBlock}){
 				type: 'Vault',
 				address: vault.address,
 				name: vault.name,
+				details: vault,
 				contract: contract
 			});
 			setStage(1);
@@ -30,9 +32,16 @@ function BuildingBlock({provider, addBlock}){
 
 	function addAction(fun){
 		let blockt = block;
-		blockt.function = fun;
+		blockt.function = fun.fun;
+		blockt.block = fun.block;
 		addBlock(blockt);
 		reset();
+	}
+
+	function changeStage(stage){
+
+
+		setStage(stage);
 	}
 
 	// function add(){
@@ -50,7 +59,11 @@ function BuildingBlock({provider, addBlock}){
 	return <div><span>{'Contract Type:'}</span>
 		
 		{stage == 0 && <VaultButtons provider={provider} clickFunction={addVault} />}
-		{stage == 1 && <ContractActions contract={block.contract} onSelect={addAction} />}
+		{stage == 1 && <button  onClick={() => changeStage(2)}> {'See Strats?'}</button>}
+		{stage == 1 && <button  onClick={() => changeStage(3)}> {'See Functions?'}</button>}
+		{stage == 2 && <StrategyButtons provider={provider} vault={block.details} onSelect={addAction} />}
+		{stage == 3 && <ContractActions block={block} onSelect={addAction} />}
+
 
 
 		{stage != 0 && <button  onClick={() => reset()}> {'Reset'}</button>}

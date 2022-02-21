@@ -1,40 +1,46 @@
 import React, {useState,useEffect} from 'react';
-import axios from '../axios';
+import {AllStrats, AllVaults} from  '../ethereum/EthHelpers';
+import ContractActions from './ContractActions';
 
 
 
-function StrategyButtons({provider, clickFunction}){
-	let [filterCurve, setFilterCurve] = useState(true);
-	let [vaults, setAllv] = useState([]);
+function StrategyButtons({provider, vault, onSelect}){
+	let [strats, setAll] = useState([]);
+
+	let [strat, setStrat] = useState(null);
+	console.log(vault);
 
 
 	useEffect(() => {
-		try{
-			axios.post('api/getVaults/AllVaults', provider.network).then((response) => {
-				console.log(response.data);
-				setAllv(response.data);
-                
+		AllVaults(vault, provider).then(v => {
+			AllStrats(v, provider).then(s =>
+			{
+				setAll(s);
 			});
-		}catch{console.log('eth failed');}}, [provider]);
+		});}, [vault, provider, onSelect]);
+		
 
-	if(vaults.length ==0){
+	if(strats.length ==0){
 		return(
 			<div>{'loading...'}</div>
 		);
 	}
 
 	return(<div>
-		<button  onClick={() => setFilterCurve(!filterCurve)}>{filterCurve ? 'Show Curve' : 'Hide Curve'}</button>
+		
 		<div>
-			{vaults.map((vault) => {
+			{strat == null && strats.map((strat) => {
             
         
-				if(filterCurve && (vault.name.includes('urve') || vault.name.includes('crv'))){
-					return '';
-				}else{
-					return <div key={vault.address}><button  onClick={() => clickFunction(vault)}> {vault.name}{' - '}{vault.version}{' - '}{vault.address}</button></div>;
-				}
-			})}</div>
+				
+				return <div key={strat.address}><button  onClick={() => setStrat(strat)}> {strat.name}{' - '}{vault.address}</button></div>;
+				
+			})}
+			{strat && <ContractActions block={strat} onSelect={onSelect} />}
+            
+		</div>
+
+    
 	</div>
 
 	);

@@ -143,8 +143,6 @@ async function AllVaults(vaultAddresses, defaultProvider){
 	}
 
 	// eslint-disable-next-line no-unused-vars
-	console.log(vaultAddresses);
-	console.log(defaultProvider);
 	return await GetVaultInfo(vaultAddresses, defaultProvider);
 
 
@@ -207,8 +205,9 @@ async function GetVaultContract(vault, provider){
 }
 
 async function GetVaultInfo(vault, provider){
-	let s = GetVaultContract(vault, provider);
-	let name = vault.name;
+	let s = await GetVaultContract(vault, provider);
+	console.log(s);
+	let name = await s.name();
 	let debtRatio = await s.debtRatio();
 	let token = await Erc20Info(vault.want, provider);
 	let totalAssets = await s.totalAssets();

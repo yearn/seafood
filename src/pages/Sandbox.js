@@ -30,9 +30,9 @@ function Sandbox() {
 		let script = '\n@sign\ndef auto_debt_adjust():\n';
 
 		for(let block of blocks){
-			let name = block.name.replace(/\s/g, '_').toLowerCase();
+			let name = block.block.name.replace(/\s/g, '_').toLowerCase();
 			script = script + '\n\t' + name + ' = safe.contract("' + block.address + '")\n';
-			script = script + '\t' + name + '().' + block.function.name + '()\n';
+			script = script + '\t' + name + '.' + block.function.name + '()\n';
 		}
 
 		return script;

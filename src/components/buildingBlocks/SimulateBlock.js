@@ -10,12 +10,10 @@ function SimulateBlock({blocks, chainId}){
 
 	function runSim(){
 		setupTenderly(chainId).then(tenderlyProvider =>{
-			for(let block of blocks){
-				TenderlySim(block, tenderlyProvider).then(x =>{
-					addBlock([...finishedBlocks, x]);
-					setNonce(nonce+1);
-				});
-			}
+			TenderlySim(blocks, tenderlyProvider).then(x =>{
+				addBlock(x);
+				setNonce(nonce+1);
+			});
 		});
 	}
 	
@@ -26,7 +24,7 @@ function SimulateBlock({blocks, chainId}){
 
 	return<div>{finishedBlocks.map(block =>{
 		return (
-			<div key={block.tenderlyURL}>{block.block.function.name + ' on ' + block.block.name} { <a target={'_blank'} rel={'noreferrer'} href={block.tenderlyURL}> {(block.success ? ' succeeded ' : 'failed ')} </a>} </div> 
+			<div key={block.tenderlyURL}>{block.block.function.name + ' on ' + block.block.block.name } {block.block.name !== block.block.block.name && ' on ' + block.block.name } { <a target={'_blank'} rel={'noreferrer'} href={block.tenderlyURL}> {(block.success ? ' succeeded ' : 'failed ')} </a>} </div> 
 		);
 	})}</div>;
 

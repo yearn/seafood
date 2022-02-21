@@ -2,8 +2,8 @@
 import React from 'react';
 
 
-function ContractActions({contract, onSelect}) {
-	
+function ContractActions({block, onSelect}) {
+	let contract = block.contract;
 	console.log(contract);
 	console.log(contract.interface.functions);
 
@@ -19,8 +19,12 @@ function ContractActions({contract, onSelect}) {
 		if(fun.inputs.length >0) return;
 
 		let key = fun.name + fun.inputs.map(x => x.name);
+		let extended = {
+			fun: fun,
+			block: block
+		};
 		return(<div key={key}>
-			<button  onClick={() => clickFunction(fun)}> {fun.name}</button>
+			<button  onClick={() => clickFunction(extended)}> {fun.name}</button>
 		
 		</div>);
 	});
