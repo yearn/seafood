@@ -143,8 +143,6 @@ async function AllVaults(vaultAddresses, defaultProvider){
 	}
 
 	// eslint-disable-next-line no-unused-vars
-	console.log(vaultAddresses);
-	console.log(defaultProvider);
 	return await GetVaultInfo(vaultAddresses, defaultProvider);
 
 
@@ -197,12 +195,19 @@ async function AllVaults(vaultAddresses, defaultProvider){
 
 }
 
-async function GetVaultInfo(vault, provider){
+async function GetVaultContract(vault, provider){
 	let s = new ethers.Contract(vault.address, vault043, provider);
-	if( vault.version.includes('0.3.0') || vault.version.includes('0.3.1')){
+	let version = await s.apiVersion();
+	if( version.includes('0.3.0') || version.includes('0.3.1')){
 		s = new ethers.Contract(vault.address, vault030, provider);
 	}
-	let name = vault.name;
+	return s;
+}
+
+async function GetVaultInfo(vault, provider){
+	let s = await GetVaultContract(vault, provider);
+	console.log(s);
+	let name = await s.name();
 	let debtRatio = await s.debtRatio();
 	let token = await Erc20Info(vault.want, provider);
 	let totalAssets = await s.totalAssets();
@@ -338,4 +343,4 @@ function Dai(provider){
     
 }
 
-export {AllVaults, AllRegistered, AllStrats, StratInfo, Erc20Info, GetMasterchef};
+export {AllVaults, GetVaultContract, AllRegistered, AllStrats, StratInfo, Erc20Info, GetMasterchef};

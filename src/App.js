@@ -7,6 +7,7 @@ import TestAPI from './pages/TestAPI';
 import {RPCProviderContextApp} from './context/useRpcProvider';
 import Settings from './pages/Settings';
 import MainNavigation from './components/layout/MainNavigation';
+import Sandbox from './pages/Sandbox';
 
 function App() {
 	return (
@@ -21,6 +22,7 @@ function App() {
 						<Route path={'/masterchef'} element={<MasterchefPage />}></Route>
 						<Route path={'/testAPI'} element={<TestAPI />}></Route>
 						<Route path={'/settings'} element={<Settings />}></Route>
+						<Route path={'/sandbox'} element={<Sandbox />}></Route>
 					</Routes>
 				</BrowserRouter>
 			</div>
