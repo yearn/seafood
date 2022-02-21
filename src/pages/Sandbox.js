@@ -3,6 +3,7 @@ import useRPCProvider from '../context/useRpcProvider';
 import ProviderSelector from '../components/ProviderSelector';
 import BuildingBlock from '../components/buildingBlocks/BuildingBlock';
 import BuiltBlock from '../components/buildingBlocks/BuiltBlock';
+import SimulateBlock from '../components/buildingBlocks/SimulateBlock';
 
 
 function Sandbox() {
@@ -43,6 +44,8 @@ function Sandbox() {
 
 		{blocks.map(block => <BuiltBlock key={block.index} block={block} removeBlock={removeBlock} />)}
 		<h3>{'Run Code In Fork'} </h3>
+		{blocks.length > 0 && <SimulateBlock blocks={blocks} chainId={provider.network.chainId} />}
+		
 		<div><div  style={{whiteSpace: 'pre-wrap'}}>{code_preview()}</div></div>
 
 		<h3>{'Add new'} </h3>

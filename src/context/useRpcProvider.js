@@ -39,10 +39,8 @@ export const RPCProviderContextApp = ({children}) => {
 		const provider = new ethers.providers.WebSocketProvider(
 			process.env.REACT_APP_ETH_WS_PROVIDER
 		);
-		console.log(provider);
-		console.log('provider created');
+
 		setTenderly(provider);
-		console.log(provider);
 	}
 
 	function closeProvider() {
@@ -69,6 +67,7 @@ export const RPCProviderContextApp = ({children}) => {
 				console.log(tenderlyProvider);
 			});
 	}
+
 
 	return (
 		<RPCProvider.Provider
