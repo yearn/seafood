@@ -25,12 +25,27 @@ function Sandbox() {
 		setBlocks(blocks.filter(item => item.index !== blockIndex));
 	}
 
+	let code_preview = () => {
+		let script = '\n@sign\ndef auto_debt_adjust():\n';
+
+		for(let block of blocks){
+			let name = block.name.replace(/\s/g, '_').toLowerCase();
+			script = script + '\n\t' + name + ' = safe.contract("' + block.address + '")\n';
+			script = script + '\t' + name + '().' + block.function.name + '()\n';
+		}
+
+		return script;
+
+	};
 
 	return (<div>
 		<ProviderSelector selectFunction={setProvider} />
 
 		{blocks.map(block => <BuiltBlock key={block.index} block={block} removeBlock={removeBlock} />)}
+		<h3>{'Run Code In Fork'} </h3>
+		<div><div  style={{whiteSpace: 'pre-wrap'}}>{code_preview()}</div></div>
 
+		<h3>{'Add new'} </h3>
 		<BuildingBlock addBlock={addTheBlock} provider={provider} />
     
 	</div>);

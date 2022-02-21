@@ -197,11 +197,17 @@ async function AllVaults(vaultAddresses, defaultProvider){
 
 }
 
-async function GetVaultInfo(vault, provider){
+async function GetVaultContract(vault, provider){
 	let s = new ethers.Contract(vault.address, vault043, provider);
-	if( vault.version.includes('0.3.0') || vault.version.includes('0.3.1')){
+	let version = await s.apiVersion();
+	if( version.includes('0.3.0') || version.includes('0.3.1')){
 		s = new ethers.Contract(vault.address, vault030, provider);
 	}
+	return s;
+}
+
+async function GetVaultInfo(vault, provider){
+	let s = GetVaultContract(vault, provider);
 	let name = vault.name;
 	let debtRatio = await s.debtRatio();
 	let token = await Erc20Info(vault.want, provider);
@@ -338,4 +344,4 @@ function Dai(provider){
     
 }
 
-export {AllVaults, AllRegistered, AllStrats, StratInfo, Erc20Info, GetMasterchef};
+export {AllVaults, GetVaultContract, AllRegistered, AllStrats, StratInfo, Erc20Info, GetMasterchef};

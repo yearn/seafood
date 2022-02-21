@@ -3,7 +3,7 @@ import axios from '../axios';
 
 
 
-function VaultButtons({provider, clickFunction}){
+function StrategyButtons({provider, clickFunction}){
 	let [filterCurve, setFilterCurve] = useState(true);
 	let [vaults, setAllv] = useState([]);
 
@@ -11,6 +11,7 @@ function VaultButtons({provider, clickFunction}){
 	useEffect(() => {
 		try{
 			axios.post('api/getVaults/AllVaults', provider.network).then((response) => {
+				console.log(response.data);
 				setAllv(response.data);
                 
 			});
@@ -41,4 +42,4 @@ function VaultButtons({provider, clickFunction}){
 
 
 
-export default VaultButtons;
+export default StrategyButtons;
