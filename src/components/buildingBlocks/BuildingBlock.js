@@ -3,6 +3,7 @@ import VaultButtons from '../VaultsList';
 import ContractActions from '../ContractActions';
 import {GetVaultContract} from  '../../ethereum/EthHelpers';
 import StrategyButtons from '../StrategyList';
+import BuildManual from './BuildManual';
 
 
 
@@ -12,10 +13,11 @@ function BuildingBlock({provider, addBlock}){
 	const [block, setBlock] = useState({});
     
 	function addVault(vault){
+		console.log('addVault = ');
 		console.log(vault);
 
 
-		GetVaultContract(vault, provider).then(contract => {
+		GetVaultContract(vault.address, provider).then(contract => {
 			setBlock({
 				type: 'Vault',
 				address: vault.address,
@@ -23,7 +25,7 @@ function BuildingBlock({provider, addBlock}){
 				details: vault,
 				contract: contract
 			});
-			setStage(1);
+			setStage(11);
 		});
 
         
@@ -59,14 +61,18 @@ function BuildingBlock({provider, addBlock}){
 	
 	//manual address or from list?
 	return <div><span>{'Contract Type:'}</span>
+		{stage == 0 && <button  onClick={() => changeStage(20)}> {'Manual Setup?'}</button>}
+		{stage == 0 && <button  onClick={() => changeStage(10)}> {'See Vaults'}</button>}
 		
-		{stage == 0 && <VaultButtons provider={provider} clickFunction={addVault} />}
-		{stage == 1 && <button  onClick={() => changeStage(2)}> {'See Strats?'}</button>}
-		{stage == 1 && <button  onClick={() => changeStage(3)}> {'See Functions?'}</button>}
-		{stage == 2 && <StrategyButtons provider={provider} vault={block.details} onSelect={addAction} />}
-		{stage == 3 && <ContractActions block={block} onSelect={addAction} />}
+        
+        
+		{stage == 10 && <VaultButtons provider={provider} clickFunction={addVault} />}
+		{stage == 11 && <button  onClick={() => changeStage(12)}> {'See Strats?'}</button>}
+		{stage == 11 && <button  onClick={() => changeStage(13)}> {'See Functions?'}</button>}
+		{stage == 12 && <StrategyButtons provider={provider} vault={block.details} onSelect={addAction} />}
+		{stage == 13 && <ContractActions block={block} onSelect={addAction} />}
 
-
+		{stage == 20 && <BuildManual provider={provider} clickFunction={addAction} />}
 
 		{stage != 0 && <button  onClick={() => reset()}> {'Reset'}</button>}
 
