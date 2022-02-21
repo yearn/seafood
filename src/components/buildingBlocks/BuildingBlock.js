@@ -56,6 +56,8 @@ function BuildingBlock({provider, addBlock}){
 
 	}
 
+	
+	//manual address or from list?
 	return <div><span>{'Contract Type:'}</span>
 		
 		{stage == 0 && <VaultButtons provider={provider} clickFunction={addVault} />}

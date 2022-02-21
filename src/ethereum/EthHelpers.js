@@ -271,7 +271,12 @@ async function Erc20Info(token, provider){
 	};
     
 }
+async function GetCurrentBlock(provider){
 
+	let block = await provider.getBlockNumber();
+	return await provider.getBlock(block);
+    
+}
 
 function GetUrl(address, provider){
 
@@ -343,4 +348,4 @@ function Dai(provider){
     
 }
 
-export {AllVaults, GetVaultContract, AllRegistered, AllStrats, StratInfo, Erc20Info, GetMasterchef};
+export {AllVaults, GetCurrentBlock, GetVaultContract, AllRegistered, AllStrats, StratInfo, Erc20Info, GetMasterchef};
