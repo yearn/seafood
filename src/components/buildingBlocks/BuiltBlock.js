@@ -2,7 +2,9 @@ import React from 'react';
 
 
 function BuiltBlock({block, removeBlock}){
-	let inputs_as_array = Object.entries(block.inputs);
+
+	let inputs_as_array = block.inputs ? Object.entries(block.inputs): [];
+    
 	console.log(inputs_as_array[0]);
 
 	return <div>
