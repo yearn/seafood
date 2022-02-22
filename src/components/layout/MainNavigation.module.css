@@ -1,34 +1,22 @@
 .header {
-    width: 90%;
-    height: 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #006994;
-    padding: 0 10%;
-  }
+  @apply h-12 px-[10%] bg-sky-900 flex items-center justify-between;
+}
   
   .header ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: baseline;
+    @apply flex;
   }
   
   .header li {
-    margin-left: 3rem;
+    @apply ml-12;
   }
   
   .header a {
-    text-decoration: none;
-    font-size: 1rem;
-    color: #fcb8d2;
+    @apply text-pink-300;
   }
   
   .header a:hover,
   .header a:active,
   .header a.active {
-    color: white;
+    @apply text-white;
   }
   

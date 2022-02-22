@@ -23,6 +23,7 @@ function MainNavigation(){
 
 	const {defaultProvider, fantomProvider} = useRPCProvider();
 	return <header className={classes.header}>
+
 		<span>{alert}</span>
 		<nav>
 			<ul>
