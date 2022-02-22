@@ -64,7 +64,9 @@ async function TenderlySim(blocks, tenderlyProvider){
 			success = false;
 		}
 
-		let toReturn = {success: success, block: block, result: result};
+		let toReturn = block;
+		toReturn.success = success;
+		toReturn.result = result;
 
 		toReturn.tenderlyId = await tenderlyProvider.send('evm_getLatest', []);
 		toReturn.tenderlyURL = 'https://dashboard.tenderly.co/yearn/yearn-web/fork/' + tenderlyProvider.connection.url.substring(29) +'/simulation/' + toReturn.tenderlyId;
