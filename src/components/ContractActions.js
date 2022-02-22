@@ -6,7 +6,7 @@ function ContractActions({block, onSelect}) {
 	let contract = block.contract;
 	const [values, setValues] = useState({});
 	const [nonce, setNonce] = useState(0);
-
+	console.log(block);
 	function clickFunction(e, extended){
 		let key = extended.fun.name + extended.fun.inputs.map(x => x.name).join('');
 		e.preventDefault();
@@ -39,6 +39,7 @@ function ContractActions({block, onSelect}) {
 			block: block
 		};
 		return(
+			
 			<form key={key} onSubmit={(e) => clickFunction(e, extended)} >
 
 				{fun.inputs.map(input =>{
@@ -55,7 +56,11 @@ function ContractActions({block, onSelect}) {
 	
 	
 
-	return fragments;
+	return <div>
+		<h4>{block.name + ' at ' + block.address}</h4>
+		{fragments}
+
+	</div>;
 
 }
 
