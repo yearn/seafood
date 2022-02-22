@@ -1,7 +1,8 @@
 import useRPCProvider from '../context/useRpcProvider';
 import {GetMasterchef} from  '../ethereum/EthHelpers';
-import {fantomMasterchefs} from  '../ethereum/Addresses';
+//import {fantomMasterchefs} from  '../ethereum/Addresses';
 import React, {useState,useEffect} from 'react';
+import axios from '../axios';
 
 
 function MasterchefPage(){
@@ -19,12 +20,30 @@ function MasterchefPage(){
 		setNonce(nonce+1); //need to force update because react is stupid
 	};
 
-	function getAll(){
-		GetMasterchef(fantomMasterchefs(), fantomProvider, allV).then(v => { setAllv(v);});
+	function getAll(provider, old){
+
+		try{
+			axios.post('api/getVaults/AllMasterchefs', provider.network).then((response) => {
+				
+				let respons_addresses = response.data.map(x => {
+					if(!x.expired || old){
+						return x.address;
+					}
+					
+				}).filter(x => x !== undefined);
+				console.log(respons_addresses);
+				GetMasterchef(respons_addresses, provider, allV).then(v => { setAllv(v);});
+                
+			});
+		}catch{console.log('eth failed');}
+		
+	}
+	function showOld(){
+		getAll(fantomProvider, true);
 	}
 
 	useEffect(() => {
-		getAll();
+		getAll(fantomProvider, false);
 	}, [fantomProvider]);
 
 	const int = setInterval(() => {
@@ -55,6 +74,7 @@ function MasterchefPage(){
 				{values[strat.address] && <iframe style={divStyle} src={strat.emissionToken.dexScreener}></iframe>}
 				<br /></div>
 		))}
+		<button onClick={() => showOld()}> {'show expired strats'}</button>
 		</div>;
 	}else{
 		return <div>{'loading...'}</div>;
