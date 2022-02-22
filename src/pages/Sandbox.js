@@ -4,6 +4,7 @@ import ProviderSelector from '../components/ProviderSelector';
 import BuildingBlock from '../components/buildingBlocks/BuildingBlock';
 import BuiltBlock from '../components/buildingBlocks/BuiltBlock';
 import SimulateBlock from '../components/buildingBlocks/SimulateBlock';
+import PreviewCode from '../components/buildingBlocks/PreviewCode';
 
 
 function Sandbox() {
@@ -26,18 +27,7 @@ function Sandbox() {
 		setBlocks(blocks.filter(item => item.index !== blockIndex));
 	}
 
-	let code_preview = () => {
-		let script = '\n@sign\ndef auto_debt_adjust():\n';
-
-		for(let block of blocks){
-			let name = block.block.name.replace(/\s/g, '_').toLowerCase();
-			script = script + '\n\t' + name + ' = safe.contract("' + block.address + '")\n';
-			script = script + '\t' + name + '.' + block.function.name + '()\n';
-		}
-
-		return script;
-
-	};
+	
 
 	return (<div>
 		<ProviderSelector selectFunction={setProvider} />
@@ -46,7 +36,8 @@ function Sandbox() {
 		<h3>{'Run Code In Fork'} </h3>
 		{blocks.length > 0 && <SimulateBlock blocks={blocks} chainId={provider.network.chainId} />}
 		
-		<div><div  style={{whiteSpace: 'pre-wrap'}}>{code_preview()}</div></div>
+		<PreviewCode blocks={blocks} />
+		
 
 		<h3>{'Add new'} </h3>
 		<BuildingBlock addBlock={addTheBlock} provider={provider} />

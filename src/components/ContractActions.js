@@ -7,17 +7,17 @@ function ContractActions({block, onSelect}) {
 	const [values, setValues] = useState({});
 	const [nonce, setNonce] = useState(0);
 
-	function clickFunction(extended){
-		event.preventDefault();
-		console.log(values);
+	function clickFunction(e, extended){
+		let key = extended.fun.name + extended.fun.inputs.map(x => x.name).join('');
+		e.preventDefault();
 		let toUp = extended;
-		toUp.inputs = values[extended.fun.name + extended.fun.inputs.map(x => x.name)];
-		console.log(toUp);
+		toUp.inputs = values[key];
+		
 		onSelect(toUp);
 	}
 
 	const handleChange = (fieldId, name, value) => {
-		console.log(value);
+		// console.log(value);
 		setValues(currentValues => {
 			if(! currentValues[fieldId] )currentValues[fieldId] = {};
 			currentValues[fieldId][name] = value;
@@ -33,16 +33,16 @@ function ContractActions({block, onSelect}) {
 		if(fun.stateMutability === 'pure' || fun.stateMutability === 'view') return;
 
 
-		let key = fun.name + fun.inputs.map(x => x.name);
+		let key = fun.name + fun.inputs.map(x => x.name).join('');
 		let extended = {
 			fun: fun,
 			block: block
 		};
 		return(
-			<form key={key} onSubmit={() => clickFunction(extended)} >
+			<form key={key} onSubmit={(e) => clickFunction(e, extended)} >
 
 				{fun.inputs.map(input =>{
-					return <textarea key={input.name} value={values[fun.inputs] ? (values[fun.inputs][input.name] && values[fun.inputs][input.name]): input.name + '(' + input.type + ')'} onChange={event => handleChange(fun.inputs, input.name, event.target.value)} />;
+					return <textarea key={input.name} value={values[key] ? (values[key][input.name] && values[key][input.name]): input.name + '(' + input.type + ')'} onChange={event => handleChange(key, input.name, event.target.value)} />;
 				})}
 				
 				
