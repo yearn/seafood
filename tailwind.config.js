@@ -1,7 +1,22 @@
+const colors = require('tailwindcss/colors');
+
 module.exports = {
-  content: ["./src/**/*.{html,js}"],
+  content: ['./src/**/*.{html,js}'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        app: colors.sky
+      },
+      height: ({ theme }) => ({
+        'app-header': '74px'
+      })
+    }
+  },
+  variants: {
+    extend: {
+      scale: ['active'],
+      transform: ['active']
+    },
   },
   plugins: [],
 }

@@ -1,22 +1,23 @@
 .header {
-  @apply h-12 px-[10%] bg-sky-900 flex items-center justify-between;
+  @apply sticky z-50 inset-x-0 top-0 mb-8 h-app-header
+    flex items-center
+    backdrop-blur-sm bg-app-900/90 shadow-md;
 }
-  
-  .header ul {
-    @apply flex;
-  }
-  
-  .header li {
-    @apply ml-12;
-  }
-  
-  .header a {
-    @apply text-pink-300;
-  }
-  
-  .header a:hover,
-  .header a:active,
-  .header a.active {
-    @apply text-white;
-  }
-  
+
+.header ul {
+  @apply flex;
+}
+
+.header li {
+  @apply ml-12;
+}
+
+.header a {
+  @apply text-pink-300;
+}
+
+.header a:hover,
+.header a:active,
+.header a.active {
+  @apply text-white;
+}
