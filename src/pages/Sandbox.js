@@ -23,6 +23,11 @@ function Sandbox() {
 		setBlocks([...blocks, block]);
 
 	}
+
+	function updateTheBlock(block) {
+		setBlocks(block);
+
+	}
 	function removeBlock(blockIndex) {
 		setBlocks(blocks.filter(item => item.index !== blockIndex));
 	}
@@ -34,7 +39,7 @@ function Sandbox() {
 
 		{blocks.map(block => <BuiltBlock key={block.index} block={block} removeBlock={removeBlock} />)}
 		<h3>{'Run Code In Fork'} </h3>
-		{blocks.length > 0 && <SimulateBlock blocks={blocks} chainId={provider.network.chainId} />}
+		{blocks.length > 0 && <SimulateBlock blocks={blocks} updateBlock={updateTheBlock} chainId={provider.network.chainId} />}
 		
 		<PreviewCode blocks={blocks} />
 		

@@ -3,7 +3,7 @@ import {TenderlySim, setupTenderly} from '../../ethereum/TenderlySim';
 import ShowEvents from '../ShowEvents';
 
 
-function SimulateBlock({blocks, chainId}){
+function SimulateBlock({blocks, chainId, updateBlock}){
 	console.log(chainId);
 	
 	const [finishedBlocks, addBlock] = useState([]);
@@ -24,6 +24,7 @@ function SimulateBlock({blocks, chainId}){
 		setupTenderly(chainId).then(tenderlyProvider =>{
 			TenderlySim(blocks, tenderlyProvider).then(x =>{
 				addBlock(x);
+				updateBlock(x);
 			});
 		});
 	}
@@ -37,7 +38,7 @@ function SimulateBlock({blocks, chainId}){
 	return<div>{finishedBlocks.map(block =>{
 		return (
 			<div key={block.tenderlyURL}>
-				<div>{block.block.function.name + ' on ' + block.block.block.name } {block.block.name !== block.block.block.name && ' on ' + block.block.name } { <a target={'_blank'} rel={'noreferrer'} href={block.tenderlyURL}> {(block.success ? ' succeeded ' : 'failed ')} </a>}</div>
+				<div>{block.function.name + ' on ' + block.block.name } {block.name !== block.block.name && ' on ' + block.name } { <a target={'_blank'} rel={'noreferrer'} href={block.tenderlyURL}> {(block.success ? ' succeeded ' : 'failed ')} </a>}</div>
 				{(block.result && !script[block.tenderlyURL] )  && <button onClick={() => showEvent(block, true)} > {'Show Events'}</button>}
 				{script[block.tenderlyURL] && <ShowEvents events={block.result.events} />}
 				{(block.result && script[block.tenderlyURL] )  && <button onClick={() => showEvent(block, false)} > {'Hide Events'}</button>}
