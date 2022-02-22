@@ -29,9 +29,10 @@ function StrategyButtons({provider, vault, onSelect}){
 		);
 	}
 
-	return(<div>
+	return(
 		
 		<div>
+			<h4>{vault.name + ' at ' + vault.address}</h4>
 			{strat == null && strats.map((strat) => {
             
         
@@ -44,7 +45,6 @@ function StrategyButtons({provider, vault, onSelect}){
 		</div>
 
     
-	</div>
 
 	);
 }
