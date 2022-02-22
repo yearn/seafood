@@ -196,16 +196,44 @@ async function AllVaults(vaultAddresses, defaultProvider){
 }
 
 async function GetVaultContract(vault, provider){
-	let s = new ethers.Contract(vault.address, vault043, provider);
+	let s = new ethers.Contract(vault, vault043, provider);
 	let version = await s.apiVersion();
 	if( version.includes('0.3.0') || version.includes('0.3.1')){
-		s = new ethers.Contract(vault.address, vault030, provider);
+		s = new ethers.Contract(vault, vault030, provider);
 	}
 	return s;
 }
 
+async function GetBasicVault(address, provider){
+	let s = await GetVaultContract(address, provider);
+	console.log(s);
+	let name = await s.name();
+	//console.log(totalAssets)
+	//console.log(totalDebt)
+
+	return {
+		address: address,
+		name: name,
+		contract: s
+	};
+    
+}
+async function GetBasicStrat(address, provider){
+	let s = new ethers.Contract(address, strategy, provider);
+	console.log(s);
+	let name = await s.name();
+	//console.log(totalAssets)
+	//console.log(totalDebt)
+
+	return {
+		address: address,
+		name: name,
+		contract: s
+	};
+    
+}
 async function GetVaultInfo(vault, provider){
-	let s = await GetVaultContract(vault, provider);
+	let s = await GetVaultContract(vault.address, provider);
 	console.log(s);
 	let name = await s.name();
 	let debtRatio = await s.debtRatio();
@@ -271,7 +299,12 @@ async function Erc20Info(token, provider){
 	};
     
 }
+async function GetCurrentBlock(provider){
 
+	let block = await provider.getBlockNumber();
+	return await provider.getBlock(block);
+    
+}
 
 function GetUrl(address, provider){
 
@@ -343,4 +376,4 @@ function Dai(provider){
     
 }
 
-export {AllVaults, GetVaultContract, AllRegistered, AllStrats, StratInfo, Erc20Info, GetMasterchef};
+export {AllVaults, GetCurrentBlock, GetBasicStrat, GetBasicVault, GetVaultContract, AllRegistered, AllStrats, StratInfo, Erc20Info, GetMasterchef};

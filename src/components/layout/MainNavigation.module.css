@@ -2,7 +2,6 @@
   @apply h-12 px-[10%] bg-sky-900 flex items-center justify-between;
 }
   
-  
   .header ul {
     @apply flex;
   }
