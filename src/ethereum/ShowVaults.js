@@ -9,7 +9,6 @@ function ShowVault() {
 	const {defaultProvider, fantomProvider} = useRPCProvider();
 
 	
-	let [filterCurve, setFilterCurve] = useState(true);
 	let [singleVault, setSingleVault] = useState(null);
 	
   
@@ -23,7 +22,7 @@ function ShowVault() {
 	return(
       
 		<div>
-			<button  onClick={() => setFilterCurve(!filterCurve)}>{filterCurve ? 'Show Curve' : 'Hide Curve'}</button>
+			
 			<h2>{'ETH Vaults '}</h2>
 			<VaultButtons provider={defaultProvider} clickFunction={setSingleVault} />
 			<h2>{'FTM Vaults '}</h2>
