@@ -15,3 +15,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+button {
+  @apply m-2 py-2 px-4 bg-sky-200 active:transform transition duration-100 rounded cursor-pointer shadow-lg;
+}

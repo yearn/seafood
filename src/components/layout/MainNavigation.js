@@ -4,7 +4,7 @@ import classes from './MainNavigation.module.css';
 
 function MainNavigation(){
 	return <header className={classes.header}>
-		
+
 		<nav>
 			<ul>
 				<li>
