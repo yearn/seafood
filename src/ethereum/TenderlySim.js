@@ -25,19 +25,31 @@ async function TenderlySim(blocks, tenderlyProvider){
 	let returnList = [];
 
 	for(let block of blocks){
+
+
 		let gov = await block.contract.governance();
 		let signer = tenderlyProvider.getSigner(gov);
 		console.log('doing ', block.function.name);
 		const blockWithSigner = block.block.contract.connect(signer);
 		console.log(blockWithSigner);
 
-
-		let func = blockWithSigner.functions[block.function.name + '()'];
+		console.log(block.function.name + '(' + block.function.inputs.map(x => x.type) + ')');
+		let func = blockWithSigner.functions[block.function.name + '(' + block.function.inputs.map(x => x.type) + ')'];
 		console.log(func);
 		console.log(block.function);
+		let pass = true;
+		let inputs = block.function.inputs.map(x =>{
+			if(block.inputs[x.name]){
+				let ins = block.inputs[x.name];
+				
+				return ins; 
+			}
+			pass = false;
+		});
+		if(!pass) continue;
+		console.log(String(inputs));
 
-
-		let x = await func({
+		let x = await func(...inputs, {
 			gasLimit: 8_000_000, gasPrice:0
 		});
 
