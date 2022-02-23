@@ -22,11 +22,12 @@ function HistoricReports({strategy}){
 		{all.map(e => {
 			let time = new Date(e.timestamp*1000);
 
+
 			return <div key={e.txn_hash}> <span>{
                 
-				'harvest ' + time.toGMTString() + ', gain: ' + parseFloat(e.total_gain).toLocaleString(undefined, {maximumFractionDigits:5}) + ', gain(usd): ' + parseFloat(e.want_gain_usd).toLocaleString(undefined, {style:'currency', currency:'USD'}) 
+				'harvest ' + time.toGMTString() + ', gain: ' + parseFloat(e.total_gain).toLocaleString(undefined, {maximumFractionDigits:5}) + ', gain(usd): ' + parseFloat(e.want_gain_usd).toLocaleString(undefined, {style:'currency', currency:'USD'}) + ', APR: ' + parseFloat(e.rough_apr_pre_fee*100).toLocaleString(undefined, {maximumFractionDigits:2}) + '%'
             
-			}</span>{<a href={GetExplorerTx(e.chain_id, e.txn_has)}>< BsBoxArrowInUpRight   /></a>}</div>;
+			}</span>{<a href={GetExplorerTx(e.chain_id, e.txn_hash)}>< BsBoxArrowInUpRight   /></a>}</div>;
 			
 		})}
 	</div>;
