@@ -1,7 +1,8 @@
 import axios from '../axios';
 
+import {BsBoxArrowInUpRight} from 'react-icons/bs';
 import React, {useState, useEffect} from 'react';
-import {GetALink, GetExplorerTx} from '../utils/utils';
+import {GetExplorerTx} from '../utils/utils';
 function HistoricReports({strategy}){
 
 	const [all, setAll] = useState([]);
@@ -20,13 +21,12 @@ function HistoricReports({strategy}){
 		<br />
 		{all.map(e => {
 			let time = new Date(e.timestamp*1000);
-			let url = GetExplorerTx(e.chain_id, e.txn_hash);
 
-			return <div key={e.txn_hash}>{GetALink(url, 'harvest ')} {
+			return <div key={e.txn_hash}> <span>{
                 
-				time.toGMTString() + ', gain: ' + parseFloat(e.total_gain).toLocaleString(undefined, {maximumFractionDigits:5}) + ', gain(usd): ' + parseFloat(e.want_gain_usd).toLocaleString(undefined, {style:'currency', currency:'USD'}) 
+				'harvest ' + time.toGMTString() + ', gain: ' + parseFloat(e.total_gain).toLocaleString(undefined, {maximumFractionDigits:5}) + ', gain(usd): ' + parseFloat(e.want_gain_usd).toLocaleString(undefined, {style:'currency', currency:'USD'}) 
             
-			}</div>;
+			}</span>{<a href={GetExplorerTx(e.chain_id, e.txn_has)}>< BsBoxArrowInUpRight   /></a>}</div>;
 			
 		})}
 	</div>;
