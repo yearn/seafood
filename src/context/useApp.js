@@ -12,7 +12,7 @@ export const AppProvider = ({children}) => {
 		if(darkMode === null) {
 			setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
 		}
-	}, [darkMode]);
+	}, [darkMode, setDarkMode]);
 
 	return <AppContext.Provider value={{darkMode, setDarkMode}}>{children}</AppContext.Provider>;
 };

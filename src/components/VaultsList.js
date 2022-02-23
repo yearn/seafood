@@ -1,16 +1,11 @@
 import React, {useState,useEffect} from 'react';
 import axios from '../axios';
-<<<<<<< HEAD
 import {BsBoxArrowInUpRight, BsClipboardPlus} from 'react-icons/bs';
-import {GetExplorerLink} from '../utils/utils';
+import {GetExplorerLink, TruncateAddress} from '../utils/utils';
 
-
-=======
-import {TruncateAddress} from '../utils/utils';
->>>>>>> WIP
+const curveRe = /urve|crv/;
 
 function VaultButtons({provider, clickFunction}){
-	const curveRe = /urve|crv/;
 	const [showCurve, setShowCurve] = useState(true);
 	const [vaults, setVaults] = useState([]);
 	const [filter, setFilter] = useState([]);
@@ -48,6 +43,7 @@ function VaultButtons({provider, clickFunction}){
 					onClick={() => clickFunction(vault)} 
 					className={'p-4 border-2 border-sky-100 rounded-md'}>
 					{vault.name}{' - '}{vault.version}{' - '}{TruncateAddress(vault.address)}
+					<BsClipboardPlus onClick={() => navigator.clipboard.writeText(vault.address)} /><a href={GetExplorerLink(provider, vault.address)}><BsBoxArrowInUpRight /></a>
 				</div>;
 			})}
 		</div>

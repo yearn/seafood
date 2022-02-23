@@ -28,7 +28,7 @@ function MainNavigation(){
 				setAlert('FTM block is late ' + Math.floor((Date.now()/1000 - b.timestamp)/60) + ' minutes');
 			}
 		});
-	}, []);
+	}, [defaultProvider, fantomProvider]);
 
 	return <header>
 		<div className={'alert'}>{alert}</div>
