@@ -39,21 +39,19 @@ function VaultButtons({provider, clickFunction}){
 		);
 	}
 
-	return(<div>
-		<button  onClick={() => setShowCurve(!showCurve)}>{showCurve ? 'Show Curve' : 'Hide Curve'}</button>
-		<div className={'grid grid-flow-row grid-cols-3 md:grid-cols-3 2xl:grid-cols-5 gap-4'}>
+	return <div>
+		<button onClick={() => setShowCurve(!showCurve)}>{showCurve ? 'Show Curve' : 'Hide Curve'}</button>
+		<div className={'grid grid-flow-row grid-cols-3 md:grid-cols-3 2xl:grid-cols-5 gap-8'}>
 			{filter.map((vault) => {
 				return <div 
 					key={vault.address} 
 					onClick={() => clickFunction(vault)} 
-					className={'border-2 border-sky-100 rounded'}>
+					className={'p-4 border-2 border-sky-100 rounded-md'}>
 					{vault.name}{' - '}{vault.version}{' - '}{TruncateAddress(vault.address)}
 				</div>;
 			})}
 		</div>
-	</div>
-
-	);
+	</div>;
 }
 
 

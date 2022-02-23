@@ -1,13 +1,22 @@
 import React, {useState,useEffect} from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useMatch, useResolvedPath} from 'react-router-dom';
 import {GetCurrentBlock} from '../../ethereum/EthHelpers';
 
 import useRPCProvider from '../../context/useRpcProvider';
-import classes from './MainNavigation.module.css';
+import {BsBrightnessHigh, BsMoonFill} from 'react-icons/bs';
+import {useApp} from '../../context/useApp';
+
+function NavigationLink({to, label}) {
+	let resolved = useResolvedPath(to);
+	let match = useMatch({path: resolved.pathname, end: true});
+	return <Link className={match ? 'selected' : ''} to={to}>{label}</Link>;
+}
 
 function MainNavigation(){
+	const {darkMode, setDarkMode} = useApp();
+	const [alert, setAlert] = useState(null);
+	const {defaultProvider, fantomProvider} = useRPCProvider();
 
-	let [alert, setAlert] = useState(null);
 	useEffect(() => {
 		GetCurrentBlock(defaultProvider).then(b => {
 			if(Date.now()/1000 - b.timestamp > 360){
@@ -19,25 +28,28 @@ function MainNavigation(){
 				setAlert('FTM block is late ' + Math.floor((Date.now()/1000 - b.timestamp)/60) + ' minutes');
 			}
 		});
-	});
+	}, []);
 
-	const {defaultProvider, fantomProvider} = useRPCProvider();
-	return <header className={classes.header}>
-
-		<span>{alert}</span>
+	return <header>
+		<div className={'alert'}>{alert}</div>
 		<nav>
 			<ul>
 				<li>
-					<Link to={'/'}>{'All Vaults'}</Link>
+					<NavigationLink to={'/'} label={'All Vaults'}></NavigationLink>
 				</li>
 				<li>
-					<Link to={'/masterchef'}>{'Masterchef'}</Link>
+					<NavigationLink to={'/masterchef'} label={'Masterchef'}></NavigationLink>
 				</li>
 				<li>
-					<Link to={'/sandbox'}>{'Sandbox'}</Link>
+					<NavigationLink to={'/sandbox'} label={'Sandbox'}></NavigationLink>
 				</li>
 				<li>
-					<Link to={'/settings'}>{'Settings'}</Link>
+					<NavigationLink to={'/settings'} label={'Settings'}></NavigationLink>
+				</li>
+				<li>
+					<div onClick={() => { setDarkMode(!darkMode); }}>
+						{darkMode ? <BsBrightnessHigh /> : <BsMoonFill />}
+					</div>
 				</li>
 			</ul>
 		</nav>

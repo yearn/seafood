@@ -2,10 +2,14 @@ const colors = require('tailwindcss/colors');
 
 module.exports = {
   content: ['./src/**/*.{html,js}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        app: colors.sky
+        'primary': colors.sky,
+        'secondary': colors.slate,
+        'selected': colors.pink,
+        'attention': colors.yellow,
       },
       height: ({ theme }) => ({
         'app-header': '74px'
@@ -18,5 +22,7 @@ module.exports = {
       transform: ['active']
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms')
+  ],
 }
