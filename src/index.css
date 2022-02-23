@@ -21,9 +21,7 @@ header nav ul {
 }
 
 header nav li {
-  @apply flex items-center
-    ml-8
-    cursor-pointer;
+  @apply flex items-center ml-8 cursor-pointer;
 }
 
 header nav li a, header nav li div {
@@ -50,7 +48,7 @@ button {
     bg-primary-200
     dark:bg-primary-800
     active:transform transition duration-100
-    rounded-sm
+    rounded-full
     cursor-pointer shadow-md;
 }
 
@@ -62,4 +60,39 @@ button {
 
 .alert {
   @apply text-attention-300;
+}
+
+.vault-row {
+  @apply mt-2 pb-2
+    border-b-sky-200
+    dark:border-b-sky-800/80
+    border-b-2;
+}
+
+.vault-row .title-button {
+  @apply flex items-center justify-between
+    px-4 py-2
+    hover:bg-selected-200 
+    dark:hover:bg-selected-600 
+    active:transform active:scale-[98%]
+    rounded-full cursor-pointer;
+}
+
+.vault-row .title-button .title {
+  @apply text-2xl font-bold;
+}
+
+.vault-row .title-button .version {
+  @apply inline px-4 py-[2px] text-sm 
+    bg-primary-200
+    dark:bg-primary-900
+    rounded-full;
+}
+
+.vault-row .address {
+  @apply my-2 pl-4;
+}
+
+.vault-row .address > * {
+  @apply ml-2;
 }

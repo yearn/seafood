@@ -35,15 +35,20 @@ function VaultButtons({provider, clickFunction}){
 	}
 
 	return <div>
-		<button onClick={() => setShowCurve(!showCurve)}>{showCurve ? 'Show Curve' : 'Hide Curve'}</button>
-		<div className={'grid grid-flow-row grid-cols-3 md:grid-cols-3 2xl:grid-cols-5 gap-8'}>
+		<button onClick={() => setShowCurve(!showCurve)}>{showCurve ? 'Hide Curve' : 'Show Curve'}</button>
+		<div className={'max-w-prose mx-auto grid grid-flow-row grid-cols-1 md:grid-cols-1 2xl:grid-cols-1 gap-8'}>
 			{filter.map((vault) => {
-				return <div 
-					key={vault.address} 
-					onClick={() => clickFunction(vault)} 
-					className={'p-4 border-2 border-sky-100 rounded-md'}>
-					{vault.name}{' - '}{vault.version}{' - '}{TruncateAddress(vault.address)}
-					<BsClipboardPlus onClick={() => navigator.clipboard.writeText(vault.address)} /><a href={GetExplorerLink(provider, vault.address)}><BsBoxArrowInUpRight /></a>
+				return <div key={vault.address} 
+					className={'vault-row'}>
+					<div onClick={() => clickFunction(vault)} className={'title-button'}>
+						<div className={'title'}>{vault.name}</div>
+						<div className={'version'}>{vault.version}</div>
+					</div>
+					<div className={'flex items-center address'}>
+						{TruncateAddress(vault.address)}
+						<BsClipboardPlus title={`Copy ${vault.address} to your clipboard`} onClick={() => navigator.clipboard.writeText(vault.address)} />
+						<a href={GetExplorerLink(provider, vault.address)} title={`Explore ${vault.address}`}><BsBoxArrowInUpRight /></a>
+					</div>
 				</div>;
 			})}
 		</div>
