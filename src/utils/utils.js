@@ -4,4 +4,9 @@ function GetExplorerLink(provider, address){
 
 }
 
-export {GetExplorerLink};
+function GetExplorerTx(provider, address){
+	return (provider.network.chainId === 250 ? 'https://ftmscan.com/tx/' :  'https://etherscan.io/tx/') + address;
+
+}
+
+export {GetExplorerLink, GetExplorerTx};
