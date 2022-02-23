@@ -33,7 +33,7 @@ function VaultButtons({provider, clickFunction}){
 				if(filterCurve && (vault.name.includes('urve') || vault.name.includes('crv'))){
 					return '';
 				}else{
-					return <div key={vault.address} className={'flex flex-row items-center'}><button  onClick={() => clickFunction(vault)}> {vault.name}{' - '}{vault.version}{' - '}{vault.address}</button>< BsClipboardPlus onClick={() => navigator.clipboard.writeText(vault.address)} /><a href={GetExplorerLink(provider, vault.address)}>< BsBoxArrowInUpRight   /></a></div>;
+					return <div key={vault.address} className={'flex flex-row items-center'}><button  onClick={() => clickFunction(vault)}> {vault.name}{' - '}{vault.version}{' - '}{vault.address}</button>< BsClipboardPlus onClick={() => navigator.clipboard.writeText(vault.address)} /><a href={GetExplorerLink(provider.network.chainId, vault.address)}>< BsBoxArrowInUpRight   /></a></div>;
 				}
 			})}</div>
 	</div>

@@ -37,7 +37,7 @@ function StrategyButtons({provider, vault, onSelect}){
             
         
 				
-				return <div key={strat.address}><button  onClick={() => setStrat(strat)}> {strat.name}{' - '}{vault.address}</button>< BsClipboardPlus onClick={() => navigator.clipboard.writeText(strat.address)} /><a href={GetExplorerLink(provider, strat.address)}>< BsBoxArrowInUpRight   /></a></div>;
+				return <div key={strat.address}><button  onClick={() => setStrat(strat)}> {strat.name}{' - '}{vault.address}</button>< BsClipboardPlus onClick={() => navigator.clipboard.writeText(strat.address)} /><a href={GetExplorerLink(provider.network.chainId, strat.address)}>< BsBoxArrowInUpRight   /></a></div>;
 				
 			})}
 			{strat && <ContractActions block={strat} onSelect={onSelect} />}
