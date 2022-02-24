@@ -8,6 +8,12 @@
   transition duration-200;
 }
 
+a {
+  @apply underline underline-offset-2 
+    hover:text-selected-400
+    dark:hover:text-selected-400;
+}
+
 header {
   @apply sticky z-50 inset-x-0 top-0 mb-8 px-24 h-app-header
     flex items-center justify-between
@@ -25,7 +31,7 @@ header nav li {
 }
 
 header nav li a, header nav li div {
-  @apply px-4 py-2 rounded-full;
+  @apply no-underline px-4 py-2 rounded-full;
 }
 
 header nav li a:hover, header nav li div:hover {
