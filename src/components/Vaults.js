@@ -72,10 +72,9 @@ export default function Index() {
 				{`${filter.length} Vaults`}
 			</div>
 		</div>
-		<div className={'grid grid-flow-row grid-cols-1 md:grid-cols-3 2xl:grid-cols-4 gap-8'}>
+		<div className={'list'}>
 			{filter.map(vault => {
-				return <div key={vault.address} 
-					className={'vault-tile'}>
+				return <div key={vault.address} className={'tile'}>
 					<div className={'title-button'}>
 						<div className={'title'}>{vault.name}</div>
 						<div className={'version'}>{vault.version}</div>

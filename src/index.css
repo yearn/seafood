@@ -73,7 +73,7 @@ button {
 }
 
 .vaults {
-  @apply w-full;
+  @apply max-w-full;
 }
 
 .vaults .filter {
@@ -81,74 +81,78 @@ button {
 }
 
 .vaults .filter input[type=text] {
-  @apply border mr-2 border-secondary-600 bg-transparent rounded-full py-2 px-3 leading-tight focus:border-selected-200 focus:outline-none;
+  @apply border mr-2 py-2 px-3 border-secondary-600 bg-transparent rounded-full leading-tight focus:border-selected-200 focus:outline-none;
 }
 
-.vaults .chip {
+.vaults .filter .chip {
   @apply ml-2 px-4 py-1 
     border border-selected-200
     dark:border-selected-800 dark:text-selected-800
     text-sm rounded-full cursor-pointer;
 }
 
-.vaults .chip:hover {
+.vaults .filter .chip:hover {
   @apply border-selected-200
   dark:border-selected-600 dark:text-selected-600;
 }
 
-.vaults .chip:active {
+.vaults .filter .chip:active {
   @apply transform scale-95;
 }
 
-.vaults .hot {
+.vaults .filter .hot {
   @apply bg-selected-100 text-selected-900
     dark:bg-selected-800 dark:text-selected-100
     hover:dark:bg-selected-600 hover:dark:text-selected-100
     shadow-sm;
 }
 
-.vault-tile {
-  @apply mt-2;
+.vaults .list {
+  @apply grid grid-flow-row grid-cols-1 md:grid-cols-3 2xl:grid-cols-4;
 }
 
-.vault-tile .title-button {
+.vaults .list .tile {
+  @apply mr-4 mb-6;
+}
+
+.vaults .list .tile .title-button {
   @apply flex items-center justify-between
-    mb-2 px-4 py-2
+    px-4 py-2
     hover:bg-selected-200 
     dark:hover:bg-selected-600 
     active:transform active:scale-[98%]
     rounded-full cursor-pointer;
 }
 
-.vault-tile .title-button .title {
+.vaults .list .tile .title-button .title {
   @apply text-xl font-bold;
 }
 
-.vault-tile .title-button .version {
+.vaults .list .tile .title-button .version {
   @apply inline px-4 py-[2px] text-sm 
     bg-primary-200
     dark:bg-primary-900
     rounded-full;
 }
 
-.vault-tile .address {
+.vaults .list .tile .address {
   @apply my-2 pl-4;
 }
 
-.vault-tile .address > * {
+.vaults .list .tile .address > * {
   @apply ml-2;
 }
 
-.vault-tile .network {
+.vaults .list .tile .network {
   @apply mr-2 px-4 py-[2px] text-sm rounded-full;
 }
 
-.vault-tile .ethereum {
+.vaults .list .tile .ethereum {
   @apply bg-zinc-200
     dark:bg-zinc-600;
 }
 
-.vault-tile .fantom {
+.vaults .list .tile .fantom {
   @apply bg-indigo-200
     dark:bg-indigo-600;
 }
