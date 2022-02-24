@@ -4,7 +4,7 @@
 
 * {
   @apply text-secondary-900
-  dark:text-secondary-300
+  dark:text-secondary-200
   transition duration-200;
 }
 
@@ -68,14 +68,14 @@ button {
   @apply text-attention-300;
 }
 
-.vault-row {
-  @apply mt-2 pb-2
-    border-b-sky-200
-    dark:border-b-sky-800/80
-    border-b-2;
+.vault-tile {
+  @apply mt-2 pt-2
+    border-t-sky-200
+    dark:border-t-sky-800/80
+    border-t-2;
 }
 
-.vault-row .title-button {
+.vault-tile .title-button {
   @apply flex items-center justify-between
     px-4 py-2
     hover:bg-selected-200 
@@ -84,21 +84,21 @@ button {
     rounded-full cursor-pointer;
 }
 
-.vault-row .title-button .title {
-  @apply text-2xl font-bold;
+.vault-tile .title-button .title {
+  @apply text-xl font-bold;
 }
 
-.vault-row .title-button .version {
+.vault-tile .title-button .version {
   @apply inline px-4 py-[2px] text-sm 
     bg-primary-200
     dark:bg-primary-900
     rounded-full;
 }
 
-.vault-row .address {
+.vault-tile .address {
   @apply my-2 pl-4;
 }
 
-.vault-row .address > * {
+.vault-tile .address > * {
   @apply ml-2;
 }
