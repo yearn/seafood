@@ -47,7 +47,7 @@ function VaultButtons({provider, clickFunction}){
 					<div className={'flex items-center address'}>
 						{TruncateAddress(vault.address)}
 						<BsClipboardPlus title={`Copy ${vault.address} to your clipboard`} onClick={() => navigator.clipboard.writeText(vault.address)} />
-						<a href={GetExplorerLink(provider, vault.address)} title={`Explore ${vault.address}`}><BsBoxArrowInUpRight /></a>
+						<a href={GetExplorerLink(provider.network.chainId, vault.address)} title={`Explore ${vault.address}`}><BsBoxArrowInUpRight /></a>
 					</div>
 				</div>;
 			})}

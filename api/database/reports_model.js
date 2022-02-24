@@ -7,13 +7,19 @@ const pool = new Pool({
 	port: 5432,
 });
 
-const getReports = () => {
+var format = require('pg-format');
+
+const getReports = (strat) => {
+
 	return new Promise(function(resolve, reject) {
-		pool.query('SELECT * FROM reports LIMIT 100', (error, results) => {
+
+		const text = format('SELECT * FROM reports WHERE strategy_address = %L ORDER BY block DESC LIMIT 5', strat.address);
+		pool.query(text, (error, results) => {
 			if (error) {
 				reject(error);
 			}
-			console.log(results);
+			
+			
 			resolve(results.rows);
 		});
 	}); 
