@@ -36,7 +36,7 @@ function VaultButtons({provider, clickFunction}){
 
 	return <div>
 		<button onClick={() => setShowCurve(!showCurve)}>{showCurve ? 'Hide Curve' : 'Show Curve'}</button>
-		<div className={'grid grid-flow-row sm:grid-cols-1 grid-cols-3 2xl:grid-cols-4 gap-8'}>
+		<div className={'grid grid-flow-row grid-cols-1 md:grid-cols-3 2xl:grid-cols-4 gap-8'}>
 			{filter.map((vault) => {
 				return <div key={vault.address} 
 					className={'vault-tile'}>

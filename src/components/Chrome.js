@@ -3,11 +3,11 @@ import MainNavigation from './layout/MainNavigation';
 
 export default function Chrome({children}) {
 	const {darkMode} = useApp();
-	return <div className={(darkMode ? 'dark ' : '') + 'relative max-w-full min-h-screen'}>
+	return <div className={(darkMode ? 'dark' : '')}>
 		<div className={'bg'}></div>
-		<div className={'absolute z-10 w-full pb-32'}>
+		<div className={'absolute z-10 w-screen pb-32'}>
 			<MainNavigation />
-			<div className={'p-8'}>{children}</div>
+			<div className={'p-4'}>{children}</div>
 		</div>
 	</div>;
 }
