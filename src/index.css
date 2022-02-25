@@ -174,7 +174,7 @@ button {
     dark:bg-fantom-600;
 }
 
-.curve-text {
+.rainbow-text {
   @apply bg-clip-text text-transparent 
     bg-gradient-to-r 
     from-red-600 via-yellow-500 to-blue-600

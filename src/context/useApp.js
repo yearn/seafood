@@ -20,9 +20,9 @@ export const AppProvider = ({children}) => {
 			const fetches = providers.map(p => { return axios.post('/api/getVaults/AllVaults', p.network); });
 			const results = await Promise.all(fetches);
 			const freshVaults = [];
-			providers.forEach((p, index) => {
+			providers.forEach((provider, index) => {
 				freshVaults.push(...results[index].data.map(v => { 
-					return {...v, provider: p}; 
+					return {...v, provider};
 				}));
 			});
 			setVaults(freshVaults);

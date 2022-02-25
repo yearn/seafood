@@ -4,6 +4,7 @@ import {BsBoxArrowInUpRight, BsClipboardPlus} from 'react-icons/bs';
 import {GetExplorerLink, TruncateAddress} from '../utils/utils';
 import {useDebouncedCallback} from 'use-debounce';
 import {useApp} from '../context/useApp';
+import useLocalStorage from 'use-local-storage';
 
 const curveRe = /curve|crv/i;
 
@@ -11,18 +12,18 @@ export default function Vaults() {
 	const navigate = useNavigate();
 	const {vaults} = useApp();
 	const [filter, setFilter] = useState([]);
-	const [query, setQuery] = useState('');
+	const [query, setQuery] = useLocalStorage('Vaults.query', '');
+	const queryRe = new RegExp(query, 'i');
 	const debounceQuery = useDebouncedCallback(value => {setQuery(value);}, 250);
-	const [chips, setChips] = useState({
+	const [chips, setChips] = useLocalStorage('Vaults.chips', {
 		curve: true,
 		ethereum: true,
 		fantom: true
 	});
 
 	useEffect(() => {
-		const re = new RegExp(query, 'i');
 		setFilter(vaults.filter(vault => {
-			if(query && !re.test(vault.name)) return false;
+			if(query && !queryRe.test(vault.name)) return false;
 			if(!chips.ethereum && vault.provider.network.name === 'ethereum') return false;
 			if(!chips.fantom && vault.provider.network.name === 'fantom') return false;
 			return chips.curve || !curveRe.test(vault.name);
@@ -34,8 +35,8 @@ export default function Vaults() {
 			className={`chip-${tag} chip ${chips[tag] ? ` hot-${tag}` : ''}`}>{tag}</div>;
 	}
 
-	function styledTitle(title) {
-		const match = title.match(curveRe);
+	function styleTitle(title) {
+		const match = title.match(queryRe);
 		if (match) {
 			const matchedText = match[0];
 			const left = title.substring(0, match.index);
@@ -43,7 +44,7 @@ export default function Vaults() {
 			const right = title.substring(match.index + matchedText.length);
 			return <>
 				{left}
-				<span className={'curve-text'}>{middle}</span>
+				<span className={'rainbow-text'}>{middle}</span>
 				{right}
 			</>;
 		}
@@ -54,7 +55,7 @@ export default function Vaults() {
 	return <div className={'vaults'}>
 		<div className={'filter'}>
 			<div className={'flex items-center'}>
-				<input onChange={(e) => {debounceQuery(e.target.value);}} type={'text'} placeholder={'Filter by name..'} />
+				<input onChange={(e) => {debounceQuery(e.target.value);}} defaultValue={query} type={'text'} placeholder={'Filter by name..'} />
 				{chip('curve')}
 				{chip('ethereum')}
 				{chip('fantom')}
@@ -67,7 +68,7 @@ export default function Vaults() {
 			{filter.map(vault => {
 				return <div key={vault.address} className={'tile'}>
 					<div onClick={() => {navigate(`/vault/${vault.address}`);}} className={'title-button'}>
-						<div className={'title'}>{styledTitle(vault.name)}</div>
+						<div className={'title'}>{styleTitle(vault.name)}</div>
 						<div className={'version'}>{vault.version}</div>
 					</div>
 					<div className={'flex items-center justify-between'}>
