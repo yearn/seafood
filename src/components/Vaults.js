@@ -1,28 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import useRpcProvider from '../context/useRpcProvider';
-import axios from '../axios';
 import {BsBoxArrowInUpRight, BsClipboardPlus} from 'react-icons/bs';
 import {GetExplorerLink, TruncateAddress} from '../utils/utils';
 import {useDebouncedCallback} from 'use-debounce';
+import {useApp} from '../context/useApp';
 
 const curveRe = /curve|crv/i;
 
-function useFetchVaults(provider) {
-	const [result, setResult] = useState([]);
-	useEffect(() => {
-		(async () => {
-			const response = await axios.post('api/getVaults/AllVaults', provider.network);
-			setResult(response.data);
-		})();
-	}, [provider]);
-	return result;
-}
-
 export default function Index() {
-	const {defaultProvider, fantomProvider} = useRpcProvider();
-	const ethereumVaults = useFetchVaults(defaultProvider);
-	const fantomVaults = useFetchVaults(fantomProvider);
-	const [vaults, setVaults] = useState([]);
+	const {vaults} = useApp();
 	const [filter, setFilter] = useState([]);
 	const [query, setQuery] = useState('');
 	const debounceQuery = useDebouncedCallback(value => {setQuery(value);}, 250);
@@ -33,26 +18,11 @@ export default function Index() {
 	});
 
 	useEffect(() => {
-		setVaults([
-			...ethereumVaults.map(v => {
-				v.network = 'Ethereum';
-				v.provider = defaultProvider;
-				return v;
-			}),
-			...fantomVaults.map(v => {
-				v.network = 'Fantom';
-				v.provider = fantomProvider;
-				return v;
-			})
-		]);
-	}, [defaultProvider, ethereumVaults, fantomProvider, fantomVaults]);
-
-	useEffect(() => {
 		const re = new RegExp(query, 'i');
 		setFilter(vaults.filter(vault => {
 			if(query && !re.test(vault.name)) return false;
-			if(!chips.ethereum && vault.network === 'Ethereum') return false;
-			if(!chips.fantom && vault.network === 'Fantom') return false;
+			if(!chips.ethereum && vault.provider.network.name === 'ethereum') return false;
+			if(!chips.fantom && vault.provider.network.name === 'fantom') return false;
 			return chips.curve || !curveRe.test(vault.name);
 		}));
 	}, [query, chips, vaults]);
@@ -104,7 +74,7 @@ export default function Index() {
 							<BsClipboardPlus title={`Copy ${vault.address} to your clipboard`} onClick={() => navigator.clipboard.writeText(vault.address)} />
 							<a href={GetExplorerLink(vault.provider.network.chainId, vault.address)} title={`Explore ${vault.address}`}><BsBoxArrowInUpRight /></a>
 						</div>
-						<div className={`network ${vault.network.toLowerCase()}`}>{vault.network}</div>
+						<div className={`network ${vault.provider.network.name}`}>{vault.provider.network.name}</div>
 					</div>
 				</div>;
 			})}

@@ -161,7 +161,7 @@ button {
 }
 
 .vaults .list .tile .network {
-  @apply mr-2 px-4 py-[2px] text-sm rounded-full;
+  @apply mr-2 px-4 py-[2px] text-sm capitalize rounded-full;
 }
 
 .vaults .list .tile .ethereum {
