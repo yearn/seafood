@@ -5,6 +5,7 @@ import {GetExplorerLink, TruncateAddress} from '../utils/utils';
 import {useDebouncedCallback} from 'use-debounce';
 import {useApp} from '../context/useApp';
 import useLocalStorage from 'use-local-storage';
+import useKeypress from 'react-use-keypress';
 
 const curveRe = /curve|crv/i;
 
@@ -30,6 +31,12 @@ export default function Vaults() {
 			return chips.curve || !curveRe.test(vault.name);
 		}));
 	}, [query, chips, vaults]);
+
+	useKeypress(['/'], () => {
+		setTimeout(() => {
+			queryElement.current.focus();
+		}, 0);
+	});
 
 	function chip(tag) {
 		return <div onClick={() => {setChips({...chips, [tag]: !chips[tag]});}} 
@@ -62,7 +69,7 @@ export default function Vaults() {
 		<div className={'filter'}>
 			<div className={'flex items-center'}>
 				<div className={'relative flex items-center'}>
-					<input ref={queryElement} onChange={(e) => {debounceQuery(e.target.value);}} defaultValue={query} type={'text'} placeholder={'Filter by name..'} />
+					<input ref={queryElement} onChange={(e) => {debounceQuery(e.target.value);}} defaultValue={query} type={'text'} placeholder={'/ Filter by name'} />
 					{query && <div onClick={clearQuery} className={'absolute right-4 clear-query'}>
 						<BsX />
 					</div>}
