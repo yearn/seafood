@@ -5,7 +5,7 @@ import {BsBoxArrowInUpRight, BsClipboardPlus} from 'react-icons/bs';
 import {GetExplorerLink, TruncateAddress} from '../utils/utils';
 import {useDebouncedCallback} from 'use-debounce';
 
-const curveRe = /urve|crv/i;
+const curveRe = /curve|crv/i;
 
 function useFetchVaults(provider) {
 	const [result, setResult] = useState([]);
@@ -57,16 +57,35 @@ export default function Index() {
 		}));
 	}, [query, chips, vaults]);
 
+	function chip(tag) {
+		return <div onClick={() => {setChips({...chips, [tag]: !chips[tag]});}} 
+			className={`chip-${tag} chip ${chips[tag] ? ` hot-${tag}` : ''}`}>{tag}</div>;
+	}
+
+	function styledTitle(title) {
+		const match = title.match(curveRe);
+		if (match) {
+			const matchedText = match[0];
+			const left = title.substring(0, match.index);
+			const middle = title.substring(match.index, match.index + matchedText.length);
+			const right = title.substring(match.index + matchedText.length);
+			return <>
+				{left}
+				<span className={'curve-text'}>{middle}</span>
+				{right}
+			</>;
+		}
+
+		return title;
+	}
+
 	return <div className={'vaults'}>
 		<div className={'filter'}>
 			<div className={'flex items-center'}>
 				<input onChange={(e) => {debounceQuery(e.target.value);}} type={'text'} placeholder={'Filter by name..'} />
-				<div onClick={() => {setChips({...chips, curve: !chips.curve});}} 
-					className={`chip ${chips.curve ? 'hot' : ''}`}>{'Curve'}</div>
-				<div onClick={() => {setChips({...chips, ethereum: !chips.ethereum});}} 
-					className={`chip ${chips.ethereum ? 'hot' : ''}`}>{'Ethereum'}</div>
-				<div onClick={() => {setChips({...chips, fantom: !chips.fantom});}} 
-					className={`chip ${chips.fantom ? 'hot' : ''}`}>{'Fantom'}</div>
+				{chip('curve')}
+				{chip('ethereum')}
+				{chip('fantom')}
 			</div>
 			<div className={'text-2xl'}>
 				{`${filter.length} Vaults`}
@@ -76,7 +95,7 @@ export default function Index() {
 			{filter.map(vault => {
 				return <div key={vault.address} className={'tile'}>
 					<div className={'title-button'}>
-						<div className={'title'}>{vault.name}</div>
+						<div className={'title'}>{styledTitle(vault.name)}</div>
 						<div className={'version'}>{vault.version}</div>
 					</div>
 					<div className={'flex items-center justify-between'}>

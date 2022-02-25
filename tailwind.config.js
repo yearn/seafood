@@ -10,6 +10,9 @@ module.exports = {
         'secondary': colors.slate,
         'selected': colors.pink,
         'attention': colors.yellow,
+        'curve': colors.sky,
+        'ethereum': colors.zinc,
+        'fantom': colors.indigo
       },
       height: ({ theme }) => ({
         'app-header': '74px'

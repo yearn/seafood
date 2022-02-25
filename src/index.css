@@ -77,34 +77,47 @@ button {
 }
 
 .vaults .filter {
-  @apply flex items-center justify-between mb-2 px-4;
+  @apply flex items-center justify-between mb-4 px-4;
 }
 
 .vaults .filter input[type=text] {
-  @apply border mr-2 py-2 px-3 border-secondary-600 bg-transparent rounded-full leading-tight focus:border-selected-200 focus:outline-none;
+  @apply border mr-2 py-2 px-3 border-secondary-600 bg-transparent rounded-full leading-tight 
+    focus:border-selected-200 focus:outline-none;
 }
 
 .vaults .filter .chip {
-  @apply ml-2 px-4 py-1 
-    border border-selected-200
-    dark:border-selected-800 dark:text-selected-800
-    text-sm rounded-full cursor-pointer;
+  @apply ml-2 px-4 py-1 border-2 text-sm capitalize rounded-full cursor-pointer 
+    active:transform active:scale-95;
 }
 
-.vaults .filter .chip:hover {
-  @apply border-selected-200
-  dark:border-selected-600 dark:text-selected-600;
+.vaults .filter .chip-curve {
+  @apply border-curve-200 dark:border-curve-700 dark:text-curve-500
+    hover:border-curve-400 hover:dark:border-curve-600 hover:dark:text-curve-400;
 }
 
-.vaults .filter .chip:active {
-  @apply transform scale-95;
+.vaults .filter .hot-curve {
+  @apply bg-curve-200 text-curve-900 dark:bg-curve-700 dark:text-curve-100 shadow-sm
+    hover:dark:bg-curve-600 hover:dark:text-curve-100;
 }
 
-.vaults .filter .hot {
-  @apply bg-selected-100 text-selected-900
-    dark:bg-selected-800 dark:text-selected-100
-    hover:dark:bg-selected-600 hover:dark:text-selected-100
-    shadow-sm;
+.vaults .filter .chip-ethereum {
+  @apply border-ethereum-200 dark:border-ethereum-600 dark:text-ethereum-500
+    hover:border-ethereum-400 hover:dark:border-ethereum-500 hover:dark:text-ethereum-400;
+}
+
+.vaults .filter .hot-ethereum {
+  @apply bg-ethereum-200 text-ethereum-900 dark:bg-ethereum-600 dark:text-ethereum-100 shadow-sm
+    hover:dark:bg-ethereum-500 hover:dark:text-ethereum-100;
+}
+
+.vaults .filter .chip-fantom {
+  @apply border-fantom-200 dark:border-fantom-800 dark:text-fantom-500
+    hover:border-fantom-400 hover:dark:border-fantom-600 hover:dark:text-fantom-400;
+}
+
+.vaults .filter .hot-fantom {
+  @apply bg-fantom-200 text-fantom-900 dark:bg-fantom-800 dark:text-fantom-100 shadow-sm
+    hover:dark:bg-fantom-600 hover:dark:text-fantom-100;
 }
 
 .vaults .list {
@@ -135,6 +148,10 @@ button {
     rounded-full;
 }
 
+.vaults .list .tile .title-button:hover .version {
+  @apply bg-transparent;
+}
+
 .vaults .list .tile .address {
   @apply my-2 pl-4;
 }
@@ -148,11 +165,18 @@ button {
 }
 
 .vaults .list .tile .ethereum {
-  @apply bg-zinc-200
-    dark:bg-zinc-600;
+  @apply bg-ethereum-200
+    dark:bg-ethereum-500;
 }
 
 .vaults .list .tile .fantom {
-  @apply bg-indigo-200
-    dark:bg-indigo-600;
+  @apply bg-fantom-200
+    dark:bg-fantom-600;
+}
+
+.curve-text {
+  @apply bg-clip-text text-transparent 
+    bg-gradient-to-r 
+    from-red-600 via-yellow-500 to-blue-600
+    dark:from-red-400 dark:via-yellow-400 dark:to-blue-400;
 }
