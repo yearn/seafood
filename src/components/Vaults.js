@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {BsBoxArrowInUpRight, BsClipboardPlus} from 'react-icons/bs';
 import {GetExplorerLink, TruncateAddress} from '../utils/utils';
 import {useDebouncedCallback} from 'use-debounce';
@@ -6,7 +7,8 @@ import {useApp} from '../context/useApp';
 
 const curveRe = /curve|crv/i;
 
-export default function Index() {
+export default function Vaults() {
+	const navigate = useNavigate();
 	const {vaults} = useApp();
 	const [filter, setFilter] = useState([]);
 	const [query, setQuery] = useState('');
@@ -64,7 +66,7 @@ export default function Index() {
 		<div className={'list'}>
 			{filter.map(vault => {
 				return <div key={vault.address} className={'tile'}>
-					<div className={'title-button'}>
+					<div onClick={() => {navigate(`/vault/${vault.address}`);}} className={'title-button'}>
 						<div className={'title'}>{styledTitle(vault.name)}</div>
 						<div className={'version'}>{vault.version}</div>
 					</div>

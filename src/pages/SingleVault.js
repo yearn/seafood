@@ -7,7 +7,7 @@ import TenderlySetup from '../ethereum/TenderlyConnect';
 import {GetExplorerLink} from '../utils/utils';
 import HistoricReports from '../components/HistoricReports';
 
-function SingleVaultPage({value}){
+function SingleVaultPage({value = 250}){
 	const {tenderlyProvider, fantomProvider, defaultProvider} = useRPCProvider();
 	let provider = value.chain == 250 ? fantomProvider : defaultProvider;
 	const [allS, setAlls] = useState([]);

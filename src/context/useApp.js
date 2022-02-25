@@ -17,7 +17,7 @@ export const AppProvider = ({children}) => {
 		(async() => {
 			setLoading(true);
 			const providers = [defaultProvider, fantomProvider];
-			const fetches = providers.map(p => { return axios.post('api/getVaults/AllVaults', p.network); });
+			const fetches = providers.map(p => { return axios.post('/api/getVaults/AllVaults', p.network); });
 			const results = await Promise.all(fetches);
 			const freshVaults = [];
 			providers.forEach((p, index) => {
