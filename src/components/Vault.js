@@ -12,5 +12,7 @@ export default function Vault() {
 		setVault(vaults.find(v => v.address === params.address));
 	}, [params, vaults]);
 
-	return <SingleVaultPage value={vault}></SingleVaultPage>;
+	return <>
+		{vault && <SingleVaultPage value={vault}></SingleVaultPage>}
+	</>;
 }

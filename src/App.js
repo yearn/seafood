@@ -10,6 +10,7 @@ import {AppProvider} from './context/useApp';
 import Chrome from './components/Chrome';
 import Vaults from './components/Vaults';
 import Vault from './components/Vault';
+import {Toaster} from 'react-hot-toast';
 
 function App() {
 	return (
@@ -28,6 +29,7 @@ function App() {
 						</Routes>
 					</Chrome>
 				</AppProvider>
+				<Toaster></Toaster>
 			</BrowserRouter>
 		</RPCProviderContextApp>
 	);

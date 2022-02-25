@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {BsBoxArrowInUpRight, BsClipboardPlus, BsX} from 'react-icons/bs';
 import {GetExplorerLink, TruncateAddress} from '../utils/utils';
@@ -6,6 +6,7 @@ import {useDebouncedCallback} from 'use-debounce';
 import {useApp} from '../context/useApp';
 import useLocalStorage from 'use-local-storage';
 import useKeypress from 'react-use-keypress';
+import toast from 'react-hot-toast';
 
 const curveRe = /curve|crv/i;
 
@@ -14,7 +15,7 @@ export default function Vaults() {
 	const {vaults} = useApp();
 	const [filter, setFilter] = useState([]);
 	const [query, setQuery] = useLocalStorage('Vaults.query', '');
-	const queryRe = new RegExp(query, 'i');
+	const queryRe = useMemo(() => { return new RegExp(query, 'i'); }, [query]);
 	const debounceQuery = useDebouncedCallback(value => {setQuery(value);}, 250);
 	const queryElement = useRef();
 	const [chips, setChips] = useLocalStorage('Vaults.chips', {
@@ -30,7 +31,7 @@ export default function Vaults() {
 			if(!chips.fantom && vault.provider.network.name === 'fantom') return false;
 			return chips.curve || !curveRe.test(vault.name);
 		}));
-	}, [query, chips, vaults]);
+	}, [query, queryRe, chips, vaults]);
 
 	useKeypress(['/'], () => {
 		setTimeout(() => {
@@ -70,7 +71,7 @@ export default function Vaults() {
 			<div className={'flex items-center'}>
 				<div className={'relative flex items-center'}>
 					<input ref={queryElement} onChange={(e) => {debounceQuery(e.target.value);}} defaultValue={query} type={'text'} placeholder={'/ Filter by name'} />
-					{query && <div onClick={clearQuery} className={'absolute right-4 clear-query'}>
+					{query && <div onClick={clearQuery} className={'absolute right-4 small-circle-icon-button'}>
 						<BsX />
 					</div>}
 				</div>
@@ -91,9 +92,20 @@ export default function Vaults() {
 					</div>
 					<div className={'flex items-center justify-between'}>
 						<div className={'flex items-center address'}>
-							{TruncateAddress(vault.address)}
-							<BsClipboardPlus title={`Copy ${vault.address} to your clipboard`} onClick={() => navigator.clipboard.writeText(vault.address)} />
-							<a href={GetExplorerLink(vault.provider.network.chainId, vault.address)} title={`Explore ${vault.address}`}><BsBoxArrowInUpRight /></a>
+							<div onClick={() => {
+								toast(`${vault.address} copied to your clipboard`);
+								navigator.clipboard.writeText(vault.address);
+							}}
+							className={'copy'}
+							title={`Copy ${vault.address} to your clipboard`}>
+								{TruncateAddress(vault.address)}
+								<BsClipboardPlus className={'icon'} />
+							</div>
+							<a title={`Explore ${vault.address}`}
+								href={GetExplorerLink(vault.provider.network.chainId, vault.address)}
+								className={'small-circle-icon-button'}>
+								<BsBoxArrowInUpRight />
+							</a>
 						</div>
 						<div className={`network ${vault.provider.network.name}`}>{vault.provider.network.name}</div>
 					</div>

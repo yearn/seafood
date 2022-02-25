@@ -8,6 +8,11 @@
   transition duration-200;
 }
 
+input, textarea, select {
+  @apply text-secondary-900
+  dark:text-secondary-900
+}
+
 a {
   @apply underline underline-offset-2 
     hover:text-primary-400
@@ -85,11 +90,6 @@ button {
     focus:border-selected-200 focus:outline-none;
 }
 
-.vaults .filter .clear-query {
-  @apply w-6 h-6 text-2xl hover:bg-red-600 rounded-full cursor-pointer 
-    active:transform active:scale-95;
-}
-
 .vaults .filter .chip {
   @apply ml-2 px-4 py-1 border-2 text-sm capitalize rounded-full cursor-pointer 
     active:transform active:scale-95;
@@ -158,10 +158,20 @@ button {
 }
 
 .vaults .list .tile .address {
-  @apply my-2 pl-4;
+  @apply pl-2;
 }
 
-.vaults .list .tile .address > * {
+.vaults .list .tile .address .copy {
+  @apply flex items-center justify-between
+    my-2 pl-4
+    px-2
+    hover:bg-selected-200 
+    dark:hover:bg-selected-600 
+    active:transform active:scale-[98%]
+    rounded-full cursor-pointer;
+}
+
+.vaults .list .tile .address .copy .icon {
   @apply ml-2;
 }
 
@@ -177,6 +187,14 @@ button {
 .vaults .list .tile .fantom {
   @apply bg-fantom-200
     dark:bg-fantom-600;
+}
+
+.small-circle-icon-button {
+  @apply w-6 h-6 flex items-center justify-center
+    rounded-full cursor-pointer
+    hover:bg-selected-200 
+    dark:hover:bg-selected-600 
+    active:transform active:scale-90;
 }
 
 .rainbow-text {
