@@ -86,8 +86,10 @@ button {
 }
 
 .vaults .filter input[type=text] {
-  @apply border mr-2 py-2 px-3 border-secondary-600 bg-transparent rounded-full leading-tight 
-    focus:border-selected-200 focus:outline-none;
+  @apply border mr-2 py-2 px-3 border-secondary-600 bg-transparent rounded-full leading-tight
+    text-primary-900
+    dark:text-primary-200
+    focus:border-primary-200 focus:outline-none;
 }
 
 .vaults .filter .chip {
