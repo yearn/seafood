@@ -85,6 +85,11 @@ button {
     focus:border-selected-200 focus:outline-none;
 }
 
+.vaults .filter .clear-query {
+  @apply w-6 h-6 text-2xl hover:bg-red-600 rounded-full cursor-pointer 
+    active:transform active:scale-95;
+}
+
 .vaults .filter .chip {
   @apply ml-2 px-4 py-1 border-2 text-sm capitalize rounded-full cursor-pointer 
     active:transform active:scale-95;

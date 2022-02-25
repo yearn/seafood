@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {BsBoxArrowInUpRight, BsClipboardPlus} from 'react-icons/bs';
+import {BsBoxArrowInUpRight, BsClipboardPlus, BsX} from 'react-icons/bs';
 import {GetExplorerLink, TruncateAddress} from '../utils/utils';
 import {useDebouncedCallback} from 'use-debounce';
 import {useApp} from '../context/useApp';
@@ -15,6 +15,7 @@ export default function Vaults() {
 	const [query, setQuery] = useLocalStorage('Vaults.query', '');
 	const queryRe = new RegExp(query, 'i');
 	const debounceQuery = useDebouncedCallback(value => {setQuery(value);}, 250);
+	const queryElement = useRef();
 	const [chips, setChips] = useLocalStorage('Vaults.chips', {
 		curve: true,
 		ethereum: true,
@@ -52,10 +53,20 @@ export default function Vaults() {
 		return title;
 	}
 
+	function clearQuery() {
+		setQuery('');
+		queryElement.current.value = '';
+	}
+
 	return <div className={'vaults'}>
 		<div className={'filter'}>
 			<div className={'flex items-center'}>
-				<input onChange={(e) => {debounceQuery(e.target.value);}} defaultValue={query} type={'text'} placeholder={'Filter by name..'} />
+				<div className={'relative flex items-center'}>
+					<input ref={queryElement} onChange={(e) => {debounceQuery(e.target.value);}} defaultValue={query} type={'text'} placeholder={'Filter by name..'} />
+					{query && <div onClick={clearQuery} className={'absolute right-4 clear-query'}>
+						<BsX />
+					</div>}
+				</div>
 				{chip('curve')}
 				{chip('ethereum')}
 				{chip('fantom')}
