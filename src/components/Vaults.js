@@ -19,7 +19,7 @@ export default function Vaults() {
 	const debounceQuery = useDebouncedCallback(value => {setQuery(value);}, 250);
 	const queryElement = useRef();
 	const [chips, setChips] = useLocalStorage('Vaults.chips', {
-		curve: true,
+		curve: false,
 		ethereum: true,
 		fantom: true
 	});
