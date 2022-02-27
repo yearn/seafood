@@ -1,16 +1,8 @@
 import React from 'react';
-import ShowVault from '../ethereum/ShowVaults';
+import Vaults from '../components/Vaults';
 
 function DefaultPage(){
-
-
-	return <div><ShowVault /></div>;
-
-	
-	/*return (
-
-    <div><ConnectR /></div>
-    );*/
+	return <Vaults />;
 }
 
 export default DefaultPage;
