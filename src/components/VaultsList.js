@@ -1,32 +1,22 @@
 import React, {useState,useEffect} from 'react';
 import axios from '../axios';
 import {BsBoxArrowInUpRight, BsClipboardPlus} from 'react-icons/bs';
-import {GetExplorerLink, TruncateAddress} from '../utils/utils';
+import {GetExplorerLink} from '../utils/utils';
 
-const curveRe = /urve|crv/;
+
 
 function VaultButtons({provider, clickFunction}){
-	const [showCurve, setShowCurve] = useState(true);
-	const [vaults, setVaults] = useState([]);
-	const [filter, setFilter] = useState([]);
+	let [filterCurve, setFilterCurve] = useState(true);
+	let [vaults, setAllv] = useState([]);
+
 
 	useEffect(() => {
-		try {
+		try{
 			axios.post('api/getVaults/AllVaults', provider.network).then((response) => {
-				setVaults(response.data);
+				setAllv(response.data);
+                
 			});
-		} catch {
-			console.log('eth failed');
-		}
-	}, [provider]);
-
-	useEffect(() => {
-		if(!showCurve) {
-			setFilter(vaults.filter(v => !curveRe.test(v.name)));
-		} else {
-			setFilter(vaults);
-		}
-	}, [showCurve, vaults]);
+		}catch{console.log('eth failed');}}, [provider]);
 
 	if(vaults.length ==0){
 		return(
@@ -34,25 +24,21 @@ function VaultButtons({provider, clickFunction}){
 		);
 	}
 
-	return <div>
-		<button onClick={() => setShowCurve(!showCurve)}>{showCurve ? 'Hide Curve' : 'Show Curve'}</button>
-		<div className={'grid grid-flow-row grid-cols-1 md:grid-cols-3 2xl:grid-cols-4 gap-8'}>
-			{filter.map((vault) => {
-				return <div key={vault.address} 
-					className={'vault-tile'}>
-					<div onClick={() => clickFunction(vault)} className={'title-button'}>
-						<div className={'title'}>{vault.name}</div>
-						<div className={'version'}>{vault.version}</div>
-					</div>
-					<div className={'flex items-center address'}>
-						{TruncateAddress(vault.address)}
-						<BsClipboardPlus title={`Copy ${vault.address} to your clipboard`} onClick={() => navigator.clipboard.writeText(vault.address)} />
-						<a href={GetExplorerLink(provider.network.chainId, vault.address)} title={`Explore ${vault.address}`}><BsBoxArrowInUpRight /></a>
-					</div>
-				</div>;
-			})}
-		</div>
-	</div>;
+	return(<div>
+		<button  onClick={() => setFilterCurve(!filterCurve)}>{filterCurve ? 'Show Curve' : 'Hide Curve'}</button>
+		<div>
+			{vaults.map((vault) => {
+            
+        
+				if(filterCurve && (vault.name.includes('urve') || vault.name.includes('crv'))){
+					return '';
+				}else{
+					return <div key={vault.address} className={'flex flex-row items-center'}><button  onClick={() => clickFunction(vault)}> {vault.name}{' - '}{vault.version}{' - '}{vault.address}</button>< BsClipboardPlus onClick={() => navigator.clipboard.writeText(vault.address)} /><a href={GetExplorerLink(provider.network.chainId, vault.address)}>< BsBoxArrowInUpRight   /></a></div>;
+				}
+			})}</div>
+	</div>
+
+	);
 }
 
 
