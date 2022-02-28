@@ -145,11 +145,11 @@ function SolidlyTreasury(){
 					<div>  {'Lp: ' + lp.name }  </div> 
 				
 					<ul>
-						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(lp.address, fantomProvider)}> {'lp: ' + lp.address} </a></li>
-						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(lp.tokenABalance.address, fantomProvider)}> {FindName(lp.tokenABalance.address) + ' balance: ' + FormatNumer(lp.tokenABalance.balance)} </a></li>
-						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(lp.tokenBBalance.address, fantomProvider)}> {FindName(lp.tokenBBalance.address) + ' balance: ' + FormatNumer(lp.tokenBBalance.balance)} </a></li>
-						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(sex(), fantomProvider)}> {'sex pending rewards: '  + FormatNumer(lp.sexRewards)} </a></li>
-						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(solid(), fantomProvider)}> {'solid pending rewards: '  + FormatNumer(lp.solidRewards)} </a></li>
+						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, lp.address)}> {'lp: ' + lp.address} </a></li>
+						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, lp.tokenABalance.address)}> {FindName(lp.tokenABalance.address) + ' balance: ' + FormatNumer(lp.tokenABalance.balance)} </a></li>
+						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, lp.tokenBBalance.address)}> {FindName(lp.tokenBBalance.address) + ' balance: ' + FormatNumer(lp.tokenBBalance.balance)} </a></li>
+						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, sex())}> {'sex pending rewards: '  + FormatNumer(lp.sexRewards)} </a></li>
+						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, solid())}> {'solid pending rewards: '  + FormatNumer(lp.solidRewards)} </a></li>
 						<li> {'SolidexBoost: ' + FormatNumer(lp.solidsexBoost, 3)+ 'x'}</li>
 						<li> {'Price: ' + FormatNumer(lp.price, 4) }</li>
 					</ul>
@@ -161,9 +161,9 @@ function SolidlyTreasury(){
 			<h2>{'Staked Solidsex:'}</h2>
 			<div>
 				{solidsexStaked && <ul>
-					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(sex(), fantomProvider)}> {'staked solidex: '  + FormatNumer(solidsexStaked.tokenABalance.balance)} </a></li>
-					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(sex(), fantomProvider)}> {'sex pending rewards: '  + FormatNumer(solidsexStaked.sexRewards)} </a></li>
-					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(solid(), fantomProvider)}> {'solid pending rewards: '  + FormatNumer(solidsexStaked.solidRewards)} </a></li>
+					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, solidsex())}> {'staked solidex: '  + FormatNumer(solidsexStaked.tokenABalance.balance)} </a></li>
+					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, sex())}> {'sex pending rewards: '  + FormatNumer(solidsexStaked.sexRewards)} </a></li>
+					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, solid())}> {'solid pending rewards: '  + FormatNumer(solidsexStaked.solidRewards)} </a></li>
 				</ul>}
 			</div>
 		</div>;
