@@ -62,8 +62,8 @@ async function StakedSolidsex(user, provider){
 
 	let stakingRewards =  solidexStakingRewardsContract(provider);
 	
-	let pendingSolid =  await stakingRewards.rewards(user, solid());
-	let pendingSex =  await stakingRewards.rewards(user, sex());
+	let pendingSolid =  await stakingRewards.earned(user, solid());
+	let pendingSex =  await stakingRewards.earned(user, sex());
 	let balance = await stakingRewards.balanceOf(user);
 
     
