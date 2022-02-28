@@ -1,4 +1,4 @@
-import {lpDepositer, solidlyPair, solidlyRouter, solidexStakingRewards} from '../interfaces/interfaces';
+import {lpDepositer, solidlyPair, solidlyRouter, solidexStakingRewards, solidlygauge} from '../interfaces/interfaces';
 import {solidexLpDepositer,  solidlyRouterAddress, sex, wftm, solid, solidsex, solidexStakingRewardsAddress} from './Addresses';
 import {GetDexScreener} from './EthHelpers';
 
@@ -29,6 +29,16 @@ async function LpState(lp, user, provider){
 	let balances = await router.quoteRemoveLiquidity(tokenA, tokenB, stable, balance);
 	let name = await lpContract.name();
 
+	let guage = solidlyGaugeContract(await lpDepositer.gaugeForPool(lp), provider);
+
+	console.log('guage tings');
+
+	let balanceOfGuage = await guage.balanceOf(lpDepositer.address);
+	let derivedBalance = await guage.derivedBalance(lpDepositer.address);
+	console.log((derivedBalance/balanceOfGuage)*2.5);
+
+    
+
     
 
 	return{
@@ -40,7 +50,8 @@ async function LpState(lp, user, provider){
 		tokenABalance: {address: tokenA, balance: balances.amountA/1e18},
 		tokenBBalance: {address: tokenB, balance: balances.amountB/1e18},
 		price: price/1_000_000_000,
-		dexScreener: GetDexScreener(lp, provider)
+		dexScreener: GetDexScreener(lp, provider),
+		solidsexBoost: (derivedBalance/balanceOfGuage)*2.5
 	};
 
 
@@ -129,6 +140,12 @@ function solidlyLp(lp, provider){
 function solidexStakingRewardsContract(provider){
 	
 	return new ethers.Contract(solidexStakingRewardsAddress(), solidexStakingRewards, provider);
+
+}
+
+function solidlyGaugeContract(gauge, provider){
+	
+	return new ethers.Contract(gauge, solidlygauge, provider);
 
 }
 

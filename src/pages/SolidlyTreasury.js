@@ -150,7 +150,8 @@ function SolidlyTreasury(){
 						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(lp.tokenBBalance.address, fantomProvider)}> {FindName(lp.tokenBBalance.address) + ' balance: ' + FormatNumer(lp.tokenBBalance.balance)} </a></li>
 						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(sex(), fantomProvider)}> {'sex pending rewards: '  + FormatNumer(lp.sexRewards)} </a></li>
 						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(solid(), fantomProvider)}> {'solid pending rewards: '  + FormatNumer(lp.solidRewards)} </a></li>
-						<li> {'Price: ' + FormatNumer(lp.price)}</li>
+						<li> {'SolidexBoost: ' + FormatNumer(lp.solidsexBoost, 3)+ 'x'}</li>
+						<li> {'Price: ' + FormatNumer(lp.price, 4) }</li>
 					</ul>
 					<br />
 					<button onClick={() => handleChange(lp.address)}> {'Toggle dexscreener'}</button>
