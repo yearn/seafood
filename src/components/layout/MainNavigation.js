@@ -41,6 +41,9 @@ function MainNavigation(){
 					<NavigationLink to={'/masterchef'} label={'Masterchef'}></NavigationLink>
 				</li>
 				<li>
+					<NavigationLink to={'/solidly'} label={'Solidly'}></NavigationLink>
+				</li>
+				<li>
 					<NavigationLink to={'/sandbox'} label={'Sandbox'}></NavigationLink>
 				</li>
 				<li>

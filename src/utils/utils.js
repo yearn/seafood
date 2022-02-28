@@ -20,4 +20,12 @@ function TruncateAddress(address) {
 
 }
 
-export {GetExplorerLink, GetExplorerTx, GetALink, TruncateAddress};
+function FormatNumer(number){
+	return number.toLocaleString(undefined, {maximumFractionDigits:2});
+}
+
+function FormatPercent(number){
+	return (number*100).toLocaleString(undefined, {maximumFractionDigits:2}) + '%';
+}
+
+export {GetExplorerLink, GetExplorerTx, GetALink, TruncateAddress, FormatNumer, FormatPercent};
