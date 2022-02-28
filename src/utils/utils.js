@@ -20,8 +20,8 @@ function TruncateAddress(address) {
 
 }
 
-function FormatNumer(number){
-	return number.toLocaleString(undefined, {maximumFractionDigits:2});
+function FormatNumer(number, decimals=2){
+	return number.toLocaleString(undefined, {maximumFractionDigits:decimals});
 }
 
 function FormatPercent(number){
