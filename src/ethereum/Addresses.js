@@ -29,4 +29,34 @@ function ftmVaults(){
 		'0xEF0210eB96c7EB36AF8ed1c20306462764935607']; //usdc
 }
 
-export {SpiritSwapRouter, SpookySwapRouter, fantomMasterchefs, ftmVaults, ethVaults};
+function fchad(){
+	return '0xC0E2830724C946a6748dDFE09753613cd38f6767';
+}
+
+function solidlyRouterAddress(){
+	return '0xa38cd27185a464914D3046f0AB9d43356B34829D';
+}
+function sex(){
+	return '0xD31Fcd1f7Ba190dBc75354046F6024A9b86014d7';
+}
+function solidsex(){
+	return '0x41adAc6C1Ff52C5e27568f27998d747F7b69795B';
+}
+function solid(){
+	return '0x888EF71766ca594DED1F0FA3AE64eD2941740A20';
+}
+function wftm(){
+	return '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83';
+}
+function solidexLpDepositer(){
+	return '0x26E1A0d851CF28E697870e1b7F053B605C8b060F';
+}
+
+function solidsexsolidlp(){
+	return '0x62E2819Dd417F3b430B6fa5Fd34a49A377A02ac8';
+}
+function sexwftmlp(){
+	return '0xFCEC86aF8774d69e2e4412B8De3f4aBf1f671ecC';
+}
+
+export {sex, solid, solidlyRouterAddress, solidsex,wftm, solidsexsolidlp, SpiritSwapRouter, SpookySwapRouter, fantomMasterchefs, ftmVaults, ethVaults, fchad, solidexLpDepositer, sexwftmlp};

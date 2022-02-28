@@ -11,6 +11,7 @@ import Chrome from './components/Chrome';
 import Vaults from './components/Vaults';
 import Vault from './components/Vault';
 import {Toaster} from 'react-hot-toast';
+import SolidlyTreasury from './pages/SolidlyTreasury';
 
 function App() {
 	return (
@@ -23,6 +24,7 @@ function App() {
 							<Route path={'/vault/:address'} element={<Vault />} />
 							<Route path={'/vault'} element={<SingleVaultPage />}></Route>
 							<Route path={'/masterchef'} element={<MasterchefPage />}></Route>
+							<Route path={'/solidly'} element={<SolidlyTreasury />}></Route>
 							<Route path={'/testAPI'} element={<TestAPI />}></Route>
 							<Route path={'/settings'} element={<Settings />}></Route>
 							<Route path={'/sandbox'} element={<Sandbox />}></Route>
