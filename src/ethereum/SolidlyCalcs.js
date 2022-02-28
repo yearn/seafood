@@ -1,5 +1,5 @@
-import {lpDepositer, solidlyPair, solidlyRouter} from '../interfaces/interfaces';
-import {solidexLpDepositer,  solidlyRouterAddress, sex, wftm, solid, solidsex} from './Addresses';
+import {lpDepositer, solidlyPair, solidlyRouter, solidexStakingRewards} from '../interfaces/interfaces';
+import {solidexLpDepositer,  solidlyRouterAddress, sex, wftm, solid, solidsex, solidexStakingRewardsAddress} from './Addresses';
 import {GetDexScreener} from './EthHelpers';
 
 const {ethers} = require('ethers');
@@ -41,6 +41,29 @@ async function LpState(lp, user, provider){
 		tokenBBalance: {address: tokenB, balance: balances.amountB/1e18},
 		price: price/1_000_000_000,
 		dexScreener: GetDexScreener(lp, provider)
+	};
+
+
+}   
+
+async function StakedSolidsex(user, provider){
+	console.log('Solidex State:');
+
+	let stakingRewards =  solidexStakingRewardsContract(provider);
+	
+	let pendingSolid =  await stakingRewards.rewards(user, solid());
+	let pendingSex =  await stakingRewards.rewards(user, sex());
+	let balance = await stakingRewards.balanceOf(user);
+
+    
+
+	return{
+		
+		sexRewards: pendingSex/1e18,
+		solidRewards: pendingSolid/1e18,
+        
+		tokenABalance: {address: solidsex(), balance: balance/1e18},
+		
 	};
 
 
@@ -103,5 +126,10 @@ function solidlyLp(lp, provider){
 	return new ethers.Contract(lp, solidlyPair, provider);
 
 }
+function solidexStakingRewardsContract(provider){
+	
+	return new ethers.Contract(solidexStakingRewardsAddress(), solidexStakingRewards, provider);
 
-export {LpState, FindName};
+}
+
+export {LpState, FindName, StakedSolidsex};

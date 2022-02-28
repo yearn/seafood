@@ -58,5 +58,9 @@ function solidsexsolidlp(){
 function sexwftmlp(){
 	return '0xFCEC86aF8774d69e2e4412B8De3f4aBf1f671ecC';
 }
+function solidexStakingRewardsAddress(){
+	return '0x7FcE87e203501C3a035CbBc5f0Ee72661976D6E1';
+}
 
-export {sex, solid, solidlyRouterAddress, solidsex,wftm, solidsexsolidlp, SpiritSwapRouter, SpookySwapRouter, fantomMasterchefs, ftmVaults, ethVaults, fchad, solidexLpDepositer, sexwftmlp};
+
+export {sex, solid, solidexStakingRewardsAddress, solidlyRouterAddress, solidsex,wftm, solidsexsolidlp, SpiritSwapRouter, SpookySwapRouter, fantomMasterchefs, ftmVaults, ethVaults, fchad, solidexLpDepositer, sexwftmlp};

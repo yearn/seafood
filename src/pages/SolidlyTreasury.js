@@ -1,5 +1,5 @@
 import useRPCProvider from '../context/useRpcProvider';
-import {FindName, LpState} from '../ethereum/SolidlyCalcs';
+import {FindName, LpState, StakedSolidsex} from '../ethereum/SolidlyCalcs';
 //import {fantomMasterchefs} from  '../ethereum/Addresses';
 import {fchad, solidsexsolidlp, sexwftmlp} from '../ethereum/Addresses';
 import React, {useEffect, useState} from 'react';
@@ -13,6 +13,7 @@ function SolidlyTreasury(){
 	const [values, setValues] = useState({});
 
 	const [totals, setTotals] = useState({});
+	const [solidsexStaked, setSolidsex] = useState({});
 
 	const [nonce, setNonce] = useState(0);
 
@@ -27,20 +28,27 @@ function SolidlyTreasury(){
 	function getAll(provider){
 
 		LpState(solidsexsolidlp(), fchad(), provider).then((x) => { 
-			add(x);
+			addTotals(x);
+			addLp(x);
 		});
 
 		LpState(sexwftmlp(), fchad(), provider).then((x) => { 
-			add(x);
+			addTotals(x);
+			addLp(x);
 		});
 
-		
+
+		StakedSolidsex(fchad(), provider).then((x) =>{
+			console.log(x);
+			addTotals(x);
+			setSolidsex(x);
+
+		});
 
 		
 	}
 
-	function add(x){
-		console.log(x);
+	function addTotals(x){
 		setTotals(currentValues => {
 
 			let sexBalance = 0;
@@ -58,15 +66,18 @@ function SolidlyTreasury(){
 				solidSexBalance += x.tokenABalance.balance;
 			} 
 
-			if(x.tokenBBalance.address === sex()){
-				sexBalance += x.tokenBBalance.balance;
-			} else if(x.tokenBBalance.address === solid()){
-				solidBalance += x.tokenBBalance.balance;
-			} else if(x.tokenBBalance.address === wftm()){
-				wftmBalance += x.tokenBBalance.balance;
-			} else if(x.tokenBBalance.address === solidsex()){
-				solidSexBalance += x.tokenBBalance.balance;
-			} 
+			if(x.tokenBBalance){
+				if(x.tokenBBalance.address === sex()){
+					sexBalance += x.tokenBBalance.balance;
+				} else if(x.tokenBBalance.address === solid()){
+					solidBalance += x.tokenBBalance.balance;
+				} else if(x.tokenBBalance.address === wftm()){
+					wftmBalance += x.tokenBBalance.balance;
+				} else if(x.tokenBBalance.address === solidsex()){
+					solidSexBalance += x.tokenBBalance.balance;
+				} 
+			}
+			
 
 			if(currentValues.sexRewards){
 				currentValues.sexBalance = currentValues.sexBalance+sexBalance;
@@ -90,6 +101,11 @@ function SolidlyTreasury(){
 			
 			return currentValues;
 		});
+	}
+
+	function addLp(x){
+		console.log(x);
+		
 			
 		setLps(currentValues => {
 			return [x, ...currentValues];
@@ -112,9 +128,11 @@ function SolidlyTreasury(){
 		return <div>
 			<h2>{'Total Numbers'}</h2>
 			<ul>
+				<li>{'Borrowed 135,550 WFTM from treasury'}</li>
+				<li>{'Started with 1,118,072 solidsex'}</li>
 				<li>{'Total Availble Solid = ' + FormatNumer(totals.solidBalance)}</li>
-				<li>{'Total Availble Solidsex = ' + FormatNumer(totals.solidSexBalance)}</li>
-				<li>{'Total Availble Wftm = ' + FormatNumer(totals.wftmBalance)}</li>
+				<li>{'Total Availble Solidsex = ' + FormatNumer(totals.solidSexBalance) + ', profit of: ' + FormatNumer(totals.solidSexBalance - 1118072)}</li>
+				<li>{'Total Availble Wftm = ' + FormatNumer(totals.wftmBalance) + ', profit of: ' + FormatNumer(totals.wftmBalance - 135550)}</li>
 				<li>{'Total Availble Sex = ' + FormatNumer(totals.sexBalance)}</li>
 				<li>{'Total Pending Solid Rewards = ' + FormatNumer(totals.solidRewards)}</li>
 				<li>{'Total Pending Sex Rewards = ' + FormatNumer(totals.sexRewards)}</li>
@@ -140,6 +158,13 @@ function SolidlyTreasury(){
 					<br /></div>
 			))}
 			<h2>{'Staked Solidsex:'}</h2>
+			<div>
+				{solidsexStaked && <ul>
+					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(sex(), fantomProvider)}> {'staked solidex: '  + FormatNumer(solidsexStaked.tokenABalance.balance)} </a></li>
+					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(sex(), fantomProvider)}> {'sex pending rewards: '  + FormatNumer(solidsexStaked.sexRewards)} </a></li>
+					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(solid(), fantomProvider)}> {'solid pending rewards: '  + FormatNumer(solidsexStaked.solidRewards)} </a></li>
+				</ul>}
+			</div>
 		</div>;
 	}else{
 		return <div>{'loading...'}</div>;
