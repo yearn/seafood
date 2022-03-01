@@ -128,11 +128,11 @@ function SolidlyTreasury(){
 		return <div>
 			<h2>{'Total Numbers'}</h2>
 			<ul>
-				<li>{'Borrowed 135,550 WFTM from treasury'}</li>
+				<li>{'Borrowed 17,680 WFTM from treasury'}</li>
 				<li>{'Started with 1,118,072 solidsex'}</li>
 				<li>{'Total Availble Solid = ' + FormatNumer(totals.solidBalance)}</li>
 				<li>{'Total Availble Solidsex = ' + FormatNumer(totals.solidSexBalance) + ', profit of: ' + FormatNumer(totals.solidSexBalance - 1118072)}</li>
-				<li>{'Total Availble Wftm = ' + FormatNumer(totals.wftmBalance) + ', profit of: ' + FormatNumer(totals.wftmBalance - 135550)}</li>
+				<li>{'Total Availble Wftm = ' + FormatNumer(totals.wftmBalance) + ', profit of: ' + FormatNumer(totals.wftmBalance - 17680)}</li>
 				<li>{'Total Availble Sex = ' + FormatNumer(totals.sexBalance)}</li>
 				<li>{'Total Pending Solid Rewards = ' + FormatNumer(totals.solidRewards)}</li>
 				<li>{'Total Pending Sex Rewards = ' + FormatNumer(totals.sexRewards)}</li>
