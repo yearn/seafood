@@ -36,6 +36,9 @@ function fchad(){
 function solidlyRouterAddress(){
 	return '0xa38cd27185a464914D3046f0AB9d43356B34829D';
 }
+function spookyRouterAddress(){
+	return '0xF491e7B69E4244ad4002BC14e878a34207E38c29';
+}
 function sex(){
 	return '0xD31Fcd1f7Ba190dBc75354046F6024A9b86014d7';
 }
@@ -47,6 +50,9 @@ function solid(){
 }
 function wftm(){
 	return '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83';
+}
+function daiFantom(){
+	return '0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E';
 }
 function solidexLpDepositer(){
 	return '0x26E1A0d851CF28E697870e1b7F053B605C8b060F';
@@ -63,4 +69,4 @@ function solidexStakingRewardsAddress(){
 }
 
 
-export {sex, solid, solidexStakingRewardsAddress, solidlyRouterAddress, solidsex,wftm, solidsexsolidlp, SpiritSwapRouter, SpookySwapRouter, fantomMasterchefs, ftmVaults, ethVaults, fchad, solidexLpDepositer, sexwftmlp};
+export {sex, solid,spookyRouterAddress, solidexStakingRewardsAddress, daiFantom, solidlyRouterAddress, solidsex,wftm, solidsexsolidlp, SpiritSwapRouter, SpookySwapRouter, fantomMasterchefs, ftmVaults, ethVaults, fchad, solidexLpDepositer, sexwftmlp};

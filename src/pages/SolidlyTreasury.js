@@ -5,12 +5,14 @@ import {fchad, solidsexsolidlp, sexwftmlp} from '../ethereum/Addresses';
 import React, {useEffect, useState} from 'react';
 import {FormatNumer, GetExplorerLink} from '../utils/utils';
 import {sex, solid, wftm, solidsex} from '../ethereum/Addresses';
+import {GetPrices} from '../ethereum/PriceFinder';
 
 function SolidlyTreasury(){
 	const {fantomProvider} = useRPCProvider();
 	// let [allV, setAllv] = useState([]);
 	const [lps, setLps] = useState([]);
 	const [values, setValues] = useState({});
+	const [prices, setPrices] = useState([]);
 
 	const [totals, setTotals] = useState({});
 	const [solidsexStaked, setSolidsex] = useState({});
@@ -26,6 +28,12 @@ function SolidlyTreasury(){
 	};
 
 	function getAll(provider){
+		const tokens = [sex(), solid(), wftm(), solidsex()];
+
+		GetPrices(tokens, provider).then(x =>{
+			console.log(x);
+			setPrices(x);
+		});
 
 		LpState(solidsexsolidlp(), fchad(), provider).then((x) => { 
 			addTotals(x);
@@ -128,14 +136,17 @@ function SolidlyTreasury(){
 		return <div>
 			<h2>{'Total Numbers'}</h2>
 			<ul>
-				<li>{'Borrowed 17,680 WFTM from treasury'}</li>
-				<li>{'Started with 1,118,072 solidsex'}</li>
-				<li>{'Total Availble Solid = ' + FormatNumer(totals.solidBalance)}</li>
-				<li>{'Total Availble Solidsex = ' + FormatNumer(totals.solidSexBalance) + ', profit of: ' + FormatNumer(totals.solidSexBalance - 1118072)}</li>
-				<li>{'Total Availble Wftm = ' + FormatNumer(totals.wftmBalance) + ', profit of: ' + FormatNumer(totals.wftmBalance - 17680)}</li>
-				<li>{'Total Availble Sex = ' + FormatNumer(totals.sexBalance)}</li>
-				<li>{'Total Pending Solid Rewards = ' + FormatNumer(totals.solidRewards)}</li>
-				<li>{'Total Pending Sex Rewards = ' + FormatNumer(totals.sexRewards)}</li>
+				<li>{'Borrowed 17,680 WFTM from treasury worth: $' + FormatNumer(17680*prices[wftm()])}</li>
+				<li>{'Started with 1,118,072 solidsex worth: $' + FormatNumer(1118072*prices[solidsex()]) }</li>
+				<br />
+				<li>{'Total Holdings Now Worth: $' + FormatNumer(totals.solidBalance*prices[solid()] + totals.solidSexBalance*prices[solidsex()]+totals.wftmBalance*prices[wftm()] +totals.sexBalance*prices[sex()] + totals.solidRewards*prices[solid()]+totals.sexRewards*prices[sex()] ) }</li>
+				<br />
+				<li>{'Total Availble Solid = ' + FormatNumer(totals.solidBalance)+ ' worth: $' + FormatNumer(totals.solidBalance*prices[solid()])}</li>
+				<li>{'Total Availble Solidsex = ' + FormatNumer(totals.solidSexBalance)+ ' worth: $' + FormatNumer(totals.solidSexBalance*prices[solidsex()]) }</li>
+				<li>{'Total Availble Wftm = ' + FormatNumer(totals.wftmBalance) + ' worth: $' + FormatNumer(totals.wftmBalance*prices[wftm()]) }</li>
+				<li>{'Total Availble Sex = ' + FormatNumer(totals.sexBalance)+ ' worth: $' + FormatNumer(totals.sexBalance*prices[sex()])}</li>
+				<li>{'Total Pending Solid Rewards = ' + FormatNumer(totals.solidRewards)+ ' worth: $' + FormatNumer(totals.solidRewards*prices[solid()])}</li>
+				<li>{'Total Pending Sex Rewards = ' + FormatNumer(totals.sexRewards) + ' worth: $' + FormatNumer(totals.sexRewards*prices[sex()])}</li>
 			</ul>
 			
 			<br />
