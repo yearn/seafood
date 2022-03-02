@@ -1,32 +1,65 @@
 import {registry, erc20, vault030, vault043, strategy,masterchef, masterchefstrat} from '../interfaces/interfaces';
 //import {SpookySwapRouter, SpiritSwapRouter} from './Addresses';
+import {
+	Multicall
+} from 'ethereum-multicall';
 
 const {ethers} = require('ethers');
 
 let all = [];
 
 async function AllStrats(vault, defaultProvider){
-	console.log('All Strats');
-
-	let strats = [];
-    
-	let currentTime = Date.now()/1000;
-    
-	//console.log('received ', vault)
-	let con = vault.contract;
-	let totalAssets = await con.totalAssets();
-	let gov = await con.governance();
-	//console.log('gov is', gov)
-
-
-	for(let i = 0; i <20 ; i++){
-		const s = await con.withdrawalQueue(i);
-		if(s == '0x0000000000000000000000000000000000000000'){
-			break;
+	const multicall = new Multicall({ethersProvider: defaultProvider, tryAggregate: true});
+	const contractCallContext = [
+		{
+			reference: 'vaultContract',
+			contractAddress: vault.address.address,
+			abi: vault043,
+			calls: [
+				{reference: 'assets', methodName: 'totalAssets', methodParameters: []},
+				{reference: 'governance', methodName: 'governance', methodParameters: []},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [0]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [1]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [2]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [3]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [4]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [5]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [6]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [7]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [8]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [9]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [10]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [11]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [12]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [13]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [14]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [15]},
+			]
 		}
-		strats.push(await StratInfo(con, s, defaultProvider, currentTime, totalAssets, gov));
-	}
+	];
 
+	const results = await multicall.call(contractCallContext);
+	let resultsArray = results.results.vaultContract.callsReturnContext;
+	let res, s, gov, totalAssets;
+	let strats = [];
+	let con = vault.contract;
+	let currentTime = Date.now()/1000;
+	for(let i=0; i < resultsArray.length; i++){
+	    res = resultsArray[i].returnValues[0];
+		if(i == 0){
+			totalAssets = res;
+		}
+		else if(i == 1){
+			gov = res;
+		}
+		else{
+			s = res;
+			if(s == '0x0000000000000000000000000000000000000000'){
+				break;
+			}
+			strats.push(await StratInfo(con, s, defaultProvider, currentTime, totalAssets, gov));
+		}
+	}
 	return strats;
 }   
 
