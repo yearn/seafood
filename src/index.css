@@ -82,6 +82,14 @@ select {
   @apply text-attention-300;
 }
 
+.dialog-container {
+  @apply absolute z-50 top-0 left-0 right-0 h-screen flex items-center justify-center bg-secondary-900/80;
+}
+
+.dialog {
+  @apply w-[80%] h-[80%] p-8 bg-secondary-900 rounded-xl shadow-lg;
+}
+
 .vaults {
   @apply max-w-full;
 }
