@@ -313,6 +313,30 @@ async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
 	};
     
 }
+async function GetBalances(tokens, user, provider){
+
+	let result = [];
+
+	for(let token of tokens ){
+		let s = await Erc20Info(token,provider);
+
+		
+		let balance = await s.contract.balanceOf(user);
+		
+		result.push({
+			token: s,
+			balance: balance / (10 ** s.decimals)
+		});
+
+
+		
+
+	}
+
+	return result;
+	
+    
+}
 
 async function Erc20Info(token, provider){
 	let s = new ethers.Contract(token, erc20, provider);
@@ -384,6 +408,9 @@ async function masterchefContract(address, provider, masterchefContract){
     
 }
 
+
+
+
 function Registry(provider){
 	console.log('registering network', provider.network.name);
 
@@ -409,4 +436,4 @@ function Dai(provider){
     
 }
 
-export {AllVaults,GetDexScreener, GetCurrentBlock, GetBasicStrat, GetBasicVault, GetVaultContract, AllRegistered, AllStrats, StratInfo, Erc20Info, GetMasterchef};
+export {AllVaults,GetDexScreener, GetBalances, GetCurrentBlock, GetBasicStrat, GetBasicVault, GetVaultContract, AllRegistered, AllStrats, StratInfo, Erc20Info, GetMasterchef};
