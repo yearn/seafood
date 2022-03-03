@@ -1,5 +1,5 @@
-import {lpDepositer, solidlyPair, solidlyRouter, solidexStakingRewards, solidlygauge} from '../interfaces/interfaces';
-import {solidexLpDepositer,  solidlyRouterAddress, sex, wftm, solid, solidsex, solidexStakingRewardsAddress} from './Addresses';
+import {lpDepositer, solidlyPair, solidlyRouter, solidexStakingRewards, solidlygauge, solidexFeeDistributor} from '../interfaces/interfaces';
+import {solidexLpDepositer,  solidlyRouterAddress, sex, wftm, solid, solidsex, solidexStakingRewardsAddress, yfi, woofy, solidexFeeDistributorAddress} from './Addresses';
 import {GetDexScreener} from './EthHelpers';
 
 const {ethers} = require('ethers');
@@ -80,6 +80,26 @@ async function StakedSolidsex(user, provider){
 
 }   
 
+async function StakedSex(user, provider){
+
+	let feeDistributor = solidexFeeDistributorContract(provider);
+
+	
+	
+	let pendingSolidsex =  await feeDistributor.claimable(user, [solidsex()]);
+	
+    
+
+	return{
+		
+		solidsexRewards: pendingSolidsex/1e18,
+        
+		
+	};
+
+
+} 
+
 function FindName(address){
 	if(address === sex()){
 		return('sex');
@@ -92,6 +112,12 @@ function FindName(address){
 	}
 	if(address === wftm()){
 		return('wftm');
+	}
+	if(address === yfi() ){
+		return('yfi');
+	}
+	if(address === woofy()){
+		return('woofy (18d)');
 	}
 
 }
@@ -142,6 +168,11 @@ function solidexStakingRewardsContract(provider){
 	return new ethers.Contract(solidexStakingRewardsAddress(), solidexStakingRewards, provider);
 
 }
+function solidexFeeDistributorContract(provider){
+	
+	return new ethers.Contract(solidexFeeDistributorAddress(), solidexFeeDistributor, provider);
+
+}
 
 function solidlyGaugeContract(gauge, provider){
 	
@@ -149,4 +180,4 @@ function solidlyGaugeContract(gauge, provider){
 
 }
 
-export {LpState, FindName, StakedSolidsex};
+export {LpState,StakedSex, FindName, StakedSolidsex};
