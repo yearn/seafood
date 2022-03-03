@@ -1,5 +1,6 @@
 import {registry, erc20, vault030, vault043, strategy,masterchef, masterchefstrat} from '../interfaces/interfaces';
 //import {SpookySwapRouter, SpiritSwapRouter} from './Addresses';
+
 import {
 	Multicall
 } from 'ethereum-multicall';
@@ -47,7 +48,7 @@ async function AllStrats(vault, defaultProvider){
 	for(let i=0; i < resultsArray.length; i++){
 	    res = resultsArray[i].returnValues[0];
 		if(i == 0){
-			totalAssets = res;
+			totalAssets = ethers.BigNumber.from(res);
 		}
 		else if(i == 1){
 			gov = res;
@@ -87,8 +88,8 @@ async function Masterchefinfo(strat, provider, filled){
 	}else{
 		name = 'Scarface USDC Masterchef';
 	}
-	console.log(name);
-	console.log(filled);
+	// console.log(name);
+	// console.log(filled);
 
 	let masterchef = await masterchefContract(await s.masterchef(), provider, filled);
 	let pid = await s.pid();
@@ -168,7 +169,7 @@ async function AllRegistered(provider){
 
 
 async function AllVaults(vaultAddresses, defaultProvider){
-	//console.log('All Vaults');
+	// console.log(vaultAddresses);
 
 	if(all.length >0){
 		//console.log('hit all ' +all.length)  
@@ -297,6 +298,7 @@ async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
 	let s = new ethers.Contract(strat, strategy, provider);
 	let params = await vault.strategies(strat);
 	//console.log(params)
+	// console.log('beforedebt: ', params.totalDebt/totalAssets);
     
 	let name = await s.name();
 	return {
