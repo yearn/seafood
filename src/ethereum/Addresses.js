@@ -61,6 +61,11 @@ function sexwftmlp(){
 function solidexStakingRewardsAddress(){
 	return '0x7FcE87e203501C3a035CbBc5f0Ee72661976D6E1';
 }
+function solidlyVoter(){
+	return '0xdC819F5d05a6859D2faCbB4A44E5aB105762dbaE';
+}
 
 
-export {sex, solid, solidexStakingRewardsAddress, solidlyRouterAddress, solidsex,wftm, solidsexsolidlp, SpiritSwapRouter, SpookySwapRouter, fantomMasterchefs, ftmVaults, ethVaults, fchad, solidexLpDepositer, sexwftmlp};
+
+
+export {sex, solid, solidlyVoter, solidexStakingRewardsAddress, solidlyRouterAddress, solidsex,wftm, solidsexsolidlp, SpiritSwapRouter, SpookySwapRouter, fantomMasterchefs, ftmVaults, ethVaults, fchad, solidexLpDepositer, sexwftmlp};

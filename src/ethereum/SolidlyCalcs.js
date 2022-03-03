@@ -78,7 +78,33 @@ async function StakedSolidsex(user, provider){
 	};
 
 
-}   
+}
+
+// async function votes(provider){
+// 	console.log('Solidly Votes:');
+
+// 	let voter =  solidelyVotingContract(provider);
+
+//     for (let i = 0; i < cars.length; i++) {
+//         text += cars[i] + "<br>";
+//       }
+	
+// 	let pendingSolid =  await stakingRewards.earned(user, solid());
+	
+
+    
+
+// 	return{
+		
+// 		sexRewards: pendingSex/1e18,
+// 		solidRewards: pendingSolid/1e18,
+        
+// 		tokenABalance: {address: solidsex(), balance: balance/1e18},
+		
+// 	};
+
+
+// }   
 
 function FindName(address){
 	if(address === sex()){
