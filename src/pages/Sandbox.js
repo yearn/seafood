@@ -20,7 +20,7 @@ function Sandbox() {
 	function addTheBlock(block) {
 		block.index = nonce;
 		setNonce(nonce+1);
-		setBlocks([...blocks, block]);
+		setBlocks(blocks => [...blocks, block]);
 
 	}
 
@@ -29,7 +29,9 @@ function Sandbox() {
 
 	}
 	function removeBlock(blockIndex) {
-		setBlocks(blocks.filter(item => item.index !== blockIndex));
+		setBlocks(blocks => {
+			return blocks.filter(item => item.index !== blockIndex);
+		});
 	}
 
 	
