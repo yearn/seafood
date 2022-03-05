@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+header.vaults {
+  @apply sticky z-50 inset-x-0 top-0 p-4
+    flex flex-col
+    bg-transparent
+    dark:bg-transparent
+    sm:static
+    sm:flex-row
+    sm:justify-between
+    sm:h-app-header;
+}
+
+.vaults-overpass {
+  @apply bg-secondary-900/60
+    dark:bg-secondary-900/60
+    backdrop-blur-md shadow-md;
+}
+
+.vaults-hide {
+  @apply bg-transparent dark:bg-transparent backdrop-blur-none shadow-none;
+}
+
+.vaults-hide > * {
+  @apply opacity-0;
+}
+
+header.vaults button.menu {
+  @apply text-4xl bg-transparent shadow-none;
+}
+
+nav.menu {
+  @apply fixed z-[100] top-0 w-full h-screen p-8
+    flex flex-col items-center justify-center
+    bg-secondary-900
+    pointer-events-none
+    opacity-0
+    sm:static
+    sm:w-fit
+    sm:h-auto
+    sm:opacity-100
+    sm:p-0
+    sm:flex-row
+    sm:bg-transparent
+    sm:pointer-events-auto;
+}
+
+nav.menu-show {
+  @apply opacity-100 animate-slide-in-x pointer-events-auto;
+}
+
+nav.menu-hide {
+  @apply opacity-0 animate-slide-out-x;
+}
+
+nav.menu ul {
+  @apply flex flex-col sm:flex-row justify-center;
+}
+
+nav.menu li {
+  @apply flex items-center justify-center mt-8 sm:mt-0 sm:ml-2 lg:ml-8 text-xl sm:text-base cursor-pointer;
+}
+
+nav.menu li a, nav.menu li div {
+  @apply no-underline px-4 py-2 rounded-full;
+}
+
+nav.menu li a:hover, nav.menu li div:hover {
+  @apply bg-selected-200 text-selected-900
+    dark:bg-selected-600 dark:text-white;
+}
+
+nav.menu li a:active, nav.menu li div:active {
+  @apply transform scale-95;
+}
+
+nav.menu li .selected {
+  @apply bg-selected-100 text-selected-900
+    dark:bg-selected-300 dark:text-selected-900 
+    shadow-md;
+}
+
+.vaults {
+  @apply max-w-full;
+}
+
+.vaults input[type=text] {
+  @apply w-full border py-2 px-3 border-secondary-600 bg-transparent rounded-full leading-tight
+    text-primary-900
+    dark:text-primary-200
+    focus:border-primary-200 focus:outline-none;
+}
+
+.vaults .list {
+  @apply p-2 sm:p-4 grid grid-flow-row grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4;
+}
+
+.vaults .list .tile {
+  @apply mb-6;
+}
+
+.vaults .list .tile .title-button {
+  @apply flex items-center justify-between
+    px-4 py-2
+    hover:bg-selected-200 
+    dark:hover:bg-selected-600 
+    active:transform active:scale-[98%]
+    rounded-full cursor-pointer;
+}
+
+.vaults .list .tile .title-button .title {
+  @apply text-xl font-bold;
+}
+
+.vaults .list .tile .title-button .version {
+  @apply inline px-4 py-[2px] text-sm 
+    bg-primary-200
+    dark:bg-primary-900
+    rounded-full;
+}
+
+.vaults .list .tile .title-button:hover .version {
+  @apply bg-transparent;
+}
+
+.vaults .list .tile .address {
+  @apply pl-2;
+}
+
+.vaults .list .tile .address .copy {
+  @apply flex items-center justify-between
+    my-2 pl-4
+    px-2
+    hover:bg-selected-200 
+    dark:hover:bg-selected-600 
+    active:transform active:scale-[98%]
+    rounded-full cursor-pointer;
+}
+
+.vaults .list .tile .address .copy .icon {
+  @apply ml-2;
+}
+
+.vaults .list .tile .network {
+  @apply mr-2 px-4 py-[2px] text-sm capitalize rounded-full;
+}
+
+.vaults .list .tile .ethereum {
+  @apply bg-ethereum-200
+    dark:bg-ethereum-500;
+}
+
+.vaults .list .tile .fantom {
+  @apply bg-fantom-200
+    dark:bg-fantom-600;
+}
+
+.vaults .chip {
+  @apply ml-2 px-4 py-1 border-2 text-sm capitalize rounded-full cursor-pointer 
+    active:transform active:scale-95;
+}
+
+.vaults .chip-curve {
+  @apply border-curve-200 dark:border-curve-700 dark:text-curve-500
+    hover:border-curve-400 hover:dark:border-curve-600 hover:dark:text-curve-400;
+}
+
+.vaults .hot-curve {
+  @apply bg-curve-200 text-curve-900 dark:bg-curve-700 dark:text-curve-100 shadow-sm
+    hover:dark:bg-curve-600 hover:dark:text-curve-100;
+}
+
+.vaults .chip-ethereum {
+  @apply border-ethereum-200 dark:border-ethereum-600 dark:text-ethereum-500
+    hover:border-ethereum-400 hover:dark:border-ethereum-500 hover:dark:text-ethereum-400;
+}
+
+.vaults .hot-ethereum {
+  @apply bg-ethereum-200 text-ethereum-900 dark:bg-ethereum-600 dark:text-ethereum-100 shadow-sm
+    hover:dark:bg-ethereum-500 hover:dark:text-ethereum-100;
+}
+
+.vaults .chip-fantom {
+  @apply border-fantom-200 dark:border-fantom-800 dark:text-fantom-500
+    hover:border-fantom-400 hover:dark:border-fantom-600 hover:dark:text-fantom-400;
+}
+
+.vaults .hot-fantom {
+  @apply bg-fantom-200 text-fantom-900 dark:bg-fantom-800 dark:text-fantom-100 shadow-sm
+    hover:dark:bg-fantom-600 hover:dark:text-fantom-100;
+}

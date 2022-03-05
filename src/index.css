@@ -23,7 +23,7 @@ body {
   @apply bg-secondary-900;
 }
 
-header {
+.header {
   @apply sticky z-50 inset-x-0 top-0 px-24 h-app-header
     flex items-center justify-between
     bg-primary-400/70
@@ -31,28 +31,28 @@ header {
     backdrop-blur-sm shadow-md;
 }
 
-header nav ul {
+.header nav ul {
   @apply flex;
 }
 
-header nav li {
+.header nav li {
   @apply flex items-center ml-8 cursor-pointer;
 }
 
-header nav li a, header nav li div {
+.header nav li a, .header nav li div {
   @apply no-underline px-4 py-2 rounded-full;
 }
 
-header nav li a:hover, header nav li div:hover {
+.header nav li a:hover, .header nav li div:hover {
   @apply bg-selected-200 text-selected-900
     dark:bg-selected-600 dark:text-white;
 }
 
-header nav li a:active, header nav li div:active {
+.header nav li a:active, .header nav li div:active {
   @apply transform scale-95;
 }
 
-header nav li .selected {
+.header nav li .selected {
   @apply bg-selected-100 text-selected-900
     dark:bg-selected-300 dark:text-selected-900 
     shadow-md;
@@ -69,7 +69,7 @@ button, select {
 }
 
 select {
-  @apply border-0 pr-12 text-secondary-900 dark:text-secondary-200;
+  @apply border-0 pr-12 text-secondary-900 dark:text-secondary-200 active:scale-100;
 }
 
 .bg {
@@ -90,126 +90,22 @@ select {
   @apply w-[80%] h-[80%] p-8 bg-secondary-900 rounded-xl shadow-lg;
 }
 
-.vaults {
-  @apply max-w-full;
-}
-
-.vaults .filter {
-  @apply flex items-center justify-between mb-4 px-4;
-}
-
-.vaults .filter input[type=text] {
-  @apply border mr-2 py-2 px-3 border-secondary-600 bg-transparent rounded-full leading-tight
-    text-primary-900
-    dark:text-primary-200
-    focus:border-primary-200 focus:outline-none;
-}
-
-.vaults .filter .chip {
-  @apply ml-2 px-4 py-1 border-2 text-sm capitalize rounded-full cursor-pointer 
-    active:transform active:scale-95;
-}
-
-.vaults .filter .chip-curve {
-  @apply border-curve-200 dark:border-curve-700 dark:text-curve-500
-    hover:border-curve-400 hover:dark:border-curve-600 hover:dark:text-curve-400;
-}
-
-.vaults .filter .hot-curve {
-  @apply bg-curve-200 text-curve-900 dark:bg-curve-700 dark:text-curve-100 shadow-sm
-    hover:dark:bg-curve-600 hover:dark:text-curve-100;
-}
-
-.vaults .filter .chip-ethereum {
-  @apply border-ethereum-200 dark:border-ethereum-600 dark:text-ethereum-500
-    hover:border-ethereum-400 hover:dark:border-ethereum-500 hover:dark:text-ethereum-400;
-}
-
-.vaults .filter .hot-ethereum {
-  @apply bg-ethereum-200 text-ethereum-900 dark:bg-ethereum-600 dark:text-ethereum-100 shadow-sm
-    hover:dark:bg-ethereum-500 hover:dark:text-ethereum-100;
-}
-
-.vaults .filter .chip-fantom {
-  @apply border-fantom-200 dark:border-fantom-800 dark:text-fantom-500
-    hover:border-fantom-400 hover:dark:border-fantom-600 hover:dark:text-fantom-400;
-}
-
-.vaults .filter .hot-fantom {
-  @apply bg-fantom-200 text-fantom-900 dark:bg-fantom-800 dark:text-fantom-100 shadow-sm
-    hover:dark:bg-fantom-600 hover:dark:text-fantom-100;
-}
-
-.vaults .list {
-  @apply grid grid-flow-row grid-cols-1 md:grid-cols-3 2xl:grid-cols-4;
-}
-
-.vaults .list .tile {
-  @apply mr-4 mb-6;
-}
-
-.vaults .list .tile .title-button {
-  @apply flex items-center justify-between
-    px-4 py-2
+.sm-circle-icon-button {
+  @apply w-6 h-6 
+    flex items-center justify-center
     hover:bg-selected-200 
     dark:hover:bg-selected-600 
-    active:transform active:scale-[98%]
+    active:transform active:scale-90
     rounded-full cursor-pointer;
 }
 
-.vaults .list .tile .title-button .title {
-  @apply text-xl font-bold;
-}
-
-.vaults .list .tile .title-button .version {
-  @apply inline px-4 py-[2px] text-sm 
-    bg-primary-200
-    dark:bg-primary-900
-    rounded-full;
-}
-
-.vaults .list .tile .title-button:hover .version {
-  @apply bg-transparent;
-}
-
-.vaults .list .tile .address {
-  @apply pl-2;
-}
-
-.vaults .list .tile .address .copy {
-  @apply flex items-center justify-between
-    my-2 pl-4
-    px-2
+.md-circle-icon-button {
+  @apply w-12 h-12 text-4xl
+    flex items-center justify-center
     hover:bg-selected-200 
     dark:hover:bg-selected-600 
-    active:transform active:scale-[98%]
+    active:transform active:scale-90
     rounded-full cursor-pointer;
-}
-
-.vaults .list .tile .address .copy .icon {
-  @apply ml-2;
-}
-
-.vaults .list .tile .network {
-  @apply mr-2 px-4 py-[2px] text-sm capitalize rounded-full;
-}
-
-.vaults .list .tile .ethereum {
-  @apply bg-ethereum-200
-    dark:bg-ethereum-500;
-}
-
-.vaults .list .tile .fantom {
-  @apply bg-fantom-200
-    dark:bg-fantom-600;
-}
-
-.small-circle-icon-button {
-  @apply w-6 h-6 flex items-center justify-center
-    rounded-full cursor-pointer
-    hover:bg-selected-200 
-    dark:hover:bg-selected-600 
-    active:transform active:scale-90;
 }
 
 .rainbow-text {

@@ -30,12 +30,12 @@ function MainNavigation(){
 		});
 	}, [defaultProvider, fantomProvider]);
 
-	return <header>
+	return <header className={'header'}>
 		<div className={'alert'}>{alert}</div>
 		<nav>
 			<ul>
 				<li>
-					<NavigationLink to={'/'} label={'All Vaults'}></NavigationLink>
+					<NavigationLink to={'/'} label={'Vaults'}></NavigationLink>
 				</li>
 				<li>
 					<NavigationLink to={'/masterchef'} label={'Masterchef'}></NavigationLink>
