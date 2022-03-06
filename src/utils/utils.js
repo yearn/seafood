@@ -1,5 +1,7 @@
 import React from 'react';
 
+const curveRe = /curve|crv/i;
+
 function GetExplorerLink(chainId, address){
 	return (chainId === 250 ? 'https://ftmscan.com/address/' :  'https://etherscan.io/address/') + address;
 
@@ -28,4 +30,4 @@ function FormatPercent(number){
 	return (number*100).toLocaleString(undefined, {maximumFractionDigits:2}) + '%';
 }
 
-export {GetExplorerLink, GetExplorerTx, GetALink, TruncateAddress, FormatNumer, FormatPercent};
+export {curveRe, GetExplorerLink, GetExplorerTx, GetALink, TruncateAddress, FormatNumer, FormatPercent};

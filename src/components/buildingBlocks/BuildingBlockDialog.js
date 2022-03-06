@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import useKeypress from 'react-use-keypress';
 import {useApp} from '../../context/useApp';
-
-const curveRe = /curve|crv/i;
+import {curveRe} from '../../utils/utils';
 
 export default function BuildingBlockDialog({state, setState}) {
 	const {vaults} = useApp();

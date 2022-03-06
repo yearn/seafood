@@ -1,8 +1,7 @@
 import React, {createContext, useContext, useEffect, useMemo, useState} from 'react';
 import useLocalStorage from 'use-local-storage';
 import {useApp} from '../../context/useApp';
-
-const curveRe = /curve|crv/i;
+import {curveRe} from '../../utils/utils';
 
 const	FilterContext = createContext();
 
