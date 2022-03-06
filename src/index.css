@@ -23,41 +23,6 @@ body {
   @apply bg-secondary-900;
 }
 
-.header {
-  @apply sticky z-50 inset-x-0 top-0 px-24 h-app-header
-    flex items-center justify-between
-    bg-primary-400/70
-    dark:bg-primary-900/90
-    backdrop-blur-sm shadow-md;
-}
-
-.header nav ul {
-  @apply flex;
-}
-
-.header nav li {
-  @apply flex items-center ml-8 cursor-pointer;
-}
-
-.header nav li a, .header nav li div {
-  @apply no-underline px-4 py-2 rounded-full;
-}
-
-.header nav li a:hover, .header nav li div:hover {
-  @apply bg-selected-200 text-selected-900
-    dark:bg-selected-600 dark:text-white;
-}
-
-.header nav li a:active, .header nav li div:active {
-  @apply transform scale-95;
-}
-
-.header nav li .selected {
-  @apply bg-selected-100 text-selected-900
-    dark:bg-selected-300 dark:text-selected-900 
-    shadow-md;
-}
-
 button, select {
   @apply m-2 py-2 px-4 
     bg-primary-200
@@ -111,6 +76,5 @@ select {
 .rainbow-text {
   @apply bg-clip-text text-transparent 
     bg-gradient-to-r 
-    from-red-600 via-yellow-500 to-blue-600
-    dark:from-red-400 dark:via-yellow-400 dark:to-blue-400;
+    from-purple-500 to-pink-500;
 }

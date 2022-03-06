@@ -3,6 +3,7 @@ import {Link, useMatch, useNavigate, useResolvedPath} from 'react-router-dom';
 import {BsBrightnessHigh, BsMoonFill, BsX} from 'react-icons/bs';
 import {useApp} from '../../context/useApp';
 import {SmallScreen, useMediumBreakpoint} from '../../utils/breakpoints';
+import './index.css';
 
 function NavigationLink({to, label}) {
 	const resolved = useResolvedPath(to);
@@ -22,6 +23,11 @@ export default function Menu({action}) {
 			</div>
 		</SmallScreen>
 		<ul>
+			<SmallScreen>
+				<li className={'brand'}>
+					{'Seafood'}
+				</li>
+			</SmallScreen>
 			<li>
 				<NavigationLink to={'/'} label={'Vaults'}></NavigationLink>
 			</li>
