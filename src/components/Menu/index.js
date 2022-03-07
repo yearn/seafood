@@ -1,8 +1,9 @@
 import React from 'react';
-import {Link, useMatch, useNavigate, useResolvedPath} from 'react-router-dom';
-import {BsBrightnessHigh, BsMoonFill, BsX} from 'react-icons/bs';
+import {Link, useMatch, useResolvedPath} from 'react-router-dom';
+import {BsBrightnessHigh, BsMoonFill} from 'react-icons/bs';
 import {useApp} from '../../context/useApp';
 import {SmallScreen, useMediumBreakpoint} from '../../utils/breakpoints';
+import CloseDialog from '../CloseDialog';
 import './index.css';
 
 function NavigationLink({to, label}) {
@@ -13,14 +14,11 @@ function NavigationLink({to, label}) {
 }
 
 export default function Menu({action}) {
-	const navigate = useNavigate();
 	const {darkMode, setDarkMode} = useApp();
 
 	return <nav className={`menu ${action ? `menu-${action}` : ''}`}>
 		<SmallScreen>
-			<div onClick={() => navigate(-1)} className={'absolute top-4 right-4 md-circle-icon-button'}>
-				<BsX />
-			</div>
+			<CloseDialog></CloseDialog>
 		</SmallScreen>
 		<ul>
 			<SmallScreen>

@@ -55,11 +55,12 @@ select {
 }
 
 .dialog {
-  @apply w-[80%] h-[80%] p-8 
-    flex flex-col justify-between
+  @apply w-full h-screen p-2
+    flex flex-col justify-end
     bg-secondary-200 
     dark:bg-secondary-900
-    rounded-xl shadow-lg;
+    sm:w-[80%] sm:h-[80%] sm:p-8
+    sm:rounded-xl sm:shadow-lg;
 }
 
 .sm-circle-icon-button {

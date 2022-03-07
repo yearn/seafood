@@ -10,7 +10,7 @@ export default function Vaults() {
 	const [chips, setChips] = useLocalStorage('Vaults.filter.chips', defaultChips());
 
 	return <FilterProvider query={query} setQuery={setQuery} chips={chips} setChips={setChips}>
-		<Filter></Filter>
+		<Filter showVaultCount={true}></Filter>
 		<List />
 	</FilterProvider>;
 }

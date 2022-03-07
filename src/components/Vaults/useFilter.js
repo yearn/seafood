@@ -34,6 +34,7 @@ export function defaultChips() {
 	return {
 		curve: false,
 		ethereum: true,
-		fantom: true
+		fantom: true,
+		tags: ['curve', 'ethereum', 'fantom']
 	};
 }

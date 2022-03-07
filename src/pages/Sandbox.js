@@ -4,7 +4,7 @@ import BuildingBlock from '../components/buildingBlocks/BuildingBlock';
 import BuiltBlock from '../components/buildingBlocks/BuiltBlock';
 import SimulateBlock from '../components/buildingBlocks/SimulateBlock';
 import PreviewCode from '../components/buildingBlocks/PreviewCode';
-import BuildingBlockDialog from '../components/buildingBlocks/BuildingBlockDialog';
+import AddBlockDialog, {AddBlockButton} from '../components/AddBlockDialog';
 import {SelectedProviderContext} from '../components/SelectProvider/useSelectedProvider';
 import SelectProvider from '../components/SelectProvider';
 
@@ -13,12 +13,15 @@ function Sandbox() {
 	const [selectedProvider, setSelectedProvider] = useState(defaultProvider);
 	const [blocks, setBlocks] = useState([]);
 	const [nonce, setNonce] = useState(0);
-	const [buildingBlockDialogState, setBuildingBlockDialogState] = useState({show: false});
 
 	function addBlock(block) {
 		block.index = nonce;
 		setNonce(nonce+1);
 		setBlocks(blocks => [...blocks, block]);
+	}
+
+	function onAddBlock(block) {
+		console.log('block', block);
 	}
 
 	function updateBlock(block) {
@@ -49,8 +52,8 @@ function Sandbox() {
 			<h3>{'Add new'} </h3>
 			<BuildingBlock addBlock={addBlock} provider={selectedProvider} />
 
-			<button onClick={() => setBuildingBlockDialogState(state => {return {...state, show:true};})}>{'Add block'}</button>
-			<BuildingBlockDialog state={buildingBlockDialogState} setState={setBuildingBlockDialogState}></BuildingBlockDialog>
+			<AddBlockButton></AddBlockButton>
+			<AddBlockDialog onAddBlock={onAddBlock}></AddBlockDialog>
 		</div>
 	</SelectedProviderContext.Provider>;
 

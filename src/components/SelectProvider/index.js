@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import useRPCProvider from '../../context/useRpcProvider';
 import {useSelectedProvider} from './useSelectedProvider';
 
-function ProviderSelector(){
+export default function SelectProvider(){
 	const {defaultProvider, fantomProvider} = useRPCProvider();
 	const {setSelectedProvider} = useSelectedProvider();
 	const [state, setState] = useState(1);
@@ -21,5 +21,3 @@ function ProviderSelector(){
 		<option value={'250'}>{'Fantom'}</option>
 	</select>;
 }
-
-export default ProviderSelector;

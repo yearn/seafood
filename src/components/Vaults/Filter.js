@@ -7,7 +7,7 @@ import {MediumScreen, SmallScreen} from '../../utils/breakpoints';
 import {useFilter} from './useFilter';
 import Chips from './Chips';
 
-export default function Filter() {
+export default function Filter({showVaultCount = false}) {
 	const queryElement = useRef();
 	const {query, setQuery, filter} = useFilter();
 	const debounceQuery = useDebouncedCallback(value => {setQuery(value);}, 250);
@@ -36,7 +36,7 @@ export default function Filter() {
 						</div>}
 					</div>
 					<div className={'w-1/5 text-center text-xs'}>
-						{`${filter.length} Vaults`}
+						{showVaultCount && `${filter.length} Vaults`}
 					</div>
 				</div>
 				<div className={'mt-4 flex items-center justify-center'}>
@@ -55,7 +55,7 @@ export default function Filter() {
 				<div className={'w-full flex items-center justify-between'}>
 					<Chips></Chips>
 					<div className={'text-2xl'}>
-						{`${filter.length} Vaults`}
+						{showVaultCount && `${filter.length} Vaults`}
 					</div>
 				</div>
 			</div>
