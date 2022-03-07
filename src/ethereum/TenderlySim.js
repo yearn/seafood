@@ -21,10 +21,13 @@ async function setupTenderly(chainId){
 }
 
 async function TenderlySim(blocks, tenderlyProvider){
+	console.log(blocks);
 
 	let returnList = [];
 
-	for(let block of blocks){
+	for(let i =0; i < blocks.length; i++){
+		
+		let block = blocks[i];
 
 
 		let gov = await block.contract.governance();
@@ -39,11 +42,15 @@ async function TenderlySim(blocks, tenderlyProvider){
 		// console.log(block.function);
 		let pass = true;
 		let inputs = block.function.inputs.map(x =>{
+			// console.log(x);
+			// console.log(block.inputs);
 			if(block.inputs[x.name]){
 				let ins = block.inputs[x.name];
+				// console.log('pass', x.name);
 				
 				return ins; 
 			}
+			console.log('FAIL');
 			pass = false;
 		});
 		if(!pass) continue;
@@ -73,7 +80,7 @@ async function TenderlySim(blocks, tenderlyProvider){
 		returnList.push(toReturn);
 	}
 
-	
+	console.log(returnList);
 	
 	return returnList;
 
