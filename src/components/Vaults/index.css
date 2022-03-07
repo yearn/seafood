@@ -6,11 +6,11 @@
   @apply max-w-full p-2 sm:p-4 grid grid-flow-row grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4;
 }
 
-.vaults-list .tile {
+.vault-tile {
   @apply mb-6;
 }
 
-.vaults-list .tile .title-button {
+.vault-tile .title-button {
   @apply flex items-center justify-between
     px-4 py-2
     hover:bg-selected-200 
@@ -19,26 +19,26 @@
     rounded-full cursor-pointer;
 }
 
-.vaults-list .tile .title-button .title {
+.vault-tile .title-button .title {
   @apply text-xl font-bold;
 }
 
-.vaults-list .tile .title-button .version {
+.vault-tile .title-button .version {
   @apply inline px-4 py-[2px] text-sm 
     bg-primary-200
     dark:bg-primary-900
     rounded-full;
 }
 
-.vaults-list .tile .title-button:hover .version {
+.vault-tile .title-button:hover .version {
   @apply bg-transparent;
 }
 
-.vaults-list .tile .address {
+.vault-tile .address {
   @apply pl-2;
 }
 
-.vaults-list .tile .address .copy {
+.vault-tile .address .copy {
   @apply flex items-center justify-between
     my-2 pl-4
     px-2
@@ -48,20 +48,20 @@
     rounded-full cursor-pointer;
 }
 
-.vaults-list .tile .address .copy .icon {
+.vault-tile .address .copy .icon {
   @apply ml-2;
 }
 
-.vaults-list .tile .network {
+.vault-tile .network {
   @apply mr-2 px-4 py-[2px] text-sm capitalize rounded-full;
 }
 
-.vaults-list .tile .ethereum {
+.vault-tile .ethereum {
   @apply bg-ethereum-200
     dark:bg-ethereum-500;
 }
 
-.vaults-list .tile .fantom {
+.vault-tile .fantom {
   @apply bg-fantom-200
     dark:bg-fantom-600;
 }

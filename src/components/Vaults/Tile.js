@@ -23,7 +23,7 @@ export default function Tile({vault, onClick}) {
 		return title;
 	}
 
-	return <div className={'tile'}>
+	return <div className={'vault-tile'}>
 		<div onClick={onClick} className={'title-button'}>
 			<div className={'title'}>{styleTitle(vault.name)}</div>
 			<div className={'version'}>{vault.version}</div>
@@ -37,10 +37,12 @@ export default function Tile({vault, onClick}) {
 				className={'copy'}
 				title={`Copy ${vault.address} to your clipboard`}>
 					{TruncateAddress(vault.address)}
+					{vault.icon}
 					<BsClipboardPlus className={'icon'} />
 				</div>
 				<a title={`Explore ${vault.address}`}
 					href={GetExplorerLink(vault.provider.network.chainId, vault.address)}
+					target={'_blank'} rel={'noreferrer'}
 					className={'sm-circle-icon-button'}>
 					<BsBoxArrowInUpRight />
 				</a>

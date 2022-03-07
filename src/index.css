@@ -48,11 +48,18 @@ select {
 }
 
 .dialog-container {
-  @apply absolute z-50 top-0 left-0 right-0 h-screen flex items-center justify-center bg-secondary-900/80;
+  @apply absolute z-[100] top-0 left-0 right-0 h-screen 
+    flex items-center justify-center 
+    bg-secondary-900/40
+    backdrop-blur-md;
 }
 
 .dialog {
-  @apply w-[80%] h-[80%] p-8 bg-secondary-900 rounded-xl shadow-lg;
+  @apply w-[80%] h-[80%] p-8 
+    flex flex-col justify-between
+    bg-secondary-200 
+    dark:bg-secondary-900
+    rounded-xl shadow-lg;
 }
 
 .sm-circle-icon-button {
