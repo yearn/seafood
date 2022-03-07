@@ -1,24 +1,24 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import useKeypress from 'react-use-keypress';
-import {useApp} from '../../context/useApp';
-import {curveRe} from '../../utils/utils';
 import Tile from '../Vaults/Tile';
-import {FilterProvider} from '../Vaults/useFilter';
+import {FilterProvider, defaultChips, useFilter} from '../Vaults/useFilter';
 import '../Vaults/index.css';
 import Filter from '../Vaults/Filter';
 
-export default function BuildingBlockDialog({state, setState}) {
-	const {vaults} = useApp();
-	const [filter, setFilter] = useState([]);
-	const [curve] = useState(false);
-	useKeypress(['Escape'], close);
+function Tiles() {
+	const {filter} = useFilter();
+	return <>
+		{filter.map(vault => {
+			return <Tile key={vault.address} vault={vault}></Tile>;
+		})}
+	</>;
+}
 
-	useEffect(() => {
-		setFilter(vaults.filter(vault => {
-			if(vault.provider.chainId != state.provider.chainId) return false;
-			return curve || !curveRe.test(vault.name);
-		}));
-	}, [state, vaults, curve]);
+export default function BuildingBlockDialog({state, setState}) {
+	const [query, setQuery] = useState('');
+	const [chips, setChips] = useState(defaultChips());
+
+	useKeypress(['Escape'], close);
 
 	function close() {
 		setState(state => {
@@ -26,20 +26,19 @@ export default function BuildingBlockDialog({state, setState}) {
 		});
 	}
 
-	return <div className={`dialog-container${state.show ? '' : ' invisible'}`}>
-		<div className={'dialog'}>
-			<FilterProvider>
-				<div className={''}>
-					<Filter></Filter>
+	return <FilterProvider query={query} setQuery={setQuery} chips={chips} setChips={setChips}>
+		<div className={`dialog-container${state.show ? '' : ' invisible'}`}>
+			<div className={'dialog'}>	
+				<Filter></Filter>
+				<div className={'max-h-full overflow-scroll my-4 grid grid-flow-row grid-cols-1 md:grid-cols-3 2xl:grid-cols-4'}>
+					<Tiles></Tiles>
 				</div>
-				<div className={'max-h-full overflow-scroll my-2 grid grid-flow-row grid-cols-1 md:grid-cols-3 2xl:grid-cols-4'}>
-					{filter.map(vault => {
-						return <Tile key={vault.address} vault={vault}></Tile>;
-					})}
+				<div className={'flex items-center justify-end'}>
+					<button>{'Manual'}</button>
+					<button onClick={close}>{'Close'}</button>
 				</div>
-			</FilterProvider>
-			<button onClick={close}>{'Close'}</button>
+			</div>
+			<div onClick={close} className={'absolute -z-10 inset-0'}></div>
 		</div>
-		<div onClick={close} className={'absolute -z-10 inset-0'}></div>
-	</div>;
+	</FilterProvider>;
 }

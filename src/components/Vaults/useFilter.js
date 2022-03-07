@@ -1,5 +1,4 @@
 import React, {createContext, useContext, useEffect, useMemo, useState} from 'react';
-import useLocalStorage from 'use-local-storage';
 import {useApp} from '../../context/useApp';
 import {curveRe} from '../../utils/utils';
 
@@ -7,16 +6,10 @@ const	FilterContext = createContext();
 
 export const useFilter = () => useContext(FilterContext);
 
-export const FilterProvider = ({children}) => {
+export const FilterProvider = ({query, setQuery, chips, setChips, children}) => {
 	const {vaults} = useApp();
 	const [filter, setFilter] = useState([]);
-	const [query, setQuery] = useLocalStorage('Vaults.filter.query', '');
 	const queryRe = useMemo(() => { return new RegExp(query, 'i'); }, [query]);
-	const [chips, setChips] = useLocalStorage('Vaults.filter.chips', {
-		curve: false,
-		ethereum: true,
-		fantom: true
-	});
 
 	useEffect(() => {
 		setFilter(vaults.filter(vault => {
@@ -36,3 +29,11 @@ export const FilterProvider = ({children}) => {
 		filter
 	}}>{children}</FilterContext.Provider>;
 };
+
+export function defaultChips() {
+	return {
+		curve: false,
+		ethereum: true,
+		fantom: true
+	};
+}
