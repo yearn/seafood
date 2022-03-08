@@ -83,6 +83,10 @@ function volYfiWftmLp(){
 function solidexFeeDistributorAddress(){
 	return '0xA5e76B97e12567bbA2e822aC68842097034C55e7';
 }
+function oxDaoStaker(){
+	return '0xDA0027f2368bA3cb65a494B1fc7EA7Fd05AB42DD';
+}
 
 
-export {sex,yfi, solidexFeeDistributorAddress,woofy, volYfiWftmLp, volYfiWoofyLp,solid,spookyRouterAddress, solidexStakingRewardsAddress, daiFantom, solidlyRouterAddress, solidsex,wftm, solidsexsolidlp, SpiritSwapRouter, SpookySwapRouter, fantomMasterchefs, ftmVaults, ethVaults, fchad, solidexLpDepositer, sexwftmlp};
+
+export {sex,yfi, oxDaoStaker, solidexFeeDistributorAddress,woofy, volYfiWftmLp, volYfiWoofyLp,solid,spookyRouterAddress, solidexStakingRewardsAddress, daiFantom, solidlyRouterAddress, solidsex,wftm, solidsexsolidlp, SpiritSwapRouter, SpookySwapRouter, fantomMasterchefs, ftmVaults, ethVaults, fchad, solidexLpDepositer, sexwftmlp};
