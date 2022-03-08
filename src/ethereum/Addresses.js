@@ -86,7 +86,10 @@ function solidexFeeDistributorAddress(){
 function oxDaoStaker(){
 	return '0xDA0027f2368bA3cb65a494B1fc7EA7Fd05AB42DD';
 }
+function veNFT(){
+	return '0xcBd8fEa77c2452255f59743f55A3Ea9d83b3c72b';
+}
 
 
 
-export {sex,yfi, oxDaoStaker, solidexFeeDistributorAddress,woofy, volYfiWftmLp, volYfiWoofyLp,solid,spookyRouterAddress, solidexStakingRewardsAddress, daiFantom, solidlyRouterAddress, solidsex,wftm, solidsexsolidlp, SpiritSwapRouter, SpookySwapRouter, fantomMasterchefs, ftmVaults, ethVaults, fchad, solidexLpDepositer, sexwftmlp};
+export {sex,yfi, oxDaoStaker, solidexFeeDistributorAddress,woofy, volYfiWftmLp, volYfiWoofyLp,solid,spookyRouterAddress, solidexStakingRewardsAddress, daiFantom, solidlyRouterAddress, solidsex,wftm, solidsexsolidlp, SpiritSwapRouter, SpookySwapRouter, fantomMasterchefs, veNFT, ftmVaults, ethVaults, fchad, solidexLpDepositer, sexwftmlp};

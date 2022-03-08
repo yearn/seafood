@@ -1,5 +1,5 @@
-import {lpDepositer, solidlyPair, solidlyRouter, solidexStakingRewards, solidlygauge, solidexFeeDistributor} from '../interfaces/interfaces';
-import {solidexLpDepositer,  solidlyRouterAddress, sex, wftm, solid, solidsex, solidexStakingRewardsAddress, yfi, woofy, solidexFeeDistributorAddress, oxDaoStaker} from './Addresses';
+import {lpDepositer, solidlyPair, solidlyRouter, solidexStakingRewards, solidlygauge, solidexFeeDistributor, veNFTContract} from '../interfaces/interfaces';
+import {solidexLpDepositer,  solidlyRouterAddress, sex, wftm, solid, solidsex, solidexStakingRewardsAddress, yfi, woofy, solidexFeeDistributorAddress, oxDaoStaker, veNFT} from './Addresses';
 import {GetDexScreener} from './EthHelpers';
 
 const {ethers} = require('ethers');
@@ -95,8 +95,32 @@ async function StakedSex(user, provider){
     
 
 	return{
-		
+		solidRewards: 0,
+		sexRewards: 0,
 		solidsexRewards: pendingSolidsex/1e18,
+        
+		
+	};
+
+
+} 
+
+
+async function StakedVeNft(user, provider){
+
+	let nft = veNContract(provider);
+
+	let tokenId = 13427;
+	let solid_balance = (await nft.locked(tokenId))[0];
+
+	console.log(solid_balance);
+
+
+
+	return{
+		solidRewards: 0,
+		sexRewards:0,
+		tokenABalance: {address: solid(), balance: solid_balance/1e18},
         
 		
 	};
@@ -184,4 +208,10 @@ function solidlyGaugeContract(gauge, provider){
 
 }
 
-export {LpState,StakedSex, FindName, StakedSolidsex};
+function veNContract(provider){
+	
+	return new ethers.Contract(veNFT() , veNFTContract, provider);
+
+}
+
+export {LpState,StakedSex, StakedVeNft,FindName, StakedSolidsex};
