@@ -7,7 +7,11 @@ import './index.css';
 
 export default function Vaults() {
 	const [query, setQuery] = useLocalStorage('Vaults.filter.query', '');
-	const [chips, setChips] = useLocalStorage('Vaults.filter.chips', defaultChips());
+	const [chips, setChips] = useLocalStorage('Vaults.filter.chips', defaultChips(), {
+		parser: (str) => {
+			return {...defaultChips(), ...JSON.parse(str)};
+		}
+	});
 
 	return <FilterProvider query={query} setQuery={setQuery} chips={chips} setChips={setChips}>
 		<Filter showVaultCount={true}></Filter>
