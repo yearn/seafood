@@ -196,7 +196,8 @@ function SolidlyTreasury(){
 						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, lp.tokenBBalance.address)}> {FindName(lp.tokenBBalance.address) + ' balance: ' + FormatNumer(lp.tokenBBalance.balance)} </a></li>
 						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, sex())}> {'sex pending rewards: '  + FormatNumer(lp.sexRewards) + ' worth $' + FormatNumer(lp.sexRewards*prices[sex()])} </a></li>
 						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, solid())}> {'solid pending rewards: '  + FormatNumer(lp.solidRewards) + ' worth $' + FormatNumer(lp.solidRewards*prices[solid()])} </a></li>
-						<li> {'SolidexBoost: ' + FormatNumer(lp.solidsexBoost, 3)+ 'x'}</li>
+						<li> {'Solidex Boost: ' + FormatNumer(lp.solidsexBoost, 3)+ 'x'}</li>
+						<li> {'OxDao Boost: ' + FormatNumer(lp.oxdaoBoost, 3)+ 'x'}</li>
 						<li> {'Price: ' + FormatNumer(lp.price, 4) }</li>
 					</ul>
 					<br />

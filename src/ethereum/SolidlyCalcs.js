@@ -1,5 +1,5 @@
 import {lpDepositer, solidlyPair, solidlyRouter, solidexStakingRewards, solidlygauge, solidexFeeDistributor} from '../interfaces/interfaces';
-import {solidexLpDepositer,  solidlyRouterAddress, sex, wftm, solid, solidsex, solidexStakingRewardsAddress, yfi, woofy, solidexFeeDistributorAddress} from './Addresses';
+import {solidexLpDepositer,  solidlyRouterAddress, sex, wftm, solid, solidsex, solidexStakingRewardsAddress, yfi, woofy, solidexFeeDistributorAddress, oxDaoStaker} from './Addresses';
 import {GetDexScreener} from './EthHelpers';
 
 const {ethers} = require('ethers');
@@ -35,6 +35,9 @@ async function LpState(lp, user, provider){
 
 	let balanceOfGuage = await guage.balanceOf(lpDepositer.address);
 	let derivedBalance = await guage.derivedBalance(lpDepositer.address);
+
+	let balanceOfGuageOx = await guage.balanceOf(oxDaoStaker());
+	let derivedBalanceOx = await guage.derivedBalance(oxDaoStaker());
 	console.log((derivedBalance/balanceOfGuage)*2.5);
 
     
@@ -51,7 +54,8 @@ async function LpState(lp, user, provider){
 		tokenBBalance: {address: tokenB, balance: balances.amountB/1e18},
 		price: price/1_000_000_000,
 		dexScreener: GetDexScreener(lp, provider),
-		solidsexBoost: (derivedBalance/balanceOfGuage)*2.5
+		solidsexBoost: (derivedBalance/balanceOfGuage)*2.5,
+		oxdaoBoost: (derivedBalanceOx/balanceOfGuageOx)*2.5
 	};
 
 
