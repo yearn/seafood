@@ -6,7 +6,7 @@ const	FilterContext = createContext();
 
 export const useFilter = () => useContext(FilterContext);
 
-export const FilterProvider = ({query, setQuery, chips, setChips, children}) => {
+export function FilterProvider({query, setQuery, chips, setChips, children}) {
 	const {vaults} = useApp();
 	const [filter, setFilter] = useState([]);
 	const queryRe = useMemo(() => { return new RegExp(query, 'i'); }, [query]);
@@ -28,7 +28,7 @@ export const FilterProvider = ({query, setQuery, chips, setChips, children}) => 
 		setChips,
 		filter
 	}}>{children}</FilterContext.Provider>;
-};
+}
 
 export function defaultChips() {
 	return {

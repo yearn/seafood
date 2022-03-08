@@ -26,7 +26,7 @@ export default function Tile({vault, onClick}) {
 	return <div className={'vault-tile'}>
 		<div onClick={onClick} className={'title-button'}>
 			<div className={'title'}>{styleTitle(vault.name)}</div>
-			<div className={'version'}>{vault.version}</div>
+			<div className={'chip version'}>{vault.version}</div>
 		</div>
 		<div className={'flex items-center justify-between'}>
 			<div className={'flex items-center address'}>
@@ -37,7 +37,6 @@ export default function Tile({vault, onClick}) {
 				className={'copy'}
 				title={`Copy ${vault.address} to your clipboard`}>
 					{TruncateAddress(vault.address)}
-					{vault.icon}
 					<BsClipboardPlus className={'icon'} />
 				</div>
 				<a title={`Explore ${vault.address}`}

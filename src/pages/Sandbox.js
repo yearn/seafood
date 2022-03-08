@@ -7,6 +7,7 @@ import PreviewCode from '../components/buildingBlocks/PreviewCode';
 import AddBlockDialog, {AddBlockButton} from '../components/AddBlockDialog';
 import {SelectedProviderContext} from '../components/SelectProvider/useSelectedProvider';
 import SelectProvider from '../components/SelectProvider';
+import {AddBlockDialogProvider} from '../components/AddBlockDialog/useAddBlockDialog';
 
 function Sandbox() {
 	const {defaultProvider} = useRPCProvider();
@@ -52,8 +53,10 @@ function Sandbox() {
 			<h3>{'Add new'} </h3>
 			<BuildingBlock addBlock={addBlock} provider={selectedProvider} />
 
-			<AddBlockButton></AddBlockButton>
-			<AddBlockDialog onAddBlock={onAddBlock}></AddBlockDialog>
+			<AddBlockDialogProvider>
+				<AddBlockButton></AddBlockButton>
+				<AddBlockDialog onAddBlock={onAddBlock}></AddBlockDialog>
+			</AddBlockDialogProvider>
 		</div>
 	</SelectedProviderContext.Provider>;
 

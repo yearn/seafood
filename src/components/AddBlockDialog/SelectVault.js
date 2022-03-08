@@ -16,7 +16,7 @@ function Tiles({onSelect}) {
 export default function SelectVault({onSelect}) {
 	const {selectedProvider} = useSelectedProvider();
 	const [query, setQuery] = useState('');
-	const [chips, setChips] = useState(defaultChips());
+	const [chips, setChips] = useState({...defaultChips(), tags: ['curve']});
 
 	useEffect(() => {
 		setChips({
@@ -30,7 +30,7 @@ export default function SelectVault({onSelect}) {
 	return <FilterProvider query={query} setQuery={setQuery} chips={chips} setChips={setChips}>
 		<div className={'max-h-full flex flex-col'}>
 			<Filter></Filter>
-			<div className={'grow overflow-scroll my-4 grid grid-flow-row grid-cols-1 md:grid-cols-3 2xl:grid-cols-4'}>
+			<div className={'list'}>
 				<Tiles onSelect={onSelect}></Tiles>
 			</div>
 		</div>

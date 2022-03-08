@@ -11,26 +11,31 @@
 }
 
 .vault-tile .title-button {
-  @apply flex items-center justify-between
+  @apply max-w-full flex items-center justify-between
     px-4 py-2
     hover:bg-selected-200 
     dark:hover:bg-selected-600 
     active:transform active:scale-[98%]
-    rounded-full cursor-pointer;
+    rounded-full cursor-pointer overflow-hidden;
 }
 
 .vault-tile .title-button .title {
-  @apply text-xl font-bold;
+  @apply text-lg font-bold;
+}
+
+.vault-tile .title-button .title-sm {
+  @apply text-sm font-bold;
+}
+
+.vault-tile .title-button .chip {
+  @apply inline px-4 py-[2px] text-sm rounded-full;
 }
 
 .vault-tile .title-button .version {
-  @apply inline px-4 py-[2px] text-sm 
-    bg-primary-200
-    dark:bg-primary-900
-    rounded-full;
+  @apply bg-primary-200 dark:bg-primary-900;
 }
 
-.vault-tile .title-button:hover .version {
+.vault-tile .title-button:hover .chip {
   @apply bg-transparent;
 }
 
