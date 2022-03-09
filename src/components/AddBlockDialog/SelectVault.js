@@ -3,6 +3,7 @@ import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import {defaultChips, FilterProvider, useFilter} from '../Vaults/useFilter';
 import Filter from '../Vaults/Filter';
 import Tile from '../Vaults/Tile';
+import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
 
 function Tiles({onSelect}) {
 	const {filter} = useFilter();
@@ -13,8 +14,9 @@ function Tiles({onSelect}) {
 	</>;
 }
 
-export default function SelectVault({onSelect}) {
+export default function SelectVault() {
 	const {selectedProvider} = useSelectedProvider();
+	const {setSteps, setResult} = useAddBlockDialog();
 	const [query, setQuery] = useState('');
 	const [chips, setChips] = useState({...defaultChips(), tags: ['curve']});
 
@@ -26,6 +28,11 @@ export default function SelectVault({onSelect}) {
 			tags: ['curve']
 		});
 	}, [selectedProvider]);
+
+	function onSelect(vault) {
+		setResult(result => {return {...result, vault};});
+		setSteps(steps => {return [...steps, stepEnum.selectVaultFunctionOrStrategy];});
+	}
 
 	return <FilterProvider query={query} setQuery={setQuery} chips={chips} setChips={setChips}>
 		<div className={'max-h-full flex flex-col'}>

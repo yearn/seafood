@@ -5,17 +5,25 @@ export const AddBlockContext = createContext();
 export const useAddBlockDialog = () => useContext(AddBlockContext);
 
 export function AddBlockDialogProvider({children}) {
-	const [step, setStep] = useState(0);
+	const [steps, setSteps] = useState([stepEnum.selectVault]);
 	const [result, setResult] = useState(defaultResult());
 	return <AddBlockContext.Provider value={{
-		step, setStep, result, setResult
+		steps, setSteps, result, setResult
 	}}>{children}</AddBlockContext.Provider>;
 }
+
+export const stepEnum = {
+	selectVault: {},
+	selectVaultFunctionOrStrategy: {},
+	selectStrategyFunction: {},
+	setInputs: {}
+};
 
 export function defaultResult() {
 	return {
 		vault: null,
 		strategy: null,
-		func: null
+		function: null,
+		inputs: null
 	};
 }

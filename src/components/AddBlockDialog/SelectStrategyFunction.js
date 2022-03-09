@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {useAddBlockDialog} from './useAddBlockDialog';
+import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
 import FunctionTile from './FunctionTile';
 import {MediumScreen, SmallScreen} from '../../utils/breakpoints';
 
-export default function SelectStrategyFunction({onSelect}) {
-	const {result} = useAddBlockDialog();
+export default function SelectStrategyFunction() {
+	const {setSteps, result, setResult} = useAddBlockDialog();
 	const [items, setItems] = useState([]);
 
 	useEffect(() => {
@@ -21,6 +21,18 @@ export default function SelectStrategyFunction({onSelect}) {
 		})();
 	}, [result]);
 
+	function onClickFunction(func) {
+		func.source = 'strategy';
+		setResult(result => {return {
+			...result,
+			function: func
+		};});
+		setSteps(steps => {return [
+			...steps,
+			stepEnum.setInputs
+		];});
+	}
+
 	return <div className={'max-h-full flex flex-col'}>
 		<div className={'px-4 pt-4 pb-8'}>
 			<SmallScreen>
@@ -33,7 +45,7 @@ export default function SelectStrategyFunction({onSelect}) {
 		</div>
 		<div className={'list'}>
 			{items.map(item => <div key={item.key}>
-				<FunctionTile func={item} onClick={() => onSelect(item)}></FunctionTile>
+				<FunctionTile func={item} onClick={() => onClickFunction(item)}></FunctionTile>
 			</div>)}
 		</div>
 	</div>;

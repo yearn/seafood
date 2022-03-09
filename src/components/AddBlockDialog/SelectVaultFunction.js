@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {AllStrats, GetVaultContract} from '../../ethereum/EthHelpers';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
-import {useAddBlockDialog} from './useAddBlockDialog';
+import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
 import StrategyTile from './StrategyTile';
 import FunctionTile from './FunctionTile';
 
-export default function SelectVaultFunction({onSelect}) {
+export default function SelectVaultFunction() {
 	const {selectedProvider} = useSelectedProvider();
-	const {setStep, result, setResult} = useAddBlockDialog();
+	const {setSteps, result, setResult} = useAddBlockDialog();
 	const [items, setItems] = useState([]);
 
 	useEffect(() => {
@@ -38,14 +38,28 @@ export default function SelectVaultFunction({onSelect}) {
 
 			setItems([...strategies, ...functions]);
 		})();
-	}, [result]);
+	}, [selectedProvider, result]);
 
 	function onClickStrategy(strategy) {
 		setResult(result => {return {
 			...result,
 			strategy
 		};});
-		setStep(step => step + 1);
+		setSteps(steps => {return [
+			...steps,
+			stepEnum.selectStrategyFunction
+		];});
+	}
+
+	function onClickFunction(func) {
+		setResult(result => {return {
+			...result,
+			function: func
+		};});
+		setSteps(steps => {return [
+			...steps,
+			stepEnum.setInputs
+		];});
 	}
 
 	return <div className={'max-h-full flex flex-col'}>
@@ -57,7 +71,7 @@ export default function SelectVaultFunction({onSelect}) {
 				{item.type === 'strategy' && 
 					<StrategyTile strategy={item} onClick={() => onClickStrategy(item)}></StrategyTile>}
 				{item.type === 'function' && 
-					<FunctionTile func={item} onClick={() => onSelect(item)}></FunctionTile>}
+					<FunctionTile func={item} onClick={() => onClickFunction(item)}></FunctionTile>}
 			</div>)}
 		</div>
 	</div>;

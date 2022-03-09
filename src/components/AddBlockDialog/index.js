@@ -6,17 +6,18 @@ import CloseDialog from '../CloseDialog';
 import SelectVault from './SelectVault';
 import SelectVaultFunction from './SelectVaultFunction';
 import SelectStrategyFunction from './SelectStrategyFunction';
-import {useAddBlockDialog, defaultResult} from './useAddBlockDialog';
+import {useAddBlockDialog, stepEnum, defaultResult} from './useAddBlockDialog';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
+import SetInputs from './SetInputs';
 import {GetVaultContract} from '../../ethereum/EthHelpers';
 import '../Vaults/index.css';
 
 export function AddBlockButton() {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const {setStep, setResult} = useAddBlockDialog();
+	const {setSteps, setResult} = useAddBlockDialog();
 	function onClick() {
-		setStep(0);
+		setSteps([stepEnum.selectVault]);
 		setResult(defaultResult());
 		navigate(`${location.pathname}#add-block`);
 	}
@@ -27,7 +28,8 @@ export default function AddBlockDialog({onAddBlock}) {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const {selectedProvider} = useSelectedProvider();
-	const {step, setStep, result, setResult} = useAddBlockDialog();
+	const {steps, setSteps, result, setResult} = useAddBlockDialog();
+	const currentStep = steps[steps.length - 1];
 	const [show, setShow] = useState(false);
 
 	useEffect(() => {
@@ -40,13 +42,22 @@ export default function AddBlockDialog({onAddBlock}) {
 		navigate(-1);
 	}
 
-	function onSelectVault(vault) {
-		setResult(result => {return {...result, vault};});
-		nextStep();
+	function onPreviousStep() {
+		setSteps(steps => {
+			steps.pop();
+			return [...steps];
+		});
 	}
 
-	async function onSelectFunction(func) {
-		setResult(result => {return {...result, func};});
+	function onValidInputs(inputs) {
+		console.log('inputs', inputs);
+		setResult(result => {return {
+			...result,
+			inputs
+		};});
+	}
+
+	async function onClickAddBlock() {
 		const block = {
 			type: 'Vault',
 			index: 0,
@@ -54,24 +65,12 @@ export default function AddBlockDialog({onAddBlock}) {
 			details: result.vault,
 			address: result.vault.address,
 			contract: await GetVaultContract(result.vault.address, selectedProvider),
-			function: func,
+			function: result.function,
 			inputs: {}
 		};
-		block.block = (step > 1) ? result.strategy : block;
+		block.block = (result.function.source === 'strategy') ? result.strategy : block;
 		onAddBlock(block);
 		navigate(-1);
-	}
-
-	function nextStep() {
-		setStep(step => {
-			return step + 1;
-		});
-	}
-
-	function previousStep() {
-		setStep(step => {
-			return step - 1;
-		});
 	}
 
 	return <div className={`dialog-container${show ? '' : ' invisible'}`}>
@@ -81,13 +80,15 @@ export default function AddBlockDialog({onAddBlock}) {
 			</SmallScreen>
 
 			<div className={'grow overflow-y-auto'}>
-				{step === 0 && <SelectVault onSelect={onSelectVault}></SelectVault>}
-				{step === 1 && <SelectVaultFunction onSelect={onSelectFunction}></SelectVaultFunction>}
-				{step === 2 && <SelectStrategyFunction onSelect={onSelectFunction}></SelectStrategyFunction>}
+				{currentStep === stepEnum.selectVault && <SelectVault></SelectVault>}
+				{currentStep === stepEnum.selectVaultFunctionOrStrategy && <SelectVaultFunction></SelectVaultFunction>}
+				{currentStep === stepEnum.selectStrategyFunction && <SelectStrategyFunction></SelectStrategyFunction>}
+				{currentStep === stepEnum.setInputs && <SetInputs onValidInputs={onValidInputs}></SetInputs>}
 			</div>
 
 			<div className={'flex items-center justify-end'}>
-				<button disabled={step < 1} onClick={previousStep}>{'< Back'}</button>
+				<button disabled={steps.length < 2} onClick={onPreviousStep}>{'< Back'}</button>
+				<button disabled={!result?.inputs} onClick={onClickAddBlock}>{'Add block'}</button>
 				<button>{'Manual'}</button>
 				<MediumScreen>
 					<button onClick={close}>{'Cancel'}</button>
