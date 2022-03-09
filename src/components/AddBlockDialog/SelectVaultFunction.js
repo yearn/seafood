@@ -49,7 +49,7 @@ export default function SelectVaultFunction({onSelect}) {
 	}
 
 	return <div className={'max-h-full flex flex-col'}>
-		<div className={'flex items-center'}>
+		<div className={'px-4 pt-4 pb-12 flex items-center'}>
 			<h2 className={'text-xl'}>{result.vault.name}</h2>
 		</div>
 		<div className={'list'}>

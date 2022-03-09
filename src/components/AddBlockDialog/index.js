@@ -7,6 +7,8 @@ import SelectVault from './SelectVault';
 import SelectVaultFunction from './SelectVaultFunction';
 import SelectStrategyFunction from './SelectStrategyFunction';
 import {useAddBlockDialog, defaultResult} from './useAddBlockDialog';
+import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
+import {GetVaultContract} from '../../ethereum/EthHelpers';
 import '../Vaults/index.css';
 
 export function AddBlockButton() {
@@ -24,6 +26,7 @@ export function AddBlockButton() {
 export default function AddBlockDialog({onAddBlock}) {
 	const location = useLocation();
 	const navigate = useNavigate();
+	const {selectedProvider} = useSelectedProvider();
 	const {step, setStep, result, setResult} = useAddBlockDialog();
 	const [show, setShow] = useState(false);
 
@@ -42,9 +45,20 @@ export default function AddBlockDialog({onAddBlock}) {
 		nextStep();
 	}
 
-	function onSelectFunction(func) {
+	async function onSelectFunction(func) {
 		setResult(result => {return {...result, func};});
-		onAddBlock(result);
+		const block = {
+			type: 'Vault',
+			index: 0,
+			name: result.vault.name,
+			details: result.vault,
+			address: result.vault.address,
+			contract: await GetVaultContract(result.vault.address, selectedProvider),
+			function: func,
+			inputs: {}
+		};
+		block.block = (step > 1) ? result.strategy : block;
+		onAddBlock(block);
 		navigate(-1);
 	}
 

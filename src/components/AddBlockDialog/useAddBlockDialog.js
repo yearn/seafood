@@ -16,7 +16,6 @@ export function defaultResult() {
 	return {
 		vault: null,
 		strategy: null,
-		func: null,
-		block: null
+		func: null
 	};
 }
