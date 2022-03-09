@@ -66,7 +66,7 @@ export default function AddBlockDialog({onAddBlock}) {
 				<CloseDialog></CloseDialog>
 			</SmallScreen>
 
-			<div className={'grow overflow-auto'}>
+			<div className={'grow overflow-y-auto'}>
 				{step === 0 && <SelectVault onSelect={onSelectVault}></SelectVault>}
 				{step === 1 && <SelectVaultFunction onSelect={onSelectFunction}></SelectVaultFunction>}
 				{step === 2 && <SelectStrategyFunction onSelect={onSelectFunction}></SelectStrategyFunction>}

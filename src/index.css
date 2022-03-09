@@ -69,7 +69,7 @@ select {
 }
 
 .dialog .list {
-  @apply grow overflow-scroll my-4 grid grid-flow-row grid-cols-1 md:grid-cols-3 2xl:grid-cols-4;
+  @apply grow overflow-y-auto my-4 grid grid-flow-row grid-cols-1 md:grid-cols-3 2xl:grid-cols-4;
 }
 
 .sm-circle-icon-button {
