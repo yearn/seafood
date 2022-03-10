@@ -57,7 +57,10 @@ export default function AddBlockDialog({onAddBlock}) {
 			address: result.vault.address,
 			contract: await GetVaultContract(result.vault.address, selectedProvider),
 			function: result.function,
-			inputs: {}
+			inputs: result.function.inputs.reduce((accumulator, current, index) => {
+				accumulator[current.name] = result.inputs[index];
+				return accumulator;
+			}, {})
 		};
 		block.block = (result.function.source === 'strategy') ? result.strategy : block;
 		onAddBlock(block);

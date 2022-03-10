@@ -18,14 +18,12 @@ function Sandbox() {
 	function addBlock(block) {
 		block.index = nonce;
 		setNonce(nonce+1);
-		console.log('block', block);
 		setBlocks(blocks => [...blocks, block]);
 	}
 
 	function onAddBlock(block) {
 		block.index = nonce;
 		setNonce(nonce+1);
-		console.log('block', block);
 		setBlocks(blocks => [...blocks, block]);
 	}
 
