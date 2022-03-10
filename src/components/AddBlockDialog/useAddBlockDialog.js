@@ -24,6 +24,7 @@ export function defaultResult() {
 		vault: null,
 		strategy: null,
 		function: null,
-		inputs: null
+		inputs: null,
+		valid: false
 	};
 }

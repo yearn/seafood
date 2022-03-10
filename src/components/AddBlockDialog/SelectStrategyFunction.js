@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
 import FunctionTile from './FunctionTile';
-import {MediumScreen, SmallScreen} from '../../utils/breakpoints';
+import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 
 export default function SelectStrategyFunction() {
 	const {setSteps, result, setResult} = useAddBlockDialog();
@@ -14,7 +14,6 @@ export default function SelectStrategyFunction() {
 				return f.type === 'function' && f.stateMutability !== 'pure' && f.stateMutability !== 'view';
 			}).map(f => {return {
 				type: 'function',
-				key: `${f.name}${f.inputs.map(i => i.name).join('')}`,
 				...f
 			};});
 			setItems(functions);
@@ -39,12 +38,12 @@ export default function SelectStrategyFunction() {
 				<h2 className={'text-xl'}>{`${result.vault.name} \\`}</h2>
 				<h2 className={'text-xl'}>{result.strategy.name}</h2>
 			</SmallScreen>
-			<MediumScreen>
+			<BiggerThanSmallScreen>
 				<h2 className={'text-xl'}>{`${result.vault.name} \\ ${result.strategy.name}`}</h2>
-			</MediumScreen>
+			</BiggerThanSmallScreen>
 		</div>
-		<div className={'list'}>
-			{items.map(item => <div key={item.key}>
+		<div className={'tiles'}>
+			{items.map((item, index) => <div key={index}>
 				<FunctionTile func={item} onClick={() => onClickFunction(item)}></FunctionTile>
 			</div>)}
 		</div>

@@ -35,7 +35,8 @@ button, select {
 
 button:disabled {
   @apply text-gray-800 bg-gray-200
-    dark:text-gray-400 dark:bg-gray-800;
+    dark:text-gray-400 dark:bg-gray-800
+    shadow-none;
 }
 
 select {
@@ -68,8 +69,41 @@ select {
     sm:rounded-xl sm:shadow-lg;
 }
 
-.dialog .list {
+.dialog .tiles {
   @apply grow overflow-y-auto my-4 grid grid-flow-row grid-cols-1 md:grid-cols-3 2xl:grid-cols-4;
+}
+
+.dialog .inputs {
+  @apply grow mb-4 overflow-y-auto ;
+}
+
+.dialog .inputs .scroll-container {
+  @apply min-h-full flex flex-col items-center justify-center;
+}
+
+.dialog .inputs .input {
+  @apply my-4 w-4/5 md:w-2/5;
+}
+
+.dialog .inputs .input input[type=text] {
+  @apply w-full py-2 px-2 text-lg border-transparent leading-tight
+    bg-gray-800
+    text-primary-900
+    dark:text-white
+    focus:border-primary-400 focus:bg-gray-700 focus:ring-0
+    rounded-md shadow-inner;
+}
+
+.dialog .inputs .input .validation {
+  @apply ml-4;
+}
+
+.dialog .inputs .input .validation .valid {
+  @apply fill-ok-400;
+}
+
+.dialog .inputs .input .validation .invalid {
+  @apply fill-error-600;
 }
 
 .sm-circle-icon-button {

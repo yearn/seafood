@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {useScrollPosition} from '@n8tb1t/use-scroll-position';
 import {BsList} from 'react-icons/bs';
 import {useLocation, useNavigate} from 'react-router-dom';
-import {MediumScreen, SmallScreen, useMediumBreakpoint} from '../../utils/breakpoints';
+import {BiggerThanSmallScreen, SmallScreen, useMediumBreakpoint} from '../../utils/breakpoints';
 import Menu from '../Menu';
 import './index.css';
 
@@ -29,12 +29,12 @@ export default function Header() {
 			<SmallScreen>
 				<button onClick={() => navigate('#menu')} className={'menu w-1/5'}><BsList /></button>
 			</SmallScreen>
-			<MediumScreen>
+			<BiggerThanSmallScreen>
 				<div className={'w-full pl-4 pr-8 flex items-center justify-between'}>
 					<h1 className={'text-3xl font-bold'}>{'Seafood'}</h1>
 					<Menu></Menu>
 				</div>
-			</MediumScreen>
+			</BiggerThanSmallScreen>
 		</header>
 		<SmallScreen>
 			<Menu action={(location.hash === '#menu') ? 'show' : 'hide'}></Menu>

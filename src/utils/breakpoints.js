@@ -9,7 +9,7 @@ export function SmallScreen({children}) {
 	return !mediumBreakpoint ? children : null;
 }
 
-export function MediumScreen({children}) {
+export function BiggerThanSmallScreen({children}) {
 	const mediumBreakpoint = useMediumBreakpoint();
 	return mediumBreakpoint ? children : null;
 }

@@ -3,7 +3,7 @@ import {BsX} from 'react-icons/bs';
 import useKeypress from 'react-use-keypress';
 import {useDebouncedCallback} from 'use-debounce';
 import useScrollOverpass from '../Header/useScrollOverpass';
-import {MediumScreen, SmallScreen} from '../../utils/breakpoints';
+import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import {useFilter} from './useFilter';
 import Chips from './Chips';
 
@@ -44,7 +44,7 @@ export default function Filter({showVaultCount = false}) {
 				</div>
 			</div>
 		</SmallScreen>
-		<MediumScreen>
+		<BiggerThanSmallScreen>
 			<div className={`vaults-filter flex items-center pl-4 pr-8 py-2 ${overpassClass}`}>
 				<div className={'relative mr-2 flex items-center justify-center'}>
 					<input ref={queryElement} onChange={(e) => {debounceQuery(e.target.value);}} defaultValue={query} type={'text'} placeholder={'/ Filter by name'} />
@@ -59,6 +59,6 @@ export default function Filter({showVaultCount = false}) {
 					</div>
 				</div>
 			</div>
-		</MediumScreen>
+		</BiggerThanSmallScreen>
 	</>;
 }

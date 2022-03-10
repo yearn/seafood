@@ -76,10 +76,11 @@
 }
 
 .vaults-filter input[type=text] {
-  @apply w-full border py-2 px-3 border-secondary-600 bg-transparent rounded-full leading-tight
+  @apply w-full py-2 px-3 bg-transparent rounded-full leading-tight
     text-primary-900
     dark:text-primary-200
-    focus:border-primary-200 focus:outline-none;
+    focus:border-primary-400 focus:ring-0
+    shadow-inner;
 }
 
 .vaults-filter .chip {

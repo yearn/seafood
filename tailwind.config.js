@@ -9,7 +9,9 @@ module.exports = {
         'primary': colors.sky,
         'secondary': colors.slate,
         'selected': colors.pink,
+        'ok': colors.green,
         'attention': colors.yellow,
+        'error': colors.red,
         'curve': colors.sky,
         'ethereum': colors.zinc,
         'fantom': colors.indigo

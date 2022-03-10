@@ -24,7 +24,6 @@ export default function SelectVaultFunction() {
 			const strategies = (await AllStrats(block, selectedProvider))
 				.map(s => {return {
 					type: 'strategy',
-					key: s.name,
 					...s
 				};});
 
@@ -32,7 +31,6 @@ export default function SelectVaultFunction() {
 				return f.type === 'function' && f.stateMutability !== 'pure' && f.stateMutability !== 'view';
 			}).map(f => {return {
 				type: 'function',
-				key: `${f.name}${f.inputs.map(i => i.name).join('')}`,
 				...f
 			};});
 
@@ -66,8 +64,8 @@ export default function SelectVaultFunction() {
 		<div className={'px-4 pt-4 pb-12 flex items-center'}>
 			<h2 className={'text-xl'}>{result.vault.name}</h2>
 		</div>
-		<div className={'list'}>
-			{items.map(item => <div key={item.key}>
+		<div className={'tiles'}>
+			{items.map((item, index) => <div key={index}>
 				{item.type === 'strategy' && 
 					<StrategyTile strategy={item} onClick={() => onClickStrategy(item)}></StrategyTile>}
 				{item.type === 'function' && 
