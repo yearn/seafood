@@ -36,6 +36,8 @@ export default function SetInputs() {
 			return value.length > 0;
 		case 'address':
 			return ethers.utils.isAddress(value);
+		case 'bool':
+			return value === 'true' || value === 'false';
 		default:
 			return !isNaN(value) && ((x) => { return (x | 0) === x; })(parseFloat(value));
 		}

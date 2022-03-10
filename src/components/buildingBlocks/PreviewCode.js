@@ -1,13 +1,14 @@
-import React from 'react';
-
+import React, {useEffect, useState} from 'react';
+import ReactPrismEditor from 'react-prism-editor';
+import {useApp} from '../../context/useApp';
 
 function PreviewCode({blocks}){
+	const {darkMode} = useApp();
+	const [code, setCode] = useState('');
 
-
-	let code_preview = () => {
+	useEffect(() => {
 		let script = '\n@sign\ndef auto_generated_code():\n';
 		let will_fail = false;
-        
 
 		for(let block of blocks){
 			console.log(block);
@@ -32,11 +33,19 @@ function PreviewCode({blocks}){
 			}
 		}
 
-		return script;
+		setCode(script);
 
-	};
+	}, [blocks]);
 
-	return <div><div  style={{whiteSpace: 'pre-wrap'}}>{code_preview()}</div></div>;
+	return <div className={'prism-editor-override'}>
+		<ReactPrismEditor
+			language={'js'}
+			theme={darkMode ? 'funky' : 'solarizedlight'}
+			lineNumber={true}
+			code={code}
+			readOnly={true}
+			clipboard={true} />
+	</div>;
 }
 
 

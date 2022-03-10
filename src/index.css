@@ -129,3 +129,7 @@ select {
     bg-gradient-to-r 
     from-purple-500 to-pink-500;
 }
+
+.prism-editor-override pre {
+  @apply rounded-xl;
+}

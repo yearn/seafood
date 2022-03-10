@@ -36,6 +36,11 @@ export default function AddBlockDialog({onAddBlock}) {
 	}, [location]);
 
 	useKeypress(['Escape'], close);
+	useKeypress(['Enter'], () => {
+		if(result.valid) {
+			onClickAddBlock();
+		}
+	});
 
 	function close() {
 		navigate(-1);

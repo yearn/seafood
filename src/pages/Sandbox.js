@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import useRPCProvider from '../context/useRpcProvider';
-import BuildingBlock from '../components/buildingBlocks/BuildingBlock';
+// import BuildingBlock from '../components/buildingBlocks/BuildingBlock';
 import BuiltBlock from '../components/buildingBlocks/BuiltBlock';
 import SimulateBlock from '../components/buildingBlocks/SimulateBlock';
 import PreviewCode from '../components/buildingBlocks/PreviewCode';
@@ -15,11 +15,11 @@ function Sandbox() {
 	const [blocks, setBlocks] = useState([]);
 	const [nonce, setNonce] = useState(0);
 
-	function addBlock(block) {
-		block.index = nonce;
-		setNonce(nonce+1);
-		setBlocks(blocks => [...blocks, block]);
-	}
+	// function addBlock(block) {
+	// 	block.index = nonce;
+	// 	setNonce(nonce+1);
+	// 	setBlocks(blocks => [...blocks, block]);
+	// }
 
 	function onAddBlock(block) {
 		block.index = nonce;
@@ -38,44 +38,36 @@ function Sandbox() {
 	}
 
 	return <SelectedProviderContext.Provider value={{selectedProvider, setSelectedProvider}}>
-		<div>
-			<SelectProvider></SelectProvider>
+		<div className={'grow px-2 pt-8 flex flex-col md:flex-row'}>
 
-			{blocks.map(block => 
-				<BuiltBlock key={block.index} block={block} removeBlock={removeBlock} />
-			)}
+			<div className={'md:w-1/3 flex flex-col items-center'}>
+				<SelectProvider></SelectProvider>
+				{blocks.map(block => 
+					<BuiltBlock key={block.index} block={block} removeBlock={removeBlock} />
+				)}
+				<AddBlockDialogProvider>
+					<AddBlockButton></AddBlockButton>
+					<AddBlockDialog onAddBlock={onAddBlock}></AddBlockDialog>
+				</AddBlockDialogProvider>
+			</div>
 
-			<h3>{'Run Code In Fork'} </h3>
-			{blocks.length > 0 && 
-				<SimulateBlock blocks={blocks} updateBlock={updateBlock} chainId={selectedProvider.network.chainId} />
-			}
+			<div className={'md:w-2/3 md:px-8'}>
+				<div>
+					<h3>{'Run Code In Fork'} </h3>
+					{blocks.length > 0 && 
+						<SimulateBlock blocks={blocks} updateBlock={updateBlock} chainId={selectedProvider.network.chainId} />
+					}
+				</div>
+				<div className={'rounded-xl shadow-md'}>
+					<PreviewCode blocks={blocks} />
+				</div>
+			</div>
 
-			<PreviewCode blocks={blocks} />
+			{/* <h3>{'Add new'} </h3>
+			<BuildingBlock addBlock={addBlock} provider={selectedProvider} /> */}
 
-			<h3>{'Add new'} </h3>
-			<BuildingBlock addBlock={addBlock} provider={selectedProvider} />
-
-			<AddBlockDialogProvider>
-				<AddBlockButton></AddBlockButton>
-				<AddBlockDialog onAddBlock={onAddBlock}></AddBlockDialog>
-			</AddBlockDialogProvider>
 		</div>
 	</SelectedProviderContext.Provider>;
-
-	//three components
-	//the builder
-
-
-
-
-	//the display of the code
-
-
-	//the results when run
-
-
-
-
 }
 
 export default Sandbox;
