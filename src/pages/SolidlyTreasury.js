@@ -1,5 +1,5 @@
 import useRPCProvider from '../context/useRpcProvider';
-import {FindName, LpState, StakedSex, StakedSolidsex} from '../ethereum/SolidlyCalcs';
+import {FindName, LpState, StakedSex, StakedSolidsex, StakedVeNft} from '../ethereum/SolidlyCalcs';
 //import {fantomMasterchefs} from  '../ethereum/Addresses';
 import {fchad, solidsexsolidlp,  volYfiWftmLp,  volYfiWoofyLp} from '../ethereum/Addresses';
 import React, {useEffect, useState} from 'react';
@@ -18,6 +18,7 @@ function SolidlyTreasury(){
 
 	const [totals, setTotals] = useState({});
 	const [solidsexStaked, setSolidsex] = useState({});
+	const [solidNft, setSolidNft] = useState({});
 	const [sexStaked, setSex] = useState({});
 
 	const [nonce, setNonce] = useState(0);
@@ -73,6 +74,14 @@ function SolidlyTreasury(){
 
 		});
 
+		StakedVeNft(fchad(), provider).then((x) =>{
+			addTotals(x);
+			setSolidNft(x);
+			console.log('nft', x);
+			
+
+		});
+
 		
 	}
 
@@ -89,6 +98,7 @@ function SolidlyTreasury(){
 					sexBalance += x.tokenABalance.balance;
 				} else if(x.tokenABalance.address === solid()){
 					solidBalance += x.tokenABalance.balance;
+
 				} else if(x.tokenABalance.address === wftm()){
 					wftmBalance += x.tokenABalance.balance;
 				} else if(x.tokenABalance.address === solidsex()){
@@ -107,9 +117,12 @@ function SolidlyTreasury(){
 					solidSexBalance += x.tokenBBalance.balance;
 				} 
 			}
-			
+	
 
-			if(currentValues.sexRewards){
+			if(currentValues.sexRewards >= 0){
+				if(currentValues.solidBalance >0){
+					console.log('sadsssa', solidBalance);
+				}
 				currentValues.sexBalance = currentValues.sexBalance+sexBalance;
 				currentValues.solidBalance = currentValues.solidBalance+ solidBalance;
 				currentValues.wftmBalance = currentValues.wftmBalance+ wftmBalance;
@@ -118,16 +131,19 @@ function SolidlyTreasury(){
 
 				currentValues.sexRewards = currentValues.sexRewards + x.sexRewards;
 				currentValues.solidRewards = currentValues.solidRewards + x.solidRewards;
-				if (x.solidsexRewards){
+				if (currentValues.solidsexRewards >= 0 && x.solidsexRewards >= 0){
 					currentValues.solidsexRewards = currentValues.solidsexRewards + x.solidsexRewards;
+				}else if (x.solidsexRewards >= 0) {
+					currentValues.solidsexRewards = x.solidsexRewards;
 				}
 				
 			}else{
+				
 				currentValues.sexBalance = sexBalance;
 				currentValues.solidBalance = solidBalance;
 				currentValues.wftmBalance = wftmBalance;
 				currentValues.solidSexBalance = solidSexBalance;
-
+				
 				currentValues.solidRewards =  x.solidRewards;
 				currentValues.sexRewards =  x.sexRewards;
 				if (x.solidsexRewards){
@@ -148,7 +164,7 @@ function SolidlyTreasury(){
 			return [x, ...currentValues];
 		});
 	}
-	console.log(totals);
+	console.log('totals', totals);
 
 	
 	
@@ -196,7 +212,8 @@ function SolidlyTreasury(){
 						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, lp.tokenBBalance.address)}> {FindName(lp.tokenBBalance.address) + ' balance: ' + FormatNumer(lp.tokenBBalance.balance)} </a></li>
 						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, sex())}> {'sex pending rewards: '  + FormatNumer(lp.sexRewards) + ' worth $' + FormatNumer(lp.sexRewards*prices[sex()])} </a></li>
 						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, solid())}> {'solid pending rewards: '  + FormatNumer(lp.solidRewards) + ' worth $' + FormatNumer(lp.solidRewards*prices[solid()])} </a></li>
-						<li> {'SolidexBoost: ' + FormatNumer(lp.solidsexBoost, 3)+ 'x'}</li>
+						<li> {'Solidex Boost: ' + FormatNumer(lp.solidsexBoost, 3)+ 'x'}</li>
+						<li> {'OxDao Boost: ' + FormatNumer(lp.oxdaoBoost, 3)+ 'x'}</li>
 						<li> {'Price: ' + FormatNumer(lp.price, 4) }</li>
 					</ul>
 					<br />
@@ -217,6 +234,13 @@ function SolidlyTreasury(){
 				{sexStaked && <ul>
 					
 					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, solidsex())}> {'solidsex pending rewards: '  + FormatNumer(sexStaked.solidsexRewards) + ' worth $' + FormatNumer(sexStaked.solidsexRewards*prices[solidsex()])} </a></li>
+				</ul>}
+			</div>
+			<h2>{'Staked Nft:'}</h2>
+			<div>
+				{solidNft && <ul>
+					
+					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, solid())}> {'staked solid Nft: '  + FormatNumer(solidNft.tokenABalance.balance) + ' worth $' + FormatNumer(solidNft.tokenABalance.balance*prices[solid()])} </a></li>
 				</ul>}
 			</div>
 		</div>;
