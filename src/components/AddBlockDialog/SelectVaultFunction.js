@@ -52,6 +52,7 @@ export default function SelectVaultFunction() {
 	function onClickFunction(func) {
 		setResult(result => {return {
 			...result,
+			strategy: null,
 			function: func
 		};});
 		setSteps(steps => {return [

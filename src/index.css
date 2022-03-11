@@ -33,6 +33,18 @@ button, select {
     cursor-pointer shadow-md;
 }
 
+button.big {
+  @apply px-8 text-2xl;
+}
+
+button.iconic {
+  @apply flex items-center
+}
+
+button.iconic svg {
+  @apply mr-2;
+}
+
 button:disabled {
   @apply text-gray-800 bg-gray-200
     dark:text-gray-400 dark:bg-gray-800
@@ -119,6 +131,15 @@ select {
   @apply w-12 h-12 text-4xl
     flex items-center justify-center
     hover:bg-selected-200 
+    dark:hover:bg-selected-600 
+    active:transform active:scale-90
+    rounded-full cursor-pointer;
+}
+
+.lg-circle-icon-button {
+  @apply w-16 h-16 text-4xl
+    flex items-center justify-center
+    hover:bg-selected-200
     dark:hover:bg-selected-600 
     active:transform active:scale-90
     rounded-full cursor-pointer;

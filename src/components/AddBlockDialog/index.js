@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import useKeypress from 'react-use-keypress';
+import {BsBox} from 'react-icons/bs';
 import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import CloseDialog from '../CloseDialog';
 import SelectVault from './SelectVault';
@@ -20,7 +21,10 @@ export function AddBlockButton() {
 		setResult(defaultResult());
 		navigate(`${location.pathname}#add-block`);
 	}
-	return <button onClick={onClick}>{'Add block'}</button>;
+	return <button onClick={onClick} className={'big iconic'}>
+		<BsBox></BsBox>
+		{'Add block'}
+	</button>;
 }
 
 export default function AddBlockDialog({onAddBlock}) {

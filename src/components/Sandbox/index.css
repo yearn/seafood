@@ -1,0 +1,7 @@
+.sandbox-tab {
+  @apply bg-secondary-800;
+}
+
+.sandbox-tab.selected {
+  @apply bg-selected-100 dark:bg-selected-600 shadow-md;
+}

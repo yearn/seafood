@@ -28,7 +28,7 @@ export default function SetInputs() {
 			inputs: inputValues.map(value => value.value),
 			valid
 		};});
-	}, [inputValues]);
+	}, [inputValues, setResult]);
 
 	function validate(input, value) {
 		switch(input.type) {
