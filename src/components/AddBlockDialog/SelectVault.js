@@ -36,7 +36,7 @@ export default function SelectVault() {
 
 	return <FilterProvider query={query} setQuery={setQuery} chips={chips} setChips={setChips}>
 		<div className={'max-h-full flex flex-col'}>
-			<Filter></Filter>
+			<Filter overpassOnScroll={false}></Filter>
 			<div className={'tiles'}>
 				<Tiles onSelect={onSelect}></Tiles>
 			</div>

@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import {useLocation} from 'react-router-dom';
 import useRPCProvider from '../../context/useRpcProvider';
 // import BuildingBlock from '../buildingBlocks/BuildingBlock';
-import BuiltBlock from '../buildingBlocks/BuiltBlock';
 import SimulateBlock from '../buildingBlocks/SimulateBlock';
 import PreviewCode from '../buildingBlocks/PreviewCode';
 import AddBlockDialog, {AddBlockButton} from '../AddBlockDialog';
@@ -11,6 +10,7 @@ import SelectProvider from '../SelectProvider';
 import {AddBlockDialogProvider} from '../AddBlockDialog/useAddBlockDialog';
 import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import Tabs from './Tabs';
+import Block from './Block';
 import './index.css';
 
 function Sandbox() {
@@ -36,20 +36,24 @@ function Sandbox() {
 		setBlocks(block);
 	}
 
-	function removeBlock(blockIndex) {
+	function onRemoveBlock(blockIndex) {
 		setBlocks(blocks => {
 			return blocks.filter(item => item.index !== blockIndex);
 		});
 	}
 
+	function onResetBlocks() {
+		setBlocks([]);
+	}
+
 	return <SelectedProviderContext.Provider value={{selectedProvider, setSelectedProvider}}>
-		<div className={'grow px-2 md:pt-8 flex flex-col justify-between md:flex-row'}>
+		<div className={'sandbox'}>
 
 			<BiggerThanSmallScreen>
 				<div className={'md:w-1/3 flex flex-col items-center'}>
 					<SelectProvider disabled={blocks.length > 0}></SelectProvider>
 					{blocks.map(block => 
-						<BuiltBlock key={block.index} block={block} removeBlock={removeBlock} />
+						<Block key={block.index} block={block} onRemove={onRemoveBlock}></Block>
 					)}
 					<AddBlockDialogProvider>
 						<AddBlockButton></AddBlockButton>
@@ -76,13 +80,18 @@ function Sandbox() {
 				<div className={'grow flex flex-col justify-center'}>
 					{(location.hash === '' || location.hash === '#add-block') && <>
 						{blocks.map(block => 
-							<BuiltBlock key={block.index} block={block} removeBlock={removeBlock} />
+							<Block key={block.index} block={block} onRemove={onRemoveBlock}></Block>
 						)}
-						<SelectProvider disabled={blocks.length > 0}></SelectProvider>
-						<AddBlockDialogProvider>
-							<AddBlockButton></AddBlockButton>
-							<AddBlockDialog onAddBlock={onAddBlock}></AddBlockDialog>
-						</AddBlockDialogProvider>
+						<div className={'mt-8 mb-32 flex flex-col items-center'}>
+							<AddBlockDialogProvider>
+								<AddBlockButton></AddBlockButton>
+								<AddBlockDialog onAddBlock={onAddBlock}></AddBlockDialog>
+							</AddBlockDialogProvider>
+							<div>
+								<SelectProvider disabled={blocks.length > 0}></SelectProvider>
+								{blocks.length > 0 && <button onClick={onResetBlocks}>{'Reset'}</button>}
+							</div>
+						</div>
 					</>}
 
 					{location.hash === '#run' && 
@@ -95,7 +104,10 @@ function Sandbox() {
 						</div>
 					}
 				</div>
-				<Tabs></Tabs>
+
+				<div className={'tabs'}>
+					<Tabs></Tabs>
+				</div>
 			</SmallScreen>
 
 		</div>

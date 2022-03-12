@@ -3,9 +3,7 @@
 @tailwind utilities;
 
 * {
-  @apply text-secondary-900
-  dark:text-secondary-200
-  transition duration-200;
+  @apply text-secondary-900 dark:text-secondary-200 transition duration-200;
 }
 
 input, textarea, select {
@@ -45,7 +43,11 @@ button.iconic svg {
   @apply mr-2;
 }
 
-button:disabled {
+button.big.iconic svg {
+  @apply mr-4;
+}
+
+button:disabled, select:disabled {
   @apply text-gray-800 bg-gray-200
     dark:text-gray-400 dark:bg-gray-800
     shadow-none;
@@ -66,7 +68,7 @@ select {
 }
 
 .dialog-container {
-  @apply absolute z-[100] top-0 left-0 right-0 h-screen 
+  @apply fixed z-[100] top-0 left-0 right-0 h-screen 
     flex items-center justify-center 
     bg-secondary-900/40
     backdrop-blur-md;

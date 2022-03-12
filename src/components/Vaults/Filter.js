@@ -7,7 +7,7 @@ import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import {useFilter} from './useFilter';
 import Chips from './Chips';
 
-export default function Filter({showVaultCount = false}) {
+export default function Filter({showVaultCount = false, overpassOnScroll = true}) {
 	const queryElement = useRef();
 	const {query, setQuery, filter} = useFilter();
 	const debounceQuery = useDebouncedCallback(value => {setQuery(value);}, 250);
@@ -26,7 +26,7 @@ export default function Filter({showVaultCount = false}) {
 
 	return <>
 		<SmallScreen>
-			<div className={`vaults-filter py-4 ${overpassClass}`}>
+			<div className={`vaults-filter py-4 ${overpassOnScroll ? overpassClass : ''}`}>
 				<div className={'flex items-center justify-between'}>
 					<div className={'w-1/5'}></div>
 					<div className={'w-3/5 relative flex items-center justify-center'}>
@@ -45,7 +45,7 @@ export default function Filter({showVaultCount = false}) {
 			</div>
 		</SmallScreen>
 		<BiggerThanSmallScreen>
-			<div className={`vaults-filter flex items-center pl-4 pr-8 py-2 ${overpassClass}`}>
+			<div className={`vaults-filter flex items-center pl-4 pr-8 py-2 ${overpassOnScroll ? overpassClass : ''}`}>
 				<div className={'relative mr-2 flex items-center justify-center'}>
 					<input ref={queryElement} onChange={(e) => {debounceQuery(e.target.value);}} defaultValue={query} type={'text'} placeholder={'/ Filter by name'} />
 					{query && <div onClick={clearQuery} className={'absolute right-2 sm-circle-icon-button'}>

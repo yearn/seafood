@@ -13,8 +13,8 @@ export default function Tabs() {
 	};
 
 	return <div className={'py-4 flex items-center justify-evenly'}>
-		<div onClick={onClick('')} className={`lg-circle-icon-button sandbox-tab ${location.hash === '' ? 'selected' : ''}`}><BsBox></BsBox></div>
-		<div onClick={onClick('run')} className={`lg-circle-icon-button sandbox-tab ${location.hash === '#run' ? 'selected' : ''}`}><BsPlay></BsPlay></div>
-		<div onClick={onClick('code')} className={`lg-circle-icon-button sandbox-tab ${location.hash === '#code' ? 'selected' : ''}`}><BsCode></BsCode></div>
+		<div onClick={onClick('')} className={`tab lg-circle-icon-button ${location.hash === '' ? 'selected' : ''}`}><BsBox></BsBox></div>
+		<div onClick={onClick('run')} className={`tab lg-circle-icon-button ${location.hash === '#run' ? 'selected' : ''}`}><BsPlay></BsPlay></div>
+		<div onClick={onClick('code')} className={`tab lg-circle-icon-button ${location.hash === '#code' ? 'selected' : ''}`}><BsCode></BsCode></div>
 	</div>;
 }

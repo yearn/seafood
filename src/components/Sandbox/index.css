@@ -1,7 +1,31 @@
-.sandbox-tab {
+.sandbox {
+  @apply grow px-2 py-8 md:pt-8 flex flex-col justify-between md:flex-row;
+}
+
+.sandbox .tabs {
+  @apply fixed bottom-0 w-full backdrop-blur-md shadow-md;
+}
+
+.sandbox .tabs .tab {
   @apply bg-secondary-800;
 }
 
-.sandbox-tab.selected {
+.sandbox .tabs .tab.selected {
   @apply bg-selected-100 dark:bg-selected-600 shadow-md;
+}
+
+.sandbox .block {
+  @apply p-4 mb-4 bg-secondary-800 rounded-md;
+}
+
+.sandbox .block h2 {
+  @apply text-2xl;
+}
+
+.sandbox .block ul {
+  @apply mt-4 pl-4;
+}
+
+.sandbox .block .input-name {
+  @apply text-secondary-400 mr-2;
 }
