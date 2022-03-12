@@ -299,8 +299,12 @@ async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
 	let params = await vault.strategies(strat);
 	//console.log(params)
 	// console.log('beforedebt: ', params.totalDebt/totalAssets);
+	let genlender = false;
     
 	let name = await s.name();
+	if(name.includes('StrategyLenderYieldOptimiser')){
+		genlender = true;
+	}
 	return {
 		name: name,
 		contract: s,
@@ -311,7 +315,8 @@ async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
 		debtRatio: params.debtRatio,
 		lastTime: (currentTime- params.lastReport)/60/60,
 		vaultAssets: totalAssets,
-		governance: gov
+		governance: gov,
+		genlender: genlender
 	};
     
 }
