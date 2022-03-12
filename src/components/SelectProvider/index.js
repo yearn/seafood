@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import useRPCProvider from '../../context/useRpcProvider';
 import {useSelectedProvider} from './useSelectedProvider';
 
-export default function SelectProvider(){
+export default function SelectProvider({disabled}){
 	const {defaultProvider, fantomProvider} = useRPCProvider();
 	const {setSelectedProvider} = useSelectedProvider();
 	const [state, setState] = useState(1);
@@ -16,7 +16,7 @@ export default function SelectProvider(){
 		}
 	}
 
-	return <select value={state} onChange={onChange}>
+	return <select disabled={disabled} value={state} onChange={onChange}>
 		<option value={'1'}>{'Ethereum'}</option>
 		<option value={'250'}>{'Fantom'}</option>
 	</select>;

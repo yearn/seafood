@@ -47,7 +47,7 @@ function Sandbox() {
 
 			<BiggerThanSmallScreen>
 				<div className={'md:w-1/3 flex flex-col items-center'}>
-					<SelectProvider></SelectProvider>
+					<SelectProvider disabled={blocks.length > 0}></SelectProvider>
 					{blocks.map(block => 
 						<BuiltBlock key={block.index} block={block} removeBlock={removeBlock} />
 					)}
@@ -78,7 +78,7 @@ function Sandbox() {
 						{blocks.map(block => 
 							<BuiltBlock key={block.index} block={block} removeBlock={removeBlock} />
 						)}
-						<SelectProvider></SelectProvider>
+						<SelectProvider disabled={blocks.length > 0}></SelectProvider>
 						<AddBlockDialogProvider>
 							<AddBlockButton></AddBlockButton>
 							<AddBlockDialog onAddBlock={onAddBlock}></AddBlockDialog>
