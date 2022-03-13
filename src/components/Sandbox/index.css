@@ -2,11 +2,6 @@
   @apply grow px-2 pt-24 pb-16 md:pt-8 flex flex-col justify-between md:flex-row;
 }
 
-.sandbox .tools {
-  @apply fixed bottom-0 left-0 w-full 
-    px-8 py-4 flex items-center justify-end;
-}
-
 .sandbox .tabs {
   @apply fixed top-0 left-0 w-full text-4xl
     px-4 py-4 flex items-center justify-between;
@@ -36,18 +31,28 @@
   @apply fill-secondary-800;
 }
 
-.sandbox .block {
+.sandbox .simulator .block {
   @apply p-4 bg-secondary-800 rounded-md;
 }
 
-.sandbox .block h2 {
+.sandbox .simulator .block h2 {
   @apply text-2xl;
 }
 
-.sandbox .block ul {
-  @apply mt-4 pl-4;
+.sandbox .simulator .block ul {
+  @apply mt-4;
 }
 
-.sandbox .block .input-name {
+.sandbox .simulator .block .input-name {
   @apply text-secondary-400 mr-2;
+}
+
+.sandbox .actions {
+  @apply fixed bottom-0 left-0 w-full 
+    px-8 py-4 flex items-center justify-center
+    backdrop-blur-md;
+}
+
+.sandbox .actions button {
+  @apply px-16 py-2;
 }

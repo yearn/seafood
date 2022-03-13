@@ -53,6 +53,10 @@ button:disabled, select:disabled {
     shadow-none;
 }
 
+button:disabled svg {
+  @apply fill-gray-800 dark:fill-gray-400;
+}
+
 select {
   @apply border-0 pr-12 text-secondary-900 dark:text-secondary-200 active:scale-100;
 }

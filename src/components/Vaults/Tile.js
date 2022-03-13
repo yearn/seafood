@@ -1,5 +1,5 @@
 import React from 'react';
-import {BsBoxArrowInUpRight, BsClipboardPlus} from 'react-icons/bs';
+import {BsBoxArrowInUpRight, BsClipboard} from 'react-icons/bs';
 import toast from 'react-hot-toast';
 import {GetExplorerLink, TruncateAddress} from '../../utils/utils';
 import {useFilter} from './useFilter';
@@ -37,7 +37,7 @@ export default function Tile({vault, onClick}) {
 				className={'copy'}
 				title={`Copy ${vault.address} to your clipboard`}>
 					{TruncateAddress(vault.address)}
-					<BsClipboardPlus className={'icon'} />
+					<BsClipboard className={'icon'} />
 				</div>
 				<a title={`Explore ${vault.address}`}
 					href={GetExplorerLink(vault.provider.network.chainId, vault.address)}

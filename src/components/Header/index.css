@@ -26,3 +26,7 @@ header {
 header button.menu {
   @apply m-0 p-0  text-4xl bg-transparent shadow-none;
 }
+
+header button.menu svg {
+  @apply fill-secondary-600;
+}

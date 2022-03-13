@@ -1,6 +1,6 @@
 import React from 'react';
 import toast from 'react-hot-toast';
-import {BsBoxArrowInUpRight, BsClipboardPlus} from 'react-icons/bs';
+import {BsBoxArrowInUpRight, BsClipboard} from 'react-icons/bs';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import {GetExplorerLink, TruncateAddress} from '../../utils/utils';
 
@@ -20,7 +20,7 @@ export default function StrategyTile({strategy, onClick}) {
 				className={'copy'}
 				title={`Copy ${strategy.address} to your clipboard`}>
 					{TruncateAddress(strategy.address)}
-					<BsClipboardPlus className={'icon'} />
+					<BsClipboard className={'icon'} />
 				</div>
 				<a title={`Explore ${strategy.address}`}
 					href={GetExplorerLink(selectedProvider.network.chainId, strategy.address)}

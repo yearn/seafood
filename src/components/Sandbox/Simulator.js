@@ -1,15 +1,16 @@
 import React from 'react';
-import {BsPlayFill, BsCaretDownFill} from 'react-icons/bs';
+import {BsPlay, BsCaretDownFill} from 'react-icons/bs';
 import {useBlocks} from './useBlocks';
 import Block from './Block';
 import {AddBlockDialogProvider} from '../AddBlockDialog/useAddBlockDialog';
 import AddBlockDialog, {AddBlockButton} from '../AddBlockDialog';
 import SelectProvider from '../SelectProvider';
-import useScrollOverpass from '../Header/useScrollOverpass';
+import {setupTenderly, TenderlySim} from '../../ethereum/TenderlySim';
+import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 
 export default function Simulator() {
-	const {overpassClass} = useScrollOverpass();
 	const {blocks, setBlocks} = useBlocks();
+	const {selectedProvider} = useSelectedProvider();
 
 	function onAddBlock(block) {
 		block.index = blocks.length > 0 
@@ -26,6 +27,13 @@ export default function Simulator() {
 
 	function onReset() {
 		setBlocks([]);
+	}
+
+	async function onSimulate() {
+		const tenderly = await setupTenderly(selectedProvider.network.chainId);
+		const result = await TenderlySim(blocks, tenderly);
+		console.log('result', result);
+		setBlocks(result);
 	}
 
 	return <div className={'simulator'}>
@@ -47,8 +55,8 @@ export default function Simulator() {
 			</div>
 		</div>
 
-		<div className={`tools ${overpassClass}`}>
-			<div className={'flex items-center'}>{'Simulate'}<BsPlayFill className={'text-4xl'}></BsPlayFill></div>
+		<div className={'actions'}>
+			<button onClick={onSimulate} disabled={blocks.length === 0}><BsPlay className={'text-4xl'}></BsPlay></button>
 		</div>
 
 	</div>;
