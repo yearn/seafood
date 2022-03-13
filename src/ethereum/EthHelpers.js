@@ -303,7 +303,14 @@ async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
     
 	let name = await s.name();
 	if(name.includes('StrategyLenderYieldOptimiser')){
-		genlender = true;
+
+
+    	let status = await s.lendStatuses();
+    	console.log(status);
+
+
+
+		genlender = status;
 	}
 	return {
 		name: name,
