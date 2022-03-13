@@ -1,10 +1,12 @@
 import React from 'react';
-import {BsBox, BsCode, BsPlay} from 'react-icons/bs';
+import {BsBox, BsCode} from 'react-icons/bs';
 import {useLocation, useNavigate} from 'react-router-dom';
+import useScrollOverpass from '../Header/useScrollOverpass';
 
 export default function Tabs() {
 	const location = useLocation();
 	const navigate = useNavigate();
+	const {overpassClass} = useScrollOverpass();
 
 	const onClick = hash => {
 		return () => {
@@ -12,9 +14,9 @@ export default function Tabs() {
 		};
 	};
 
-	return <div className={'py-4 flex items-center justify-evenly'}>
-		<div onClick={onClick('')} className={`tab lg-circle-icon-button ${location.hash === '' ? 'selected' : ''}`}><BsBox></BsBox></div>
-		<div onClick={onClick('run')} className={`tab lg-circle-icon-button ${location.hash === '#run' ? 'selected' : ''}`}><BsPlay></BsPlay></div>
-		<div onClick={onClick('code')} className={`tab lg-circle-icon-button ${location.hash === '#code' ? 'selected' : ''}`}><BsCode></BsCode></div>
+	return <div className={`tabs ${overpassClass}`}>
+		<div className={'basis-1/3'}></div>
+		<div onClick={onClick('')} className={`tab basis-1/3 justify-center ${location.hash === '' ? 'selected' : ''}`}><BsBox></BsBox></div>
+		<div onClick={onClick('code')} className={`tab basis-1/3 justify-end pr-1 ${location.hash === '#code' ? 'selected' : ''}`}><BsCode></BsCode></div>
 	</div>;
 }

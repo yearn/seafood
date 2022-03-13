@@ -42,7 +42,7 @@ export default function Menu({action}) {
 				<NavigationLink to={'/settings'} label={'Settings'}></NavigationLink>
 			</li>
 			<li>
-				<div onClick={() => { setDarkMode(!darkMode);}}>
+				<div onClick={() => {setDarkMode(!darkMode);}}>
 					{darkMode ? <BsBrightnessHigh /> : <BsMoonFill />}
 				</div>
 			</li>

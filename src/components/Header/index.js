@@ -17,6 +17,8 @@ export default function Header() {
 		if(currPos.y > -16) {
 			setShow(true);
 			setEffectClass('');
+		}else if(currPos.y > -118) {
+			setShow(true);
 		}else if((currPos.y > prevPos.y) != show) {
 			setShow(show => {return !show;});
 			if(show && !mediumBreakpoint) setEffectClass('scroll-overpass-hide');

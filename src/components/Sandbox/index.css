@@ -1,21 +1,43 @@
 .sandbox {
-  @apply grow px-2 py-8 md:pt-8 flex flex-col justify-between md:flex-row;
+  @apply grow px-2 pt-24 pb-16 md:pt-8 flex flex-col justify-between md:flex-row;
+}
+
+.sandbox .tools {
+  @apply fixed bottom-0 left-0 w-full 
+    px-8 py-4 flex items-center justify-end;
 }
 
 .sandbox .tabs {
-  @apply fixed bottom-0 w-full backdrop-blur-md shadow-md;
+  @apply fixed top-0 left-0 w-full text-4xl
+    px-4 py-4 flex items-center justify-between;
 }
 
 .sandbox .tabs .tab {
-  @apply bg-secondary-800;
+  @apply grow flex;
 }
 
-.sandbox .tabs .tab.selected {
-  @apply bg-selected-100 dark:bg-selected-600 shadow-md;
+.sandbox .tabs .tab svg {
+  @apply fill-secondary-600;
+}
+
+.sandbox .tabs .tab.selected svg {
+  @apply fill-secondary-100 shadow-md;
+}
+
+.sandbox .simulator {
+  @apply grow flex flex-col justify-center;
+}
+
+.sandbox .simulator .caret {
+  @apply -mt-4 mb-2 flex justify-center text-5xl;
+}
+
+.sandbox .simulator .caret svg {
+  @apply fill-secondary-800;
 }
 
 .sandbox .block {
-  @apply p-4 mb-4 bg-secondary-800 rounded-md;
+  @apply p-4 bg-secondary-800 rounded-md;
 }
 
 .sandbox .block h2 {
