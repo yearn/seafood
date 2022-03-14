@@ -37,6 +37,7 @@ function BuildingBlock({provider, addBlock}){
 		blockt.function = fun.fun;
 		blockt.block = fun.block;
 		blockt.inputs = fun.inputs;
+		console.log('blockt', blockt);
 		addBlock(blockt);
 		reset();
 	}

@@ -16,7 +16,8 @@ export const stepEnum = {
 	selectVault: {},
 	selectVaultFunctionOrStrategy: {},
 	selectStrategyFunction: {},
-	setInputs: {}
+	setInputs: {},
+	manual: {}
 };
 
 export function defaultResult() {

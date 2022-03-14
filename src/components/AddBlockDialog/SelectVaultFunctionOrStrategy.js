@@ -5,7 +5,7 @@ import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
 import StrategyTile from './StrategyTile';
 import FunctionTile from './FunctionTile';
 
-export default function SelectVaultFunction() {
+export default function SelectVaultFunctionOrStrategy() {
 	const {selectedProvider} = useSelectedProvider();
 	const {setSteps, result, setResult} = useAddBlockDialog();
 	const [items, setItems] = useState([]);
@@ -50,6 +50,7 @@ export default function SelectVaultFunction() {
 	}
 
 	function onClickFunction(func) {
+		func.source = 'vault';
 		setResult(result => {return {
 			...result,
 			strategy: null,

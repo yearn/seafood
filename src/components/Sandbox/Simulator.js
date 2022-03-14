@@ -32,7 +32,6 @@ export default function Simulator() {
 	async function onSimulate() {
 		const tenderly = await setupTenderly(selectedProvider.network.chainId);
 		const result = await TenderlySim(blocks, tenderly);
-		console.log('result', result);
 		setBlocks(result);
 	}
 

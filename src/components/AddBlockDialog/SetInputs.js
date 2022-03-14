@@ -46,13 +46,13 @@ export default function SetInputs() {
 	return <div className={'h-full flex flex-col'}>
 		<div className={'px-4 pt-4 pb-8'}>
 			<SmallScreen>
-				<h2 className={'text-xl'}>{result.vault.name}</h2>
+				<h2 className={'text-xl'}>{result.vault?.name || 'Manual'}</h2>
 				{result.strategy && <h2 className={'text-xl'}>{` \\ ${result.strategy.name}`}</h2>}
 				<h2 className={'text-xl'}>{` \\ ${result.function.name}`}</h2>
 			</SmallScreen>
 			<BiggerThanSmallScreen>
 				<h2 className={'text-xl'}>
-					{result.vault.name}
+					{result.vault?.name || 'Manual'}
 					{result.strategy && ` \\ ${result.strategy.name}`}
 					{` \\ ${result.function.name}`}
 				</h2>
@@ -60,17 +60,22 @@ export default function SetInputs() {
 		</div>
 		<div className={'inputs'}>
 			<div className={'scroll-container'}>
-				{result.function.inputs.length === 0 && <div className={''}>{'ヽ(^o^)丿 - This function doesn\'t need inputs!'}</div>}
-				{result.function.inputs.map((input, index) => <div key={index} className={'input'}>
-					<h3 className={'text-lg mb-2'}>{input.name}</h3>
-					<div className={'flex items-center'}>
-						<input type={'text'} onChange={(e) => {debounceInput({index, value: e.target.value});}} placeholder={input.type} />
-						<div className={'validation'}>
-							{inputValues[index].valid && <BsCheckLg className={'valid'}></BsCheckLg>}
-							{!inputValues[index].valid && <BsAsterisk className={'invalid'}></BsAsterisk>}
+				{result.function.inputs.length === 0 && 
+					<div className={''}>{'ヽ(^o^)丿 - This function doesn\'t need inputs!'}</div>
+				}
+
+				{result.function.inputs.map((input, index) => 
+					<div key={index} className={'input'}>
+						<h3 className={'text-lg mb-2'}>{input.name}</h3>
+						<div className={'flex items-center'}>
+							<input type={'text'} onChange={(e) => {debounceInput({index, value: e.target.value});}} placeholder={input.type} />
+							<div className={'validation'}>
+								{inputValues[index].valid && <BsCheckLg className={'valid'}></BsCheckLg>}
+								{!inputValues[index].valid && <BsAsterisk className={'invalid'}></BsAsterisk>}
+							</div>
 						</div>
 					</div>
-				</div>)}
+				)}
 			</div>
 		</div>
 	</div>;
