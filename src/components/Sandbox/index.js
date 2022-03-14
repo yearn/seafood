@@ -45,7 +45,7 @@ export default function Sandbox() {
 				</BiggerThanSmallScreen>
 
 				<SmallScreen>
-					{(location.hash === '' || location.hash === '#add-block') &&
+					{(location.hash === '' || location.hash === '#add-block' || location.hash === '#events') &&
 						<Simulator />}
 					{location.hash === '#code' && 
 						<Code />}

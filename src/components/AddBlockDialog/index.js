@@ -110,8 +110,8 @@ export default function AddBlockDialog({onAddBlock}) {
 
 			<div className={'flex items-center justify-end'}>
 				<button disabled={steps.length < 2} onClick={onPreviousStep}>{'< Back'}</button>
-				<button disabled={!result?.valid} onClick={onClickAddBlock}>{'Add block'}</button>
 				<button onClick={onManual}>{'Manual'}</button>
+				<button disabled={!result?.valid} onClick={onClickAddBlock}>{'Add block'}</button>
 				<BiggerThanSmallScreen>
 					<button onClick={close}>{'Cancel'}</button>
 				</BiggerThanSmallScreen>

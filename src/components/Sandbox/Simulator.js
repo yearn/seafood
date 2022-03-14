@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useState} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {BsPlay, BsCaretDownFill} from 'react-icons/bs';
 import {useBlocks} from './useBlocks';
 import Block from './Block';
@@ -7,10 +8,14 @@ import AddBlockDialog, {AddBlockButton} from '../AddBlockDialog';
 import SelectProvider from '../SelectProvider';
 import {setupTenderly, TenderlySim} from '../../ethereum/TenderlySim';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
+import EventsDialog from './EventsDialog';
 
 export default function Simulator() {
+	const location = useLocation();
+	const navigate = useNavigate();
 	const {blocks, setBlocks} = useBlocks();
 	const {selectedProvider} = useSelectedProvider();
+	const [showEventsForBlock, setShowEventsForBlock] = useState();
 
 	function onAddBlock(block) {
 		block.index = blocks.length > 0 
@@ -19,10 +24,15 @@ export default function Simulator() {
 		setBlocks(blocks => [...blocks, block]);
 	}
 
-	function onRemoveBlock(blockIndex) {
+	function onRemoveBlock(index) {
 		setBlocks(blocks => {
-			return blocks.filter(item => item.index !== blockIndex);
+			return blocks.filter(block => block.index !== index);
 		});
+	}
+
+	function onShowBlockEvents(index) {
+		setShowEventsForBlock(blocks[index]);
+		navigate(`${location.pathname}#events`);
 	}
 
 	function onReset() {
@@ -37,7 +47,7 @@ export default function Simulator() {
 
 	return <div className={'simulator'}>
 		{blocks.map((block) => <div key={block.index}>
-			<Block block={block} onRemove={onRemoveBlock}></Block>
+			<Block block={block} onRemove={onRemoveBlock} onShowEvents={onShowBlockEvents}></Block>
 			<div className={'caret'}>
 				<BsCaretDownFill></BsCaretDownFill>
 			</div>
@@ -57,6 +67,8 @@ export default function Simulator() {
 		<div className={'actions'}>
 			<button onClick={onSimulate} disabled={blocks.length === 0}><BsPlay className={'text-4xl'}></BsPlay></button>
 		</div>
+
+		<EventsDialog block={showEventsForBlock}></EventsDialog>
 
 	</div>;
 }

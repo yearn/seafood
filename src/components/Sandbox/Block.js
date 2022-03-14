@@ -2,7 +2,7 @@ import React from 'react';
 import {BsTrash} from 'react-icons/bs';
 import {TruncateAddress} from '../../utils/utils';
 
-export default function Blocks({block, onRemove}) {
+export default function Block({block, onRemove, onShowEvents}) {
 	const inputs_as_array = block.inputs ? Object.entries(block.inputs) : [];
 
 	function formatValue(value, index) {
@@ -47,15 +47,24 @@ export default function Blocks({block, onRemove}) {
 		</ul>
 
 		<div className={'mt-4 flex items-center justify-between'}>
-			<div className={'flex items-center'}>
+			<div className={'basis-1/3'}>
 				{block.success !== undefined &&
-					<a className={statusColor()} target={'_blank'} rel={'noreferrer'} href={block.tenderlyURL}>
+					<a className={`${statusColor()}`} target={'_blank'} rel={'noreferrer'} href={block.tenderlyURL}>
 						{status()}
 					</a>
 				}
 			</div>
-			<div className={'sm-circle-icon-button'} onClick={() => onRemove(block.index)}>
-				<BsTrash></BsTrash>
+			<div className={'basis-1/3 flex justify-center'}>
+				{block.success &&
+					<a onClick={() => onShowEvents(block.index)} className={`${statusColor()}`} target={'_blank'} rel={'noreferrer'}>
+						{'Events'}
+					</a>
+				}
+			</div>
+			<div className={'basis-1/3 flex justify-end'}>
+				<div className={'sm-circle-icon-button'} onClick={() => onRemove(block.index)}>
+					<BsTrash></BsTrash>
+				</div>
 			</div>
 		</div>
 
