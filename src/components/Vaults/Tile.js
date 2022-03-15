@@ -24,29 +24,35 @@ export default function Tile({vault, onClick}) {
 	}
 
 	return <div className={'vault-tile'}>
-		<div onClick={onClick} className={'title-button'}>
-			<div className={'title'}>{styleTitle(vault.name)}</div>
-			<div className={'chip version'}>{vault.version}</div>
-		</div>
-		<div className={'flex items-center justify-between'}>
-			<div className={'flex items-center address'}>
-				<div onClick={() => {
-					toast(`${vault.address} copied to your clipboard`);
-					navigator.clipboard.writeText(vault.address);
-				}}
-				className={'copy'}
-				title={`Copy ${vault.address} to your clipboard`}>
-					{TruncateAddress(vault.address)}
-					<BsClipboard className={'icon'} />
+		<div onClick={onClick} className={'main'}>
+			<div className={'info'}>
+				<div className={'title'}>{styleTitle(vault.name)}</div>
+				<div className={'chips'}>
+					<div className={'chip version'}>{vault.version}</div>
+					<div className={`chip ${vault.provider.network.name}`}>{vault.provider.network.name}</div>
 				</div>
-				<a title={`Explore ${vault.address}`}
-					href={GetExplorerLink(vault.provider.network.chainId, vault.address)}
-					target={'_blank'} rel={'noreferrer'}
-					className={'sm-circle-icon-button'}>
-					<BsBoxArrowInUpRight />
-				</a>
 			</div>
-			<div className={`network ${vault.provider.network.name}`}>{vault.provider.network.name}</div>
+			<div className={'avatar'}>
+				<div></div>
+			</div>
+		</div>
+		<div className={'footer'}>
+			<div onClick={() => {
+				toast(`${vault.address} copied to your clipboard`);
+				navigator.clipboard.writeText(vault.address);
+			}}
+			className={'left'}
+			title={`Copy ${vault.address} to your clipboard`}>
+				<BsClipboard className={'icon'} />
+				{TruncateAddress(vault.address)}
+			</div>
+			<a title={`Explore ${vault.address}`}
+				href={GetExplorerLink(vault.provider.network.chainId, vault.address)}
+				target={'_blank'} rel={'noreferrer'}
+				className={'right'}>
+				<BsBoxArrowInUpRight />
+				{'Explore'}
+			</a>		
 		</div>
 	</div>;
 }

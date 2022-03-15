@@ -6,29 +6,35 @@ import {GetExplorerLink, TruncateAddress} from '../../utils/utils';
 
 export default function StrategyTile({strategy, onClick}) {
 	const {selectedProvider} = useSelectedProvider();
+
 	return <div className={'vault-tile'}>
-		<div onClick={onClick} className={'title-button'}>
-			<div className={'title-sm'}>{strategy.name}</div>
-			<div className={'chip bg-pink-800'}>{'strategy'}</div>
-		</div>
-		<div className={'flex items-center justify-between'}>
-			<div className={'flex items-center address'}>
-				<div onClick={() => {
-					toast(`${strategy.address} copied to your clipboard`);
-					navigator.clipboard.writeText(strategy.address);
-				}}
-				className={'copy'}
-				title={`Copy ${strategy.address} to your clipboard`}>
-					{TruncateAddress(strategy.address)}
-					<BsClipboard className={'icon'} />
+		<div onClick={onClick} className={'main'}>
+			<div className={'info'}>
+				<div className={'title'}>{strategy.name}</div>
+				<div className={'chips'}>
+					<div className={'chip bg-pink-400 dark:bg-pink-800'}>{'strategy'}</div>
 				</div>
-				<a title={`Explore ${strategy.address}`}
-					href={GetExplorerLink(selectedProvider.network.chainId, strategy.address)}
-					target={'_blank'} rel={'noreferrer'}
-					className={'sm-circle-icon-button'}>
-					<BsBoxArrowInUpRight />
-				</a>
 			</div>
+			<div className={'avatar'}>
+			</div>
+		</div>
+		<div className={'footer'}>
+			<div onClick={() => {
+				toast(`${strategy.address} copied to your clipboard`);
+				navigator.clipboard.writeText(strategy.address);
+			}}
+			className={'left'}
+			title={`Copy ${strategy.address} to your clipboard`}>
+				<BsClipboard className={'icon'} />
+				{TruncateAddress(strategy.address)}
+			</div>
+			<a title={`Explore ${strategy.address}`}
+				href={GetExplorerLink(selectedProvider.network.chainId, strategy.address)}
+				target={'_blank'} rel={'noreferrer'}
+				className={'right'}>
+				<BsBoxArrowInUpRight />
+				{'Explore'}
+			</a>
 		</div>
 	</div>;
 }

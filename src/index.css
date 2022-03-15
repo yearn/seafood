@@ -97,14 +97,14 @@ select {
 .dialog {
   @apply w-full h-screen p-2
     flex flex-col justify-end
-    bg-secondary-200 
+    bg-secondary-100 
     dark:bg-secondary-900
     sm:w-[80%] sm:h-[80%] sm:p-8
     sm:rounded-xl sm:shadow-lg;
 }
 
 .dialog .tiles {
-  @apply grow overflow-y-auto my-4 grid grid-flow-row grid-cols-1 md:grid-cols-3 2xl:grid-cols-4;
+  @apply grow overflow-y-auto my-4 grid grid-flow-row gap-2 grid-cols-1 sm:gap-8 md:grid-cols-3 2xl:grid-cols-4;
 }
 
 .dialog .inputs {
