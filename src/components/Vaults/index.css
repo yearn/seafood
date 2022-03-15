@@ -38,7 +38,7 @@
 }
 
 .vault-tile .main .info .chips .little-chip {
-  @apply h-fit px-2 py-[1px] text-xs capitalize rounded-full;
+  @apply h-fit px-2 py-[1px] text-xs rounded-full;
 }
 
 .vault-tile .main .avatar div {
