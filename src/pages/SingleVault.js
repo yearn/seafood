@@ -3,7 +3,7 @@ import {AllStrats, AllVaults} from  '../ethereum/EthHelpers';
 import HarvestMultiple from  '../ethereum/HarvestMultiple';
 import useRPCProvider from '../context/useRpcProvider';
 import RatioAdjust from './RatioAdjusters';
-import {GetExplorerLink} from '../utils/utils';
+import {FormatNumer, FormatPercent, GetExplorerLink} from '../utils/utils';
 import HistoricReports from '../components/HistoricReports';
 import {setupTenderly, TenderlySim} from '../ethereum/TenderlySim';
 import ShowEvents from '../components/ShowEvents';
@@ -155,6 +155,7 @@ function SingleVaultPage({value}){
 		<div key={strat.address}> 
 			<br />
 			<div>{'Strat: '}{strat.name}{' - '}<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, strat.address)} rel={'noreferrer'}>{strat.address}</a><button onClick={() => runSimZero(strat)}>{'Sim 0'}</button></div>
+			{strat.genlender && <ul> {strat.genlender.map(lender =>  <li key={lender.add}> {'    Lender: ' } <a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(provider.network.chainId, lender.add)}> {lender.name}</a> {', Deposits: ' + FormatNumer(lender.assets/(10 **vault.token.decimals)) + ', APR: '  + FormatPercent(lender.rate/(10 **18))} </li>)}</ul>}
 			{zeros[strat.address] &&  <a target={'_blank'} rel={'noreferrer'} href={zeros[strat.address].tenderlyURL}> {(zeros[strat.address].success ? ' succeeded ' : 'failed ')} </a>}
 			{(zeros[strat.address] && zeros[strat.address].result) && <ShowEvents events={zeros[strat.address].result.events} />}
 			<div>{'Lastharvest: '}{strat.lastTime.toLocaleString(undefined, {maximumFractionDigits:2})}{'h - Real ratio: '}{(100*strat.beforeDebt/strat.vaultAssets).toLocaleString(undefined, {maximumFractionDigits:2})}{'% - Desired ratio: '}{(strat.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% '}</div>
