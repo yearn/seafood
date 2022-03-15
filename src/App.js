@@ -5,7 +5,7 @@ import MasterchefPage from './pages/Masterchef';
 import TestAPI from './pages/TestAPI';
 import {RPCProviderContextApp} from './context/useRpcProvider';
 import Settings from './pages/Settings';
-import Sandbox from './pages/Sandbox';
+import Sandbox from './components/Sandbox';
 import {AppProvider} from './context/useApp';
 import Chrome from './components/Chrome';
 import Vaults from './components/Vaults';
@@ -27,7 +27,7 @@ function App() {
 							<Route path={'/solidly'} element={<SolidlyTreasury />}></Route>
 							<Route path={'/testAPI'} element={<TestAPI />}></Route>
 							<Route path={'/settings'} element={<Settings />}></Route>
-							<Route path={'/sandbox'} element={<Sandbox />}></Route>
+							<Route path={'/sandbox/*'} element={<Sandbox />}></Route>
 						</Routes>
 					</Chrome>
 				</AppProvider>

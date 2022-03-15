@@ -1,0 +1,139 @@
+.vaults-list {
+  @apply max-w-full;
+}
+
+.vaults-list {
+  @apply max-w-full p-2 sm:p-4 grid grid-flow-row gap-2 grid-cols-1 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4;
+}
+
+.vault-tile .main {
+  @apply px-4 pt-4 pb-8 flex items-center justify-between 
+    border-b 
+    border-b-secondary-300/40
+    bg-secondary-200
+    dark:border-b-secondary-900/40
+    dark:bg-secondary-800
+    active:transform active:scale-[98%]
+    rounded-tl-xl rounded-tr-xl cursor-pointer;
+}
+
+.vault-tile .main.full {
+  @apply rounded-xl;
+}
+
+.vault-tile .main .info {
+  @apply flex flex-col;
+}
+
+.vault-tile .main .info .title {
+  @apply text-lg font-bold;
+}
+
+.vault-tile .main .info .chips {
+  @apply mt-2 flex flex-wrap gap-2 items-center;
+}
+
+.vault-tile .main .info .chips .chip {
+  @apply px-4 py-[2px] text-sm capitalize rounded-full;
+}
+
+.vault-tile .main .info .chips .little-chip {
+  @apply h-fit px-2 py-[1px] text-xs rounded-full;
+}
+
+.vault-tile .main .avatar div {
+  @apply w-16 h-16 bg-secondary-600/40 rounded-full;
+}
+
+.vault-tile .footer {
+  @apply flex items-center justify-between;
+}
+
+.vault-tile .footer .left, .vault-tile .footer .right {
+  @apply basis-1/2 p-4 flex items-center justify-center text-sm
+    bg-secondary-200
+    dark:bg-secondary-800
+    active:transform active:scale-[98%]
+    cursor-pointer;
+}
+
+.vault-tile .footer svg {
+  @apply mr-2;
+}
+
+.vault-tile .footer .left {
+  @apply border-r border-r-secondary-300/40 dark:border-r-secondary-900/40 rounded-bl-xl;
+}
+
+.vault-tile .footer .right {
+  @apply rounded-br-xl;
+}
+
+.vault-tile .footer .left, .vault-tile .footer .right, .vault-tile .main {
+  @apply hover:bg-selected-200 dark:hover:bg-secondary-700;
+}
+
+.vault-tile .version {
+  @apply bg-primary-200 dark:bg-primary-900;
+}
+
+.vault-tile .ethereum {
+  @apply bg-ethereum-200
+    dark:bg-ethereum-500;
+}
+
+.vault-tile .fantom {
+  @apply bg-fantom-200
+    dark:bg-fantom-600;
+}
+
+.vaults-filter {
+  @apply sticky top-0;
+}
+
+.vaults-filter input[type=text] {
+  @apply w-full py-2 px-3 bg-transparent rounded-full leading-tight
+    text-primary-900
+    dark:text-primary-200
+    focus:border-primary-400 focus:ring-0
+    shadow-inner;
+}
+
+.vaults-filter .chip {
+  @apply ml-2 px-4 py-1 border-2 text-sm capitalize rounded-full cursor-pointer 
+    active:transform active:scale-95;
+}
+
+.vaults-filter .chip:first-child {
+  @apply ml-0;
+}
+
+.vaults-filter .chip-curve {
+  @apply border-curve-200 dark:border-curve-700 dark:text-curve-500
+    hover:border-curve-400 hover:dark:border-curve-600 hover:dark:text-curve-400;
+}
+
+.vaults-filter .hot-curve {
+  @apply bg-curve-200 text-curve-900 dark:bg-curve-700 dark:text-curve-100 shadow-sm
+    hover:dark:bg-curve-600 hover:dark:text-curve-100;
+}
+
+.vaults-filter .chip-ethereum {
+  @apply border-ethereum-200 dark:border-ethereum-600 dark:text-ethereum-500
+    hover:border-ethereum-400 hover:dark:border-ethereum-500 hover:dark:text-ethereum-400;
+}
+
+.vaults-filter .hot-ethereum {
+  @apply bg-ethereum-200 text-ethereum-900 dark:bg-ethereum-600 dark:text-ethereum-100 shadow-sm
+    hover:dark:bg-ethereum-500 hover:dark:text-ethereum-100;
+}
+
+.vaults-filter .chip-fantom {
+  @apply border-fantom-200 dark:border-fantom-800 dark:text-fantom-500
+    hover:border-fantom-400 hover:dark:border-fantom-600 hover:dark:text-fantom-400;
+}
+
+.vaults-filter .hot-fantom {
+  @apply bg-fantom-200 text-fantom-900 dark:bg-fantom-800 dark:text-fantom-100 shadow-sm
+    hover:dark:bg-fantom-600 hover:dark:text-fantom-100;
+}
