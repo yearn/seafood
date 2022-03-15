@@ -24,7 +24,7 @@
 }
 
 .sandbox .tabs .tab.selected svg {
-  @apply fill-secondary-100 shadow-md;
+  @apply fill-primary-400 dark:fill-secondary-100;
 }
 
 .sandbox .simulator {
