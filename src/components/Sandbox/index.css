@@ -36,7 +36,7 @@
 }
 
 .sandbox .simulator .block-container .block {
-  @apply p-4 w-full h-fit bg-secondary-800 rounded-md;
+  @apply p-4 w-full h-fit bg-secondary-200 dark:bg-secondary-800 rounded-md;
 }
 
 .sandbox .simulator .block-container .block h2 {
@@ -57,7 +57,7 @@
 }
 
 .sandbox .simulator .block-container .caret svg {
-  @apply fill-secondary-800;
+  @apply fill-secondary-200 dark:fill-secondary-800;
 }
 
 .sandbox .actions {

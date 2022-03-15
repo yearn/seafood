@@ -15,7 +15,7 @@ export default function Block({block, onRemove, onShowEvents}) {
 	}
 
 	function borderColor() {
-		if(block.success === undefined) return 'border-secondary-800/80';
+		if(block.success === undefined) return 'border-secondary-200/80 dark:border-secondary-800/80';
 		if(block.success) return 'border-ok-600/80';
 		return 'border-error-600/80';
 	}
