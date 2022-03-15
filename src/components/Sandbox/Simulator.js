@@ -13,7 +13,7 @@ import {SmallScreen} from '../../utils/breakpoints';
 export default function Simulator() {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const {blocks, setBlocks, addBlock, simulate, reset, removeBlock} = useBlocks();
+	const {blocks, setBlocks, addBlock, simulate, simulating, reset, removeBlock} = useBlocks();
 	const [showEventsForBlock, setShowEventsForBlock] = useState();
 
 	function onShowBlockEvents(index) {
@@ -27,8 +27,8 @@ export default function Simulator() {
 				<Block block={block} onRemove={removeBlock} onShowEvents={onShowBlockEvents}></Block>
 			</div>)}
 
-		<div className={`${blocks.length === 0 ? 'mt-64' : 'mt-8'} mb-32 flex flex-col items-center`}>
-			<SmallScreen>
+		<SmallScreen>
+			<div className={`${blocks.length === 0 ? 'mt-64' : 'mt-8'} mb-32 flex flex-col items-center`}>
 				<AddBlockDialogProvider>
 					<AddBlockButton className={'big'}></AddBlockButton>
 					<AddBlockDialog onAddBlock={addBlock}></AddBlockDialog>
@@ -37,12 +37,12 @@ export default function Simulator() {
 					<SelectProvider disabled={blocks.length > 0}></SelectProvider>
 					<button disabled={blocks.length < 1} onClick={reset}>{'Reset'}</button>
 				</div>
-			</SmallScreen>
-		</div>
-
-		<SmallScreen>
+			</div>
 			<div className={'actions'}>
-				<button onClick={simulate} disabled={blocks.length === 0}><BsPlay className={'text-4xl'}></BsPlay></button>
+				<div className={'button-ring-container'}>
+					<div className={`button-ring ${simulating ? 'ok' : ''}`}></div>
+					<button onClick={simulate} disabled={blocks.length === 0}><BsPlay className={'text-4xl'}></BsPlay></button>
+				</div>
 			</div>
 		</SmallScreen>
 

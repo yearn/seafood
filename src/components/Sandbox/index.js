@@ -16,6 +16,7 @@ export default function Sandbox() {
 	const {defaultProvider} = useRPCProvider();
 	const [selectedProvider, setSelectedProvider] = useState(defaultProvider);
 	const [blocks, setBlocks] = useState([]);
+	const [simulating, setSimulating] = useState(false);
 
 	function addBlock(block) {
 		block.index = blocks.length > 0 
@@ -25,10 +26,12 @@ export default function Sandbox() {
 	}
 
 	async function simulate() {
+		setSimulating(true);
 		blocks.forEach((block, index) => {block.index = index;});
 		const tenderly = await setupTenderly(selectedProvider.network.chainId);
 		const result = await TenderlySim(blocks, tenderly);
 		setBlocks(result);
+		setSimulating(false);
 	}
 
 	function removeBlock(index) {
@@ -42,7 +45,7 @@ export default function Sandbox() {
 	}
 
 	return <SelectedProviderContext.Provider value={{selectedProvider, setSelectedProvider}}>
-		<BlocksContext.Provider value={{blocks, setBlocks, addBlock, simulate, removeBlock, reset}}>
+		<BlocksContext.Provider value={{blocks, setBlocks, addBlock, simulate, simulating, removeBlock, reset}}>
 			<div className={'sandbox'}>
 				<BiggerThanSmallScreen>
 					<Toolbar></Toolbar>

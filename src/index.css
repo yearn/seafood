@@ -31,6 +31,18 @@ button, select {
     cursor-pointer shadow-md;
 }
 
+.button-ring-container {
+  @apply relative;
+}
+
+.button-ring {
+  @apply absolute z-[-1] w-full h-full border-transparent border-2 rounded-full;
+}
+
+.button-ring.ok {
+  @apply border-ok-400 animate-pulse;
+}
+
 button.big {
   @apply px-8 text-2xl;
 }
@@ -76,7 +88,7 @@ select {
 }
 
 .dialog-container {
-  @apply fixed z-[0] top-0 left-0 right-0 h-screen 
+  @apply fixed z-[100] top-0 left-0 right-0 h-screen 
     flex items-center justify-center 
     bg-secondary-900/40
     backdrop-blur-md;

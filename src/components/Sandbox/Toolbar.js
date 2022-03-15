@@ -11,7 +11,7 @@ export default function Toolbar() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const {overpassClass} = useScrollOverpass();
-	const {blocks, addBlock, simulate, reset} = useBlocks();
+	const {blocks, addBlock, simulate, simulating, reset} = useBlocks();
 
 	return <div className={`toolbar ${overpassClass}`}>
 		<div className={'flex items-center'}>
@@ -20,10 +20,13 @@ export default function Toolbar() {
 				<AddBlockButton></AddBlockButton>
 				<AddBlockDialog onAddBlock={addBlock}></AddBlockDialog>
 			</AddBlockDialogProvider>
-			<button onClick={simulate} disabled={blocks.length < 1} className={'iconic'}>
-				{'Simulate'}
-				<BsPlay className={'text-xl'}></BsPlay>
-			</button>
+			<div className={'button-ring-container'}>
+				<div className={`button-ring ${simulating ? 'ok' : ''}`}></div>
+				<button onClick={simulate} disabled={blocks.length < 1} className={'iconic'}>
+					{'Simulate'}
+					<BsPlay className={'text-xl'}></BsPlay>
+				</button>
+			</div>
 		</div>
 
 		<div className={'flex items-center'}>
