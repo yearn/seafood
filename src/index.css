@@ -39,8 +39,8 @@ button, select {
   @apply absolute z-[-1] w-full h-full border-transparent border-2 rounded-full;
 }
 
-.button-ring.ok {
-  @apply border-ok-400 animate-pulse;
+.button-ring.default {
+  @apply border-primary-400 animate-pulse;
 }
 
 button.big {
@@ -78,7 +78,7 @@ select {
 }
 
 .bg {
-  @apply fixed top-0 z-0 w-screen h-screen bg-gradient-to-b 
+  @apply fixed top-0 z-0 w-full h-full bg-gradient-to-b 
     from-secondary-100 via-primary-100 to-primary-200
     dark:from-secondary-900 dark:via-primary-900 dark:to-primary-800;
 }
@@ -88,14 +88,14 @@ select {
 }
 
 .dialog-container {
-  @apply fixed z-[100] top-0 left-0 right-0 h-screen 
+  @apply fixed z-[100] top-0 left-0 right-0 h-full 
     flex items-center justify-center 
     bg-secondary-900/40
     backdrop-blur-md;
 }
 
 .dialog {
-  @apply w-full h-screen p-2
+  @apply w-full h-full p-2
     flex flex-col justify-end
     bg-secondary-100 
     dark:bg-secondary-900

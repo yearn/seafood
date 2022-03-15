@@ -45,7 +45,7 @@ export default function Simulator() {
 		<SmallScreen>
 			<div className={'actions'}>
 				<div className={'button-ring-container'}>
-					<div className={`button-ring ${simulating ? 'ok' : ''}`}></div>
+					<div className={`button-ring ${simulating ? 'default' : ''}`}></div>
 					<button onClick={simulate} disabled={blocks.length === 0}><BsPlay className={'text-4xl'}></BsPlay></button>
 				</div>
 			</div>

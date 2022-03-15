@@ -21,7 +21,7 @@ export default function Toolbar() {
 				<AddBlockDialog onAddBlock={addBlock}></AddBlockDialog>
 			</AddBlockDialogProvider>
 			<div className={'button-ring-container'}>
-				<div className={`button-ring ${simulating ? 'ok' : ''}`}></div>
+				<div className={`button-ring ${simulating ? 'default' : ''}`}></div>
 				<button onClick={simulate} disabled={blocks.length < 1} className={'iconic'}>
 					{'Simulate'}
 					<BsPlay className={'text-xl'}></BsPlay>
