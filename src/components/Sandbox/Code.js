@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {BsClipboard} from 'react-icons/bs';
+import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import {useBlocks} from './useBlocks';
 
 export default function Code() {
@@ -32,19 +33,25 @@ export default function Code() {
 		}
 
 		setLinesOfCode(lines);
-
 	}, [blocks]);
 
-	return <div className={'pb-32 overflow-x-auto grow'}>
+	return <div className={'pt-8 pb-32 overflow-x-auto grow'}>
 		{linesOfCode.map((line, index) => 
 			<div key={index} className={'flex items-center'}>
-				<div className={'pl-2 pr-4 dark:text-secondary-400/60'}>{index + 1}</div>
+				<div className={'ml-2 mr-4 w-8 min-w-[2rem] text-right dark:text-secondary-400/60'}>{''}{index + 1}</div>
 				<div className={'whitespace-nowrap'}>{line}</div>
 			</div>
 		)}
 
-		<div className={'actions'}>
-			<button><BsClipboard className={'text-4xl'}></BsClipboard></button>
-		</div>
+		<SmallScreen>
+			<div className={'actions'}>
+				<button><BsClipboard className={'text-4xl'}></BsClipboard></button>
+			</div>
+		</SmallScreen>
+		<BiggerThanSmallScreen>
+			<button className={'absolute top-32 right-8 big iconic no-text'}>
+				<BsClipboard className={'text-xl'}></BsClipboard>
+			</button>
+		</BiggerThanSmallScreen>
 	</div>;
 }

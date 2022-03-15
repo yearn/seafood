@@ -36,15 +36,19 @@ button.big {
 }
 
 button.iconic {
-  @apply flex items-center
+  @apply flex items-center justify-center before:content-['\00A0'] after:content-['\00A0'];
 }
 
 button.iconic svg {
-  @apply mr-2;
+  @apply ml-2;
 }
 
 button.big.iconic svg {
-  @apply mr-4;
+  @apply ml-4;
+}
+
+button.iconic.no-text svg, button.big.iconic.no-text svg {
+  @apply m-0;
 }
 
 button:disabled, select:disabled {
@@ -54,7 +58,7 @@ button:disabled, select:disabled {
 }
 
 button:disabled svg {
-  @apply fill-gray-800 dark:fill-gray-400;
+  @apply fill-gray-800 dark:fill-gray-400 pointer-events-none;
 }
 
 select {
@@ -72,7 +76,7 @@ select {
 }
 
 .dialog-container {
-  @apply fixed z-[100] top-0 left-0 right-0 h-screen 
+  @apply fixed z-[0] top-0 left-0 right-0 h-screen 
     flex items-center justify-center 
     bg-secondary-900/40
     backdrop-blur-md;

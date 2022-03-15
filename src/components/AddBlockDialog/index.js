@@ -13,7 +13,7 @@ import SelectStrategyFunction from './SelectStrategyFunction';
 import SetInputs from './SetInputs';
 import Manual from './Manual';
 
-export function AddBlockButton() {
+export function AddBlockButton({className}) {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const {setSteps, setResult} = useAddBlockDialog();
@@ -24,9 +24,9 @@ export function AddBlockButton() {
 		navigate(`${location.pathname}#add-block`);
 	}
 
-	return <button onClick={onClick} className={'big iconic'}>
-		<BsBox></BsBox>
+	return <button onClick={onClick} className={`iconic ${className}`}>
 		{'Add block'}
+		<BsBox></BsBox>
 	</button>;
 }
 
@@ -80,6 +80,7 @@ export default function AddBlockDialog({onAddBlock}) {
 
 		const block = {
 			index: 0,
+			address: result.vault.address,
 			name: result.vault.name,
 			contract,
 			function: result.function,

@@ -1,5 +1,13 @@
 .sandbox {
-  @apply grow px-2 pt-24 pb-16 md:pt-8 flex flex-col justify-between md:flex-row;
+  @apply grow flex flex-col sm:z-[100];
+}
+
+.sandbox .toolbar {
+  @apply sticky top-0 pl-4 pr-8 py-2 flex items-center justify-between;
+}
+
+.sandbox .content {
+  @apply grow px-2 pt-24 pb-16 sm:px-8 sm:py-0 flex flex-col justify-between;
 }
 
 .sandbox .tabs {
@@ -20,31 +28,36 @@
 }
 
 .sandbox .simulator {
-  @apply grow flex flex-col justify-center;
+  @apply sm:pt-8 sm:pb-32 grid grid-flow-row grid-cols-1 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4;
 }
 
-.sandbox .simulator .caret {
-  @apply -mt-4 mb-2 flex justify-center text-5xl;
+.sandbox .simulator .block-container {
+  @apply flex flex-col sm:flex-row sm:h-fit;
 }
 
-.sandbox .simulator .caret svg {
-  @apply fill-secondary-800;
+.sandbox .simulator .block-container .block {
+  @apply p-4 w-full h-fit bg-secondary-800 rounded-md;
 }
 
-.sandbox .simulator .block {
-  @apply p-4 bg-secondary-800 rounded-md;
-}
-
-.sandbox .simulator .block h2 {
+.sandbox .simulator .block-container .block h2 {
   @apply text-2xl;
 }
 
-.sandbox .simulator .block ul {
+.sandbox .simulator .block-container .block ul {
   @apply mt-4;
 }
 
-.sandbox .simulator .block .input-name {
+.sandbox .simulator .block-container .block .input-name {
   @apply text-secondary-400 mr-2;
+}
+
+.sandbox .simulator .block-container .caret {
+  @apply -mt-4 mb-2 flex justify-center text-5xl
+    sm:mt-0 sm:mb-0 sm:flex-col sm:-ml-5;
+}
+
+.sandbox .simulator .block-container .caret svg {
+  @apply fill-secondary-800;
 }
 
 .sandbox .actions {

@@ -1,72 +1,49 @@
 import React, {useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
-import {BsPlay, BsCaretDownFill} from 'react-icons/bs';
+import {BsPlay} from 'react-icons/bs';
 import {useBlocks} from './useBlocks';
 import Block from './Block';
 import {AddBlockDialogProvider} from '../AddBlockDialog/useAddBlockDialog';
 import AddBlockDialog, {AddBlockButton} from '../AddBlockDialog';
 import SelectProvider from '../SelectProvider';
-import {setupTenderly, TenderlySim} from '../../ethereum/TenderlySim';
-import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import EventsDialog from './EventsDialog';
+import {SmallScreen} from '../../utils/breakpoints';
 
 export default function Simulator() {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const {blocks, setBlocks} = useBlocks();
-	const {selectedProvider} = useSelectedProvider();
+	const {blocks, addBlock, simulate, reset, removeBlock} = useBlocks();
 	const [showEventsForBlock, setShowEventsForBlock] = useState();
-
-	function onAddBlock(block) {
-		block.index = blocks.length > 0 
-			? blocks[blocks.length - 1].index + 1
-			: 0;
-		setBlocks(blocks => [...blocks, block]);
-	}
-
-	function onRemoveBlock(index) {
-		setBlocks(blocks => {
-			return blocks.filter(block => block.index !== index);
-		});
-	}
 
 	function onShowBlockEvents(index) {
 		setShowEventsForBlock(blocks[index]);
 		navigate(`${location.pathname}#events`);
 	}
 
-	function onReset() {
-		setBlocks([]);
-	}
-
-	async function onSimulate() {
-		const tenderly = await setupTenderly(selectedProvider.network.chainId);
-		const result = await TenderlySim(blocks, tenderly);
-		setBlocks(result);
-	}
-
 	return <div className={'simulator'}>
-		{blocks.map((block) => <div key={block.index}>
-			<Block block={block} onRemove={onRemoveBlock} onShowEvents={onShowBlockEvents}></Block>
-			<div className={'caret'}>
-				<BsCaretDownFill></BsCaretDownFill>
-			</div>
-		</div>)}
+		{blocks.map((block) => 
+			<div key={block.index} className={'flex flex-col justify-center'}>
+				<Block block={block} onRemove={removeBlock} onShowEvents={onShowBlockEvents}></Block>
+			</div>)}
 
-		<div className={'mt-8 mb-32 flex flex-col items-center'}>
-			<AddBlockDialogProvider>
-				<AddBlockButton></AddBlockButton>
-				<AddBlockDialog onAddBlock={onAddBlock}></AddBlockDialog>
-			</AddBlockDialogProvider>
-			<div>
-				<SelectProvider disabled={blocks.length > 0}></SelectProvider>
-				{blocks.length > 0 && <button onClick={onReset}>{'Reset'}</button>}
-			</div>
+		<div className={`${blocks.length === 0 ? 'mt-64' : 'mt-8'} mb-32 flex flex-col items-center`}>
+			<SmallScreen>
+				<AddBlockDialogProvider>
+					<AddBlockButton className={'big'}></AddBlockButton>
+					<AddBlockDialog onAddBlock={addBlock}></AddBlockDialog>
+				</AddBlockDialogProvider>
+				<div>
+					<SelectProvider disabled={blocks.length > 0}></SelectProvider>
+					<button disabled={blocks.length < 1} onClick={reset}>{'Reset'}</button>
+				</div>
+			</SmallScreen>
 		</div>
 
-		<div className={'actions'}>
-			<button onClick={onSimulate} disabled={blocks.length === 0}><BsPlay className={'text-4xl'}></BsPlay></button>
-		</div>
+		<SmallScreen>
+			<div className={'actions'}>
+				<button onClick={simulate} disabled={blocks.length === 0}><BsPlay className={'text-4xl'}></BsPlay></button>
+			</div>
+		</SmallScreen>
 
 		<EventsDialog block={showEventsForBlock}></EventsDialog>
 
