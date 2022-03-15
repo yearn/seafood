@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
+import {ReactSortable} from 'react-sortablejs';
 import {BsPlay} from 'react-icons/bs';
 import {useBlocks} from './useBlocks';
 import Block from './Block';
@@ -12,7 +13,7 @@ import {SmallScreen} from '../../utils/breakpoints';
 export default function Simulator() {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const {blocks, addBlock, simulate, reset, removeBlock} = useBlocks();
+	const {blocks, setBlocks, addBlock, simulate, reset, removeBlock} = useBlocks();
 	const [showEventsForBlock, setShowEventsForBlock] = useState();
 
 	function onShowBlockEvents(index) {
@@ -20,7 +21,7 @@ export default function Simulator() {
 		navigate(`${location.pathname}#events`);
 	}
 
-	return <div className={'simulator'}>
+	return <ReactSortable list={blocks} setList={setBlocks} className={'simulator'}>
 		{blocks.map((block) => 
 			<div key={block.index} className={'flex flex-col justify-center'}>
 				<Block block={block} onRemove={removeBlock} onShowEvents={onShowBlockEvents}></Block>
@@ -47,5 +48,5 @@ export default function Simulator() {
 
 		<EventsDialog block={showEventsForBlock}></EventsDialog>
 
-	</div>;
+	</ReactSortable>;
 }

@@ -10,10 +10,6 @@ export default function EventsDialog({block}) {
 	const [show, setShow] = useState(false);
 
 	useEffect(() => {
-		console.log('block', block);
-	}, [block]);
-
-	useEffect(() => {
 		setShow(location.hash === '#events');
 	}, [location]);
 

@@ -5,11 +5,11 @@ import {SelectedProviderContext} from '../SelectProvider/useSelectedProvider';
 import {BlocksContext} from './useBlocks';
 import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import {setupTenderly, TenderlySim} from '../../ethereum/TenderlySim';
+import Toolbar from './Toolbar';
 import Tabs from './Tabs';
 import Simulator from './Simulator';
 import Code from './Code';
 import './index.css';
-import Toolbar from './Toolbar';
 
 export default function Sandbox() {
 	const location = useLocation();
@@ -25,6 +25,7 @@ export default function Sandbox() {
 	}
 
 	async function simulate() {
+		blocks.forEach((block, index) => {block.index = index;});
 		const tenderly = await setupTenderly(selectedProvider.network.chainId);
 		const result = await TenderlySim(blocks, tenderly);
 		setBlocks(result);
