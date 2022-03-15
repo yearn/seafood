@@ -21,12 +21,13 @@ export default function Simulator() {
 		navigate(`${location.pathname}#events`);
 	}
 
-	return <ReactSortable list={blocks} setList={setBlocks} className={'simulator'}>
-		{blocks.map((block) => 
-			<div key={block.index} className={'flex flex-col justify-center'}>
-				<Block block={block} onRemove={removeBlock} onShowEvents={onShowBlockEvents}></Block>
-			</div>)}
-
+	return <>
+		<ReactSortable list={blocks} setList={setBlocks} className={'simulator'}>
+			{blocks.map((block) => 
+				<div key={block.index} className={'flex flex-col justify-center'}>
+					<Block block={block} onRemove={removeBlock} onShowEvents={onShowBlockEvents}></Block>
+				</div>)}
+		</ReactSortable>
 		<SmallScreen>
 			<div className={`${blocks.length === 0 ? 'mt-64' : 'mt-8'} mb-32 flex flex-col items-center`}>
 				<AddBlockDialogProvider>
@@ -38,6 +39,10 @@ export default function Simulator() {
 					<button disabled={blocks.length < 1} onClick={reset}>{'Reset'}</button>
 				</div>
 			</div>
+		</SmallScreen>
+
+		<EventsDialog block={showEventsForBlock}></EventsDialog>
+		<SmallScreen>
 			<div className={'actions'}>
 				<div className={'button-ring-container'}>
 					<div className={`button-ring ${simulating ? 'ok' : ''}`}></div>
@@ -45,8 +50,5 @@ export default function Simulator() {
 				</div>
 			</div>
 		</SmallScreen>
-
-		<EventsDialog block={showEventsForBlock}></EventsDialog>
-
-	</ReactSortable>;
+	</>;
 }

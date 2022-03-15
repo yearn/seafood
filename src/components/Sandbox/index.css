@@ -7,7 +7,7 @@
 }
 
 .sandbox .content {
-  @apply grow px-2 pt-24 pb-16 sm:px-8 sm:py-0 flex flex-col justify-between;
+  @apply grow px-4 pt-24 pb-16 sm:px-8 sm:py-0 flex flex-col justify-between;
 }
 
 .sandbox .tabs {
