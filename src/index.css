@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .glow-attention-md {
+    filter: drop-shadow(0 4px 3px rgb(250 204 21 / 0.1)) drop-shadow(0 2px 2px rgb(250 204 21 / 0.06));
+  }
+}
+
 * {
   @apply text-secondary-900 dark:text-secondary-200 transition duration-200;
 }

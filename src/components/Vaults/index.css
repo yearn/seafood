@@ -6,15 +6,22 @@
   @apply max-w-full p-2 sm:p-4 grid grid-flow-row gap-2 grid-cols-1 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4;
 }
 
+.vault-tile .footer .left, 
+.vault-tile .footer .center, 
+.vault-tile .footer .right, 
+.vault-tile .main {
+  @apply bg-secondary-200 dark:bg-secondary-800 
+    hover:bg-selected-200 dark:hover:bg-secondary-700
+    active:transform active:scale-[98%]
+    cursor-pointer;
+}
+
 .vault-tile .main {
   @apply px-4 pt-4 pb-8 flex items-center justify-between 
     border-b 
     border-b-secondary-300/40
-    bg-secondary-200
     dark:border-b-secondary-900/40
-    dark:bg-secondary-800
-    active:transform active:scale-[98%]
-    rounded-tl-xl rounded-tr-xl cursor-pointer;
+    rounded-tl-xl rounded-tr-xl;
 }
 
 .vault-tile .main.full {
@@ -54,28 +61,33 @@
   @apply flex items-center justify-between;
 }
 
-.vault-tile .footer .left, .vault-tile .footer .right {
-  @apply basis-1/2 p-4 flex items-center justify-center text-sm
-    bg-secondary-200
-    dark:bg-secondary-800
-    active:transform active:scale-[98%]
-    cursor-pointer;
-}
-
 .vault-tile .footer svg {
   @apply mr-2;
 }
 
+.vault-tile .footer .left, 
+.vault-tile .footer .center, 
+.vault-tile .footer .right {
+  @apply p-4 flex items-center justify-center text-sm;
+}
+
+.vault-tile .footer .left, 
+.vault-tile .footer .right {
+  @apply basis-1/4;
+}
+
+.vault-tile .footer .center {
+  @apply basis-1/2 border-l border-r 
+    border-secondary-300/40 
+    dark:border-secondary-900/40;
+}
+
 .vault-tile .footer .left {
-  @apply border-r border-r-secondary-300/40 dark:border-r-secondary-900/40 rounded-bl-xl;
+  @apply rounded-bl-xl;
 }
 
 .vault-tile .footer .right {
-  @apply rounded-br-xl;
-}
-
-.vault-tile .footer .left, .vault-tile .footer .right, .vault-tile .main {
-  @apply hover:bg-selected-200 dark:hover:bg-secondary-700;
+  @apply rounded-br-xl no-underline;
 }
 
 .vault-tile .version {
@@ -90,6 +102,10 @@
 .vault-tile .fantom {
   @apply bg-fantom-200
     dark:bg-fantom-600;
+}
+
+.vault-tile .favorite {
+  @apply fill-attention-400;
 }
 
 .vaults-filter {
