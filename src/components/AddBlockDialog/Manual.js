@@ -1,16 +1,30 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {ethers} from 'ethers';
 import {useDebouncedCallback} from 'use-debounce';
 import {BsAsterisk, BsCheckLg} from 'react-icons/bs';
+import {useApp} from '../../context/useApp';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import {GetBasicStrat, GetBasicVault} from '../../ethereum/EthHelpers';
 import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
 
 export default function Manual() {
+	const {vaults, favoriteVaults, favoriteStrategies} = useApp();
 	const {selectedProvider} = useSelectedProvider();
 	const {setSteps, setResult} = useAddBlockDialog();
 	const [address, setAddress] = useState({value: null, valid: false, type: ''});
+	const [favorites, setFavorites] = useState([]);
 	const [block, setBlock] = useState();
+
+	useEffect(() => {
+		setFavorites([
+			...vaults.filter(vault => favoriteVaults.includes(vault.address)).map(vault => {
+				return {
+					address: vault.address,
+					name: vault.name
+				};
+			})
+		]);
+	}, [favoriteVaults, favoriteStrategies]);
 
 	const debounceAddress = useDebouncedCallback(async (value) => {
 		value = value.trim();
@@ -74,17 +88,37 @@ export default function Manual() {
 		}}
 	}
 
+	async function onSelectFavorite(e) {
+		if(e.target.value) {
+			const newBlock = await GetBasicVault(e.target.value, selectedProvider);
+			setAddress({value: e.target.value, valid: true, type: 'vault'});
+			setBlock(newBlock);
+		} else {
+			setAddress({value: null, valid: false, type: ''});
+			setBlock(null);
+		}
+	}
+
 	return <div className={'h-full flex flex-col'}>
 		<div className={'inputs'}>
 			<div className={'scroll-container'}>
 				<p className={'pl-8 pr-12 py-4 text-3xl'}>{'Enter a vault or strategy address'}</p>
 				<div className={'input flex items-center'}>
-					<input type={'text'} onChange={(e) => {debounceAddress(e.target.value);}} placeholder={'address'} />
+					<input type={'text'} defaultValue={address.value} onChange={(e) => {debounceAddress(e.target.value);}} placeholder={'address'} />
 					<div className={'validation'}>
 						{address.valid && <BsCheckLg className={'valid'}></BsCheckLg>}
 						{!address.valid && <BsAsterisk className={'invalid'}></BsAsterisk>}
 					</div>
 				</div>
+				{favorites.length && 
+				<div className={'input'}>
+					<select defaultValue={address.value} onChange={onSelectFavorite} className={'w-full'}>
+						<option value={''}>{'Or choose a favorite'}</option>
+						{favorites.map(favorite => 
+							<option key={favorite.address} value={favorite.address}>{favorite.name}</option>
+						)}
+					</select>
+				</div>}
 				<div className={'mt-4 text-lg'}>
 					&nbsp;{block?.name}&nbsp;
 				</div>

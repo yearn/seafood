@@ -1,11 +1,5 @@
 @tailwind utilities;
 
-@layer utilities {
-  .glow-attention-md {
-    filter: drop-shadow(0 4px 3px rgb(250 204 21 / 0.1)) drop-shadow(0 2px 2px rgb(250 204 21 / 0.06));
-  }
-}
-
 .vaults-list {
   @apply max-w-full;
 }
@@ -69,10 +63,6 @@
   @apply flex items-center justify-between;
 }
 
-.vault-tile .footer svg {
-  @apply mr-2;
-}
-
 .vault-tile .footer .left, 
 .vault-tile .footer .center, 
 .vault-tile .footer .right {
@@ -117,7 +107,7 @@
 }
 
 .vaults-filter {
-  @apply sticky top-0;
+  @apply sticky top-0 z-10;
 }
 
 .vaults-filter input[type=text] {

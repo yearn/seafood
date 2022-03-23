@@ -1,4 +1,5 @@
 const colors = require('tailwindcss/colors');
+const plugin = require('tailwindcss/plugin');
 
 module.exports = {
   content: ['./src/**/*.{html,js}'],
@@ -42,6 +43,13 @@ module.exports = {
     },
   },
   plugins: [
-    require('@tailwindcss/forms')
+    require('@tailwindcss/forms'),
+    plugin(function({ addUtilities }) {
+      addUtilities({
+        '.glow-attention-md': {
+          'filter': 'drop-shadow(0 4px 3px rgb(250 204 21 / 0.1)) drop-shadow(0 2px 2px rgb(250 204 21 / 0.06))',
+        }
+      })
+    })
   ],
 }
