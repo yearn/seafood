@@ -13,7 +13,7 @@ const getReports = (strat) => {
 
 	return new Promise(function(resolve, reject) {
 
-		const text = format('SELECT * FROM reports WHERE strategy_address = %L ORDER BY block DESC LIMIT 5', strat.address);
+		const text = format('SELECT * FROM reports WHERE strategy_address = %L ORDER BY block DESC LIMIT 100', strat.address);
 		pool.query(text, (error, results) => {
 			if (error) {
 				reject(error);
