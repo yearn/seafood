@@ -22,10 +22,12 @@ ChartJS.register(
 );
 
 
-export default function InfoChart({vault}) {
-	console.log(vault);
+export default function InfoChart({x, y, name}) {
+	console.log('info', x);
+	console.log('name', name);
 	const options = {
 		responsive: true,
+		maintainAspectRatio: false,
 		plugins: {
 			legend: {
 				position: 'top',
@@ -34,22 +36,16 @@ export default function InfoChart({vault}) {
 		},
 	};
       
-	const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+	const labels = x;
       
 	const data = {
 		labels,
 		datasets: [
 			{
-				label: 'Dataset 1',
-				data: labels.map(() => 2),
+				label: name,
+				data: y,
 				borderColor: 'rgb(255, 99, 132)',
 				backgroundColor: 'rgba(255, 99, 132, 0.5)',
-			},
-			{
-				label: 'Dataset 2',
-				data: labels.map(() => 3),
-				borderColor: 'rgb(53, 162, 235)',
-				backgroundColor: 'rgba(53, 162, 235, 0.5)',
 			},
 		],
 	};

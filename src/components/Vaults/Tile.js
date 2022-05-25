@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import {GetExplorerLink, TruncateAddress} from '../../utils/utils';
 import {useFilter} from './useFilter';
 
-import InfoChart from './InfoChart';
+// import InfoChart from './InfoChart';
 	
 	
 
@@ -43,8 +43,9 @@ export default function Tile({vault, onClick}) {
 				</div>
 			</div>
 			<div className={'avatar'}>
-				<div><InfoChart vault={vault}
-				/></div>
+				<div>
+					{/* <InfoChart name={'PPS'} /> */}
+				</div>
 			</div>
 		</div>
 		<div className={'footer'}>
