@@ -176,7 +176,14 @@ function SingleVaultPage({value}){
 			{(zeros[strat.address] && zeros[strat.address].result) && <ShowEvents events={zeros[strat.address].result.events} />}
 			<div>{'Lastharvest: '}{strat.lastTime.toLocaleString(undefined, {maximumFractionDigits:2})}{'h - Real ratio: '}{(100*strat.beforeDebt/strat.vaultAssets).toLocaleString(undefined, {maximumFractionDigits:2})}{'% - Desired ratio: '}{(strat.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% '}</div>
 			<div>{harvestedS.length > 0 ? (strat.succeded ? showApr(strat) : 'Failed Harvest ')  : ''} <a target={'_blank'} href={strat.tenderlyURL} rel={'noreferrer'}>{harvestedS.length > 0 && 'Tenderly Link'} </a></div>
-			{historicHarvests[strat.address] && <div> <InfoChart x={historicHarvests[strat.address].map(d => d['date_string']).reverse()} name={'APR'} y={historicHarvests[strat.address].map(d => d['rough_apr_pre_fee']*100).reverse()} importData={historicHarvests[strat.address]} /></div>}
+			{historicHarvests[strat.address] && <div> <InfoChart x={historicHarvests[strat.address].map(d => d['date_string']).reverse()} name={'APR (capped at 200%)'} y={historicHarvests[strat.address].map(d => {
+				let amount = d['rough_apr_pre_fee']*100;
+				if (amount > 200){
+					amount = 200;
+				}
+				return amount;
+			}).reverse()
+			} importData={historicHarvests[strat.address]} /></div>}
 			{showHistoricHarvests[strat.address] && <HistoricReports history={historicHarvests[strat.address]} />}
 			{!showHistoricHarvests[strat.address] &&<button onClick={() => clickShowHistoricHarvests(strat.address)}>{'Show historic harvests'}</button>}
 		</div>
