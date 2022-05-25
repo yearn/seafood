@@ -40,9 +40,11 @@
 .vault-tile .main .info .chips .little-chip {
   @apply h-fit px-2 py-[1px] text-xs rounded-full;
 }
-
+.vault-tile .main .avatar{
+  @apply flex w-5/6
+}
 .vault-tile .main .avatar div {
-  @apply w-16 h-16 bg-secondary-600/40 rounded-full;
+  @apply w-full h-20 bg-secondary-600/40 rounded-lg;
 }
 
 .vault-tile .footer {
