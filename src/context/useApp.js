@@ -26,7 +26,7 @@ export const AppProvider = ({children}) => {
 				}));
 			});
 			setVaults(freshVaults);
-			console.log(freshVaults);
+			// console.log(freshVaults);
 			setLoading(false);
 		})();
 	}, [defaultProvider, fantomProvider]);
