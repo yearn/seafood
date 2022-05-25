@@ -1,25 +1,24 @@
-import axios from '../axios';
 
 import {BsBoxArrowInUpRight} from 'react-icons/bs';
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {GetExplorerTx} from '../utils/utils';
-function HistoricReports({strategy}){
+function HistoricReports({history}){
 
-	const [all, setAll] = useState([]);
+	// const [all, setAll] = useState([]);
     
-	useEffect(() => {
-		try{
-			axios.post('api/getVaults/AllStrategyReports', strategy).then((response) => {
-				console.log(response.data);
-				setAll(response.data);
-			});
-		}catch{console.log('eth failed');
-		}
-	}, [strategy]);
-
+	// useEffect(() => {
+	// 	try{
+	// 		axios.post('api/getVaults/AllStrategyReports', strategy).then((response) => {
+	// 			console.log(response.data);
+	// 			setAll(response.data);
+	// 		});
+	// 	}catch{console.log('eth failed');
+	// 	}
+	// }, [strategy]);
+	console.log('history', history);
 	return <div>
 		<br />
-		{all.map(e => {
+		{history.map(e => {
 			let time = new Date(e.timestamp*1000);
 
 

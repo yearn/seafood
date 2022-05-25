@@ -7,18 +7,20 @@ import {FormatNumer, FormatPercent, GetExplorerLink} from '../utils/utils';
 import HistoricReports from '../components/HistoricReports';
 import {setupTenderly, TenderlySim} from '../ethereum/TenderlySim';
 import ShowEvents from '../components/ShowEvents';
+import axios from '../axios';
+import InfoChart from '../components/Vaults/InfoChart';
 
 function SingleVaultPage({value}){
 	const {fantomProvider, defaultProvider} = useRPCProvider();
 	let provider = value.chain == 250 ? fantomProvider : defaultProvider;
 	const [allS, setAlls] = useState([]);
 	const [historicHarvests, setHistoricHarvests] = useState([]);
+	const [showHistoricHarvests, setShowHistoricHarvests] = useState([]);
 	const [vault, setVault] = useState({});
 	const [nonce, setNonce] = useState(0);
 	const [harvestedS, setHarvested] = useState([]);
 	const [showRatio, toggleRatios] = useState(false);
 	const [zeros, setStateZeros] = useState({});
-  
 
 	console.log('inputting ', value);
 
@@ -49,6 +51,20 @@ function SingleVaultPage({value}){
 		if(vault.address){
 			AllStrats(vault, provider).then(y => {			
 				setAlls(y || []);
+				y.forEach(strategy => {
+					axios.post('api/getVaults/AllStrategyReports', strategy).then((response) => {
+						console.log(response.data);
+						setHistoricHarvests(
+							currentValues => {
+								currentValues[strategy.address] = response.data;
+								return currentValues;
+							
+							});
+						setNonce(nonce+Math.random(100));
+			
+					});
+				});
+				
 			});
 		}
 
@@ -93,7 +109,7 @@ function SingleVaultPage({value}){
 					currentValues[strat.address] = x[1];
 					return currentValues;
 				});
-				setNonce(nonce+1);
+				setNonce(nonce+Math.random(100));
 			});
 		});
 
@@ -106,11 +122,11 @@ function SingleVaultPage({value}){
 		setHarvested(_harvested || []);
 	}, [allS, vault, provider.network.chainId]);
 
-	function showHistoricHarvests(strat){
+	function clickShowHistoricHarvests(strat){
 
 		try{
 			
-			setHistoricHarvests(
+			setShowHistoricHarvests(
 				currentValues => {
 					currentValues[strat] = true;
 					return currentValues;
@@ -160,8 +176,9 @@ function SingleVaultPage({value}){
 			{(zeros[strat.address] && zeros[strat.address].result) && <ShowEvents events={zeros[strat.address].result.events} />}
 			<div>{'Lastharvest: '}{strat.lastTime.toLocaleString(undefined, {maximumFractionDigits:2})}{'h - Real ratio: '}{(100*strat.beforeDebt/strat.vaultAssets).toLocaleString(undefined, {maximumFractionDigits:2})}{'% - Desired ratio: '}{(strat.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% '}</div>
 			<div>{harvestedS.length > 0 ? (strat.succeded ? showApr(strat) : 'Failed Harvest ')  : ''} <a target={'_blank'} href={strat.tenderlyURL} rel={'noreferrer'}>{harvestedS.length > 0 && 'Tenderly Link'} </a></div>
-			{historicHarvests[strat.address] && <HistoricReports strategy={strat} />}
-			{!historicHarvests[strat.address] &&<button onClick={() => showHistoricHarvests(strat.address)}>{'Show historic harvests'}</button>}
+			{historicHarvests[strat.address] && <div> <InfoChart x={historicHarvests[strat.address].map(d => d['date_string'])} name={'APR'} y={historicHarvests[strat.address].map(d => d['rough_apr_pre_fee']*100)} importData={historicHarvests[strat.address]} /></div>}
+			{showHistoricHarvests[strat.address] && <HistoricReports history={historicHarvests[strat.address]} />}
+			{!showHistoricHarvests[strat.address] &&<button onClick={() => clickShowHistoricHarvests(strat.address)}>{'Show historic harvests'}</button>}
 		</div>
 	));
 	

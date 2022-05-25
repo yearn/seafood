@@ -4,8 +4,15 @@ import toast from 'react-hot-toast';
 import {GetExplorerLink, TruncateAddress} from '../../utils/utils';
 import {useFilter} from './useFilter';
 
+// import InfoChart from './InfoChart';
+	
+	
+
+
 export default function Tile({vault, onClick}) {
 	const {queryRe} = useFilter();
+	
+
 
 	function styleTitle(title) {
 		const match = title.match(queryRe);
@@ -23,7 +30,10 @@ export default function Tile({vault, onClick}) {
 		return title;
 	}
 
+	
+
 	return <div className={'vault-tile'}>
+		
 		<div onClick={onClick} className={'main'}>
 			<div className={'info'}>
 				<div className={'title'}>{styleTitle(vault.name)}</div>
@@ -33,7 +43,9 @@ export default function Tile({vault, onClick}) {
 				</div>
 			</div>
 			<div className={'avatar'}>
-				<div></div>
+				<div>
+					{/* <InfoChart name={'PPS'} /> */}
+				</div>
 			</div>
 		</div>
 		<div className={'footer'}>
