@@ -29,9 +29,9 @@ export default function Menu({action}) {
 			<li>
 				<NavigationLink to={'/'} label={'Vaults'}></NavigationLink>
 			</li>
-			<li>
+			{/* <li>
 				<NavigationLink to={'/insights'} label={'Insights'}></NavigationLink>
-			</li>
+			</li> */}
 			<li>
 				<NavigationLink to={'/masterchef'} label={'Masterchef'}></NavigationLink>
 			</li>
