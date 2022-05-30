@@ -46,6 +46,9 @@
 .vault-tile .main .avatar div {
   @apply w-full h-20 bg-secondary-600/40 rounded-lg;
 }
+.internal-avatar {
+  @apply p-1.5 text-sm;
+}
 
 .vault-tile .footer {
   @apply flex items-center justify-between;

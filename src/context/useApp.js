@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, {createContext, useContext, useEffect, useState} from 'react';
 import useLocalStorage from 'use-local-storage';
 import useRpcProvider from './useRpcProvider';
+import {AllStratsFromAllVaults} from  '../ethereum/EthHelpers';
 
 const	AppContext = createContext();
 
@@ -11,6 +12,7 @@ export const AppProvider = ({children}) => {
 	const {defaultProvider, fantomProvider} = useRpcProvider();
 	const [loading, setLoading] = useState(false);
 	const [vaults, setVaults] = useState([]);
+	const [strats, setStrats] = useState([]);
 	const [darkMode, setDarkMode] = useLocalStorage('darkMode', null);
 
 	useEffect(() => {
@@ -25,6 +27,14 @@ export const AppProvider = ({children}) => {
 					return {...v, provider};
 				}));
 			});
+			AllStratsFromAllVaults(freshVaults.filter(v => v.provider.network.name === 'ethereum'), providers[0]).then(x => {
+				setStrats(oldArray => [...oldArray, ...x]);
+			});
+			AllStratsFromAllVaults(freshVaults.filter(v => v.provider.network.name === 'fantom'), providers[1]).then(x => {
+				setStrats(oldArray => [...oldArray, ...x]);
+				console.log(x);
+			});
+
 			setVaults(freshVaults);
 			// console.log(freshVaults);
 			setLoading(false);
@@ -40,6 +50,7 @@ export const AppProvider = ({children}) => {
 	return <AppContext.Provider value={{
 		loading,
 		vaults,
+		strats,
 		darkMode, 
 		setDarkMode
 	}}>{children}</AppContext.Provider>;

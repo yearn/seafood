@@ -23,8 +23,8 @@ ChartJS.register(
 
 
 export default function InfoChart({x, y, name}) {
-	console.log('info', x);
-	console.log('name', name);
+	// console.log('info', x);
+	// console.log('name', name);
 	const options = {
 		responsive: true,
 		maintainAspectRatio: false,
