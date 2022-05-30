@@ -3,6 +3,8 @@ import {BsBoxArrowInUpRight, BsClipboard} from 'react-icons/bs';
 import toast from 'react-hot-toast';
 import {GetExplorerLink, TruncateAddress} from '../../utils/utils';
 import {useFilter} from './useFilter';
+import {useApp} from '../../context/useApp';
+import StratSummary from './StratSummary';
 
 // import InfoChart from './InfoChart';
 	
@@ -11,6 +13,7 @@ import {useFilter} from './useFilter';
 
 export default function Tile({vault, onClick}) {
 	const {queryRe} = useFilter();
+	const {strats} = useApp();
 	
 
 
@@ -30,7 +33,9 @@ export default function Tile({vault, onClick}) {
 		return title;
 	}
 
-	
+	// console.log(strats);
+	const v_d = strats.find(element => element.address === vault.address);
+	console.log(v_d);
 
 	return <div className={'vault-tile'}>
 		
@@ -44,7 +49,7 @@ export default function Tile({vault, onClick}) {
 			</div>
 			<div className={'avatar'}>
 				<div>
-					{/* <InfoChart name={'PPS'} /> */}
+					{v_d && <StratSummary vault={v_d}/>  /* <InfoChart name={'PPS'} /> */}
 				</div>
 			</div>
 		</div>

@@ -46,7 +46,7 @@ async function AllStrats(vault, defaultProvider){
 	let con = vault.contract;
 	let currentTime = Date.now()/1000;
 	for(let i=0; i < resultsArray.length; i++){
-	    res = resultsArray[i].returnValues[0];
+		res = resultsArray[i].returnValues[0];
 		if(i == 0){
 			totalAssets = ethers.BigNumber.from(res);
 		}
@@ -63,6 +63,197 @@ async function AllStrats(vault, defaultProvider){
 	}
 	return strats;
 }   
+
+async function AllStratsFromAllVaults(vaults, defaultProvider){
+	const multicall = new Multicall({ethersProvider: defaultProvider, tryAggregate: true});
+	const contractCallContext =  vaults.map(vault => (
+		{
+			reference: vault.address,
+			contractAddress: vault.address,
+			abi: vault043,
+			calls: [
+				{reference: 'assets', methodName: 'totalAssets', methodParameters: []},
+				{reference: 'governance', methodName: 'governance', methodParameters: []},
+				{reference: 'debt', methodName: 'totalDebt', methodParameters: []},
+				{reference: 'version', methodName: 'apiVersion', methodParameters: []},
+				{reference: 'decimals', methodName: 'decimals', methodParameters: []},
+				{reference: 'debtRatio', methodName: 'debtRatio', methodParameters: []},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [0]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [1]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [2]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [3]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [4]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [5]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [6]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [7]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [8]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [9]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [10]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [11]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [12]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [13]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [14]},
+				{reference: 'queue', methodName: 'withdrawalQueue', methodParameters: [15]},
+			]
+		}));
+	
+	// console.log(contractCallContext);
+	const results = await multicall.call(contractCallContext);
+	// console.log(results);
+	// console.log(resultsArray);
+	// let res, s, gov, totalAssets;
+	let vaults_enlarged = [];
+
+
+	let all_strats = [];
+	
+
+	vaults.forEach(vault => {
+		let strats = [];
+		let resultsArray = results.results[vault.address].callsReturnContext;
+		let res, s, gov, totalAssets, totalDebt, decimals, version, debtRatio;
+		// console.log(resultsArray);
+		for(let i=0; i < resultsArray.length; i++){
+			res = resultsArray[i].returnValues[0];
+			if(!res){
+				continue;
+			}
+			if(i == 0){
+				totalAssets = ethers.BigNumber.from(res);
+			}
+			else if(i == 1){
+				gov = res;
+			}
+			else if(i == 2){
+				totalDebt = ethers.BigNumber.from(res);
+			}
+			else if(i == 3){
+				version = res;
+			}
+			else if(i == 4){
+				decimals = ethers.BigNumber.from(res).toNumber();
+			}
+			else if(i == 5){
+				
+				debtRatio = ethers.BigNumber.from(res).toNumber();
+			}
+			else{
+				s = res;
+				if(s == '0x0000000000000000000000000000000000000000'){
+					break;
+				}
+				strats.push(s);
+				all_strats.push(s);
+			}
+		}
+		vaults_enlarged.push({
+			name: vault.name,
+			address: vault.address,
+			chainId: defaultProvider.network.chainId,
+			totalAssets: totalAssets,
+			totalDebt: totalDebt,
+			version: version,
+			decimals: decimals,
+			debtRatio: debtRatio,
+			gov: gov,
+			strats: strats
+		});
+		
+	});
+
+	// need to split into smaller pieces. too big!
+	var size = 100; 
+	var arrayOfArrays = [];
+	for (var i=0; i<vaults_enlarged.length; i+=size) {
+		arrayOfArrays.push(vaults_enlarged.slice(i,i+size));
+	}
+
+	for( let arr of arrayOfArrays){
+		const contractCallContextStrats =  arr.map(vault => {
+			// console.log('length of strats:', vault.strats.length);
+			return {
+				reference: vault.address,
+				contractAddress: vault.address,
+				abi: vault.version.includes('0.3.0') | vault.version.includes('0.3.1') ? vault030: vault043,
+				calls: vault.strats.map(strat => ({reference: 'strategies', methodName: 'strategies', methodParameters: [strat]}))
+				
+			};}
+		);
+		// console.log(contractCallContextStrats);
+		const results2 = await multicall.call(contractCallContextStrats);
+		//console.log(results2);
+
+		for( let v of vaults_enlarged){
+			let x = results2.results[v.address];
+			if(x != undefined){
+				v.strats_detailed = x.callsReturnContext.map(ret => (StrategiesDecode(ret.methodParameters[0],v, ret.returnValues)));
+			}
+			
+		}
+	}
+
+	
+	const contractCallContextAllStrats =  all_strats.map(strat => {
+		// console.log('length of strats:', vault.strats.length);
+		return {
+			reference: strat,
+			contractAddress: strat,
+			abi: strategy,
+			calls: [
+				{reference: 'name', methodName: 'name', methodParameters: []},
+			]
+		};}
+	);
+	// console.log(contractCallContextStrats);
+	const results3 = await multicall.call(contractCallContextAllStrats);
+	//console.log(results2);
+
+	for( let v of vaults_enlarged){
+		if(v.strats_detailed){
+			for ( let s of v.strats_detailed){
+				let x = results3.results[s.address];
+				if(x != undefined){
+					s.name = x.callsReturnContext[0].returnValues[0];
+				}
+			}
+		}
+		
+		
+	}
+	
+
+	// console.log('length of vaults:', vaults_enlarged.length);
+
+	
+	
+
+	
+	
+
+
+
+	// let con = vault.contract;
+	// let currentTime = Date.now()/1000;
+	// for(let j=0; j < results.length; j++){
+	// 	let resultsArray = results[j];
+	// 	for(let i =0; i< resultsArray)
+	//     res = resultsArray[i].returnValues[0];
+	// 	if(i == 0){
+	// 		totalAssets = ethers.BigNumber.from(res);
+	// 	}
+	// 	else if(i == 1){
+	// 		gov = res;
+	// 	}
+	// 	else{
+	// 		s = res;
+	// 		if(s == '0x0000000000000000000000000000000000000000'){
+	// 			break;
+	// 		}
+	// 		strats.push(await StratInfo(con, s, defaultProvider, currentTime, totalAssets, gov));
+	// 	}
+	// }
+	return vaults_enlarged;
+}
 
 async function GetMasterchef(strats, provider, allV){
     
@@ -291,7 +482,44 @@ async function GetVaultInfo(vault, provider){
     
 }
 
+function StrategiesDecode(strat, vault, strategies_return){
+	// console.log(strategies_return);
 
+	if(vault.version.includes('0.3.0') | vault.version.includes('0.3.1')){
+		return {
+			address: strat,
+			performanceFee: ethers.BigNumber.from(strategies_return[0]), 
+			activation: ethers.BigNumber.from(strategies_return[1]), 
+			debtRatio: ethers.BigNumber.from(strategies_return[2]), 
+			rateLimit: ethers.BigNumber.from(strategies_return[3]), 
+			lastReport: ethers.BigNumber.from(strategies_return[4]), 
+			totalDebt: ethers.BigNumber.from(strategies_return[5]), 
+			totalGain: ethers.BigNumber.from(strategies_return[6]), 
+			totalLoss: ethers.BigNumber.from(strategies_return[7])
+			
+	
+		};
+	}else{
+		return {
+			address: strat,
+			performanceFee: ethers.BigNumber.from(strategies_return[0]), 
+			activation: ethers.BigNumber.from(strategies_return[1]), 
+			debtRatio: ethers.BigNumber.from(strategies_return[2]), 
+			minDebtPerHarvest: ethers.BigNumber.from(strategies_return[3]), 
+			maxDebtPerHarvest: ethers.BigNumber.from(strategies_return[4]), 
+			lastReport: ethers.BigNumber.from(strategies_return[5]), 
+			totalDebt: ethers.BigNumber.from(strategies_return[6]), 
+			totalGain: ethers.BigNumber.from(strategies_return[7]), 
+			totalLoss: ethers.BigNumber.from(strategies_return[8])
+			
+	
+		};
+	}
+
+	
+	
+    
+}
 
 async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
 
@@ -450,4 +678,4 @@ function Dai(provider){
     
 }
 
-export {AllVaults,GetDexScreener, GetBalances, GetCurrentBlock, GetBasicStrat, GetBasicVault, GetVaultContract, AllRegistered, AllStrats, StratInfo, Erc20Info, GetMasterchef};
+export {AllVaults,GetDexScreener, AllStratsFromAllVaults, GetBalances, GetCurrentBlock, GetBasicStrat, GetBasicVault, GetVaultContract, AllRegistered, AllStrats, StratInfo, Erc20Info, GetMasterchef};
