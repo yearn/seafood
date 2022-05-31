@@ -1,6 +1,6 @@
 import React from 'react';
 import {Route, Routes, BrowserRouter} from 'react-router-dom';
-import SingleVaultPage from './pages/SingleVault';
+import SingleVaultPage from './components/SingleVault';
 import MasterchefPage from './pages/Masterchef';
 import TestAPI from './pages/TestAPI';
 import {RPCProviderContextApp} from './context/useRpcProvider';
