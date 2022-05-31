@@ -35,7 +35,7 @@ export default function Tile({vault, onClick}) {
 
 	// console.log(strats);
 	const v_d = strats.find(element => element.address === vault.address);
-	console.log(v_d);
+	//console.log(v_d);
 
 	return <div className={'vault-tile'}>
 		
