@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import useRPCProvider from '../context/useRpcProvider';
-import SingleVaultPage from '../pages/SingleVault';
+import SingleVaultPage from './components/SingleVault';
 
 import VaultButtons from '../components/VaultsList';
 

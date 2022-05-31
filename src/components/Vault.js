@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import {useApp} from '../context/useApp';
-import SingleVaultPage from '../pages/SingleVault';
+import SingleVaultPage from './SingleVault';
 
 export default function Vault() {
 	const params = useParams();

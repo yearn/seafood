@@ -1,14 +1,16 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {AllStrats, AllVaults} from  '../ethereum/EthHelpers';
-import HarvestMultiple from  '../ethereum/HarvestMultiple';
-import useRPCProvider from '../context/useRpcProvider';
-import RatioAdjust from './RatioAdjusters';
-import {FormatNumer, FormatPercent, GetExplorerLink} from '../utils/utils';
-import HistoricReports from '../components/HistoricReports';
-import {setupTenderly, TenderlySim} from '../ethereum/TenderlySim';
-import ShowEvents from '../components/ShowEvents';
-import axios from '../axios';
-import InfoChart from '../components/Vaults/InfoChart';
+import {AllStrats, AllVaults} from  '../../ethereum/EthHelpers';
+import HarvestMultiple from  '../../ethereum/HarvestMultiple';
+import useRPCProvider from '../../context/useRpcProvider';
+import RatioAdjust from '../../pages/RatioAdjusters';
+import {FormatNumer, FormatPercent, GetExplorerLink} from '../../utils/utils';
+import HistoricReports from '../../components/HistoricReports';
+import {setupTenderly, TenderlySim} from '../../ethereum/TenderlySim';
+import ShowEvents from '../../components/ShowEvents';
+import axios from '../../axios';
+import InfoChart from '../../components/Vaults/InfoChart';
+import './index.css';
+import useLocalStorage from 'use-local-storage';
 
 function SingleVaultPage({value}){
 	const {fantomProvider, defaultProvider} = useRPCProvider();
@@ -21,6 +23,7 @@ function SingleVaultPage({value}){
 	const [harvestedS, setHarvested] = useState([]);
 	const [showRatio, toggleRatios] = useState(false);
 	const [zeros, setStateZeros] = useState({});
+	const [showGraphs, setShowGraphs] = useLocalStorage('SingleVault.settings.showGraphs', false);
 
 	//console.log('inputting ', value);
 
@@ -176,7 +179,7 @@ function SingleVaultPage({value}){
 			{(zeros[strat.address] && zeros[strat.address].result) && <ShowEvents events={zeros[strat.address].result.events} />}
 			<div>{'Lastharvest: '}{strat.lastTime.toLocaleString(undefined, {maximumFractionDigits:2})}{'h - Real ratio: '}{(100*strat.beforeDebt/strat.vaultAssets).toLocaleString(undefined, {maximumFractionDigits:2})}{'% - Desired ratio: '}{(strat.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% '}</div>
 			<div>{harvestedS.length > 0 ? (strat.succeded ? showApr(strat) : 'Failed Harvest ')  : ''} <a target={'_blank'} href={strat.tenderlyURL} rel={'noreferrer'}>{harvestedS.length > 0 && 'Tenderly Link'} </a></div>
-			{historicHarvests[strat.address] && <div> <InfoChart x={historicHarvests[strat.address].map(d => d['date_string']).reverse()} name={'APR (capped at 200%)'} y={historicHarvests[strat.address].map(d => {
+			{historicHarvests[strat.address] && showGraphs && <div> <InfoChart x={historicHarvests[strat.address].map(d => d['date_string']).reverse()} name={'APR (capped at 200%)'} y={historicHarvests[strat.address].map(d => {
 				let amount = d['rough_apr_pre_fee']*100;
 				if (amount > 200){
 					amount = 200;
@@ -193,6 +196,7 @@ function SingleVaultPage({value}){
 		<div>
 			
 			<button onClick={onHarvestMultiple}>{' Harvest All?'}</button>
+			{'show graphs: '}<input type={'checkbox'} checked={showGraphs} onChange={() => (setShowGraphs(!showGraphs))} />
 			
 			<div>{vault.name}{' - '}{vault.version}{' - '}<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, value.address)} rel={'noreferrer'}> {value.address}</a>{' - '}{(vault.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated - Free Assets: '}{((vault.totalAssets - vault.totalDebt) / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
 			{/* {console.log('sda2')}
