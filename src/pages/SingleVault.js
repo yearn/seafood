@@ -22,7 +22,7 @@ function SingleVaultPage({value}){
 	const [showRatio, toggleRatios] = useState(false);
 	const [zeros, setStateZeros] = useState({});
 
-	console.log('inputting ', value);
+	//console.log('inputting ', value);
 
 	//Handle the setAll
 	// const	onSetAll = useCallback(async () => {
@@ -53,7 +53,7 @@ function SingleVaultPage({value}){
 				setAlls(y || []);
 				y.forEach(strategy => {
 					axios.post('api/getVaults/AllStrategyReports', strategy).then((response) => {
-						console.log(response.data);
+						//console.log(response.data);
 						setHistoricHarvests(
 							currentValues => {
 								currentValues[strategy.address] = response.data;
@@ -163,7 +163,7 @@ function SingleVaultPage({value}){
 			<div>{'loading strats...'}</div></div>);
 	}
     
-	console.log(zeros);
+	//console.log(zeros);
 	// console.log(vault);
 	// console.log(harvestedS);
 
@@ -195,8 +195,8 @@ function SingleVaultPage({value}){
 			<button onClick={onHarvestMultiple}>{' Harvest All?'}</button>
 			
 			<div>{vault.name}{' - '}{vault.version}{' - '}<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, value.address)} rel={'noreferrer'}> {value.address}</a>{' - '}{(vault.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated - Free Assets: '}{((vault.totalAssets - vault.totalDebt) / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
-			{console.log('sda2')}
-			{console.log(vault)}
+			{/* {console.log('sda2')}
+			{console.log(vault)} */}
 			{listItems}
 
 			<div>{showRatio && <RatioAdjust strats={allS} />}</div>
