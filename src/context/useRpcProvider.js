@@ -3,44 +3,74 @@ import React, {useContext, createContext, useState} from 'react';
 
 const RPCProvider = createContext();
 export const RPCProviderContextApp = ({children}) => {
-	const [useProvider, setUseProvider] = useState(null);
+	const [defaultProvider, setDefaultProvider] = useState(new ethers.providers.WebSocketProvider(
+		process.env.REACT_APP_ETH_WS_PROVIDER, {
+			name: 'ethereum',
+			chainId: 1
+		}
+	));
+	const [fantomProvider, setFantomProvider] = useState(new ethers.providers.WebSocketProvider(
+		process.env.REACT_APP_FTM_WS_PROVIDER3, {
+			name: 'fantom',
+			chainId: 250
+		}
+	));
+
 
 	const def_network = {
 		name: 'ethereum',
 		chainId: 1
 	};
-	const defaultProvider = new ethers.providers.WebSocketProvider(
+	const eth_nodes = [];
+	
+	eth_nodes.push(new ethers.providers.WebSocketProvider(
 		process.env.REACT_APP_ETH_WS_PROVIDER, def_network
-	);
+	));
+	if(process.env.REACT_APP_ETH_WS_PROVIDER_BACKUP){
+
+		const n = new ethers.providers.WebSocketProvider(
+			process.env.REACT_APP_ETH_WS_PROVIDER_BACKUP, def_network
+		);
+		eth_nodes.push(n);
+	}
+
 	const network = {
 		name: 'fantom',
 		chainId: 250
 	};
-	/*
-	//console.log(base64.encode(process.env.REACT_APP_FTM_USER + ':' + process.env.REACT_APP_FTM_PASS));
-	const urlInfo = {
-		url: process.env.REACT_APP_FTM_WS_PROVIDER2,
-		user: process.env.REACT_APP_FTM_USER,
-		password: process.env.REACT_APP_FTM_PASS,
-		//headers: {'Authorization': 'Basic ' + base64.encode(process.env.REACT_APP_FTM_USER + ':' + process.env.REACT_APP_FTM_PASS)			
-		//}
-	};
-	const fantomProvider = new ethers.providers.JsonRpcProvider(
-		urlInfo, network
-	);*/
 
-	const fantomProvider = new ethers.providers.WebSocketProvider(
+	const ftm_nodes = [];
+	
+	ftm_nodes.push(new ethers.providers.WebSocketProvider(
 		process.env.REACT_APP_FTM_WS_PROVIDER3, network
-	);
-
+	));
+	
 	const [tenderlyProvider, setTenderly] = useState(null);
 
-	function initProvider() {
-		const provider = new ethers.providers.WebSocketProvider(
-			process.env.REACT_APP_ETH_WS_PROVIDER
-		);
+	async function initProviders() {
+		let promises = [];
+		for(let provider of eth_nodes){
+			let promise = new Promise(function(resolve){
+				provider.detectNetwork().then(() => resolve(provider));
+			});
+			promises.push(promise);
+		}
+		let def = await Promise.race(promises);
+		setDefaultProvider(def);
+		console.log(defaultProvider);
+		
 
-		setTenderly(provider);
+		promises = [];
+		for(let provider of ftm_nodes){
+			let promise = new Promise(function(resolve){
+				provider.detectNetwork().then(() => resolve(provider));
+			});
+			promises.push(promise);
+		}
+		let fan = await Promise.race(promises);
+		setFantomProvider(fan);
+
+		return [def, fan];
 	}
 
 	function closeProvider() {
@@ -72,9 +102,7 @@ export const RPCProviderContextApp = ({children}) => {
 	return (
 		<RPCProvider.Provider
 			value={{
-				useProvider,
-				setUseProvider,
-				initProvider,
+				initProviders,
 				closeProvider,
 				setupTenderly,
 				tenderlyProvider,

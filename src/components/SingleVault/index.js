@@ -14,6 +14,9 @@ import useLocalStorage from 'use-local-storage';
 
 function SingleVaultPage({value}){
 	const {fantomProvider, defaultProvider} = useRPCProvider();
+
+	
+
 	let provider = value.chain == 250 ? fantomProvider : defaultProvider;
 	const [allS, setAlls] = useState([]);
 	const [historicHarvests, setHistoricHarvests] = useState([]);
@@ -24,7 +27,7 @@ function SingleVaultPage({value}){
 	const [showRatio, toggleRatios] = useState(false);
 	const [zeros, setStateZeros] = useState({});
 	const [showGraphs, setShowGraphs] = useLocalStorage('SingleVault.settings.showGraphs', false);
-
+	
 	//console.log('inputting ', value);
 
 	//Handle the setAll
@@ -41,7 +44,8 @@ function SingleVaultPage({value}){
 	// useEffect(() => onSetAll(), [onSetAll]);
 
 	useEffect(() => {
-		if(value.address){
+		
+		if(value.address && provider){
 			AllVaults(value, provider).then(x => {
 				setVault(x);
 			});
@@ -51,7 +55,7 @@ function SingleVaultPage({value}){
 
 	useEffect(() => {
 
-		if(vault.address){
+		if(vault.address && provider){
 			AllStrats(vault, provider).then(y => {			
 				setAlls(y || []);
 				y.forEach(strategy => {
@@ -100,10 +104,7 @@ function SingleVaultPage({value}){
 		extended1.function = strat.contract.interface.fragments.find(x => x.name === 'harvest');
 		
 		blocks.push(extended1);
-
-
-		
-		
+				
 		
 		setupTenderly(provider.network.chainId).then(tenderlyProvider =>{
 			TenderlySim(blocks, tenderlyProvider).then(x =>{
@@ -123,7 +124,7 @@ function SingleVaultPage({value}){
 		const tenderly = await setupTenderly(provider.network.chainId);
 		const	_harvested = await HarvestMultiple(allS, vault, tenderly);
 		setHarvested(_harvested || []);
-	}, [allS, vault, provider.network.chainId]);
+	}, [allS, vault, provider]);
 
 	function clickShowHistoricHarvests(strat){
 
@@ -160,7 +161,7 @@ function SingleVaultPage({value}){
 		return ' APR ' + over_year + '% ';
 	};
 
-	if(allS.length == 0) {
+	if(allS.length == 0 ) {
 		return(<div>
 			{vault.address && <div>{vault.name}{' - '}{vault.version}{' - '}<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, value.address)} rel={'noreferrer'}> {value.address}</a>{' - '}{(vault.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated - Free Assets: '}{((vault.totalAssets - vault.totalDebt) / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>}
 			<div>{'loading strats...'}</div></div>);

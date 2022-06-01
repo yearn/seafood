@@ -65,7 +65,9 @@ async function AllStrats(vault, defaultProvider){
 }   
 
 async function AllStratsFromAllVaults(vaults, defaultProvider){
+	
 	const multicall = new Multicall({ethersProvider: defaultProvider, tryAggregate: true});
+
 	const contractCallContext =  vaults.map(vault => (
 		{
 			reference: vault.address,
@@ -98,7 +100,19 @@ async function AllStratsFromAllVaults(vaults, defaultProvider){
 		}));
 	
 	// console.log(contractCallContext);
-	const results = await multicall.call(contractCallContext);
+	let results;
+	if(defaultProvider.network.chainId === 1){
+		console.log('sas');
+	}
+
+	const prom = multicall.call(contractCallContext);
+
+	results= await prom;
+	
+	if(defaultProvider.network.chainId === 1){
+		console.log('sas');
+	}
+	
 	// console.log(results);
 	// console.log(resultsArray);
 	// let res, s, gov, totalAssets;

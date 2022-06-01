@@ -9,7 +9,7 @@ const	AppContext = createContext();
 export const useApp = () => useContext(AppContext);
 
 export const AppProvider = ({children}) => {
-	const {defaultProvider, fantomProvider} = useRpcProvider();
+	const {initProviders} = useRpcProvider();
 	const [loading, setLoading] = useState(false);
 	const [vaults, setVaults] = useState([]);
 	const [strats, setStrats] = useState([]);
@@ -18,7 +18,10 @@ export const AppProvider = ({children}) => {
 	useEffect(() => {
 		(async() => {
 			setLoading(true);
-			const providers = [defaultProvider, fantomProvider];
+
+			let providers = await initProviders();
+			console.log(providers);
+
 			const fetches = providers.map(p => { return axios.post('/api/getVaults/AllVaults', p.network); });
 			const results = await Promise.all(fetches);
 			const freshVaults = [];
@@ -27,19 +30,19 @@ export const AppProvider = ({children}) => {
 					return {...v, provider};
 				}));
 			});
+			
 			AllStratsFromAllVaults(freshVaults.filter(v => v.provider.network.name === 'ethereum'), providers[0]).then(x => {
 				setStrats(oldArray => [...oldArray, ...x]);
 			});
 			AllStratsFromAllVaults(freshVaults.filter(v => v.provider.network.name === 'fantom'), providers[1]).then(x => {
 				setStrats(oldArray => [...oldArray, ...x]);
-				console.log(x);
 			});
 
 			setVaults(freshVaults);
 			// console.log(freshVaults);
 			setLoading(false);
 		})();
-	}, [defaultProvider, fantomProvider]);
+	}, []);
 
 	useEffect(() => {
 		if(darkMode === null) {
