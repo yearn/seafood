@@ -24,7 +24,7 @@ function ContractActions({block, onSelect}) {
 			return currentValues;
 		});
 		setNonce(nonce+1); //need to force update because react is stupid
-	};
+	};//facu is great
 
 
 	let fragments = contract.interface.fragments.map(fun =>{
