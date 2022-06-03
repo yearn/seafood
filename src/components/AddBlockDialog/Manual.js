@@ -8,23 +8,52 @@ import {GetBasicStrat, GetBasicVault} from '../../ethereum/EthHelpers';
 import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
 
 export default function Manual() {
-	const {vaults, favoriteVaults, favoriteStrategies} = useApp();
+	const {vaults, strats, favoriteVaults, favoriteStrategies} = useApp();
 	const {selectedProvider} = useSelectedProvider();
 	const {setSteps, setResult} = useAddBlockDialog();
 	const [address, setAddress] = useState({value: null, valid: false, type: ''});
 	const [favorites, setFavorites] = useState([]);
 	const [block, setBlock] = useState();
 
+	function locateStrategy(address) {
+		for(let v = 0; v < strats.length; v++) {
+			const strategy = strats[v].strats_detailed?.find(s => s.address === address);
+			if(strategy) {
+				return {
+					vault: strats[v],
+					strategy
+				};
+			}
+		}
+		return {
+			vault: undefined,
+			strategy: undefined
+		};
+	}
+
 	useEffect(() => {
-		setFavorites([
-			...vaults.filter(vault => favoriteVaults.includes(vault.address)).map(vault => {
+		const refresh = [
+			...vaults.filter(vault => favoriteVaults.includes(vault.address) 
+			&& vault.provider.network.chainId === selectedProvider.network.chainId).map(vault => {
 				return {
 					address: vault.address,
-					name: vault.name
+					name: `${vault.name} (${vault.version})`
 				};
 			})
-		]);
-	}, [favoriteVaults, favoriteStrategies]);
+		];
+
+		favoriteStrategies.forEach(favoriteStrategy => {
+			const {vault, strategy} = locateStrategy(favoriteStrategy);
+			if(vault) {
+				refresh.push({
+					address: strategy.address,
+					name: `${vault.name} \\ ${strategy.name}`
+				});
+			}
+		});
+
+		setFavorites(refresh);
+	}, [vaults, strats, favoriteVaults, favoriteStrategies]);
 
 	const debounceAddress = useDebouncedCallback(async (value) => {
 		value = value.trim();
@@ -37,7 +66,7 @@ export default function Manual() {
 				newBlock = await GetBasicVault(value, selectedProvider);
 
 				// HACK: Looking for a way to infer the contract type 
-				// instead of having users select Vault or Strategy. 
+				// instead of having users select Vault or Strategy.
 				// My assumption here is that strategies never have a governance() function.
 				// So if this call fails we go on to check if the address is a strategy.
 				await newBlock.contract.callStatic.governance();
@@ -60,7 +89,7 @@ export default function Manual() {
 		else setBlock(null);
 	}, 250);
 
-	function onSelectFunction() {
+	async function onSelectFunction() {
 		switch(address.type) {
 		case 'vault': {
 			setResult(result => {return {
@@ -75,9 +104,10 @@ export default function Manual() {
 			break;
 		}
 		case 'strategy': {
+			const {vault} = locateStrategy(block.address);
 			setResult(result => {return {
 				...result, 
-				vault: null,
+				vault,
 				strategy: block
 			};});
 			setSteps(steps => {return [
@@ -89,14 +119,7 @@ export default function Manual() {
 	}
 
 	async function onSelectFavorite(e) {
-		if(e.target.value) {
-			const newBlock = await GetBasicVault(e.target.value, selectedProvider);
-			setAddress({value: e.target.value, valid: true, type: 'vault'});
-			setBlock(newBlock);
-		} else {
-			setAddress({value: null, valid: false, type: ''});
-			setBlock(null);
-		}
+		debounceAddress(e.target.value);
 	}
 
 	return <div className={'h-full flex flex-col'}>
