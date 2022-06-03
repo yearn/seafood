@@ -1,21 +1,14 @@
 import React from 'react';
-import {BsBoxArrowInUpRight, BsClipboard} from 'react-icons/bs';
+import {BsBoxArrowInUpRight, BsStar, BsStarFill} from 'react-icons/bs';
 import toast from 'react-hot-toast';
+import {useApp} from '../../context/useApp';
 import {GetExplorerLink, TruncateAddress} from '../../utils/utils';
 import {useFilter} from './useFilter';
-import {useApp} from '../../context/useApp';
 import StratSummary from './StratSummary';
 
-// import InfoChart from './InfoChart';
-	
-	
-
-
 export default function Tile({vault, onClick}) {
+	const {favoriteVaults, setFavoriteVaults, strats} = useApp();
 	const {queryRe} = useFilter();
-	const {strats} = useApp();
-	
-
 
 	function styleTitle(title) {
 		const match = title.match(queryRe);
@@ -36,6 +29,26 @@ export default function Tile({vault, onClick}) {
 	// console.log(strats);
 	const v_d = strats.find(element => element.address === vault.address);
 	//console.log(v_d);
+	function toggleFavorite(vault) {
+		return () => {
+			setFavoriteVaults(favorites => {
+				const index = favorites.indexOf(vault.address);
+				if(index > -1) {
+					favorites.splice(index, 1);
+				} else {
+					favorites.push(vault.address);
+				}
+				return [...favorites];
+			});
+		};
+	}
+
+	function copyAddress(vault) {
+		return () => {
+			toast(`${vault.address} copied to your clipboard`);
+			navigator.clipboard.writeText(vault.address);
+		};
+	}
 
 	return <div className={'vault-tile'}>
 		
@@ -54,21 +67,20 @@ export default function Tile({vault, onClick}) {
 			</div>
 		</div>
 		<div className={'footer'}>
-			<div onClick={() => {
-				toast(`${vault.address} copied to your clipboard`);
-				navigator.clipboard.writeText(vault.address);
-			}}
-			className={'left'}
-			title={`Copy ${vault.address} to your clipboard`}>
-				<BsClipboard className={'icon'} />
+			<div className={'left'} onClick={toggleFavorite(vault)}>
+				{!favoriteVaults.includes(vault.address) && <>&nbsp;<BsStar />&nbsp;</>}
+				{favoriteVaults.includes(vault.address) && <>&nbsp;<BsStarFill className={'favorite glow-attention-md'} />&nbsp;</>}
+			</div>
+			<div className={'center'}
+				title={`Copy ${vault.address} to your clipboard`}
+				onClick={copyAddress(vault)}>
 				{TruncateAddress(vault.address)}
 			</div>
-			<a title={`Explore ${vault.address}`}
+			<a className={'right'}
+				title={`Explore ${vault.address}`}
 				href={GetExplorerLink(vault.provider.network.chainId, vault.address)}
-				target={'_blank'} rel={'noreferrer'}
-				className={'right'}>
-				<BsBoxArrowInUpRight />
-				{'Explore'}
+				target={'_blank'} rel={'noreferrer'}>
+				&nbsp;<BsBoxArrowInUpRight />&nbsp;
 			</a>		
 		</div>
 	</div>;

@@ -13,6 +13,8 @@ export const AppProvider = ({children}) => {
 	const [loading, setLoading] = useState(false);
 	const [vaults, setVaults] = useState([]);
 	const [strats, setStrats] = useState([]);
+	const [favoriteVaults, setFavoriteVaults] = useLocalStorage('favoriteVaults', []);
+	const [favoriteStrategies, setFavoriteStrategies] = useLocalStorage('favoriteStrategies', []);
 	const [darkMode, setDarkMode] = useLocalStorage('darkMode', null);
 
 	useEffect(() => {
@@ -54,6 +56,10 @@ export const AppProvider = ({children}) => {
 		loading,
 		vaults,
 		strats,
+		favoriteVaults,
+		setFavoriteVaults,
+		favoriteStrategies, 
+		setFavoriteStrategies,
 		darkMode, 
 		setDarkMode
 	}}>{children}</AppContext.Provider>;

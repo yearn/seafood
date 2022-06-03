@@ -14,7 +14,7 @@ export default function Toolbar() {
 	const {blocks, addBlock, simulate, simulating, reset} = useBlocks();
 
 	return <div className={`toolbar ${overpassClass}`}>
-		<div className={'flex items-center'}>
+		<div className={'flex gap-2 items-center'}>
 			<SelectProvider disabled={blocks.length > 0}></SelectProvider>
 			<AddBlockDialogProvider>
 				<AddBlockButton></AddBlockButton>
@@ -29,7 +29,7 @@ export default function Toolbar() {
 			</div>
 		</div>
 
-		<div className={'flex items-center'}>
+		<div className={'flex gap-2 items-center'}>
 			{location.hash === '' && 
 				<button onClick={() => navigate(`${location.pathname}#code`)} className={'iconic no-text'}>
 					<BsCode className={'text-xl'}></BsCode>

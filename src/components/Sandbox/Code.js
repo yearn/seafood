@@ -46,7 +46,10 @@ export default function Code() {
 		{linesOfCode.map((line, index) => 
 			<div key={index} className={'flex items-center'}>
 				<div className={'ml-2 mr-4 w-8 min-w-[2rem] text-right dark:text-secondary-400/60'}>{''}{index + 1}</div>
-				<div className={'whitespace-nowrap'}>{line}</div>
+				<div className={'whitespace-nowrap'}>
+					{Array.from(line).filter(c => c === '\t').map((_, index) => <span key={index}>&emsp;</span>)}
+					{line.replace('\t', '')}
+				</div>
 			</div>
 		)}
 

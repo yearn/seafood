@@ -34,7 +34,7 @@ export default function Simulator() {
 					<AddBlockButton className={'big'}></AddBlockButton>
 					<AddBlockDialog onAddBlock={addBlock}></AddBlockDialog>
 				</AddBlockDialogProvider>
-				<div>
+				<div className={'flex gap-2'}>
 					<SelectProvider disabled={blocks.length > 0}></SelectProvider>
 					<button disabled={blocks.length < 1} onClick={reset}>{'Reset'}</button>
 				</div>

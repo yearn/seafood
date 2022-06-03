@@ -109,7 +109,7 @@ export default function AddBlockDialog({onAddBlock}) {
 				{currentStep === stepEnum.manual && <Manual></Manual>}
 			</div>
 
-			<div className={'flex items-center justify-end'}>
+			<div className={'flex gap-2 items-center justify-end'}>
 				<button disabled={steps.length < 2} onClick={onPreviousStep}>{'< Back'}</button>
 				<button onClick={onManual}>{'Manual'}</button>
 				<button disabled={!result?.valid} onClick={onClickAddBlock}>{'Add block'}</button>

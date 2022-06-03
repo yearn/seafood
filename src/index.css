@@ -116,7 +116,7 @@ select {
 }
 
 .dialog .inputs .input {
-  @apply my-4 w-4/5 md:w-2/5;
+  @apply relative my-4 w-4/5 md:w-2/5;
 }
 
 .dialog .inputs .input input[type=text] {
@@ -131,7 +131,7 @@ select {
 }
 
 .dialog .inputs .input .validation {
-  @apply ml-4;
+  @apply absolute z-10 ml-4 -right-7;
 }
 
 .dialog .inputs .input .validation .valid {
