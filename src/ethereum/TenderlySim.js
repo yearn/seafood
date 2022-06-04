@@ -38,7 +38,7 @@ async function TenderlySim(blocks, tenderlyProvider){
 
 		// console.log(block.function.name + '(' + block.function.inputs.map(x => x.type) + ')');
 		let func = blockWithSigner.functions[block.function.name + '(' + block.function.inputs.map(x => x.type) + ')'];
-		// console.log(func);
+		//console.log(func);
 		// console.log(block.function);
 		let pass = true;
 		let inputs = block.function.inputs.map(x =>{
@@ -54,11 +54,17 @@ async function TenderlySim(blocks, tenderlyProvider){
 			pass = false;
 		});
 		if(!pass) continue;
-		console.log(String(inputs));
+		if(String(inputs) === 'false'){
+			inputs = [false];
+		} else if (String(inputs) === 'true'){
+			inputs = [true];
+		}
 
 		let x = await func(...inputs, {
 			gasLimit: 8_000_000, gasPrice:0
 		});
+
+		// console.log(x);
 
 
 		let success = true;
