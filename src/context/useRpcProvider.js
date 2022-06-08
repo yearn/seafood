@@ -1,6 +1,12 @@
 import {ethers} from 'ethers';
 import React, {useContext, createContext, useState} from 'react';
 
+function keepAlive(provider) {
+	provider.keepAliveInterval = setInterval(async () => {
+		await provider.send('eth_blockNumber');
+	}, 55_000);
+}
+
 const RPCProvider = createContext();
 export const RPCProviderContextApp = ({children}) => {
 	const [defaultProvider, setDefaultProvider] = useState();
@@ -37,8 +43,9 @@ export const RPCProviderContextApp = ({children}) => {
 			promises.push(promise);
 		}
 		let def = await Promise.race(promises);
-		setDefaultProvider(def);
 		eth_nodes.filter(n => n !== def).forEach(n => n.destroy());
+		setDefaultProvider(def);
+		keepAlive(def);
 
 		promises = [];
 		for(let provider of ftm_nodes){
@@ -50,6 +57,7 @@ export const RPCProviderContextApp = ({children}) => {
 		let fan = await Promise.race(promises);
 		ftm_nodes.filter(n => n !== fan).forEach(n => n.destroy());
 		setFantomProvider(fan);
+		keepAlive(fan);
 
 		return [def, fan];
 	}
