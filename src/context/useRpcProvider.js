@@ -3,51 +3,32 @@ import React, {useContext, createContext, useState} from 'react';
 
 const RPCProvider = createContext();
 export const RPCProviderContextApp = ({children}) => {
-	const [defaultProvider, setDefaultProvider] = useState(new ethers.providers.WebSocketProvider(
-		process.env.REACT_APP_ETH_WS_PROVIDER, {
-			name: 'ethereum',
-			chainId: 1
-		}
-	));
-	const [fantomProvider, setFantomProvider] = useState(new ethers.providers.WebSocketProvider(
-		process.env.REACT_APP_FTM_WS_PROVIDER3, {
-			name: 'fantom',
-			chainId: 250
-		}
-	));
-
-
-	const def_network = {
-		name: 'ethereum',
-		chainId: 1
-	};
-	const eth_nodes = [];
-	
-	eth_nodes.push(new ethers.providers.WebSocketProvider(
-		process.env.REACT_APP_ETH_WS_PROVIDER, def_network
-	));
-	if(process.env.REACT_APP_ETH_WS_PROVIDER_BACKUP){
-
-		const n = new ethers.providers.WebSocketProvider(
-			process.env.REACT_APP_ETH_WS_PROVIDER_BACKUP, def_network
-		);
-		eth_nodes.push(n);
-	}
-
-	const network = {
-		name: 'fantom',
-		chainId: 250
-	};
-
-	const ftm_nodes = [];
-	
-	ftm_nodes.push(new ethers.providers.WebSocketProvider(
-		process.env.REACT_APP_FTM_WS_PROVIDER3, network
-	));
-	
+	const [defaultProvider, setDefaultProvider] = useState();
+	const [fantomProvider, setFantomProvider] = useState();	
 	const [tenderlyProvider, setTenderly] = useState(null);
 
 	async function initProviders() {
+		const eth_nodes = [];
+		eth_nodes.push(new ethers.providers.WebSocketProvider(
+			process.env.REACT_APP_ETH_WS_PROVIDER, {
+				name: 'ethereum',
+				chainId: 1
+			}));
+		if(process.env.REACT_APP_ETH_WS_PROVIDER_BACKUP){
+			eth_nodes.push(new ethers.providers.WebSocketProvider(
+				process.env.REACT_APP_ETH_WS_PROVIDER_BACKUP, {
+					name: 'ethereum',
+					chainId: 1
+				}));
+		}
+
+		const ftm_nodes = [];
+		ftm_nodes.push(new ethers.providers.WebSocketProvider(
+			process.env.REACT_APP_FTM_WS_PROVIDER3, {
+				name: 'fantom',
+				chainId: 250
+			}));
+
 		let promises = [];
 		for(let provider of eth_nodes){
 			let promise = new Promise(function(resolve){
@@ -57,8 +38,7 @@ export const RPCProviderContextApp = ({children}) => {
 		}
 		let def = await Promise.race(promises);
 		setDefaultProvider(def);
-		console.log(defaultProvider);
-		
+		eth_nodes.filter(n => n !== def).forEach(n => n.destroy());
 
 		promises = [];
 		for(let provider of ftm_nodes){
@@ -68,6 +48,7 @@ export const RPCProviderContextApp = ({children}) => {
 			promises.push(promise);
 		}
 		let fan = await Promise.race(promises);
+		ftm_nodes.filter(n => n !== fan).forEach(n => n.destroy());
 		setFantomProvider(fan);
 
 		return [def, fan];
@@ -97,7 +78,6 @@ export const RPCProviderContextApp = ({children}) => {
 				console.log(tenderlyProvider);
 			});
 	}
-
 
 	return (
 		<RPCProvider.Provider
