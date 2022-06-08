@@ -142,9 +142,49 @@ function SingleVaultPage({value}){
 
 	}
 
+	const showTotalApr = () => {
+
+		let total_weighted_apr = 0;
+		let total_user_apr = 0;
+
+		for(const strat of allS){
+			let fee= getApr(strat);
+			let beforeFee = fee.beforeFee;
+			let afterFee = fee.afterFee;
+			
+			total_weighted_apr += beforeFee*strat.beforeDebt;
+			total_user_apr += afterFee*strat.beforeDebt;
+
+		}
+
+		let apr = total_weighted_apr/vault.totalAssets;
+		let after = total_user_apr/vault.totalAssets;
+		return 'Total Vault APR Before Fees: ' + apr.toLocaleString(undefined, {maximumFractionDigits:2}) + '%, After Fees: ' + after.toLocaleString(undefined, {maximumFractionDigits:2}) + '%';
+
+		
+	};
+
 	const showApr = (strat) => {
 		if(!strat.succeded){
 			return;
+		}
+		let fee= getApr(strat);
+		let beforeFee = fee.beforeFee;
+		let afterFee = fee.afterFee;
+		// console.log(beforeFee);
+		// console.log(afterFee);
+		// console.log(getApr(strat));
+
+		beforeFee = beforeFee.toLocaleString(undefined, {maximumFractionDigits:2});
+		afterFee = afterFee.toLocaleString(undefined, {maximumFractionDigits:2});
+		
+		
+		return 'before-fee APR: ' + beforeFee + '%, after-fee APR ' + afterFee + '%';
+	};
+
+	function getApr(strat){
+		if(!strat.succeded){
+			return {beforeFee: 0, afterFee: 0};
 		}
 
 		let profit = strat.paramsAfter.totalGain - strat.beforeGain;
@@ -157,9 +197,16 @@ function SingleVaultPage({value}){
 				percent = profit / strat.beforeDebt;
 			}
 		}
-		let over_year = (100*percent * 8760 / strat.lastTime).toLocaleString(undefined, {maximumFractionDigits:2});    
-		return ' APR ' + over_year + '% ';
-	};
+		let over_year = (100*percent * 8760 / strat.lastTime);
+
+		let delegated_percent = strat.delegatedAssets/strat.beforeDebt;
+		// console.log(strat);
+		// console.log(delegated_percent);
+		let user_apr = (over_year*0.8) - (2*(1-delegated_percent));
+		user_apr = user_apr > 0 ? user_apr : 0;
+		return {beforeFee: over_year, afterFee: user_apr};    
+
+	}
 
 	if(allS.length == 0 ) {
 		return(<div>
@@ -202,6 +249,7 @@ function SingleVaultPage({value}){
 			<div>{vault.name}{' - '}{vault.version}{' - '}<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, value.address)} rel={'noreferrer'}> {value.address}</a>{' - '}{(vault.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated - Free Assets: '}{((vault.totalAssets - vault.totalDebt) / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
 			{/* {console.log('sda2')}
 			{console.log(vault)} */}
+			{harvestedS.length > 0 && <div> {showTotalApr()}</div>}
 			{listItems}
 
 			<div>{showRatio && <RatioAdjust strats={allS} />}</div>
