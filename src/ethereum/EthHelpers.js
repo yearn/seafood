@@ -542,13 +542,21 @@ async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
 	//console.log(params)
 	// console.log('beforedebt: ', params.totalDebt/totalAssets);
 	let genlender = false;
+	let delegated = 0;
+	try{
+		delegated = await s.delegatedAssets();
+	}catch(ex){
+		//nothing
+	}
+	
+
     
 	let name = await s.name();
 	if(name.includes('StrategyLenderYieldOptimiser')){
 
 
-    	let status = await s.lendStatuses();
-    	console.log(status);
+		let status = await s.lendStatuses();
+		console.log(status);
 
 
 
@@ -558,6 +566,7 @@ async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
 		name: name,
 		contract: s,
 		address: strat,
+		delegatedAssets: delegated,
 		beforeDebt: params.totalDebt,
 		beforeGain: params.totalGain,
 		beforeLoss: params.totalLoss,
