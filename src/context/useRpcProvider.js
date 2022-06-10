@@ -1,10 +1,48 @@
 import {ethers} from 'ethers';
-import React, {useContext, createContext, useState} from 'react';
+import React, {useContext, createContext, useState, useEffect} from 'react';
+import Web3WsProvider from 'web3-providers-ws';
 
-function keepAlive(provider) {
-	provider.keepAliveInterval = setInterval(async () => {
-		await provider.send('eth_blockNumber');
-	}, 55_000);
+function makeSocketProvider(url, name, chainId) {
+	return new ethers.providers.Web3Provider(
+		new Web3WsProvider(url, {
+			timeout: 30_000,
+			clientConfig: {
+				keepalive: true,
+				keepaliveInterval: 55_000
+			},
+			reconnect: {
+				auto: true,
+				delay: 5000,
+				maxAttempts: 5,
+				onTimeout: false
+			}
+		}),
+		{name, chainId});
+}
+
+async function raceAll(promises) {
+	const result = await Promise.race(promises);
+	await Promise.all(promises);
+	return result;
+}
+
+async function bestProvider(rpcs, name, chainId) {
+	const providers = [];
+	rpcs.filter(rpc => rpc).forEach(rpc => {
+		providers.push(makeSocketProvider(rpc, name, chainId));
+	});
+
+	const promises = [];
+	providers.forEach(provider => {
+		promises.push(new Promise(function(resolve){
+			provider.detectNetwork().then(() => resolve(provider));
+		}));
+	});
+
+	const result = await raceAll(promises);
+	providers.filter(provider => provider !== result)
+		.forEach(provider => provider.provider.disconnect());
+	return result;
 }
 
 const RPCProvider = createContext();
@@ -13,54 +51,20 @@ export const RPCProviderContextApp = ({children}) => {
 	const [fantomProvider, setFantomProvider] = useState();	
 	const [tenderlyProvider, setTenderly] = useState(null);
 
-	async function initProviders() {
-		const eth_nodes = [];
-		eth_nodes.push(new ethers.providers.WebSocketProvider(
-			process.env.REACT_APP_ETH_WS_PROVIDER, {
-				name: 'ethereum',
-				chainId: 1
-			}));
-		if(process.env.REACT_APP_ETH_WS_PROVIDER_BACKUP){
-			eth_nodes.push(new ethers.providers.WebSocketProvider(
-				process.env.REACT_APP_ETH_WS_PROVIDER_BACKUP, {
-					name: 'ethereum',
-					chainId: 1
-				}));
-		}
+	useEffect(() => {
+		bestProvider([
+			process.env.REACT_APP_ETH_WS_PROVIDER,
+			process.env.REACT_APP_ETH_WS_PROVIDER_BACKUP
+		], 'ethereum', 1).then(provider => {
+			setDefaultProvider(provider);
+		});
 
-		const ftm_nodes = [];
-		ftm_nodes.push(new ethers.providers.WebSocketProvider(
-			process.env.REACT_APP_FTM_WS_PROVIDER3, {
-				name: 'fantom',
-				chainId: 250
-			}));
-
-		let promises = [];
-		for(let provider of eth_nodes){
-			let promise = new Promise(function(resolve){
-				provider.detectNetwork().then(() => resolve(provider));
-			});
-			promises.push(promise);
-		}
-		let def = await Promise.race(promises);
-		eth_nodes.filter(n => n !== def).forEach(n => n.destroy());
-		setDefaultProvider(def);
-		keepAlive(def);
-
-		promises = [];
-		for(let provider of ftm_nodes){
-			let promise = new Promise(function(resolve){
-				provider.detectNetwork().then(() => resolve(provider));
-			});
-			promises.push(promise);
-		}
-		let fan = await Promise.race(promises);
-		ftm_nodes.filter(n => n !== fan).forEach(n => n.destroy());
-		setFantomProvider(fan);
-		keepAlive(fan);
-
-		return [def, fan];
-	}
+		bestProvider([
+			process.env.REACT_APP_FTM_WS_PROVIDER3
+		], 'fantom', 250).then(provider => {
+			setFantomProvider(provider);			
+		});
+	}, []);
 
 	function closeProvider() {
 		setTenderly(null);
@@ -90,7 +94,6 @@ export const RPCProviderContextApp = ({children}) => {
 	return (
 		<RPCProvider.Provider
 			value={{
-				initProviders,
 				closeProvider,
 				setupTenderly,
 				tenderlyProvider,
