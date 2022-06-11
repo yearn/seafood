@@ -9,7 +9,7 @@ const	AppContext = createContext();
 export const useApp = () => useContext(AppContext);
 
 export const AppProvider = ({children}) => {
-	const {initProviders} = useRpcProvider();
+	const {defaultProvider, fantomProvider} = useRpcProvider();
 	const [loading, setLoading] = useState(false);
 	const [vaults, setVaults] = useState([]);
 	const [strats, setStrats] = useState([]);
@@ -18,33 +18,30 @@ export const AppProvider = ({children}) => {
 	const [darkMode, setDarkMode] = useLocalStorage('darkMode', null);
 
 	useEffect(() => {
-		(async() => {
+		const providers = [defaultProvider, fantomProvider];
+		if(providers.every(p => p)) {
 			setLoading(true);
-
-			let providers = await initProviders();
-			console.log(providers);
-
 			const fetches = providers.map(p => { return axios.post('/api/getVaults/AllVaults', p.network); });
-			const results = await Promise.all(fetches);
-			const freshVaults = [];
-			providers.forEach((provider, index) => {
-				freshVaults.push(...results[index].data.map(v => { 
-					return {...v, provider};
-				}));
+			Promise.all(fetches).then(results => {
+				const freshVaults = [];
+				providers.forEach((provider, index) => {
+					freshVaults.push(...results[index].data.map(v => { 
+						return {...v, provider};
+					}));
+				});
+				
+				AllStratsFromAllVaults(freshVaults.filter(v => v.provider.network.name === 'ethereum'), providers[0]).then(x => {
+					setStrats(oldArray => [...oldArray, ...x]);
+				});
+				AllStratsFromAllVaults(freshVaults.filter(v => v.provider.network.name === 'fantom'), providers[1]).then(x => {
+					setStrats(oldArray => [...oldArray, ...x]);
+				});
+	
+				setVaults(freshVaults);
+				setLoading(false);
 			});
-			
-			AllStratsFromAllVaults(freshVaults.filter(v => v.provider.network.name === 'ethereum'), providers[0]).then(x => {
-				setStrats(oldArray => [...oldArray, ...x]);
-			});
-			AllStratsFromAllVaults(freshVaults.filter(v => v.provider.network.name === 'fantom'), providers[1]).then(x => {
-				setStrats(oldArray => [...oldArray, ...x]);
-			});
-
-			setVaults(freshVaults);
-			// console.log(freshVaults);
-			setLoading(false);
-		})();
-	}, []);
+		}
+	}, [defaultProvider, fantomProvider]);
 
 	useEffect(() => {
 		if(darkMode === null) {
