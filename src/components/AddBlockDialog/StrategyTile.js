@@ -25,8 +25,8 @@ export default function StrategyTile({strategy, onClick}) {
 
 	return <div className={'vault-tile'}>
 		<div onClick={onClick} className={'main'}>
+			<div className={'title'}>{strategy.name}</div>
 			<div className={'info'}>
-				<div className={'title'}>{strategy.name}</div>
 				<div className={'chips'}>
 					<div className={'chip bg-pink-400 dark:bg-pink-800'}>{'strategy'}</div>
 				</div>

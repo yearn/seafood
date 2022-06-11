@@ -4,7 +4,6 @@ import toast from 'react-hot-toast';
 import {useApp} from '../../context/useApp';
 import {GetExplorerLink, TruncateAddress} from '../../utils/utils';
 import {useFilter} from './useFilter';
-import StratSummary from './StratSummary';
 
 export default function Tile({vault, onClick}) {
 	const {favoriteVaults, setFavoriteVaults, strats} = useApp();
@@ -53,16 +52,25 @@ export default function Tile({vault, onClick}) {
 	return <div className={'vault-tile'}>
 		
 		<div onClick={onClick} className={'main'}>
-			<div className={'info'}>
-				<div className={'title'}>{styleTitle(vault.name)}</div>
-				<div className={'chips'}>
-					<div className={'chip version'}>{vault.version}</div>
-					<div className={`chip ${vault.provider.network.name}`}>{vault.provider.network.name}</div>
+			<div className={'title'}>{styleTitle(vault.name)}</div>
+			<div className={'body'}>
+				<div className={'info'}>
+					<div className={'chips'}>
+						<div className={'chip version'}>{vault.version}</div>
+						<div className={`chip ${vault.provider.network.name}`}>{vault.provider.network.name}</div>
+					</div>
+					<div className={'strategies'}>
+						{v_d && <div>
+							<p>{v_d.strats.length + ' Strategies'}</p>
+							<p>{(v_d.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated'}</p> 
+							<p>{((v_d.totalAssets - v_d.totalDebt) / (10 ** v_d.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}{' Free'}</p>
+						</div>}
+					</div>
 				</div>
-			</div>
-			<div className={'avatar'}>
-				<div>
-					{v_d && <StratSummary vault={v_d}/>  /* <InfoChart name={'PPS'} /> */}
+				<div className={'chart'}>
+					<div>
+						{v_d && <></>  /* <InfoChart name={'PPS'} /> */}
+					</div>
 				</div>
 			</div>
 		</div>

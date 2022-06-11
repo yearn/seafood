@@ -19,7 +19,7 @@
 }
 
 .vault-tile .main {
-  @apply px-4 pt-4 pb-8 flex items-center justify-between 
+  @apply px-4 pt-4 pb-6 flex flex-col 
     border-b 
     border-b-secondary-300/40
     dark:border-b-secondary-900/40
@@ -30,32 +30,40 @@
   @apply rounded-xl;
 }
 
-.vault-tile .main .info {
-  @apply flex flex-col;
-}
-
-.vault-tile .main .info .title {
+.vault-tile .main .title {
   @apply text-lg font-bold;
 }
 
+.vault-tile .main .body {
+  @apply flex gap-4;
+}
+
+.vault-tile .strategies {
+  @apply text-sm;
+}
+
+.vault-tile .main .info {
+  @apply mt-3 flex flex-col gap-2 items-start;
+}
+
 .vault-tile .main .info .chips {
-  @apply mt-2 flex flex-wrap gap-2 items-center;
+  @apply flex gap-2 items-center;
 }
 
 .vault-tile .main .info .chips .chip {
-  @apply px-4 py-[2px] text-sm capitalize rounded-full;
+  @apply px-2 py-1 text-xs capitalize rounded-full;
 }
 
 .vault-tile .main .info .chips .little-chip {
   @apply h-fit px-2 py-[1px] text-xs rounded-full;
 }
-.vault-tile .main .avatar{
-  @apply flex w-5/6
+.vault-tile .main .chart{
+  @apply pt-2 flex w-full;
 }
-.vault-tile .main .avatar div {
-  @apply w-full h-20 bg-secondary-600/40 rounded-lg;
+.vault-tile .main .chart div {
+  @apply w-full bg-secondary-600/40 rounded-lg;
 }
-.internal-avatar {
+.internal-chart {
   @apply p-1.5 text-sm;
 }
 
