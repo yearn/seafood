@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {ethers} from 'ethers';
 import {useDebouncedCallback} from 'use-debounce';
 import {BsAsterisk, BsCheckLg} from 'react-icons/bs';
@@ -15,7 +15,7 @@ export default function Manual() {
 	const [favoritesList, setFavorites] = useState([]);
 	const [block, setBlock] = useState();
 
-	function locateStrategy(address) {
+	const locateStrategy = useCallback((address) => {
 		for(let v = 0; v < strats.length; v++) {
 			const strategy = strats[v].strats_detailed?.find(s => s.address === address);
 			if(strategy) {
@@ -29,7 +29,7 @@ export default function Manual() {
 			vault: undefined,
 			strategy: undefined
 		};
-	}
+	}, [strats]);
 
 	useEffect(() => {
 		const refresh = [
@@ -53,7 +53,7 @@ export default function Manual() {
 		});
 
 		setFavorites(refresh);
-	}, [vaults, strats, favorites]);
+	}, [vaults, strats, favorites, selectedProvider, locateStrategy]);
 
 	const debounceAddress = useDebouncedCallback(async (value) => {
 		value = value.trim();

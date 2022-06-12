@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import {useApp} from '../../context/useApp';
 import {GetExplorerLink, TruncateAddress} from '../../utils/utils';
 import {useFilter} from './useFilter';
+import Bone from '../Bone';
 
 export default function Tile({vault, onClick}) {
 	const {favorites, strats} = useApp();
@@ -49,7 +50,7 @@ export default function Tile({vault, onClick}) {
 		};
 	}
 
-	return <div className={'vault-tile'}>
+	return <div className={'group vault-tile'}>
 		
 		<div onClick={onClick} className={'main'}>
 			<div className={'title'}>{styleTitle(vault.name)}</div>
@@ -59,11 +60,16 @@ export default function Tile({vault, onClick}) {
 						<div className={'chip version'}>{vault.version}</div>
 						<div className={`chip ${vault.provider.network.name}`}>{vault.provider.network.name}</div>
 					</div>
-					<div className={'strategies'}>
+					<div className={'strategies dark:group-hover:text-secondary-200'}>
+						{!v_d && <div className={'animate-pulse'}>
+							<div><Bone></Bone></div>
+							<div><Bone></Bone></div>
+							<div><Bone></Bone></div>
+						</div>}
 						{v_d && <div>
-							<p>{v_d.strats.length + ' Strategies'}</p>
-							<p>{(v_d.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated'}</p> 
-							<p>{((v_d.totalAssets - v_d.totalDebt) / (10 ** v_d.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}{' Free'}</p>
+							<div>{v_d.strats.length + ' Strategies'}</div>
+							<div>{(v_d.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated'}</div>
+							<div>{((v_d.totalAssets - v_d.totalDebt) / (10 ** v_d.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}{' Free'}</div>
 						</div>}
 					</div>
 				</div>
@@ -74,7 +80,7 @@ export default function Tile({vault, onClick}) {
 				</div>
 			</div>
 		</div>
-		<div className={'footer'}>
+		<div className={'footer dark:group-hover:text-secondary-200'}>
 			<div className={'left'} onClick={toggleFavorite(vault)}>
 				{!favorites.vaults.includes(vault.address) && <>&nbsp;<BsStar />&nbsp;</>}
 				{favorites.vaults.includes(vault.address) && <>&nbsp;<BsStarFill className={'favorite glow-attention-md'} />&nbsp;</>}
@@ -84,7 +90,7 @@ export default function Tile({vault, onClick}) {
 				onClick={copyAddress(vault)}>
 				{TruncateAddress(vault.address)}
 			</div>
-			<a className={'right'}
+			<a className={'plain right'}
 				title={`Explore ${vault.address}`}
 				href={GetExplorerLink(vault.provider.network.chainId, vault.address)}
 				target={'_blank'} rel={'noreferrer'}>

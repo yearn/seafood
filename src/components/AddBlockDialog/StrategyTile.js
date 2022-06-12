@@ -23,7 +23,7 @@ export default function StrategyTile({strategy, onClick}) {
 		};
 	}
 
-	return <div className={'vault-tile'}>
+	return <div className={'group vault-tile'}>
 		<div onClick={onClick} className={'main'}>
 			<div className={'title'}>{strategy.name}</div>
 			<div className={'info'}>
@@ -32,7 +32,7 @@ export default function StrategyTile({strategy, onClick}) {
 				</div>
 			</div>
 		</div>
-		<div className={'footer'}>
+		<div className={'footer dark:group-hover:text-secondary-200'}>
 			<div className={'left'} onClick={toggleFavorite()}>
 				{!favorites.strategies.includes(strategy.address) && <>&nbsp;<BsStar />&nbsp;</>}
 				{favorites.strategies.includes(strategy.address) && <>&nbsp;<BsStarFill className={'favorite glow-attention-md'} />&nbsp;</>}

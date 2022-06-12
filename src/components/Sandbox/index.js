@@ -22,7 +22,7 @@ export default function Sandbox() {
 		if(selectedProvider !== defaultProvider) {
 			setSelectedProvider(defaultProvider);
 		}
-	}, [setSelectedProvider, defaultProvider]);
+	}, [selectedProvider, setSelectedProvider, defaultProvider]);
 
 	function addBlock(block) {
 		block.index = blocks.length > 0 
@@ -63,7 +63,7 @@ export default function Sandbox() {
 							<>
 								{blocks.length === 0 && 
 									<div className={'grow flex items-center justify-center text-2xl'}>
-										<div className={'pb-32'}>{'><(((*> - The sandbox is empty'}</div>
+										<div className={'rainbow-text'}>{'><(((*> - The sandbox is empty'}</div>
 									</div>
 								}
 								{blocks.length > 0 && <Simulator />}

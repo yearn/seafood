@@ -3,11 +3,17 @@
 }
 
 .sandbox .toolbar {
-  @apply sticky top-0 pl-4 pr-8 py-2 flex items-center justify-between;
+  @apply sticky top-0 pl-8 pr-8 py-2 flex items-center justify-between;
 }
 
 .sandbox .content {
-  @apply grow px-4 pt-24 pb-16 sm:px-8 sm:py-0 flex flex-col justify-between;
+  @apply grow 
+  sm:mx-8 sm:mb-4
+  px-4 pt-24 pb-16 sm:px-8 sm:py-0 
+  flex flex-col justify-between
+  sm:border-4 sm:border-primary-600/40 dark:sm:border-primary-400/40
+  dark:sm:bg-black/20
+  sm:rounded;
 }
 
 .sandbox .tabs {

@@ -37,7 +37,7 @@ nav.menu li.brand {
 }
 
 nav.menu li a, nav.menu li div {
-  @apply no-underline px-4 py-2 rounded-full;
+  @apply no-underline px-4 py-2 rounded;
 }
 
 nav.menu li a:hover, nav.menu li div:hover {
@@ -51,6 +51,5 @@ nav.menu li a:active, nav.menu li div:active {
 
 nav.menu li .selected {
   @apply bg-selected-100 text-selected-900
-    dark:bg-selected-300 dark:text-selected-900 
-    shadow-md;
+    dark:bg-selected-300 dark:text-selected-900;
 }

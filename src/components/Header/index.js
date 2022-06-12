@@ -33,7 +33,7 @@ export default function Header() {
 			</SmallScreen>
 			<BiggerThanSmallScreen>
 				<div className={'w-full pl-4 pr-8 flex items-center justify-between'}>
-					<h1 className={'text-3xl font-bold'}>{'Seafood'}</h1>
+					<h1 className={'text-3xl font-bold rainbow-text dark:drop-shadow-md'}>{'Seafood'}</h1>
 					<Menu></Menu>
 				</div>
 			</BiggerThanSmallScreen>
