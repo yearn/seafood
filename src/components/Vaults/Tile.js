@@ -6,7 +6,7 @@ import {GetExplorerLink, TruncateAddress} from '../../utils/utils';
 import {useFilter} from './useFilter';
 
 export default function Tile({vault, onClick}) {
-	const {favoriteVaults, setFavoriteVaults, strats} = useApp();
+	const {favorites, strats} = useApp();
 	const {queryRe} = useFilter();
 
 	function styleTitle(title) {
@@ -30,14 +30,14 @@ export default function Tile({vault, onClick}) {
 	//console.log(v_d);
 	function toggleFavorite(vault) {
 		return () => {
-			setFavoriteVaults(favorites => {
-				const index = favorites.indexOf(vault.address);
+			favorites.setVaults(vaults => {
+				const index = vaults.indexOf(vault.address);
 				if(index > -1) {
-					favorites.splice(index, 1);
+					vaults.splice(index, 1);
 				} else {
-					favorites.push(vault.address);
+					vaults.push(vault.address);
 				}
-				return [...favorites];
+				return [...vaults];
 			});
 		};
 	}
@@ -76,8 +76,8 @@ export default function Tile({vault, onClick}) {
 		</div>
 		<div className={'footer'}>
 			<div className={'left'} onClick={toggleFavorite(vault)}>
-				{!favoriteVaults.includes(vault.address) && <>&nbsp;<BsStar />&nbsp;</>}
-				{favoriteVaults.includes(vault.address) && <>&nbsp;<BsStarFill className={'favorite glow-attention-md'} />&nbsp;</>}
+				{!favorites.vaults.includes(vault.address) && <>&nbsp;<BsStar />&nbsp;</>}
+				{favorites.vaults.includes(vault.address) && <>&nbsp;<BsStarFill className={'favorite glow-attention-md'} />&nbsp;</>}
 			</div>
 			<div className={'center'}
 				title={`Copy ${vault.address} to your clipboard`}

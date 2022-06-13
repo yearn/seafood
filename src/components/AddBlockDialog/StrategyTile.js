@@ -7,18 +7,18 @@ import {GetExplorerLink, TruncateAddress} from '../../utils/utils';
 
 export default function StrategyTile({strategy, onClick}) {
 	const {selectedProvider} = useSelectedProvider();
-	const {favoriteStrategies, setFavoriteStrategies} = useApp();
+	const {favorites} = useApp();
 
 	function toggleFavorite() {
 		return () => {
-			setFavoriteStrategies(favorites => {
-				const index = favorites.indexOf(strategy.address);
+			favorites.setStrategies(strategies => {
+				const index = strategies.indexOf(strategy.address);
 				if(index > -1) {
-					favorites.splice(index, 1);
+					strategies.splice(index, 1);
 				} else {
-					favorites.push(strategy.address);
+					strategies.push(strategy.address);
 				}
-				return [...favorites];
+				return [...strategies];
 			});
 		};
 	}
@@ -34,8 +34,8 @@ export default function StrategyTile({strategy, onClick}) {
 		</div>
 		<div className={'footer'}>
 			<div className={'left'} onClick={toggleFavorite()}>
-				{!favoriteStrategies.includes(strategy.address) && <>&nbsp;<BsStar />&nbsp;</>}
-				{favoriteStrategies.includes(strategy.address) && <>&nbsp;<BsStarFill className={'favorite glow-attention-md'} />&nbsp;</>}
+				{!favorites.strategies.includes(strategy.address) && <>&nbsp;<BsStar />&nbsp;</>}
+				{favorites.strategies.includes(strategy.address) && <>&nbsp;<BsStarFill className={'favorite glow-attention-md'} />&nbsp;</>}
 			</div>
 			<div onClick={() => {
 				toast(`${strategy.address} copied to your clipboard`);

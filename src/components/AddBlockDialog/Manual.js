@@ -8,11 +8,11 @@ import {GetBasicStrat, GetBasicVault} from '../../ethereum/EthHelpers';
 import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
 
 export default function Manual() {
-	const {vaults, strats, favoriteVaults, favoriteStrategies} = useApp();
+	const {vaults, strats, favorites} = useApp();
 	const {selectedProvider} = useSelectedProvider();
 	const {setSteps, setResult} = useAddBlockDialog();
 	const [address, setAddress] = useState({value: null, valid: false, type: ''});
-	const [favorites, setFavorites] = useState([]);
+	const [favoritesList, setFavorites] = useState([]);
 	const [block, setBlock] = useState();
 
 	function locateStrategy(address) {
@@ -42,18 +42,18 @@ export default function Manual() {
 			})
 		];
 
-		favoriteStrategies.forEach(favoriteStrategy => {
+		favorites.strategies.forEach(favoriteStrategy => {
 			const {vault, strategy} = locateStrategy(favoriteStrategy);
 			if(vault) {
 				refresh.push({
 					address: strategy.address,
-					name: `${vault.name} \\ ${strategy.name}`
+					name: `${vault.name} (${vault.version}) \\ ${strategy.name}`
 				});
 			}
 		});
 
 		setFavorites(refresh);
-	}, [vaults, strats, favoriteVaults, favoriteStrategies]);
+	}, [vaults, strats, favorites]);
 
 	const debounceAddress = useDebouncedCallback(async (value) => {
 		value = value.trim();
@@ -133,11 +133,11 @@ export default function Manual() {
 						{!address.valid && <BsAsterisk className={'invalid'}></BsAsterisk>}
 					</div>
 				</div>
-				{favorites.length && 
+				{favoritesList.length && 
 				<div className={'input'}>
 					<select defaultValue={address.value} onChange={onSelectFavorite} className={'w-full'}>
 						<option value={''}>{'Or choose a favorite'}</option>
-						{favorites.map(favorite => 
+						{favoritesList.map(favorite => 
 							<option key={favorite.address} value={favorite.address}>{favorite.name}</option>
 						)}
 					</select>

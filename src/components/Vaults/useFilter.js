@@ -7,14 +7,14 @@ const	FilterContext = createContext();
 export const useFilter = () => useContext(FilterContext);
 
 export function FilterProvider({query, setQuery, chips, setChips, children}) {
-	const {vaults, favoriteVaults} = useApp();
+	const {vaults, favorites} = useApp();
 	const [filter, setFilter] = useState([]);
 	const queryRe = useMemo(() => { return new RegExp(query, 'i'); }, [query]);
 
 	useEffect(() => {
 		setFilter(vaults.filter(vault => {
 			if(query && !queryRe.test(vault.name)) return false;
-			if(chips.favorites && !favoriteVaults.includes(vault.address)) return false;
+			if(chips.favorites && !favorites.vaults.includes(vault.address)) return false;
 			if(!chips.ethereum && vault.provider.network.name === 'ethereum') return false;
 			if(!chips.fantom && vault.provider.network.name === 'fantom') return false;
 			return chips.curve || !curveRe.test(vault.name);

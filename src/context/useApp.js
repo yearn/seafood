@@ -53,10 +53,12 @@ export const AppProvider = ({children}) => {
 		loading,
 		vaults,
 		strats,
-		favoriteVaults,
-		setFavoriteVaults,
-		favoriteStrategies, 
-		setFavoriteStrategies,
+		favorites: {
+			vaults: favoriteVaults,
+			setVaults: setFavoriteVaults,
+			strategies: favoriteStrategies,
+			setStrategies: setFavoriteStrategies
+		},
 		darkMode, 
 		setDarkMode
 	}}>{children}</AppContext.Provider>;
