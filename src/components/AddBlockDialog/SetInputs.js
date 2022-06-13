@@ -61,7 +61,7 @@ export default function SetInputs() {
 		<div className={'inputs'}>
 			<div className={'scroll-container'}>
 				{result.function.inputs.length === 0 && 
-					<div className={''}>{'><(((*> - This function takes no inputs'}</div>
+					<div className={'rainbow-text'}>{'><(((*> - This function takes no inputs'}</div>
 				}
 
 				{result.function.inputs.map((input, index) => 

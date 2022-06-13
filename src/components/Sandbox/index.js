@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useLocation} from 'react-router-dom';
 import useRPCProvider from '../../context/useRpcProvider';
 import {SelectedProviderContext} from '../SelectProvider/useSelectedProvider';
@@ -17,6 +17,12 @@ export default function Sandbox() {
 	const [selectedProvider, setSelectedProvider] = useState(defaultProvider);
 	const [blocks, setBlocks] = useState([]);
 	const [simulating, setSimulating] = useState(false);
+
+	useEffect(() => {
+		if(selectedProvider !== defaultProvider) {
+			setSelectedProvider(defaultProvider);
+		}
+	}, [selectedProvider, setSelectedProvider, defaultProvider]);
 
 	function addBlock(block) {
 		block.index = blocks.length > 0 
@@ -57,7 +63,7 @@ export default function Sandbox() {
 							<>
 								{blocks.length === 0 && 
 									<div className={'grow flex items-center justify-center text-2xl'}>
-										<div className={'pb-32'}>{'><(((*> - The sandbox is empty'}</div>
+										<div className={'rainbow-text'}>{'><(((*> - The sandbox is empty'}</div>
 									</div>
 								}
 								{blocks.length > 0 && <Simulator />}

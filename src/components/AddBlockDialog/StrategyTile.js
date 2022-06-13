@@ -7,35 +7,35 @@ import {GetExplorerLink, TruncateAddress} from '../../utils/utils';
 
 export default function StrategyTile({strategy, onClick}) {
 	const {selectedProvider} = useSelectedProvider();
-	const {favoriteStrategies, setFavoriteStrategies} = useApp();
+	const {favorites} = useApp();
 
 	function toggleFavorite() {
 		return () => {
-			setFavoriteStrategies(favorites => {
-				const index = favorites.indexOf(strategy.address);
+			favorites.setStrategies(strategies => {
+				const index = strategies.indexOf(strategy.address);
 				if(index > -1) {
-					favorites.splice(index, 1);
+					strategies.splice(index, 1);
 				} else {
-					favorites.push(strategy.address);
+					strategies.push(strategy.address);
 				}
-				return [...favorites];
+				return [...strategies];
 			});
 		};
 	}
 
-	return <div className={'vault-tile'}>
+	return <div className={'group vault-tile'}>
 		<div onClick={onClick} className={'main'}>
+			<div className={'title'}>{strategy.name}</div>
 			<div className={'info'}>
-				<div className={'title'}>{strategy.name}</div>
 				<div className={'chips'}>
 					<div className={'chip bg-pink-400 dark:bg-pink-800'}>{'strategy'}</div>
 				</div>
 			</div>
 		</div>
-		<div className={'footer'}>
+		<div className={'footer dark:group-hover:text-secondary-200'}>
 			<div className={'left'} onClick={toggleFavorite()}>
-				{!favoriteStrategies.includes(strategy.address) && <>&nbsp;<BsStar />&nbsp;</>}
-				{favoriteStrategies.includes(strategy.address) && <>&nbsp;<BsStarFill className={'favorite glow-attention-md'} />&nbsp;</>}
+				{!favorites.strategies.includes(strategy.address) && <>&nbsp;<BsStar />&nbsp;</>}
+				{favorites.strategies.includes(strategy.address) && <>&nbsp;<BsStarFill className={'favorite glow-attention-md'} />&nbsp;</>}
 			</div>
 			<div onClick={() => {
 				toast(`${strategy.address} copied to your clipboard`);

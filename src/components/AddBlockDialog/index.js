@@ -101,6 +101,10 @@ export default function AddBlockDialog({onAddBlock}) {
 				<CloseDialog></CloseDialog>
 			</SmallScreen>
 
+			<BiggerThanSmallScreen>
+				<CloseDialog></CloseDialog>
+			</BiggerThanSmallScreen>
+	
 			<div className={'grow overflow-y-auto'}>
 				{currentStep === stepEnum.selectVault && <SelectVault></SelectVault>}
 				{currentStep === stepEnum.selectVaultFunctionOrStrategy && <SelectVaultFunctionOrStrategy></SelectVaultFunctionOrStrategy>}
@@ -113,9 +117,6 @@ export default function AddBlockDialog({onAddBlock}) {
 				<button disabled={steps.length < 2} onClick={onPreviousStep}>{'< Back'}</button>
 				<button onClick={onManual}>{'Manual'}</button>
 				<button disabled={!result?.valid} onClick={onClickAddBlock}>{'Add block'}</button>
-				<BiggerThanSmallScreen>
-					<button onClick={close}>{'Cancel'}</button>
-				</BiggerThanSmallScreen>
 			</div>
 		</div>
 		<div onClick={close} className={'absolute -z-10 inset-0'}></div>

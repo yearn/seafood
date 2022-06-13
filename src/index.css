@@ -2,33 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  @apply text-secondary-900 dark:text-secondary-200 transition duration-200;
+body {
+  @apply bg-secondary-900;
 }
 
 input, textarea, select {
   @apply text-secondary-900
   dark:text-secondary-900
+  transition duration-200;
 }
 
 a {
   @apply underline underline-offset-2 
-    hover:text-primary-400
-    dark:hover:text-selected-400;
+  hover:text-primary-400
+  dark:hover:text-selected-400
+  transition duration-200;
 }
 
-body {
-  @apply bg-secondary-900;
+a.plain {
+  @apply hover:text-secondary-900 dark:hover:text-secondary-200;
 }
 
 button, select {
   @apply m-2 py-2 px-4
-    bg-primary-200
-    hover:bg-primary-400
-    dark:bg-primary-800 dark:hover:bg-primary-600
-    active:transform active:scale-95
-    rounded-full
-    cursor-pointer shadow-md;
+  bg-primary-200
+  hover:bg-primary-400
+  dark:bg-primary-800 dark:hover:bg-primary-600
+  active:transform active:scale-95
+  rounded
+  cursor-pointer
+  transition duration-200;
+}
+
+.root {
+  @apply text-secondary-900 dark:text-secondary-200;
 }
 
 .button-ring-container {
@@ -36,7 +43,7 @@ button, select {
 }
 
 .button-ring {
-  @apply absolute z-[-1] w-full h-full border-transparent border-2 rounded-full;
+  @apply absolute z-[-1] w-full h-full border-transparent border-2 rounded;
 }
 
 .button-ring.default {
@@ -65,8 +72,7 @@ button.iconic.no-text svg, button.big.iconic.no-text svg {
 
 button:disabled, select:disabled {
   @apply text-gray-800 bg-gray-200
-    dark:text-gray-400 dark:bg-gray-800
-    shadow-none;
+  dark:text-gray-400 dark:bg-gray-800;
 }
 
 button:disabled svg {
@@ -78,9 +84,9 @@ select {
 }
 
 .bg {
-  @apply fixed top-0 z-0 w-full h-full bg-gradient-to-b 
-    from-secondary-100 via-primary-100 to-primary-200
-    dark:from-secondary-900 dark:via-primary-900 dark:to-primary-800;
+  @apply fixed top-0 z-0 w-full h-full
+  bg-white dark:bg-gradient-to-br dark:from-indigo-900 dark:via-secondary-900 dark:to-secondary-900
+  dark:sm:bg-gradient-radial-to-br dark:sm:from-indigo-900 dark:sm:via-secondary-900 dark:sm:to-secondary-900;
 }
 
 .alert {
@@ -89,18 +95,18 @@ select {
 
 .dialog-container {
   @apply fixed z-[100] top-0 left-0 right-0 h-full 
-    flex items-center justify-center 
-    bg-secondary-900/40
-    backdrop-blur-md;
+  flex items-center justify-center 
+  bg-secondary-900/40
+  backdrop-blur-md;
 }
 
 .dialog {
-  @apply w-full h-full p-2
-    flex flex-col justify-end
-    bg-secondary-100 
-    dark:bg-secondary-900
-    sm:w-[80%] sm:h-[80%] sm:p-8
-    sm:rounded-xl sm:shadow-lg;
+  @apply relative w-full h-full p-2
+  flex flex-col justify-end
+  bg-secondary-100 
+  dark:bg-secondary-900
+  sm:w-[80%] sm:h-[80%] sm:p-8
+  sm:rounded-xl sm:shadow-lg;
 }
 
 .dialog .tiles {
@@ -121,13 +127,13 @@ select {
 
 .dialog .inputs .input input[type=text] {
   @apply w-full py-2 px-2 text-lg border-transparent leading-tight
-    bg-gray-300
-    text-primary-900
-    focus:border-primary-400 focus:bg-gray-200 focus:ring-0
-    dark:bg-gray-800
-    dark:text-white
-    focus:dark:border-primary-400 focus:dark:bg-gray-700 focus:ring-0
-    rounded-md shadow-inner;
+  bg-gray-300
+  text-primary-900
+  focus:border-primary-400 focus:bg-gray-200 focus:ring-0
+  dark:bg-gray-800
+  dark:text-white
+  focus:dark:border-primary-400 focus:dark:bg-gray-700 focus:ring-0
+  rounded-md shadow-inner;
 }
 
 .dialog .inputs .input .validation {
@@ -144,37 +150,36 @@ select {
 
 .sm-circle-icon-button {
   @apply w-6 h-6 
-    flex items-center justify-center
-    hover:bg-selected-200 
-    dark:hover:bg-selected-600 
-    active:transform active:scale-90
-    rounded-full cursor-pointer;
+  flex items-center justify-center
+  hover:bg-primary-200 
+  dark:hover:bg-primary-600 
+  active:transform active:scale-90
+  rounded-full cursor-pointer
+  transition duration-200;
 }
 
 .md-circle-icon-button {
   @apply w-12 h-12 text-4xl
-    flex items-center justify-center
-    hover:bg-selected-200 
-    dark:hover:bg-selected-600 
-    active:transform active:scale-90
-    rounded-full cursor-pointer;
+  flex items-center justify-center
+  hover:bg-primary-200 
+  dark:hover:bg-primary-600 
+  active:transform active:scale-90
+  rounded-full cursor-pointer
+  transition duration-200;
 }
 
 .lg-circle-icon-button {
   @apply w-16 h-16 text-4xl
-    flex items-center justify-center
-    hover:bg-selected-200
-    dark:hover:bg-selected-600 
-    active:transform active:scale-90
-    rounded-full cursor-pointer;
+  flex items-center justify-center
+  hover:bg-primary-200
+  dark:hover:bg-primary-600 
+  active:transform active:scale-90
+  rounded-full cursor-pointer
+  transition duration-200;
 }
 
 .rainbow-text {
   @apply bg-clip-text text-transparent 
-    bg-gradient-to-r 
-    from-purple-500 to-pink-500;
-}
-
-.prism-editor-override pre {
-  @apply rounded-xl;
+  bg-gradient-to-r 
+  from-purple-500 to-pink-500;
 }
