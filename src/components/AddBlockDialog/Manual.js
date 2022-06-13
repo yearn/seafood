@@ -33,8 +33,8 @@ export default function Manual() {
 
 	useEffect(() => {
 		const refresh = [
-			...vaults.filter(vault => favoriteVaults.includes(vault.address) 
-			&& vault.provider.network.chainId === selectedProvider.network.chainId).map(vault => {
+			...vaults.filter(vault => favorites.vaults.includes(vault.address) 
+			&& vault.provider.network.chainId === selectedProvider?.network.chainId).map(vault => {
 				return {
 					address: vault.address,
 					name: `${vault.name} (${vault.version})`

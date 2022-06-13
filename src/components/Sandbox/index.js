@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useLocation} from 'react-router-dom';
 import useRPCProvider from '../../context/useRpcProvider';
 import {SelectedProviderContext} from '../SelectProvider/useSelectedProvider';
@@ -17,6 +17,12 @@ export default function Sandbox() {
 	const [selectedProvider, setSelectedProvider] = useState(defaultProvider);
 	const [blocks, setBlocks] = useState([]);
 	const [simulating, setSimulating] = useState(false);
+
+	useEffect(() => {
+		if(selectedProvider !== defaultProvider) {
+			setSelectedProvider(defaultProvider);
+		}
+	}, [setSelectedProvider, defaultProvider]);
 
 	function addBlock(block) {
 		block.index = blocks.length > 0 

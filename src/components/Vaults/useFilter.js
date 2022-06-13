@@ -19,7 +19,7 @@ export function FilterProvider({query, setQuery, chips, setChips, children}) {
 			if(!chips.fantom && vault.provider.network.name === 'fantom') return false;
 			return chips.curve || !curveRe.test(vault.name);
 		}));
-	}, [query, queryRe, chips, vaults]);
+	}, [query, queryRe, chips, vaults, favorites]);
 
 	return <FilterContext.Provider value={{
 		query, 

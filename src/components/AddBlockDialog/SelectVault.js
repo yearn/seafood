@@ -23,8 +23,8 @@ export default function SelectVault() {
 	useEffect(() => {
 		setChips({
 			curve: false,
-			ethereum: selectedProvider.network.chainId == 1,
-			fantom: selectedProvider.network.chainId == 250,
+			ethereum: selectedProvider?.network.chainId == 1,
+			fantom: selectedProvider?.network.chainId == 250,
 			tags: ['curve']
 		});
 	}, [selectedProvider]);
