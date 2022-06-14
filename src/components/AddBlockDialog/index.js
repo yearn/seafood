@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import useKeypress from 'react-use-keypress';
 import {BsBox} from 'react-icons/bs';
-import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import {useAddBlockDialog, stepEnum, defaultResult} from './useAddBlockDialog';
 import {GetVaultContract} from '../../ethereum/EthHelpers';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
@@ -97,13 +96,7 @@ export default function AddBlockDialog({onAddBlock}) {
 
 	return <div className={`dialog-container${show ? '' : ' invisible'}`}>
 		<div className={'dialog'}>
-			<SmallScreen>
-				<CloseDialog></CloseDialog>
-			</SmallScreen>
-
-			<BiggerThanSmallScreen>
-				<CloseDialog></CloseDialog>
-			</BiggerThanSmallScreen>
+			<CloseDialog></CloseDialog>
 	
 			<div className={'grow overflow-y-auto'}>
 				{currentStep === stepEnum.selectVault && <SelectVault></SelectVault>}

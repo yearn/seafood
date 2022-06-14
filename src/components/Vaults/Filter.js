@@ -15,7 +15,7 @@ export default function Filter({showVaultCount = false, overpassOnScroll = true}
 
 	useKeypress(['/'], () => {
 		setTimeout(() => {
-			queryElement.current.focus();
+			queryElement.current.select();
 		}, 0);
 	});
 
@@ -26,7 +26,7 @@ export default function Filter({showVaultCount = false, overpassOnScroll = true}
 
 	return <>
 		<SmallScreen>
-			<div className={`vaults-filter py-4 ${overpassOnScroll ? overpassClass : ''}`}>
+			<div className={`filter py-4 ${overpassOnScroll ? overpassClass : ''}`}>
 				<div className={'flex items-center justify-between'}>
 					<div className={'w-1/5'}></div>
 					<div className={'w-3/5 relative flex items-center justify-center'}>
@@ -45,8 +45,8 @@ export default function Filter({showVaultCount = false, overpassOnScroll = true}
 			</div>
 		</SmallScreen>
 		<BiggerThanSmallScreen>
-			<div className={`vaults-filter flex items-center pl-4 pr-8 py-2 ${overpassOnScroll ? overpassClass : ''}`}>
-				<div className={'relative mr-2 flex items-center justify-center'}>
+			<div className={`filter pl-4 pr-8 py-2 flex items-center gap-2 ${overpassOnScroll ? overpassClass : ''}`}>
+				<div className={'relative flex items-center justify-center'}>
 					<input ref={queryElement} onChange={(e) => {debounceQuery(e.target.value);}} defaultValue={query} type={'text'} placeholder={'/ Filter by name'} />
 					{query && <div onClick={clearQuery} className={'absolute right-2 sm-circle-icon-button'}>
 						<BsX />
