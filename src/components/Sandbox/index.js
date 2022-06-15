@@ -57,7 +57,7 @@ export default function Sandbox() {
 					<Toolbar></Toolbar>
 				</BiggerThanSmallScreen>
 
-				<div className={'content'}>
+				<div className={`content ${simulating ? 'simulating' : ''}`}>
 					<BiggerThanSmallScreen>
 						{(location.hash === '' || location.hash === '#add-block' || location.hash === '#events') &&
 							<>
