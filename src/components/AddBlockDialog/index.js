@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import useKeypress from 'react-use-keypress';
 import {BsBox} from 'react-icons/bs';
-import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import {useAddBlockDialog, stepEnum, defaultResult} from './useAddBlockDialog';
 import {GetVaultContract} from '../../ethereum/EthHelpers';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
@@ -12,6 +11,8 @@ import SelectVaultFunctionOrStrategy from './SelectVaultFunctionOrStrategy';
 import SelectStrategyFunction from './SelectStrategyFunction';
 import SetInputs from './SetInputs';
 import Manual from './Manual';
+import ReactSwitch from 'react-switch';
+import useLocalStorage from 'use-local-storage';
 
 export function AddBlockButton({className}) {
 	const location = useLocation();
@@ -37,6 +38,7 @@ export default function AddBlockDialog({onAddBlock}) {
 	const {steps, setSteps, result} = useAddBlockDialog();
 	const currentStep = steps[steps.length - 1];
 	const [show, setShow] = useState(false);
+	const [manual, setManual] = useLocalStorage('addBlock.manual', false);
 
 	useEffect(() => {
 		setShow(location.hash === '#add-block');
@@ -60,63 +62,59 @@ export default function AddBlockDialog({onAddBlock}) {
 		});
 	}
 
-	function onManual() {
-		const index = steps.indexOf(stepEnum.manual);
-		if(index === -1) {
-			setSteps(steps => {return [
-				steps[0], 
-				stepEnum.manual
-			];});
-		} else {
-			setSteps(steps => {return [
-				...steps.slice(0, index + 1)
-			];});
-		}
+	async function onClickAddBlock() {
+		await addBlock(result);
 	}
 
-	async function onClickAddBlock() {
-		const contract = result.vault?.contract 
-			|| await GetVaultContract(result.vault.address, selectedProvider);
+	async function addBlock(dialogResult) {
+		const contract = dialogResult.vault?.contract 
+			|| await GetVaultContract(dialogResult.vault.address, selectedProvider);
 
 		const block = {
 			index: 0,
-			address: result.vault.address,
-			name: result.vault.name,
+			address: dialogResult.vault.address,
+			name: dialogResult.vault.name,
 			contract,
-			function: result.function,
-			inputs: result.function.inputs.reduce((accumulator, current, index) => {
-				accumulator[current.name] = result.inputs[index];
+			function: dialogResult.function,
+			inputs: dialogResult.function.inputs.reduce((accumulator, current, index) => {
+				accumulator[current.name] = dialogResult.inputs[index];
 				return accumulator;
 			}, {})
 		};
-		block.block = (result.function.source === 'vault') ? block : result.strategy;
+		block.block = (dialogResult.function.source === 'vault') ? block : dialogResult.strategy;
 
 		onAddBlock(block);
 		navigate(-1);
 	}
 
+	function toggleManual() {
+		setManual(current => !current);
+		setSteps([stepEnum.selectVault]);
+	}
+
 	return <div className={`dialog-container${show ? '' : ' invisible'}`}>
 		<div className={'dialog'}>
-			<SmallScreen>
-				<CloseDialog></CloseDialog>
-			</SmallScreen>
-
-			<BiggerThanSmallScreen>
-				<CloseDialog></CloseDialog>
-			</BiggerThanSmallScreen>
+			<CloseDialog></CloseDialog>
 	
 			<div className={'grow overflow-y-auto'}>
-				{currentStep === stepEnum.selectVault && <SelectVault></SelectVault>}
-				{currentStep === stepEnum.selectVaultFunctionOrStrategy && <SelectVaultFunctionOrStrategy></SelectVaultFunctionOrStrategy>}
-				{currentStep === stepEnum.selectStrategyFunction && <SelectStrategyFunction></SelectStrategyFunction>}
+				{currentStep === stepEnum.selectVault && <>
+					{!manual && <SelectVault></SelectVault>}
+					{manual && <Manual></Manual>}
+				</>}
+				{currentStep === stepEnum.selectVaultFunctionOrStrategy && <SelectVaultFunctionOrStrategy addBlock={addBlock}></SelectVaultFunctionOrStrategy>}
+				{currentStep === stepEnum.selectStrategyFunction && <SelectStrategyFunction addBlock={addBlock}></SelectStrategyFunction>}
 				{currentStep === stepEnum.setInputs && <SetInputs></SetInputs>}
-				{currentStep === stepEnum.manual && <Manual></Manual>}
 			</div>
 
-			<div className={'flex gap-2 items-center justify-end'}>
-				<button disabled={steps.length < 2} onClick={onPreviousStep}>{'< Back'}</button>
-				<button onClick={onManual}>{'Manual'}</button>
-				<button disabled={!result?.valid} onClick={onClickAddBlock}>{'Add block'}</button>
+			<div className={'flex gap-2 items-center justify-between'}>
+				<div className={'flex items-center gap-2'}>
+					<ReactSwitch onChange={toggleManual} checked={manual} className={'react-switch'} onColor={'#0084c7'} checkedIcon={false} uncheckedIcon={false} />
+					<div onClick={toggleManual} className={'text-sm cursor-default'}>{'Manual'}</div>
+				</div>
+				<div className={'flex gap-2'}>
+					<button disabled={steps.length < 2} onClick={onPreviousStep}>{'< Back'}</button>
+					<button disabled={!result?.valid} onClick={onClickAddBlock}>{'Add block'}</button>
+				</div>
 			</div>
 		</div>
 		<div onClick={close} className={'absolute -z-10 inset-0'}></div>

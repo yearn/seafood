@@ -7,7 +7,6 @@ export default function Chips() {
 
 	function toggle(chip) {
 		return () => {
-			console.log('toggle', chip);
 			setChips(chips => {
 				return {...chips, [chip]: !chips[chip]};
 			});
@@ -15,7 +14,7 @@ export default function Chips() {
 	}
 
 	return <div className={'flex flex-col items-center'}>
-		<div className={'flex flex-row'}>
+		<div className={'flex flex-row gap-2'}>
 			<div onClick={toggle('favorites')}
 				className={`chip iconic favorite ${chips.favorites ? 'hot' : ''}`}>
 				{!chips.favorites && <BsStar />}

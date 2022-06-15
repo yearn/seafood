@@ -2,29 +2,11 @@ import React from 'react';
 import {BsBoxArrowInUpRight, BsStar, BsStarFill} from 'react-icons/bs';
 import toast from 'react-hot-toast';
 import {useApp} from '../../context/useApp';
-import {GetExplorerLink, TruncateAddress} from '../../utils/utils';
-import {useFilter} from './useFilter';
+import {GetExplorerLink, highlightString, TruncateAddress} from '../../utils/utils';
 import Bone from '../Bone';
 
-export default function Tile({vault, onClick}) {
+export default function Tile({vault, queryRe, onClick}) {
 	const {favorites, strats} = useApp();
-	const {queryRe} = useFilter();
-
-	function styleTitle(title) {
-		const match = title.match(queryRe);
-		if (match) {
-			const matchedText = match[0];
-			const left = title.substring(0, match.index);
-			const middle = title.substring(match.index, match.index + matchedText.length);
-			const right = title.substring(match.index + matchedText.length);
-			return <>
-				{left}
-				<span className={'rainbow-text'}>{middle}</span>
-				{right}
-			</>;
-		}
-		return title;
-	}
 
 	// console.log(strats);
 	const v_d = strats.find(element => element.address === vault.address);
@@ -53,7 +35,7 @@ export default function Tile({vault, onClick}) {
 	return <div className={'group vault-tile'}>
 		
 		<div onClick={onClick} className={'main'}>
-			<div className={'title'}>{styleTitle(vault.name)}</div>
+			<div className={'title'}>{highlightString(vault.name, queryRe)}</div>
 			<div className={'body'}>
 				<div className={'info'}>
 					<div className={'chips'}>

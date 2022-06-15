@@ -19,7 +19,6 @@ function GetALink(url, str){
 
 function TruncateAddress(address) {
 	return `${address.slice(0, 6)}...${address.slice(-4)}`;
-
 }
 
 function FormatNumer(number, decimals=2){
@@ -30,4 +29,29 @@ function FormatPercent(number){
 	return (number*100).toLocaleString(undefined, {maximumFractionDigits:2}) + '%';
 }
 
-export {curveRe, GetExplorerLink, GetExplorerTx, GetALink, TruncateAddress, FormatNumer, FormatPercent};
+function highlightString(string, highlightRe) {
+	const match = string.match(highlightRe);
+	if (match) {
+		const matchedText = match[0];
+		const left = string.substring(0, match.index);
+		const middle = string.substring(match.index, match.index + matchedText.length);
+		const right = string.substring(match.index + matchedText.length);
+		return <>
+			{left}
+			<span className={'rainbow-text'}>{middle}</span>
+			{right}
+		</>;
+	}
+	return string;
+}
+
+export {
+	curveRe, 
+	GetExplorerLink, 
+	GetExplorerTx, 
+	GetALink, 
+	TruncateAddress, 
+	FormatNumer, 
+	FormatPercent, 
+	highlightString
+};

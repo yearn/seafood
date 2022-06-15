@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {ethers} from 'ethers';
 import {BsAsterisk, BsCheckLg} from 'react-icons/bs';
 import {useDebouncedCallback} from 'use-debounce';
-import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import {useAddBlockDialog} from './useAddBlockDialog';
+import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 
 export default function SetInputs() {
 	const {result, setResult} = useAddBlockDialog();
@@ -44,26 +44,26 @@ export default function SetInputs() {
 	}
 
 	return <div className={'h-full flex flex-col'}>
-		<div className={'px-4 pt-4 pb-8'}>
-			<SmallScreen>
-				<h2 className={'text-xl'}>{result.vault?.name || 'Manual'}</h2>
-				{result.strategy && <h2 className={'text-xl'}>{` \\ ${result.strategy.name}`}</h2>}
-				<h2 className={'text-xl'}>{` \\ ${result.function.name}`}</h2>
-			</SmallScreen>
-			<BiggerThanSmallScreen>
-				<h2 className={'text-xl'}>
-					{result.vault?.name || 'Manual'}
-					{result.strategy && ` \\ ${result.strategy.name}`}
-					{` \\ ${result.function.name}`}
-				</h2>
-			</BiggerThanSmallScreen>
+		<div className={'header'}>
+			<div className={'w-full text-center'}>
+				<SmallScreen>
+					<div className={'text-sm font-bold whitespace-nowrap'}>
+						{`${result.vault.name} /`}
+					</div>
+					<div className={'text-xs font-bold whitespace-nowrap'}>
+						{`${result.strategy ? `${result.strategy.name} / ` : ''}${result.function.name}`}
+					</div>
+				</SmallScreen>
+				<BiggerThanSmallScreen>
+					<div className={'text-lg font-bold whitespace-nowrap'}>
+						{`${result.vault.name} / ${result.strategy ? `${result.strategy.name} / ` : ''}${result.function.name}`}
+					</div>
+				</BiggerThanSmallScreen>
+			</div>
 		</div>
+
 		<div className={'inputs'}>
 			<div className={'scroll-container'}>
-				{result.function.inputs.length === 0 && 
-					<div className={'rainbow-text'}>{'><(((*> - This function takes no inputs'}</div>
-				}
-
 				{result.function.inputs.map((input, index) => 
 					<div key={index} className={'input'}>
 						<h3 className={'text-lg mb-2'}>{input.name}</h3>

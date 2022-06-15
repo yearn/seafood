@@ -11,9 +11,13 @@
   sm:mx-8 sm:mb-4
   px-4 pt-24 pb-16 sm:px-8 sm:py-0 
   flex flex-col justify-between
-  sm:border-4 sm:border-primary-600/40 dark:sm:border-primary-400/40
-  dark:sm:bg-black/20
+  border-4 border-primary-600/40 dark:border-primary-400/40
+  dark:bg-black/20
   sm:rounded;
+}
+
+.sandbox .content.simulating {
+  @apply border-selected-600 dark:border-selected-400 animate-pulse;
 }
 
 .sandbox .tabs {

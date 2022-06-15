@@ -59,7 +59,7 @@ export default function Code() {
 			</div>
 		</SmallScreen>
 		<BiggerThanSmallScreen>
-			<button onClick={onCopyCode} className={'absolute top-36 right-10 big iconic no-text'}>
+			<button onClick={onCopyCode} className={'absolute top-36 right-14 big iconic no-text'}>
 				<BsClipboard className={'text-xl'}></BsClipboard>
 			</button>
 		</BiggerThanSmallScreen>

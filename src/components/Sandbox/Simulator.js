@@ -13,7 +13,7 @@ import {SmallScreen} from '../../utils/breakpoints';
 export default function Simulator() {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const {blocks, setBlocks, addBlock, simulate, simulating, reset, removeBlock} = useBlocks();
+	const {blocks, setBlocks, addBlock, simulate, reset, removeBlock} = useBlocks();
 	const [showEventsForBlock, setShowEventsForBlock] = useState();
 
 	function onShowBlockEvents(index) {
@@ -29,7 +29,7 @@ export default function Simulator() {
 				</div>)}
 		</ReactSortable>
 		<SmallScreen>
-			<div className={`${blocks.length === 0 ? 'mt-64' : 'mt-8'} mb-32 flex flex-col items-center`}>
+			<div className={`${blocks.length === 0 ? 'mt-64' : 'mt-8'} mb-32 flex flex-col items-center gap-4`}>
 				<AddBlockDialogProvider>
 					<AddBlockButton className={'big'}></AddBlockButton>
 					<AddBlockDialog onAddBlock={addBlock}></AddBlockDialog>
@@ -45,7 +45,6 @@ export default function Simulator() {
 		<SmallScreen>
 			<div className={'actions'}>
 				<div className={'button-ring-container'}>
-					<div className={`button-ring ${simulating ? 'default' : ''}`}></div>
 					<button onClick={simulate} disabled={blocks.length === 0}><BsPlay className={'text-4xl'}></BsPlay></button>
 				</div>
 			</div>

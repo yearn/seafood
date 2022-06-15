@@ -24,7 +24,7 @@ a.plain {
 }
 
 button, select {
-  @apply m-2 py-2 px-4
+  @apply py-2 px-4
   bg-primary-200
   hover:bg-primary-400
   dark:bg-primary-800 dark:hover:bg-primary-600
@@ -105,12 +105,16 @@ select {
   flex flex-col justify-end
   bg-secondary-100 
   dark:bg-secondary-900
-  sm:w-[80%] sm:h-[80%] sm:p-8
-  sm:rounded-xl sm:shadow-lg;
+  sm:px-8 sm:py-4;
+}
+
+.dialog .header {
+  @apply min-h-[42px] max-h-[42px] sm:min-h-[58px] sm:max-h-[58px] flex items-center justify-between;
 }
 
 .dialog .tiles {
-  @apply grow overflow-y-auto my-4 grid grid-flow-row gap-2 grid-cols-1 sm:gap-8 md:grid-cols-3 2xl:grid-cols-4;
+  @apply grow overflow-y-auto my-4 grid grid-flow-row gap-2 grid-cols-1 
+  sm:gap-8 md:grid-cols-3 2xl:grid-cols-4;
 }
 
 .dialog .inputs {
@@ -146,6 +150,87 @@ select {
 
 .dialog .inputs .input .validation .invalid {
   @apply fill-error-600;
+}
+
+.filter {
+  @apply sticky top-0 z-10;
+}
+
+.filter input[type=text] {
+  @apply w-full py-2 px-3 bg-transparent rounded leading-tight
+    text-primary-900
+    dark:text-primary-200
+    focus:border-primary-400 focus:ring-0
+    border-2 dark:border 
+    border-secondary-200 dark:border-secondary-500
+    shadow-inner;
+}
+
+.filter input[type=text]:focus {
+  @apply dark:border-blue-400;
+}
+
+.filter .chip {
+  @apply px-4 py-1 border-2 text-sm capitalize rounded cursor-pointer 
+    active:transform active:scale-95
+    transition duration-200;
+}
+
+.filter .chip.iconic {
+  @apply aspect-square border px-[.475rem] py-0 flex items-center;
+}
+
+.filter .chip.favorite {
+  @apply border-2 dark:border border-attention-200 dark:border-attention-700
+    hover:border-attention-400 hover:dark:border-attention-400;
+}
+
+.filter .chip.favorite svg {
+  @apply fill-attention-800 dark:fill-attention-700;
+}
+
+.filter .chip.favorite.hot {
+  @apply bg-attention-200 dark:bg-transparent
+    border-attention-200 dark:border-attention-700
+    hover:border-attention-400 hover:dark:border-attention-400;
+}
+
+.filter .chip.favorite.hot svg {
+  @apply fill-attention-600 dark:fill-attention-400 glow-attention-md;
+}
+
+.filter .chip:first-child {
+  @apply ml-0;
+}
+
+.filter .chip-curve {
+  @apply border-curve-200 dark:border-curve-700 dark:text-curve-500
+    hover:border-curve-400 hover:dark:border-curve-600 hover:dark:text-curve-400;
+}
+
+.filter .hot-curve {
+  @apply bg-curve-200 text-curve-900 dark:bg-curve-700 dark:text-curve-100 shadow-sm
+    hover:dark:bg-curve-600 hover:dark:text-curve-100;
+}
+
+.filter .chip-ethereum {
+  @apply border-ethereum-200 dark:border-ethereum-600 dark:text-ethereum-500
+    hover:border-ethereum-400 hover:dark:border-ethereum-500 hover:dark:text-ethereum-400;
+}
+
+.filter .hot-ethereum {
+  @apply bg-ethereum-200 text-ethereum-900 dark:bg-ethereum-600 dark:text-ethereum-100 shadow-sm
+    hover:dark:bg-ethereum-500 hover:dark:text-ethereum-100;
+}
+
+.filter .chip-fantom {
+  @apply border-fantom-200 dark:border-fantom-800 dark:text-fantom-500
+    hover:border-fantom-400 hover:dark:border-fantom-600 hover:dark:text-fantom-400;
+}
+
+.filter .hot-fantom {
+  @apply bg-fantom-200 text-fantom-900 dark:bg-fantom-800 dark:text-fantom-100 shadow-sm
+    hover:dark:bg-fantom-600 hover:dark:text-fantom-100;
 }
 
 .sm-circle-icon-button {
