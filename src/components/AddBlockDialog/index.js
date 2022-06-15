@@ -11,6 +11,8 @@ import SelectVaultFunctionOrStrategy from './SelectVaultFunctionOrStrategy';
 import SelectStrategyFunction from './SelectStrategyFunction';
 import SetInputs from './SetInputs';
 import Manual from './Manual';
+import ReactSwitch from 'react-switch';
+import useLocalStorage from 'use-local-storage';
 
 export function AddBlockButton({className}) {
 	const location = useLocation();
@@ -36,6 +38,7 @@ export default function AddBlockDialog({onAddBlock}) {
 	const {steps, setSteps, result} = useAddBlockDialog();
 	const currentStep = steps[steps.length - 1];
 	const [show, setShow] = useState(false);
+	const [manual, setManual] = useLocalStorage('addBlock.manual', false);
 
 	useEffect(() => {
 		setShow(location.hash === '#add-block');
@@ -59,20 +62,6 @@ export default function AddBlockDialog({onAddBlock}) {
 		});
 	}
 
-	function onManual() {
-		const index = steps.indexOf(stepEnum.manual);
-		if(index === -1) {
-			setSteps(steps => {return [
-				steps[0], 
-				stepEnum.manual
-			];});
-		} else {
-			setSteps(steps => {return [
-				...steps.slice(0, index + 1)
-			];});
-		}
-	}
-
 	async function onClickAddBlock() {
 		const contract = result.vault?.contract 
 			|| await GetVaultContract(result.vault.address, selectedProvider);
@@ -94,22 +83,34 @@ export default function AddBlockDialog({onAddBlock}) {
 		navigate(-1);
 	}
 
+	function toggleManual() {
+		setManual(current => !current);
+		setSteps([stepEnum.selectVault]);
+	}
+
 	return <div className={`dialog-container${show ? '' : ' invisible'}`}>
 		<div className={'dialog'}>
 			<CloseDialog></CloseDialog>
 	
 			<div className={'grow overflow-y-auto'}>
-				{currentStep === stepEnum.selectVault && <SelectVault></SelectVault>}
+				{currentStep === stepEnum.selectVault && <>
+					{!manual && <SelectVault></SelectVault>}
+					{manual && <Manual></Manual>}
+				</>}
 				{currentStep === stepEnum.selectVaultFunctionOrStrategy && <SelectVaultFunctionOrStrategy></SelectVaultFunctionOrStrategy>}
 				{currentStep === stepEnum.selectStrategyFunction && <SelectStrategyFunction></SelectStrategyFunction>}
 				{currentStep === stepEnum.setInputs && <SetInputs></SetInputs>}
-				{currentStep === stepEnum.manual && <Manual></Manual>}
 			</div>
 
-			<div className={'flex gap-2 items-center justify-end'}>
-				<button disabled={steps.length < 2} onClick={onPreviousStep}>{'< Back'}</button>
-				<button onClick={onManual}>{'Manual'}</button>
-				<button disabled={!result?.valid} onClick={onClickAddBlock}>{'Add block'}</button>
+			<div className={'flex gap-2 items-center justify-between'}>
+				<div className={'flex items-center gap-2'}>
+					<ReactSwitch onChange={toggleManual} checked={manual} className={'react-switch'} onColor={'#0084c7'} checkedIcon={false} uncheckedIcon={false} />
+					<div onClick={toggleManual} className={'text-sm cursor-default'}>{'Manual'}</div>
+				</div>
+				<div className={'flex gap-2'}>
+					<button disabled={steps.length < 2} onClick={onPreviousStep}>{'< Back'}</button>
+					<button disabled={!result?.valid} onClick={onClickAddBlock}>{'Add block'}</button>
+				</div>
 			</div>
 		</div>
 		<div onClick={close} className={'absolute -z-10 inset-0'}></div>

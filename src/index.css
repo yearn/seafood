@@ -24,7 +24,7 @@ a.plain {
 }
 
 button, select {
-  @apply m-2 py-2 px-4
+  @apply py-2 px-4
   bg-primary-200
   hover:bg-primary-400
   dark:bg-primary-800 dark:hover:bg-primary-600

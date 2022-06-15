@@ -29,7 +29,7 @@ export default function Simulator() {
 				</div>)}
 		</ReactSortable>
 		<SmallScreen>
-			<div className={`${blocks.length === 0 ? 'mt-64' : 'mt-8'} mb-32 flex flex-col items-center`}>
+			<div className={`${blocks.length === 0 ? 'mt-64' : 'mt-8'} mb-32 flex flex-col items-center gap-4`}>
 				<AddBlockDialogProvider>
 					<AddBlockButton className={'big'}></AddBlockButton>
 					<AddBlockDialog onAddBlock={addBlock}></AddBlockDialog>

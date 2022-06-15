@@ -6,12 +6,17 @@ import {useApp} from '../../context/useApp';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import {GetBasicStrat, GetBasicVault} from '../../ethereum/EthHelpers';
 import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
+import useLocalStorage from 'use-local-storage';
 
 export default function Manual() {
 	const {vaults, strats, favorites} = useApp();
 	const {selectedProvider} = useSelectedProvider();
 	const {setSteps, setResult} = useAddBlockDialog();
-	const [address, setAddress] = useState({value: null, valid: false, type: ''});
+	const [address, setAddress] = useLocalStorage('addBlock.manual.address', null);
+	const [type, setType] = useState('');
+	const [valid, setValid] = useState(false);
+	// const [address, setAddress] = useState({value: null, valid: false, type: ''});
+
 	const [favoritesList, setFavorites] = useState([]);
 	const [block, setBlock] = useState();
 
@@ -57,40 +62,41 @@ export default function Manual() {
 
 	const debounceAddress = useDebouncedCallback(async (value) => {
 		value = value.trim();
-		let newBlock = null;
-		let valid = false;
-		let type = null;
-
-		if(ethers.utils.isAddress(value)) {
-			try {
-				newBlock = await GetBasicVault(value, selectedProvider);
-
-				// HACK: Looking for a way to infer the contract type 
-				// instead of having users select Vault or Strategy.
-				// My assumption here is that strategies never have a governance() function.
-				// So if this call fails we go on to check if the address is a strategy.
-				await newBlock.contract.callStatic.governance();
-
-				valid = true;
-				type = 'vault';
-			} catch (error) {
-				try {
-					newBlock = await GetBasicStrat(value, selectedProvider);
-					valid = true;
-					type = 'strategy';
-				} catch (error) {
-					valid = false; //lint sayonara
-				}
-			}
-		}
-
-		setAddress({value, valid, type});
-		if(valid) setBlock(newBlock);
-		else setBlock(null);
+		setAddress(value);
 	}, 250);
 
+	useEffect(() => {
+		(async () => {
+			if(ethers.utils.isAddress(address)) {
+				try {
+					const block = await GetBasicVault(address, selectedProvider);
+	
+					// HACK: Looking for a way to infer the contract type 
+					// instead of having users select Vault or Strategy.
+					// My assumption here is that strategies never have a governance() function.
+					// So if this call fails we go on to check if the address is a strategy.
+					await block.contract.callStatic.governance();
+	
+					setBlock(block);
+					setType('vault');
+					setValid(true);
+				} catch (error) {
+					try {
+						const block = await GetBasicStrat(address, selectedProvider);
+						setBlock(block);
+						setType('strategy');
+						setValid(true);
+						// asas
+					} catch (error) {
+						error;
+					}
+				}
+			}
+		})();
+	}, [selectedProvider, address]);
+
 	async function onSelectFunction() {
-		switch(address.type) {
+		switch(type) {
 		case 'vault': {
 			setResult(result => {return {
 				...result, 
@@ -127,15 +133,15 @@ export default function Manual() {
 			<div className={'scroll-container'}>
 				<p className={'pl-8 pr-12 py-4 text-3xl'}>{'Enter a vault or strategy address'}</p>
 				<div className={'input flex items-center'}>
-					<input type={'text'} defaultValue={address.value} onChange={(e) => {debounceAddress(e.target.value);}} placeholder={'address'} />
+					<input type={'text'} defaultValue={address} onChange={(e) => {debounceAddress(e.target.value);}} placeholder={'address'} />
 					<div className={'validation'}>
-						{address.valid && <BsCheckLg className={'valid'}></BsCheckLg>}
-						{!address.valid && <BsAsterisk className={'invalid'}></BsAsterisk>}
+						{valid && <BsCheckLg className={'valid'}></BsCheckLg>}
+						{!valid && <BsAsterisk className={'invalid'}></BsAsterisk>}
 					</div>
 				</div>
 				{favoritesList.length && 
 				<div className={'input'}>
-					<select defaultValue={address.value} onChange={onSelectFavorite} className={'w-full'}>
+					<select defaultValue={address} onChange={onSelectFavorite} className={'w-full'}>
 						<option value={''}>{'Or choose a favorite'}</option>
 						{favoritesList.map(favorite => 
 							<option key={favorite.address} value={favorite.address}>{favorite.name}</option>
@@ -145,8 +151,8 @@ export default function Manual() {
 				<div className={'mt-4 text-lg'}>
 					&nbsp;{block?.name}&nbsp;
 				</div>
-				<button onClick={onSelectFunction} className={address.valid ? 'visible' : 'invisible'}>
-					{`Select ${address.type} function`}
+				<button onClick={onSelectFunction} className={valid ? 'block' : 'hidden'}>
+					{`Select ${type} function`}
 				</button>
 			</div>
 		</div>
