@@ -7,7 +7,7 @@ import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import useLocalStorage from 'use-local-storage';
 import Filter from './Filter';
 
-export default function SelectStrategyFunction() {
+export default function SelectStrategyFunction({addBlock}) {
 	const {selectedProvider} = useSelectedProvider();
 	const {setSteps, result, setResult} = useAddBlockDialog();
 	const [items, setItems] = useState([]);
@@ -38,14 +38,21 @@ export default function SelectStrategyFunction() {
 
 	function onClickFunction(func) {
 		func.source = 'strategy';
-		setResult(result => {return {
-			...result,
-			function: func
-		};});
-		setSteps(steps => {return [
-			...steps,
-			stepEnum.setInputs
-		];});
+		if(func.inputs.length === 0) {
+			addBlock({
+				...result,
+				function: func
+			});
+		} else {
+			setResult(current => {return {
+				...current,
+				function: func
+			};});
+			setSteps(current => {return [
+				...current,
+				stepEnum.setInputs
+			];});
+		}
 	}
 
 	return <div className={'max-h-full flex flex-col'}>

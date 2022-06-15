@@ -63,21 +63,25 @@ export default function AddBlockDialog({onAddBlock}) {
 	}
 
 	async function onClickAddBlock() {
-		const contract = result.vault?.contract 
-			|| await GetVaultContract(result.vault.address, selectedProvider);
+		await addBlock(result);
+	}
+
+	async function addBlock(dialogResult) {
+		const contract = dialogResult.vault?.contract 
+			|| await GetVaultContract(dialogResult.vault.address, selectedProvider);
 
 		const block = {
 			index: 0,
-			address: result.vault.address,
-			name: result.vault.name,
+			address: dialogResult.vault.address,
+			name: dialogResult.vault.name,
 			contract,
-			function: result.function,
-			inputs: result.function.inputs.reduce((accumulator, current, index) => {
-				accumulator[current.name] = result.inputs[index];
+			function: dialogResult.function,
+			inputs: dialogResult.function.inputs.reduce((accumulator, current, index) => {
+				accumulator[current.name] = dialogResult.inputs[index];
 				return accumulator;
 			}, {})
 		};
-		block.block = (result.function.source === 'vault') ? block : result.strategy;
+		block.block = (dialogResult.function.source === 'vault') ? block : dialogResult.strategy;
 
 		onAddBlock(block);
 		navigate(-1);
@@ -97,8 +101,8 @@ export default function AddBlockDialog({onAddBlock}) {
 					{!manual && <SelectVault></SelectVault>}
 					{manual && <Manual></Manual>}
 				</>}
-				{currentStep === stepEnum.selectVaultFunctionOrStrategy && <SelectVaultFunctionOrStrategy></SelectVaultFunctionOrStrategy>}
-				{currentStep === stepEnum.selectStrategyFunction && <SelectStrategyFunction></SelectStrategyFunction>}
+				{currentStep === stepEnum.selectVaultFunctionOrStrategy && <SelectVaultFunctionOrStrategy addBlock={addBlock}></SelectVaultFunctionOrStrategy>}
+				{currentStep === stepEnum.selectStrategyFunction && <SelectStrategyFunction addBlock={addBlock}></SelectStrategyFunction>}
 				{currentStep === stepEnum.setInputs && <SetInputs></SetInputs>}
 			</div>
 

@@ -8,7 +8,7 @@ import useLocalStorage from 'use-local-storage';
 import {useApp} from '../../context/useApp';
 import Filter from './Filter';
 
-export default function SelectVaultFunctionOrStrategy() {
+export default function SelectVaultFunctionOrStrategy({addBlock}) {
 	const {favorites, strats} = useApp();
 	const {selectedProvider} = useSelectedProvider();
 	const {setSteps, result, setResult} = useAddBlockDialog();
@@ -49,27 +49,37 @@ export default function SelectVaultFunctionOrStrategy() {
 	}, [items, favorites, query, queryRe, chips]);
 
 	function onClickStrategy(strategy) {
-		setResult(result => {return {
-			...result,
+		setResult(current => {return {
+			...current,
 			strategy
 		};});
-		setSteps(steps => {return [
-			...steps,
+		setSteps(current => {return [
+			...current,
 			stepEnum.selectStrategyFunction
 		];});
 	}
 
 	function onClickFunction(func) {
 		func.source = 'vault';
-		setResult(result => {return {
-			...result,
-			strategy: null,
-			function: func
-		};});
-		setSteps(steps => {return [
-			...steps,
-			stepEnum.setInputs
-		];});
+		if(func.inputs.length === 0) {
+			addBlock({
+				...result,
+				strategy: null,
+				function: func
+			});
+		} else {
+			setResult(current => {
+				return {
+					...current,
+					strategy: null,
+					function: func
+				};
+			});
+			setSteps(current => {return [
+				...current,
+				stepEnum.setInputs
+			];});
+		}
 	}
 
 	return <div className={'max-h-full flex flex-col'}>
