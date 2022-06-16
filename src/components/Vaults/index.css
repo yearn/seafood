@@ -20,7 +20,7 @@
 .vault-tile .main {
   @apply bg-white dark:bg-secondary-900/80 
     hover:bg-selected-100 dark:hover:bg-secondary-800
-    border-secondary-200 dark:border-secondary-800
+    border-secondary-200 dark:border-secondary-800/40
     active:transform active:scale-[98%]
     transition duration-200
     cursor-pointer;
@@ -42,11 +42,11 @@
 }
 
 .vault-tile .main .body {
-  @apply flex gap-4;
+  @apply flex;
 }
 
 .vault-tile .strategies {
-  @apply w-36 text-sm 
+  @apply w-36 text-sm -mr-[10px]
   text-secondary-900 dark:text-secondary-500
   transition duration-200;
 }
@@ -67,10 +67,15 @@
   @apply h-fit px-2 py-[1px] text-xs rounded;
 }
 .vault-tile .main .chart{
-  @apply pt-2 flex w-full;
+  @apply relative flex w-full
+  text-secondary-900 dark:text-secondary-500
+  transition duration-200;
 }
-.vault-tile .main .chart div {
-  @apply w-full border border-dashed border-secondary-300 dark:border-secondary-800 rounded;
+.vault-tile .main .chart .tvl {
+  @apply absolute bottom-0 right-0 
+  px-2 py-1 text-xs capitalize rounded
+  backdrop-blur-sm
+  rounded-full;
 }
 
 .vault-tile .footer {
