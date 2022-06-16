@@ -12,10 +12,10 @@ export default function Manual() {
 	const {vaults, strats, favorites} = useApp();
 	const {selectedProvider} = useSelectedProvider();
 	const {setSteps, setResult} = useAddBlockDialog();
-	const [address, setAddress] = useLocalStorage('addBlock.manual.address', null);
+	const [address, setAddress] = useLocalStorage('addBlock.manual.address', '');
 	const [type, setType] = useState('');
 	const [valid, setValid] = useState(false);
-	// const [address, setAddress] = useState({value: null, valid: false, type: ''});
+	const [defaultValue, setDefaultValue] = useState({address: ''});
 
 	const [favoritesList, setFavorites] = useState([]);
 	const [block, setBlock] = useState();
@@ -86,12 +86,16 @@ export default function Manual() {
 						setBlock(block);
 						setType('strategy');
 						setValid(true);
-						// asas
 					} catch (error) {
 						error;
 					}
 				}
+			} else {
+				setBlock(null);
+				setType('');
+				setValid(false);
 			}
+			setDefaultValue({address});
 		})();
 	}, [selectedProvider, address]);
 
@@ -133,25 +137,24 @@ export default function Manual() {
 			<div className={'scroll-container'}>
 				<p className={'pl-8 pr-12 py-4 text-3xl'}>{'Enter a vault or strategy address'}</p>
 				<div className={'input flex items-center'}>
-					<input type={'text'} defaultValue={address} onChange={(e) => {debounceAddress(e.target.value);}} placeholder={'address'} />
+					<input type={'text'} defaultValue={defaultValue.address} onChange={(e) => {debounceAddress(e.target.value);}} placeholder={'address'} />
 					<div className={'validation'}>
 						{valid && <BsCheckLg className={'valid'}></BsCheckLg>}
 						{!valid && <BsAsterisk className={'invalid'}></BsAsterisk>}
 					</div>
 				</div>
-				{favoritesList.length && 
 				<div className={'input'}>
-					<select defaultValue={address} onChange={onSelectFavorite} className={'w-full'}>
+					<select value={defaultValue.address} onChange={onSelectFavorite} className={'w-full'}>
 						<option value={''}>{'Or choose a favorite'}</option>
 						{favoritesList.map(favorite => 
 							<option key={favorite.address} value={favorite.address}>{favorite.name}</option>
 						)}
 					</select>
-				</div>}
+				</div>
 				<div className={'mt-4 text-lg'}>
 					&nbsp;{block?.name}&nbsp;
 				</div>
-				<button onClick={onSelectFunction} className={valid ? 'block' : 'hidden'}>
+				<button onClick={onSelectFunction} className={valid ? '' : 'invisible'}>
 					{`Select ${type} function`}
 				</button>
 			</div>

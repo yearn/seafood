@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import {useApp} from '../../context/useApp';
 import {GetExplorerLink, highlightString, TruncateAddress} from '../../utils/utils';
 import Bone from '../Bone';
+import Sparkline from './Sparkline';
 
 export default function Tile({vault, queryRe, onClick}) {
 	const {favorites, strats} = useApp();
@@ -55,10 +56,9 @@ export default function Tile({vault, queryRe, onClick}) {
 						</div>}
 					</div>
 				</div>
-				<div className={'chart'}>
-					<div>
-						{v_d && <></>  /* <InfoChart name={'PPS'} /> */}
-					</div>
+				<div className={'chart dark:group-hover:text-secondary-200'}>
+					{v_d && <Sparkline />}
+					{v_d && <div className={'tvl'}>{'TVL 10M'}</div>}
 				</div>
 			</div>
 		</div>
