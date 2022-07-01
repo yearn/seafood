@@ -1,9 +1,9 @@
 const Pool = require('pg').Pool;
 const pool = new Pool({
-	user: 'wavey',
+	user: process.env.REACT_APP_DB_USER,
 	host: '34.205.72.180',
 	database: 'reports',
-	password: 'wavey',
+	password: process.env.REACT_APP_DB_PASS,
 	port: 5432,
 });
 var format = require('pg-format');
@@ -18,7 +18,6 @@ const getChefs = (id) => {
 			if (error) {
 				reject(error);
 			}
-			console.log(results);
 			resolve(results.rows);
 		});
 	}); 
