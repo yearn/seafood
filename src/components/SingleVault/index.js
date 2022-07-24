@@ -233,8 +233,11 @@ function SingleVaultPage({value}){
 				<button onClick={onHarvestMultiple} className={'iconic'}><TbTractor className={'text-2xl'}></TbTractor>{'Harvest all strategies'}</button>
 			</div>
 		</div>
-		<div>
-			<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, value.address)} rel={'noreferrer'}> {value.address}</a>{' - '}{(vault.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated - Free Assets: '}{((vault.totalAssets - vault.totalDebt) / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}
+		<div className={'flex items-center gap-6'}>
+			<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, value.address)} rel={'noreferrer'}>{value.address}</a>
+			<div>{'Total Assets '}{(vault.totalAssets / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
+			<div>{'Free Assets '}{((vault.totalAssets - vault.totalDebt) / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
+			<div>{(vault.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated'}</div>
 		</div>
 
 		{harvestedS.length > 0 && <div> {showTotalApr()}</div>}
