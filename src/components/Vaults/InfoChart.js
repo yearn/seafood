@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
 	Chart as ChartJS,
 	CategoryScale,
@@ -22,32 +22,47 @@ ChartJS.register(
 );
 
 
-export default function InfoChart({x, y, name}) {
-	// console.log('info', x);
-	// console.log('name', name);
+export default function InfoChart({name, x, y}) {
+	const chart = useRef();
+	const [data, setData] = useState({datasets: []});
+
 	const options = {
 		responsive: true,
 		maintainAspectRatio: false,
 		plugins: {
 			legend: {
-				position: 'top',
-			},
-			
+				position: 'top'
+			}
 		},
+		animation: {
+			duration: 500
+		}
 	};
+
+	function createGradient(ctx, area) {
+		const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);	
+		gradient.addColorStop(0, '#a855f7');
+		gradient.addColorStop(1, '#ec4899');
+		return gradient;
+	}
       
 	const labels = x;
-      
-	const data = {
-		labels,
-		datasets: [
-			{
-				label: name,
-				data: y,
-				borderColor: 'rgb(255, 99, 132)',
-				backgroundColor: 'rgba(255, 99, 132, 0.5)',
-			},
-		],
-	};
-	return <Line options={options} data={data} />;
+
+	useEffect(() => {
+		if(chart.current) {
+			setData({
+				labels,
+				datasets: [
+					{
+						label: name,
+						data: y,
+						borderColor: createGradient(chart.current.ctx, chart.current.chartArea),
+						backgroundColor: 'rgba(255, 99, 132, 0.5)',
+					},
+				],
+			});
+		}
+	}, [chart, labels, name, y]);
+
+	return <Line ref={chart} options={options} data={data} />;
 }

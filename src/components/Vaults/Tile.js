@@ -8,10 +8,8 @@ import Sparkline from './Sparkline';
 
 export default function Tile({vault, queryRe, onClick}) {
 	const {favorites, strats} = useApp();
-
-	// console.log(strats);
 	const v_d = strats.find(element => element.address === vault.address);
-	//console.log(v_d);
+
 	function toggleFavorite(vault) {
 		return () => {
 			favorites.setVaults(vaults => {

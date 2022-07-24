@@ -10,14 +10,11 @@ export default function List() {
 	return <div className={'vaults-list'}>
 		{filter.map(vault => {
 			return <Tile key={vault.address} vault={vault} queryRe={queryRe} onClick={(event) => {
-				console.log(event);
 				if (event.ctrlKey || event.shiftKey) {
 					window.open(`/vault/${vault.address}`, '_blank');
-					
 				}else{
 					navigate(`/vault/${vault.address}`);
 				}
-				
 			}}></Tile>;
 		})}
 	</div>;

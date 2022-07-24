@@ -22,8 +22,8 @@ export default function Toolbar() {
 			</AddBlockDialogProvider>
 			<div className={'button-ring-container'}>
 				<button onClick={simulate} disabled={blocks.length < 1} className={'iconic'}>
-					{'Simulate'}
 					<BsPlay className={'text-xl'}></BsPlay>
+					{'Simulate'}
 				</button>
 			</div>
 		</div>

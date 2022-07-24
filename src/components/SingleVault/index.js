@@ -1,4 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
+import useLocalStorage from 'use-local-storage';
+import {TbHistory, TbTractor} from 'react-icons/tb';
 import {AllStrats, AllVaults} from  '../../ethereum/EthHelpers';
 import HarvestMultiple from  '../../ethereum/HarvestMultiple';
 import useRPCProvider from '../../context/useRpcProvider';
@@ -9,8 +11,8 @@ import {setupTenderly, TenderlySim} from '../../ethereum/TenderlySim';
 import ShowEvents from '../../components/ShowEvents';
 import axios from '../../axios';
 import InfoChart from '../../components/Vaults/InfoChart';
-import './index.css';
-import useLocalStorage from 'use-local-storage';
+import css from './index.module.css';
+import ReactSwitch from 'react-switch';
 
 function SingleVaultPage({value}){
 	const {fantomProvider, defaultProvider} = useRPCProvider();
@@ -27,36 +29,19 @@ function SingleVaultPage({value}){
 	const [showRatio, toggleRatios] = useState(false);
 	const [zeros, setStateZeros] = useState({});
 	const [showGraphs, setShowGraphs] = useLocalStorage('SingleVault.settings.showGraphs', false);
-	
-	//console.log('inputting ', value);
-
-	//Handle the setAll
-	// const	onSetAll = useCallback(async () => {
-	// 	console.log('sart');
-	// 	const vlt = await AllVaults(value, provider);
-	// 	console.log(vlt);
-	// 	setVault(vlt);
-	// 	const	_all = await AllStrats(vlt, provider);
-	// 	console.log('changing!');
-	// 	console.log(_all);
-	// 	setAlls(_all || []);
-	// }, [value, provider]);
-	// useEffect(() => onSetAll(), [onSetAll]);
 
 	useEffect(() => {
-		
 		if(value.address && provider){
 			AllVaults(value, provider).then(x => {
 				setVault(x);
 			});
 		}
-		
 	}, [value, provider]);
 
 	useEffect(() => {
-
 		if(vault.address && provider){
-			AllStrats(vault, provider).then(y => {			
+			AllStrats(vault, provider).then(y => {
+				y.sort((a, b) => a.lastTime - b.lastTime);
 				setAlls(y || []);
 				y.forEach(strategy => {
 					axios.post('api/getVaults/AllStrategyReports', strategy).then((response) => {
@@ -71,10 +56,8 @@ function SingleVaultPage({value}){
 			
 					});
 				});
-				
 			});
 		}
-
 	}, [vault, provider]);
 
 	function runSimZero(strat){
@@ -161,7 +144,6 @@ function SingleVaultPage({value}){
 		let after = total_user_apr/vault.totalAssets;
 		return 'Total Vault APR Before Fees: ' + apr.toLocaleString(undefined, {maximumFractionDigits:2}) + '%, After Fees: ' + after.toLocaleString(undefined, {maximumFractionDigits:2}) + '%';
 
-		
 	};
 
 	const showApr = (strat) => {
@@ -171,13 +153,9 @@ function SingleVaultPage({value}){
 		let fee= getApr(strat);
 		let beforeFee = fee.beforeFee;
 		let afterFee = fee.afterFee;
-		// console.log(beforeFee);
-		// console.log(afterFee);
-		// console.log(getApr(strat));
 
 		beforeFee = beforeFee.toLocaleString(undefined, {maximumFractionDigits:2});
 		afterFee = afterFee.toLocaleString(undefined, {maximumFractionDigits:2});
-		
 		
 		return 'before-fee APR: ' + beforeFee + '%, after-fee APR ' + afterFee + '%';
 	};
@@ -200,8 +178,6 @@ function SingleVaultPage({value}){
 		let over_year = (100*percent * 8760 / strat.lastTime);
 
 		let delegated_percent = strat.delegatedAssets/strat.beforeDebt;
-		// console.log(strat);
-		// console.log(delegated_percent);
 		let user_apr = (over_year*0.8) - (2*(1-delegated_percent));
 		user_apr = user_apr > 0 ? user_apr : 0;
 		return {beforeFee: over_year, afterFee: user_apr};    
@@ -213,49 +189,62 @@ function SingleVaultPage({value}){
 			{vault.address && <div>{vault.name}{' - '}{vault.version}{' - '}<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, value.address)} rel={'noreferrer'}> {value.address}</a>{' - '}{(vault.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated - Free Assets: '}{((vault.totalAssets - vault.totalDebt) / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>}
 			<div>{'loading strats...'}</div></div>);
 	}
-    
-	//console.log(zeros);
-	// console.log(vault);
-	// console.log(harvestedS);
 
 	const listItems = allS.map((strat) => (
-		<div key={strat.address}> 
-			<br />
-			<div>{'Strat: '}{strat.name}{' - '}<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, strat.address)} rel={'noreferrer'}>{strat.address}</a><button onClick={() => runSimZero(strat)}>{'Sim 0'}</button></div>
+		<div key={strat.address} className={css.strategy}>
+			<div className={'flex items-center justify-between'}>
+				<h2>{strat.name}</h2>
+				<div className={'flex items-center gap-2'}>
+					<button onClick={() => runSimZero(strat)}>{'Sim 0'}</button>
+					<button className={'iconic no-text'} title={`Harvest ${strat.name}`}><TbTractor className={'text-2xl'} /></button>
+					{!showHistoricHarvests[strat.address] && <button onClick={() => clickShowHistoricHarvests(strat.address)} className={'iconic no-text'} title={'Harvest history'}><TbHistory className={'text-2xl'} /></button>}
+				</div>
+			</div>
+			<div className={'-mt-2'}>
+				<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, strat.address)} rel={'noreferrer'}>{strat.address}</a>
+			</div>
 			{strat.genlender && <ul> {strat.genlender.map(lender =>  <li key={lender.add}> {'    Lender: ' } <a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(provider.network.chainId, lender.add)}> {lender.name}</a> {', Deposits: ' + FormatNumer(lender.assets/(10 **vault.token.decimals)) + ', APR: '  + FormatPercent(lender.rate/(10 **18))} </li>)}</ul>}
 			{zeros[strat.address] &&  <a target={'_blank'} rel={'noreferrer'} href={zeros[strat.address].tenderlyURL}> {(zeros[strat.address].success ? ' succeeded ' : 'failed ')} </a>}
 			{(zeros[strat.address] && zeros[strat.address].result) && <ShowEvents events={zeros[strat.address].result.events} />}
 			<div>{'Lastharvest: '}{strat.lastTime.toLocaleString(undefined, {maximumFractionDigits:2})}{'h - Real ratio: '}{(100*strat.beforeDebt/strat.vaultAssets).toLocaleString(undefined, {maximumFractionDigits:2})}{'% - Desired ratio: '}{(strat.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% '}</div>
 			<div>{harvestedS.length > 0 ? (strat.succeded ? showApr(strat) : 'Failed Harvest ')  : ''} <a target={'_blank'} href={strat.tenderlyURL} rel={'noreferrer'}>{harvestedS.length > 0 && 'Tenderly Link'} </a></div>
-			{historicHarvests[strat.address] && showGraphs && <div> <InfoChart x={historicHarvests[strat.address].map(d => d['date_string']).reverse()} name={'APR (capped at 200%)'} y={historicHarvests[strat.address].map(d => {
-				let amount = d['rough_apr_pre_fee']*100;
-				if (amount > 200){
-					amount = 200;
-				}
-				return amount;
-			}).reverse()
-			} importData={historicHarvests[strat.address]} /></div>}
+			{historicHarvests[strat.address] && showGraphs && <div>
+				<InfoChart name={'APR (capped at 200%)'} x={historicHarvests[strat.address].map(d => d['date_string']).reverse()} y={historicHarvests[strat.address].map(d => {
+					let amount = d['rough_apr_pre_fee'] * 100;
+					if (amount > 200){ amount = 200; }
+					return amount;
+				}).reverse()
+				} importData={historicHarvests[strat.address]} /></div>}
 			{showHistoricHarvests[strat.address] && <HistoricReports history={historicHarvests[strat.address]} />}
-			{!showHistoricHarvests[strat.address] &&<button onClick={() => clickShowHistoricHarvests(strat.address)}>{'Show historic harvests'}</button>}
 		</div>
 	));
-	
-	return(
-		<div>
-			
-			<button onClick={onHarvestMultiple}>{' Harvest All?'}</button>
-			{'show graphs: '}<input type={'checkbox'} checked={showGraphs} onChange={() => (setShowGraphs(!showGraphs))} />
-			
-			<div>{vault.name}{' - '}{vault.version}{' - '}<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, value.address)} rel={'noreferrer'}> {value.address}</a>{' - '}{(vault.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated - Free Assets: '}{((vault.totalAssets - vault.totalDebt) / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
-			{/* {console.log('sda2')}
-			{console.log(vault)} */}
-			{harvestedS.length > 0 && <div> {showTotalApr()}</div>}
-			{listItems}
 
-			<div>{showRatio && <RatioAdjust strats={allS} />}</div>
-			<div><button onClick={() => toggleRatios(!showRatio)}>{' Adjust Ratios?'}</button></div>
+	return <div className={css.main}>
+		<div className={'flex items-center justify-between'}>
+			<div className={'flex items-center'}>
+				<h1>{vault.name + ' ' + vault.version}</h1>
+				<div className={'mx-8 flex items-center gap-2'}>
+					<ReactSwitch onChange={() => setShowGraphs(current => !current)} checked={showGraphs} className={'react-switch'} onColor={'#0084c7'} checkedIcon={false} uncheckedIcon={false}>
+					</ReactSwitch>
+					<div onClick={() => setShowGraphs(current => !current)} className={'text-sm cursor-default'}>{'Charts'}</div>
+				</div>
+			</div>
+			<div className={'flex items-center'}>
+				<button onClick={onHarvestMultiple} className={'iconic'}><TbTractor className={'text-2xl'}></TbTractor>{'Harvest all strategies'}</button>
+			</div>
 		</div>
-	); 
+		<div>
+			<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, value.address)} rel={'noreferrer'}> {value.address}</a>{' - '}{(vault.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated - Free Assets: '}{((vault.totalAssets - vault.totalDebt) / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}
+		</div>
+
+		{harvestedS.length > 0 && <div> {showTotalApr()}</div>}
+		<div className={css.strategies}>
+			{listItems}
+		</div>
+
+		<div>{showRatio && <RatioAdjust strats={allS} />}</div>
+		<div><button onClick={() => toggleRatios(!showRatio)}>{' Adjust Ratios?'}</button></div>
+	</div>; 
 }
 
 

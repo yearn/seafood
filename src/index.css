@@ -59,11 +59,11 @@ button.iconic {
 }
 
 button.iconic svg {
-  @apply ml-2;
+  @apply mr-3;
 }
 
 button.big.iconic svg {
-  @apply ml-4;
+  @apply mr-3;
 }
 
 button.iconic.no-text svg, button.big.iconic.no-text svg {
