@@ -68,9 +68,11 @@ function SingleVaultPage({value}){
 			}
 		}
 
+		const performanceFee = vault.performanceFee / 10_000;
+		const managementFee = vault.managementFee / 100;
 		const over_year = (100 * percent * 8760 / strategy.lastTime);
 		const delegated_percent = strategy.delegatedAssets / strategy.beforeDebt;
-		let user_apr = (over_year * 0.80) - (2 * (1 - delegated_percent));
+		let user_apr = (over_year * (1 - performanceFee)) - (managementFee * (1 - delegated_percent));
 		user_apr = user_apr > 0 ? user_apr : 0;
 		return {beforeFee: over_year, afterFee: user_apr};    
 	}, [vault]);
@@ -125,7 +127,7 @@ function SingleVaultPage({value}){
 		Object.assign(strategy, await harvestStrategy(tenderly, strategy));
 
 		setStrategies(current => {
-			current.find(s => s.address === strategy.address).harvesting = true;
+			current.find(s => s.address === strategy.address).harvesting = false;
 			return [...current];
 		});
 	}, [setStrategies, provider, harvestStrategy]);
