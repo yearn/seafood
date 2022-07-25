@@ -24,14 +24,25 @@ a.plain {
 }
 
 button, select {
-  @apply py-2 px-4
-  bg-primary-200
-  hover:bg-primary-400
-  dark:bg-primary-800 dark:hover:bg-primary-600
+  @apply bg-primary-200 hover:bg-primary-400 dark:bg-primary-800 dark:hover:bg-primary-600
   active:transform active:scale-95
   rounded
   cursor-pointer
   transition duration-200;
+}
+
+button {
+  @apply py-[calc(.5rem-2px)] px-[calc(1rem-2px)] border-2 border-transparent;
+}
+
+select {
+  @apply py-2 px-4;
+}
+
+button:disabled, select:disabled {
+  @apply text-gray-800 dark:text-gray-400
+  bg-gray-200 dark:bg-gray-800
+  active:transform active:scale-100;
 }
 
 .root {
@@ -59,7 +70,7 @@ button.iconic {
 }
 
 button.iconic svg {
-  @apply mr-3;
+  @apply mr-3 stroke-secondary-600 dark:stroke-secondary-300;
 }
 
 button.big.iconic svg {
@@ -70,13 +81,8 @@ button.iconic.no-text svg, button.big.iconic.no-text svg {
   @apply m-0;
 }
 
-button:disabled, select:disabled {
-  @apply text-gray-800 bg-gray-200
-  dark:text-gray-400 dark:bg-gray-800;
-}
-
 button:disabled svg {
-  @apply fill-gray-800 dark:fill-gray-400 pointer-events-none;
+  @apply stroke-gray-500 dark:stroke-gray-400 pointer-events-none;
 }
 
 select {

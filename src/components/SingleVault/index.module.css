@@ -10,6 +10,10 @@
   @apply font-bold text-xl;
 }
 
+.main h3 {
+  @apply font-bold text-lg;
+}
+
 .strategies {
   @apply mt-4;
 }
@@ -17,6 +21,6 @@
 .strategy {
   @apply -mx-4 pt-4 pb-6 px-4 
   rounded border-b border-dashed border-primary-900/40 
-  hover:bg-primary-200/5 
+  hover:bg-primary-200/5
   transition duration-200;
 }

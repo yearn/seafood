@@ -42,7 +42,7 @@ export default function Tile({vault, queryRe, onClick}) {
 						<div className={`chip ${vault.provider.network.name}`}>{vault.provider.network.name}</div>
 					</div>
 					<div className={'strategies dark:group-hover:text-secondary-200'}>
-						{!v_d && <div className={'animate-pulse'}>
+						{!v_d && <div>
 							<div><Bone></Bone></div>
 							<div><Bone></Bone></div>
 							<div><Bone></Bone></div>

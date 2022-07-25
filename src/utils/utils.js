@@ -21,12 +21,25 @@ function TruncateAddress(address) {
 	return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
 
-function FormatNumer(number, decimals=2){
-	return number.toLocaleString(undefined, {maximumFractionDigits:decimals});
+function FormatNumer(number, decimals = 2){
+	if(Number.isFinite(number))
+		return number.toLocaleString(undefined, {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+	else
+		return '--';
 }
 
-function FormatPercent(number){
-	return (number*100).toLocaleString(undefined, {maximumFractionDigits:2}) + '%';
+function FormatPercent(number, decimals = 2){
+	if(Number.isFinite(number))
+		return number.toLocaleString(undefined, {style: 'percent', minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+	else
+		return '--';
+}
+
+function FormatCurrency(number, currency = 'USD') {
+	if(Number.isFinite(number))
+		return number.toLocaleString(undefined, {style: 'currency', currency});
+	else
+		return '--';
 }
 
 function highlightString(string, highlightRe) {
@@ -53,5 +66,6 @@ export {
 	TruncateAddress, 
 	FormatNumer, 
 	FormatPercent, 
+	FormatCurrency,
 	highlightString
 };
