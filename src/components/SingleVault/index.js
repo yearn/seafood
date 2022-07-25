@@ -15,15 +15,12 @@ import css from './index.module.css';
 import ReactSwitch from 'react-switch';
 import Bone from '../Bone';
 
-const bps = 0.0001;
-
 function SingleVaultPage({value}){
 	const {fantomProvider, defaultProvider} = useRPCProvider();
 	const [strategies, setStrategies] = useState([]);
 	const [showHarvestHistory, setShowHarvestHistory] = useState({});
 	const [harvestingAll, setHarvestingAll] = useState(false);
 	const [vault, setVault] = useState({});
-	const [nonce, setNonce] = useState(0);
 	const [showRatio, toggleRatios] = useState(false);
 	const [zeros, setStateZeros] = useState({});
 	const [showGraphs, setShowGraphs] = useLocalStorage('SingleVault.settings.showGraphs', false);
@@ -32,8 +29,8 @@ function SingleVaultPage({value}){
 
 	useEffect(() => {
 		if(value.address && provider){
-			AllVaults(value, provider).then(x => {
-				setVault(x);
+			AllVaults(value, provider).then(freshVault => {
+				setVault(freshVault);
 			});
 		}
 	}, [value, provider]);
@@ -42,17 +39,41 @@ function SingleVaultPage({value}){
 		if(vault.address && provider){
 			AllStrats(vault, provider).then(freshStrategies => {
 				freshStrategies.sort((a, b) => a.lastTime - b.lastTime);
-				freshStrategies.forEach(strategy => {
-					strategy.harvesting = false;
-					axios.post('api/getVaults/AllStrategyReports', strategy).then((response) => {
+				(async () => {
+					for(const strategy of freshStrategies) {
+						strategy.harvesting = false;
+						const response = await axios.post('api/getVaults/AllStrategyReports', strategy);
 						strategy.harvestHistory = response.data;
-						setNonce(nonce+Math.random(100));
-					});
-				});
-				setStrategies(freshStrategies || []);
+					}
+					setStrategies([...freshStrategies]);
+				})();
 			});
 		}
 	}, [vault, provider]);
+
+	const getStrategyApr = useCallback((strategy) => {
+		if(!strategy.succeded){
+			return {beforeFee: 0, afterFee: 0};
+		}
+
+		const profit = strategy.paramsAfterHarvest.totalGain - strategy.beforeGain;
+		const loss = strategy.paramsAfterHarvest.totalLoss - strategy.beforeLoss;
+
+		let percent = 0;
+		if (strategy.beforeDebt > 0) {
+			if (loss > profit){
+				percent = -1 * loss / strategy.beforeDebt; 
+			} else {
+				percent = profit / strategy.beforeDebt;
+			}
+		}
+
+		const over_year = (100 * percent * 8760 / strategy.lastTime);
+		const delegated_percent = strategy.delegatedAssets / strategy.beforeDebt;
+		let user_apr = (over_year * 0.80) - (2 * (1 - delegated_percent));
+		user_apr = user_apr > 0 ? user_apr : 0;
+		return {beforeFee: over_year, afterFee: user_apr};    
+	}, [vault]);
 
 	const harvestStrategy = useCallback(async (tenderly, strategy) => {
 		strategy.succeded = false;
@@ -79,23 +100,81 @@ function SingleVaultPage({value}){
 		setHarvestingAll(true);
 		const tenderly = await setupTenderly(provider.network.chainId);
 		for(const strategy of strategies) {
-			strategy.harvesting = true;
-			setStrategies([...strategies]);
+			setStrategies(current => {
+				current.find(s => s.address === strategy.address).harvesting = true;
+				return [...current];
+			});
+
 			Object.assign(strategy, await harvestStrategy(tenderly, strategy));
-			strategy.harvesting = false;
-			setStrategies([...strategies]);
+
+			setStrategies(current => {
+				current.find(s => s.address === strategy.address).harvesting = false;
+				return [...current];
+			});
 		}
 		setHarvestingAll(false);
 	}, [strategies, setStrategies, provider, harvestStrategy]);
 
 	const	onHarvestStrategy = useCallback(async (strategy) => {
+		setStrategies(current => {
+			current.find(s => s.address === strategy.address).harvesting = true;
+			return [...current];
+		});
+
 		const tenderly = await setupTenderly(provider.network.chainId);
-		strategy.harvesting = true;
-		setStrategies([...strategies]);
 		Object.assign(strategy, await harvestStrategy(tenderly, strategy));
-		strategy.harvesting = false;
-		setStrategies([...strategies]);
-	}, [strategies, setStrategies, provider, harvestStrategy]);
+
+		setStrategies(current => {
+			current.find(s => s.address === strategy.address).harvesting = true;
+			return [...current];
+		});
+	}, [setStrategies, provider, harvestStrategy]);
+
+	function VaultApr() {
+		let total_weighted_apr = 0;
+		let total_user_apr = 0;
+
+		for(const strategy of strategies){
+			const strategyApr = getStrategyApr(strategy);
+			total_weighted_apr += strategyApr.beforeFee * strategy.beforeDebt;
+			total_user_apr += strategyApr.afterFee * strategy.beforeDebt;
+		}
+
+		let apr = total_weighted_apr/vault.totalAssets;
+		let after = total_user_apr/vault.totalAssets;
+		return <div className={'flex items-center gap-5'}>
+			<div>{'Total Vault APR'}</div>
+			<div>{`Before Fees ${FormatPercent(apr / 100)}`}</div>
+			<div>{`After Fees ${FormatPercent(after / 100)}`}</div>
+		</div>;
+	}
+
+	function StrategyApr(strategy) {
+		if(!strategy.succeded) return;
+		const apr = getStrategyApr(strategy);
+		return <div className={'flex items-center gap-5'}>
+			<a target={'_blank'} href={strategy.tenderlyUrl} rel={'noreferrer'}>{'Harvest simulation'}</a>
+			<div>{'APR'}</div>
+			<div>{`Before fees ${FormatPercent(apr.beforeFee / 100)}`}</div>
+			<div>{`After fees ${FormatPercent(apr.afterFee / 100)}`}</div>
+		</div>;
+	}
+
+	function since(hours) {
+		const now = new Date();
+		now.setHours(now.getHours() - hours);
+		return now;
+	}
+
+	function toggleHarvestHistory(strategy){
+		setShowHarvestHistory(
+			currentValues => {
+				currentValues[strategy.address] = (currentValues[strategy.address] === undefined)
+					? true
+					: !currentValues[strategy.address];
+				return {...currentValues};
+			});
+	}
 
 	function runSimZero(strategy){
 		let blocks = [];
@@ -132,79 +211,8 @@ function SingleVaultPage({value}){
 					currentValues[strategy.address] = x[1];
 					return currentValues;
 				});
-				setNonce(nonce+Math.random(100));
 			});
 		});
-	}
-
-	function toggleHarvestHistory(strategy){
-		setShowHarvestHistory(
-			currentValues => {
-				currentValues[strategy.address] = (currentValues[strategy.address] === undefined)
-					? true
-					: !currentValues[strategy.address];
-				return {...currentValues};
-			});
-	}
-
-	function getApr(strategy){
-		if(!strategy.succeded){
-			return {beforeFee: 0, afterFee: 0};
-		}
-
-		const profit = strategy.paramsAfterHarvest.totalGain - strategy.beforeGain;
-		const loss = strategy.paramsAfterHarvest.totalLoss - strategy.beforeLoss;
-		let percent = 0;
-		if (strategy.beforeDebt > 0) {
-			if (loss > profit){
-				percent = -1 * loss / strategy.beforeDebt; 
-			} else {
-				percent = profit / strategy.beforeDebt;
-			}
-		}
-		const over_year = (100*percent * 8760 / strategy.lastTime);
-
-		const delegated_percent = strategy.delegatedAssets/strategy.beforeDebt;
-		let user_apr = (over_year*0.8) - (2*(1-delegated_percent));
-		user_apr = user_apr > 0 ? user_apr : 0;
-		return {beforeFee: over_year, afterFee: user_apr};    
-	}
-
-	function TotalApr() {
-		let total_weighted_apr = 0;
-		let total_user_apr = 0;
-
-		for(const strategy of strategies){
-			let fee= getApr(strategy);
-			let beforeFee = fee.beforeFee;
-			let afterFee = fee.afterFee;
-			total_weighted_apr += beforeFee*strategy.beforeDebt;
-			total_user_apr += afterFee*strategy.beforeDebt;
-		}
-
-		let apr = total_weighted_apr/vault.totalAssets;
-		let after = total_user_apr/vault.totalAssets;
-		return <div className={'flex items-center gap-5'}>
-			<div>{'Total Vault APR'}</div>
-			<div>{`Before Fees ${apr.toLocaleString(undefined, {maximumFractionDigits:2})}%`}</div>
-			<div>{`After Fees ${after.toLocaleString(undefined, {maximumFractionDigits:2})}%`}</div>
-		</div>;
-	}
-
-	function Apr(strategy) {
-		if(!strategy.succeded) return;
-		const fee = getApr(strategy);
-		return <div className={'flex items-center gap-5'}>
-			<a target={'_blank'} href={strategy.tenderlyUrl} rel={'noreferrer'}>{'Harvest simulation'}</a>
-			<div>{`before-fee APR ${FormatPercent(fee.beforeFee / 100)}`}</div>
-			<div>{`after-fee APR ${FormatPercent(fee.afterFee / 100)}`}</div>
-		</div>;
-	}
-
-	function since(hours) {
-		const now = new Date();
-		now.setHours(now.getHours() - hours);
-		return now;
 	}
 
 	const Strategies = strategies.map((strategy) => (
@@ -237,7 +245,7 @@ function SingleVaultPage({value}){
 				<div>{'Last harvest '}
 					<TimeAgo date={since(strategy.lastTime)}></TimeAgo>
 				</div>
-				{strategy.beforeDebt > bps && <>
+				{strategy.beforeDebt > 1 && <>
 					<div>{`Real ratio ${FormatPercent(strategy.beforeDebt / strategy.vaultAssets)}`}</div>
 					<div>{`Desired ratio ${FormatPercent(strategy.debtRatio / 10_000)}`}</div>
 				</>}
@@ -246,7 +254,7 @@ function SingleVaultPage({value}){
 			<div className={'max-w-prose'}>
 				{strategy.harvesting ? <Bone></Bone> : strategy.succeded === undefined ? <Bone invisible={true}></Bone> 
 					: strategy.succeded
-						? Apr(strategy) 
+						? StrategyApr(strategy) 
 						: <a target={'_blank'} href={strategy.tenderlyUrl} rel={'noreferrer'}>{'Harvest failed'}</a>}
 			</div>
 
@@ -282,7 +290,7 @@ function SingleVaultPage({value}){
 					<div>{'Free Assets '}{((vault.totalAssets - vault.totalDebt) / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
 					<div>{`${FormatPercent(vault.debtRatio/10_000, 0)} Allocated`}</div>
 				</div>
-				{harvestingAll ? <Bone></Bone> : anyHarvests ? TotalApr() : <Bone invisible={true}></Bone>}
+				{harvestingAll ? <Bone></Bone> : anyHarvests ? VaultApr() : <Bone invisible={true}></Bone>}
 			</div>
 
 			<div className={'flex items-center'}>
