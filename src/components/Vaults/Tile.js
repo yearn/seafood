@@ -1,6 +1,6 @@
-import React from 'react';
-import {BsBoxArrowInUpRight, BsStar, BsStarFill} from 'react-icons/bs';
-import toast from 'react-hot-toast';
+import React, {useState} from 'react';
+import {BsStar, BsStarFill} from 'react-icons/bs';
+import {TbCopy, TbCheck} from 'react-icons/tb';
 import {useApp} from '../../context/useApp';
 import {GetExplorerLink, highlightString, TruncateAddress} from '../../utils/utils';
 import Bone from '../Bone';
@@ -8,6 +8,7 @@ import Sparkline from './Sparkline';
 
 export default function Tile({vault, queryRe, onClick}) {
 	const {favorites, strats} = useApp();
+	const [copied, setCopied] = useState(false);
 	const v_d = strats.find(element => element.address === vault.address);
 
 	function toggleFavorite(vault) {
@@ -26,13 +27,18 @@ export default function Tile({vault, queryRe, onClick}) {
 
 	function copyAddress(vault) {
 		return () => {
-			toast(`${vault.address} copied to your clipboard`);
-			navigator.clipboard.writeText(vault.address);
+			try {
+				navigator.clipboard.writeText(vault.address);
+			} finally {
+				setCopied(true);
+				setTimeout(() => {
+					setCopied(false);
+				}, 2500);
+			}
 		};
 	}
 
 	return <div className={'group vault-tile'}>
-		
 		<div onClick={onClick} className={'main'}>
 			<div className={'title'}>{highlightString(vault.name, queryRe)}</div>
 			<div className={'body'}>
@@ -65,17 +71,18 @@ export default function Tile({vault, queryRe, onClick}) {
 				{!favorites.vaults.includes(vault.address) && <>&nbsp;<BsStar />&nbsp;</>}
 				{favorites.vaults.includes(vault.address) && <>&nbsp;<BsStarFill className={'favorite glow-attention-md'} />&nbsp;</>}
 			</div>
-			<div className={'center'}
-				title={`Copy ${vault.address} to your clipboard`}
-				onClick={copyAddress(vault)}>
-				{TruncateAddress(vault.address)}
-			</div>
-			<a className={'plain right'}
+			<a className={'plain center'}
 				title={`Explore ${vault.address}`}
 				href={GetExplorerLink(vault.provider.network.chainId, vault.address)}
 				target={'_blank'} rel={'noreferrer'}>
-				&nbsp;<BsBoxArrowInUpRight />&nbsp;
-			</a>		
+				{TruncateAddress(vault.address)}
+			</a>
+			<div className={'right'}
+				title={`Copy ${vault.address} to your clipboard`}
+				onClick={copyAddress(vault)}>
+				{!copied && <TbCopy className={'text-lg'}></TbCopy>}
+				{copied && <TbCheck className={'text-lg'}></TbCheck>}
+			</div>
 		</div>
 	</div>;
 }

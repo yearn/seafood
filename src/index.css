@@ -24,7 +24,8 @@ a.plain {
 }
 
 button, select {
-  @apply bg-primary-200 hover:bg-primary-400 dark:bg-primary-800 dark:hover:bg-primary-600
+  @apply bg-primary-200 hover:bg-selected-300 
+  dark:bg-primary-900/40 dark:hover:bg-selected-600
   active:transform active:scale-95
   rounded
   cursor-pointer
@@ -158,18 +159,36 @@ select {
   @apply fill-error-600;
 }
 
+.chip-version {
+  @apply bg-primary-200 dark:bg-primary-900;
+}
+
+.chip-curve {
+  @apply bg-curve-200 dark:bg-curve-600;
+}
+
+.chip-ethereum {
+  @apply bg-ethereum-200
+  dark:bg-ethereum-500;
+}
+
+.chip-fantom {
+  @apply bg-fantom-200
+  dark:bg-fantom-600;
+}
+
 .filter {
   @apply sticky top-0 z-10;
 }
 
 .filter input[type=text] {
   @apply w-full py-2 px-3 bg-transparent rounded leading-tight
-    text-primary-900
-    dark:text-primary-200
-    focus:border-primary-400 focus:ring-0
-    border-2 dark:border 
-    border-secondary-200 dark:border-secondary-500
-    shadow-inner;
+  text-primary-900
+  dark:text-primary-200
+  focus:border-primary-400 focus:ring-0
+  border-2 dark:border 
+  border-secondary-200 dark:border-secondary-500
+  shadow-inner;
 }
 
 .filter input[type=text]:focus {
@@ -178,8 +197,8 @@ select {
 
 .filter .chip {
   @apply px-4 py-1 border-2 text-sm capitalize rounded cursor-pointer 
-    active:transform active:scale-95
-    transition duration-200;
+  active:transform active:scale-95
+  transition duration-200;
 }
 
 .filter .chip.iconic {
@@ -188,7 +207,7 @@ select {
 
 .filter .chip.favorite {
   @apply border-2 dark:border border-attention-200 dark:border-attention-700
-    hover:border-attention-400 hover:dark:border-attention-400;
+  hover:border-attention-400 hover:dark:border-attention-400;
 }
 
 .filter .chip.favorite svg {
@@ -197,8 +216,8 @@ select {
 
 .filter .chip.favorite.hot {
   @apply bg-attention-200 dark:bg-transparent
-    border-attention-200 dark:border-attention-700
-    hover:border-attention-400 hover:dark:border-attention-400;
+  border-attention-200 dark:border-attention-700
+  hover:border-attention-400 hover:dark:border-attention-400;
 }
 
 .filter .chip.favorite.hot svg {
@@ -210,33 +229,44 @@ select {
 }
 
 .filter .chip-curve {
-  @apply border-curve-200 dark:border-curve-700 dark:text-curve-500
-    hover:border-curve-400 hover:dark:border-curve-600 hover:dark:text-curve-400;
+  @apply bg-transparent dark:bg-transparent
+  border-curve-200 dark:border-curve-700 dark:text-curve-500
+  hover:border-curve-400 hover:dark:border-curve-600 hover:dark:text-curve-400;
 }
 
 .filter .hot-curve {
   @apply bg-curve-200 text-curve-900 dark:bg-curve-700 dark:text-curve-100 shadow-sm
-    hover:dark:bg-curve-600 hover:dark:text-curve-100;
+  hover:dark:bg-curve-600 hover:dark:text-curve-100;
 }
 
 .filter .chip-ethereum {
-  @apply border-ethereum-200 dark:border-ethereum-600 dark:text-ethereum-500
-    hover:border-ethereum-400 hover:dark:border-ethereum-500 hover:dark:text-ethereum-400;
+  @apply bg-transparent dark:bg-transparent 
+  border-ethereum-200 dark:border-ethereum-600 dark:text-ethereum-500
+  hover:border-ethereum-400 hover:dark:border-ethereum-500 hover:dark:text-ethereum-400;
 }
 
 .filter .hot-ethereum {
   @apply bg-ethereum-200 text-ethereum-900 dark:bg-ethereum-600 dark:text-ethereum-100 shadow-sm
-    hover:dark:bg-ethereum-500 hover:dark:text-ethereum-100;
+  hover:dark:bg-ethereum-500 hover:dark:text-ethereum-100;
 }
 
 .filter .chip-fantom {
-  @apply border-fantom-200 dark:border-fantom-800 dark:text-fantom-500
-    hover:border-fantom-400 hover:dark:border-fantom-600 hover:dark:text-fantom-400;
+  @apply bg-transparent dark:bg-transparent
+  border-fantom-200 dark:border-fantom-800 dark:text-fantom-500
+  hover:border-fantom-400 hover:dark:border-fantom-600 hover:dark:text-fantom-400;
 }
 
 .filter .hot-fantom {
   @apply bg-fantom-200 text-fantom-900 dark:bg-fantom-800 dark:text-fantom-100 shadow-sm
-    hover:dark:bg-fantom-600 hover:dark:text-fantom-100;
+  hover:dark:bg-fantom-600 hover:dark:text-fantom-100;
+}
+
+.sm-tb-icon-button {
+  @apply p-0 w-[26px] h-[26px] flex items-center justify-center rounded-full;
+}
+
+.sm-tb-icon-button svg {
+  @apply stroke-secondary-600 dark:stroke-secondary-300;
 }
 
 .sm-circle-icon-button {

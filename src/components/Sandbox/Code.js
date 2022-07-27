@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import toast from 'react-hot-toast';
-import {BsClipboard} from 'react-icons/bs';
+import {TbCopy, TbCheck} from 'react-icons/tb';
 import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import {useBlocks} from './useBlocks';
 
 export default function Code() {
 	const {blocks} = useBlocks();
 	const [linesOfCode, setLinesOfCode] = useState([]);
+	const [copied, setCopied] = useState(false);
 
 	useEffect(() => {
 		const lines = [];
@@ -38,8 +38,14 @@ export default function Code() {
 	}, [blocks]);
 
 	function onCopyCode() {
-		navigator.clipboard.writeText(linesOfCode.join('\n'));
-		toast('Code copied to your clipboard');
+		try {
+			navigator.clipboard.writeText(linesOfCode.join('\n'));
+		} finally {
+			setCopied(true);
+			setTimeout(() => {
+				setCopied(false);
+			}, 2500);
+		}
 	}
 
 	return <div className={'pt-8 pb-32 overflow-x-auto grow'}>
@@ -55,12 +61,16 @@ export default function Code() {
 
 		<SmallScreen>
 			<div className={'actions'}>
-				<button onClick={onCopyCode}><BsClipboard className={'text-4xl'}></BsClipboard></button>
+				<button onClick={onCopyCode}>
+					{!copied && <TbCopy className={'text-4xl'}></TbCopy>}
+					{copied && <TbCheck className={'text-4xl'}></TbCheck>}
+				</button>
 			</div>
 		</SmallScreen>
 		<BiggerThanSmallScreen>
 			<button onClick={onCopyCode} className={'absolute top-36 right-14 big iconic no-text'}>
-				<BsClipboard className={'text-xl'}></BsClipboard>
+				{!copied && <TbCopy className={'text-xl'}></TbCopy>}
+				{copied && <TbCheck className={'text-xl'}></TbCheck>}
 			</button>
 		</BiggerThanSmallScreen>
 	</div>;

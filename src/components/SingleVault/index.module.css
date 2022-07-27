@@ -3,7 +3,7 @@
 }
 
 .main h1 {
-  @apply font-bold text-4xl;
+  @apply font-bold text-5xl;
 }
 
 .main h2 {
@@ -12,6 +12,14 @@
 
 .main h3 {
   @apply font-bold text-lg;
+}
+
+.header {
+  @apply sticky top-0 z-10 -mx-8 px-8 py-2 flex items-center justify-between;
+}
+
+.chip {
+  @apply px-2 py-1 text-xs capitalize rounded drop-shadow-sm;
 }
 
 .strategies {

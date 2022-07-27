@@ -14,8 +14,11 @@ import InfoChart from '../../components/Vaults/InfoChart';
 import css from './index.module.css';
 import ReactSwitch from 'react-switch';
 import Bone from '../Bone';
+import useScrollOverpass from '../Header/useScrollOverpass';
+import CopyButton from './CopyButton';
 
 function SingleVaultPage({value}){
+	const {overpassClass} = useScrollOverpass();
 	const {fantomProvider, defaultProvider} = useRPCProvider();
 	const [strategies, setStrategies] = useState([]);
 	const [showHarvestHistory, setShowHarvestHistory] = useState({});
@@ -227,8 +230,9 @@ function SingleVaultPage({value}){
 					<button onClick={() => toggleHarvestHistory(strategy)} className={'iconic no-text'} title={'Harvest history'}><TbHistory className={'text-2xl'} /></button>
 				</div>
 			</div>
-			<div className={'-mt-2'}>
+			<div className={'-mt-2 flex items-center gap-2'}>
 				<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, strategy.address)} rel={'noreferrer'}>{strategy.address}</a>
+				<CopyButton clip={strategy.address}></CopyButton>
 			</div>
 
 			{strategy.genlender && strategy.genlender.map(lender => <div key={lender.add} className={'flex items-center gap-5'}>
@@ -276,17 +280,24 @@ function SingleVaultPage({value}){
 	}
 
 	return <div className={css.main}>
-		<div className={'flex items-center justify-between'}>
+		<div className={`${css.header} ${overpassClass}`}>
 			<div>
 				<div className={'flex items-center'}>
-					<h1>{`${vault.name} ${vault.version}`}</h1>
+					<h1>{vault.name}</h1>
 					<div className={'mx-8 flex items-center gap-2'}>
 						<ReactSwitch onChange={() => setShowGraphs(current => !current)} checked={showGraphs} className={'react-switch'} onColor={'#0084c7'} checkedIcon={false} uncheckedIcon={false}>
 						</ReactSwitch>
 						<div onClick={() => setShowGraphs(current => !current)} className={'text-sm cursor-default'}>{'Charts'}</div>
 					</div>
 				</div>
-				<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, value.address)} rel={'noreferrer'}>{value.address}</a>
+				<div className={'my-1 flex gap-2'}>
+					<div className={`${css.chip} chip-version`}>{vault.version}</div>
+					<div className={`${css.chip} chip-${provider.network.name}`}>
+						{provider.network.name}
+					</div>
+					<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, value.address)} rel={'noreferrer'}>{value.address}</a>
+					<CopyButton clip={value.address}></CopyButton>
+				</div>
 				<div className={'flex items-center gap-5'}>
 					<div>{'Total Assets '}{FormatNumer(vault.totalAssets / (10 ** vault.token.decimals))}</div>
 					<div>{'Free Assets '}{((vault.totalAssets - vault.totalDebt) / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
@@ -295,10 +306,21 @@ function SingleVaultPage({value}){
 				{harvestingAll ? <Bone></Bone> : anyHarvests ? VaultApr() : <Bone invisible={true}></Bone>}
 			</div>
 
-			<div className={'flex items-center'}>
+			<div className={'flex flex-col items-center'}>
 				<button disabled={harvestingAll} onClick={onHarvestAll} className={`iconic ${harvestingAll ? 'border-primary-400 animate-pulse' : ''}`}>
 					<TbTractor className={'text-2xl'}></TbTractor>{'Harvest all strategies'}
 				</button>
+				<div className={'w-full mt-2 px-1 flex items-center justify-center gap-1'}>
+					{strategies && strategies.map(strategy => {
+						if(strategy.succeded === undefined)
+							return <div key={strategy.address} className={'grow h-1 bg-secondary-100 dark:bg-secondary-800 rounded'}></div>;
+						else if(strategy.succeded) {
+							return <div key={strategy.address} className={'grow h-1 bg-primary-300 dark:bg-primary-600 rounded'}></div>;
+						} else {
+							return <div key={strategy.address} className={'grow h-1 bg-error-400 rounded'}></div>;							
+						}
+					})}
+				</div>
 			</div>
 		</div>
 

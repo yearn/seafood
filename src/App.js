@@ -11,7 +11,6 @@ import Chrome from './components/Chrome';
 import Vaults from './components/Vaults';
 import Vault from './components/Vault';
 import Insights from './components/Insights';
-import {Toaster} from 'react-hot-toast';
 import SolidlyTreasury from './pages/SolidlyTreasury';
 
 function App() {
@@ -33,7 +32,6 @@ function App() {
 						</Routes>
 					</Chrome>
 				</AppProvider>
-				<Toaster></Toaster>
 			</BrowserRouter>
 		</RPCProviderContextApp>
 	);
