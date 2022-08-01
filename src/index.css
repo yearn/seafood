@@ -14,7 +14,7 @@ input, textarea, select {
 
 a {
   @apply underline underline-offset-2 
-  hover:text-primary-400
+  hover:text-selected-500
   dark:hover:text-selected-400
   transition duration-200;
 }
@@ -262,7 +262,7 @@ select {
 }
 
 .sm-tb-icon-button {
-  @apply p-0 w-[26px] h-[26px] flex items-center justify-center rounded-full;
+  @apply p-0 w-[26px] h-[26px] bg-transparent dark:bg-transparent flex items-center justify-center rounded-full;
 }
 
 .sm-tb-icon-button svg {
