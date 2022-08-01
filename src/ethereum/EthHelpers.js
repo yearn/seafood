@@ -472,28 +472,28 @@ async function GetBasicStrat(address, provider){
     
 }
 async function GetVaultInfo(vault, provider){
-	let s = await GetVaultContract(vault.address, provider);
-	console.log(s);
-	let name = await s.name();
-	let debtRatio = await s.debtRatio();
-	let token = await Erc20Info(vault.want, provider);
-	let totalAssets = await s.totalAssets();
-	let totalDebt = await s.totalDebt();
-	//console.log(totalAssets)
-	//console.log(totalDebt)
+	const s = await GetVaultContract(vault.address, provider);
+	const name = await s.name();
+	const debtRatio = await s.debtRatio();
+	const token = await Erc20Info(vault.want, provider);
+	const totalAssets = await s.totalAssets();
+	const totalDebt = await s.totalDebt();
+	const managementFee = await s.managementFee();
+	const performanceFee = await s.performanceFee();
 
 	return {
 		name: name,
 		contract: s,
 		address: vault,
 		version: vault.version,
-		debtRatio: debtRatio,
-		token: token,
-		totalAssets: totalAssets,
-		totalDebt: totalDebt,
-		chainId: provider.network.chainId
+		chainId: provider.network.chainId,
+		debtRatio,
+		token,
+		totalAssets,
+		totalDebt,
+		managementFee,
+		performanceFee
 	};
-    
 }
 
 function StrategiesDecode(strat, vault, strategies_return){

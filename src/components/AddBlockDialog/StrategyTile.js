@@ -1,6 +1,6 @@
-import React from 'react';
-import toast from 'react-hot-toast';
-import {BsBoxArrowInUpRight, BsStar, BsStarFill} from 'react-icons/bs';
+import React, {useState} from 'react';
+import {BsStar, BsStarFill} from 'react-icons/bs';
+import {TbCopy, TbCheck} from 'react-icons/tb';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import {useApp} from '../../context/useApp';
 import {GetExplorerLink, highlightString, TruncateAddress} from '../../utils/utils';
@@ -8,6 +8,7 @@ import {GetExplorerLink, highlightString, TruncateAddress} from '../../utils/uti
 export default function StrategyTile({strategy, queryRe, onClick}) {
 	const {selectedProvider} = useSelectedProvider();
 	const {favorites} = useApp();
+	const [copied, setCopied] = useState(false);
 
 	function toggleFavorite() {
 		return () => {
@@ -20,6 +21,19 @@ export default function StrategyTile({strategy, queryRe, onClick}) {
 				}
 				return [...strategies];
 			});
+		};
+	}
+
+	function copyAddress(strategy) {
+		return () => {
+			try {
+				navigator.clipboard.writeText(strategy.address);
+			} finally {
+				setCopied(true);
+				setTimeout(() => {
+					setCopied(false);
+				}, 2500);
+			}
 		};
 	}
 
@@ -37,20 +51,18 @@ export default function StrategyTile({strategy, queryRe, onClick}) {
 				{!favorites.strategies.includes(strategy.address) && <>&nbsp;<BsStar />&nbsp;</>}
 				{favorites.strategies.includes(strategy.address) && <>&nbsp;<BsStarFill className={'favorite glow-attention-md'} />&nbsp;</>}
 			</div>
-			<div onClick={() => {
-				toast(`${strategy.address} copied to your clipboard`);
-				navigator.clipboard.writeText(strategy.address);
-			}}
-			className={'center'}
-			title={`Copy ${strategy.address} to your clipboard`}>
-				{TruncateAddress(strategy.address)}
-			</div>
 			<a title={`Explore ${strategy.address}`}
 				href={GetExplorerLink(selectedProvider.network.chainId, strategy.address)}
 				target={'_blank'} rel={'noreferrer'}
-				className={'plain right'}>
-				&nbsp;<BsBoxArrowInUpRight />&nbsp;
+				className={'plain center'}>
+				{TruncateAddress(strategy.address)}
 			</a>
+			<div onClick={copyAddress(strategy)} 
+				title={`Copy ${strategy.address} to your clipboard`}
+				className={'right'}>
+				{!copied && <TbCopy className={'text-lg'}></TbCopy>}
+				{copied && <TbCheck className={'text-lg'}></TbCheck>}
+			</div>
 		</div>
 	</div>;
 }

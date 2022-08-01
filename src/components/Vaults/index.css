@@ -19,7 +19,7 @@
 .vault-tile .footer .right, 
 .vault-tile .main {
   @apply bg-white dark:bg-secondary-900/80 
-    hover:bg-selected-100 dark:hover:bg-secondary-800
+    hover:bg-selected-100 dark:hover:bg-selected-600
     border-secondary-200 dark:border-secondary-800/40
     active:transform active:scale-[98%]
     transition duration-200
@@ -86,7 +86,7 @@
 .vault-tile .footer .left, 
 .vault-tile .footer .center, 
 .vault-tile .footer .right {
-  @apply p-4 flex items-center justify-center text-sm;
+  @apply p-4 h-14 flex items-center justify-center text-sm;
 }
 
 .vault-tile .footer .left, 
@@ -115,12 +115,12 @@
 
 .vault-tile .ethereum {
   @apply bg-ethereum-200
-    dark:bg-ethereum-500;
+  dark:bg-ethereum-500;
 }
 
 .vault-tile .fantom {
   @apply bg-fantom-200
-    dark:bg-fantom-600;
+  dark:bg-fantom-600;
 }
 
 .vault-tile .favorite {

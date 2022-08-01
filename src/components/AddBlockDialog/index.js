@@ -26,8 +26,8 @@ export function AddBlockButton({className}) {
 	}
 
 	return <button onClick={onClick} className={`iconic ${className}`}>
-		{'Add block'}
 		<BsBox></BsBox>
+		{'Add block'}
 	</button>;
 }
 
