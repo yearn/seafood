@@ -72,7 +72,7 @@ function SingleVaultPage({value}){
 		}
 
 		const performanceFee = vault.performanceFee / 10_000;
-		const managementFee = vault.managementFee / 100;
+		const managementFee = vault.managementFee / 10_000;
 		const over_year = (100 * percent * 8760 / strategy.lastTime);
 		const delegated_percent = strategy.delegatedAssets / strategy.beforeDebt;
 		let user_apr = (over_year * (1 - performanceFee)) - (managementFee * (1 - delegated_percent));
