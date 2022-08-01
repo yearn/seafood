@@ -41,7 +41,6 @@ function SingleVaultPage({value}){
 	useEffect(() => {
 		if(vault.address && provider){
 			AllStrats(vault, provider).then(freshStrategies => {
-				freshStrategies.sort((a, b) => a.lastTime - b.lastTime);
 				(async () => {
 					for(const strategy of freshStrategies) {
 						strategy.harvesting = false;
