@@ -550,8 +550,14 @@ async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
 	}
 	
 
-    
-	let name = await s.name();
+	let name = 'TBD';
+	try {
+		name = await s.name();
+	} catch(e) {
+		console.warn('Calling strategy.name() failed');
+		console.warn(e);
+	}
+
 	if(name.includes('StrategyLenderYieldOptimiser')){
 
 
