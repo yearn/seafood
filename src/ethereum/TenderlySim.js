@@ -1,23 +1,17 @@
 import {ethers} from 'ethers';
+import config from '../config';
 
 async function setupTenderly(chainId){
-	// console.log(chainId);
-	const fork_base_url = process.env.REACT_APP_FORK_BASE_URL;
-	const payload = {network_id: chainId.toString()};
-	let result = await fetch(fork_base_url, {
+	const payload = {network_id: chainId};
+	const result = await fetch(config.forkUrl, {
 		method: 'POST',
 		body: JSON.stringify(payload),
 	});
-	// console.log(result);
 
-	let data = await result.json();
-
-	// console.log(data);
-
+	const data = await result.json();
 	return new ethers.providers.JsonRpcProvider(
-		'https://rpc.tenderly.co/fork/' + data['simulation_fork']['id']
+		`https://rpc.tenderly.co/fork/${data['simulation_fork']['id']}`
 	);
-
 }
 
 async function TenderlySim(blocks, tenderlyProvider){

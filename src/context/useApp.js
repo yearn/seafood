@@ -9,7 +9,7 @@ const	AppContext = createContext();
 export const useApp = () => useContext(AppContext);
 
 export const AppProvider = ({children}) => {
-	const {defaultProvider, fantomProvider} = useRpcProvider();
+	const {providers} = useRpcProvider();
 	const [loading, setLoading] = useState(false);
 	const [vaults, setVaults] = useState([]);
 	const [strats, setStrats] = useState([]);
@@ -18,10 +18,9 @@ export const AppProvider = ({children}) => {
 	const [darkMode, setDarkMode] = useLocalStorage('darkMode', null);
 
 	useEffect(() => {
-		const providers = [defaultProvider, fantomProvider];
-		if(providers.every(p => p)) {
+		if(providers.length > 0) {
 			setLoading(true);
-			const fetches = providers.map(p => { return axios.post('/api/getVaults/AllVaults', p.network); });
+			const fetches = providers.map(p => axios.post('/api/getVaults/AllVaults', p.network));
 			Promise.all(fetches).then(results => {
 				const freshVaults = [];
 				providers.forEach((provider, index) => {
@@ -29,19 +28,17 @@ export const AppProvider = ({children}) => {
 						return {...v, provider};
 					}));
 				});
-				
-				AllStratsFromAllVaults(freshVaults.filter(v => v.provider.network.name === 'ethereum'), providers[0]).then(x => {
-					setStrats(oldArray => [...oldArray, ...x]);
+
+				const strategyPromises = providers.map(p => AllStratsFromAllVaults(freshVaults.filter(v => v.provider.network.name === p.network.name), p));
+				Promise.all(strategyPromises).then(result => {
+					setStrats(result.flat(1));
 				});
-				AllStratsFromAllVaults(freshVaults.filter(v => v.provider.network.name === 'fantom'), providers[1]).then(x => {
-					setStrats(oldArray => [...oldArray, ...x]);
-				});
-	
+
 				setVaults(freshVaults);
 				setLoading(false);
 			});
 		}
-	}, [defaultProvider, fantomProvider]);
+	}, [providers]);
 
 	useEffect(() => {
 		if(darkMode === null) {

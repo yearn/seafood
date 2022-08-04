@@ -1,41 +1,37 @@
 import React from 'react';
+import config from '../config';
 
 const curveRe = /curve|crv/i;
 
-function GetExplorerLink(chainId, address){
-	return (chainId === 250 ? 'https://ftmscan.com/address/' :  'https://etherscan.io/address/') + address;
-
+function getAddressExplorer(chainId, address){
+	const chain = config.chains.find(chain => chain.id === chainId);
+	return `${chain.explorer}/address/${address}`;
 }
 
-function GetExplorerTx(chainId, address){
-	return (chainId === 250 ? 'https://ftmscan.com/tx/' :  'https://etherscan.io/tx/') + address;
-
+function getTxExplorer(chainId, address){
+	const chain = config.chains.find(chain => chain.id === chainId);
+	return `${chain.explorer}/tx/${address}`;
 }
 
-function GetALink(url, str){
-	return <a target={'_blank'} rel={'noreferrer'} href={url}> {str}</a>;
-
-}
-
-function TruncateAddress(address) {
+function truncateAddress(address) {
 	return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
 
-function FormatNumer(number, decimals = 2){
+function formatNumber(number, decimals = 2){
 	if(Number.isFinite(number))
 		return number.toLocaleString(undefined, {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
 	else
 		return '--';
 }
 
-function FormatPercent(number, decimals = 2){
+function formatPercent(number, decimals = 2){
 	if(Number.isFinite(number))
 		return number.toLocaleString(undefined, {style: 'percent', minimumFractionDigits: decimals, maximumFractionDigits: decimals});
 	else
 		return '--';
 }
 
-function FormatCurrency(number, currency = 'USD') {
+function formatCurrency(number, currency = 'USD') {
 	if(Number.isFinite(number))
 		return number.toLocaleString(undefined, {style: 'currency', currency});
 	else
@@ -60,12 +56,11 @@ function highlightString(string, highlightRe) {
 
 export {
 	curveRe, 
-	GetExplorerLink, 
-	GetExplorerTx, 
-	GetALink, 
-	TruncateAddress, 
-	FormatNumer, 
-	FormatPercent, 
-	FormatCurrency,
+	getAddressExplorer, 
+	getTxExplorer, 
+	truncateAddress, 
+	formatNumber, 
+	formatPercent, 
+	formatCurrency,
 	highlightString
 };

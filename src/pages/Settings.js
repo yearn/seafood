@@ -5,14 +5,14 @@ import {AllRegistered} from  '../ethereum/EthHelpers';
 import axios from '../axios';
 
 function Settings() {
-	const {defaultProvider, fantomProvider} = useRPCProvider();
+	const {providers, providerByChainId} = useRPCProvider();
 	const [loading, setLoading] = useState(false);
 
 	
   
 	const handleChange = (network) => {
 		console.log(network);
-		let provider = network ==1?defaultProvider:fantomProvider;
+		const provider = providerByChainId(network);
 
 		try{
 			setLoading(true);
@@ -39,9 +39,12 @@ function Settings() {
 
 	return(
       
-		<div>
-			<button onClick={() => handleChange(250)}> {'Update Fantom Vaults'}</button>
-			<button onClick={() => handleChange(1)}> {'Update Ethereum Vaults'}</button>
+		<div className={'p-8 flex gap-2'}>
+			{providers?.map(provider => 
+				<button key={provider.network.chainId} disabled onClick={() => handleChange(provider.network.chainId)}>
+					{'Update '}<span className={'capitalize'}>{provider.network.name}</span>{' Vaults'}
+				</button>
+			)}
 		</div>
         
 	);

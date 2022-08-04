@@ -3,7 +3,7 @@ import {BsStar, BsStarFill} from 'react-icons/bs';
 import {TbCopy, TbCheck} from 'react-icons/tb';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import {useApp} from '../../context/useApp';
-import {GetExplorerLink, highlightString, TruncateAddress} from '../../utils/utils';
+import {getAddressExplorer, highlightString, truncateAddress} from '../../utils/utils';
 
 export default function StrategyTile({strategy, queryRe, onClick}) {
 	const {selectedProvider} = useSelectedProvider();
@@ -52,10 +52,10 @@ export default function StrategyTile({strategy, queryRe, onClick}) {
 				{favorites.strategies.includes(strategy.address) && <>&nbsp;<BsStarFill className={'favorite glow-attention-md'} />&nbsp;</>}
 			</div>
 			<a title={`Explore ${strategy.address}`}
-				href={GetExplorerLink(selectedProvider.network.chainId, strategy.address)}
+				href={getAddressExplorer(selectedProvider.network.chainId, strategy.address)}
 				target={'_blank'} rel={'noreferrer'}
 				className={'plain center'}>
-				{TruncateAddress(strategy.address)}
+				{truncateAddress(strategy.address)}
 			</a>
 			<div onClick={copyAddress(strategy)} 
 				title={`Copy ${strategy.address} to your clipboard`}

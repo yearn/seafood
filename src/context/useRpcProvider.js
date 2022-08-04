@@ -1,6 +1,7 @@
 import {ethers} from 'ethers';
-import React, {useContext, createContext, useState, useEffect} from 'react';
+import React, {useContext, createContext, useState, useEffect, useCallback} from 'react';
 import Web3WsProvider from 'web3-providers-ws';
+import config from '../config';
 
 function makeSocketProvider(url, name, chainId) {
 	return new ethers.providers.Web3Provider(
@@ -46,61 +47,26 @@ async function bestProvider(rpcs, name, chainId) {
 }
 
 const RPCProvider = createContext();
+
 export const RPCProviderContextApp = ({children}) => {
-	const [defaultProvider, setDefaultProvider] = useState();
-	const [fantomProvider, setFantomProvider] = useState();	
-	const [tenderlyProvider, setTenderly] = useState(null);
+	const [providers, setProviders] = useState([]);
 
 	useEffect(() => {
-		bestProvider([
-			process.env.REACT_APP_ETH_WS_PROVIDER,
-			process.env.REACT_APP_ETH_WS_PROVIDER_BACKUP
-		], 'ethereum', 1).then(provider => {
-			setDefaultProvider(provider);
-		});
-
-		bestProvider([
-			process.env.REACT_APP_FTM_WS_PROVIDER3
-		], 'fantom', 250).then(provider => {
-			setFantomProvider(provider);			
-		});
+		(async () => {
+			const freshProviders = [];
+			for(const chain of config.chains) {
+				freshProviders.push(await bestProvider(chain.providers, chain.name, chain.id));
+			}
+			setProviders(freshProviders);
+		})();
 	}, []);
 
-	function closeProvider() {
-		setTenderly(null);
-	}
-
-	function setupTenderly(chainId) {
-		console.log(chainId);
-		const fork_base_url = process.env.REACT_APP_FORK_BASE_URL;
-		const payload = {network_id: chainId.toString()};
-		console.log('start');
-		console.log(fork_base_url);
-		fetch(fork_base_url, {
-			method: 'POST',
-			body: JSON.stringify(payload),
-		})
-			.then(res => res.json())
-			.then(data => {
-				console.log(data);
-				console.log(data['simulation_fork']['id']);
-				setTenderly(new ethers.providers.JsonRpcProvider(
-					'https://rpc.tenderly.co/fork/' + data['simulation_fork']['id']
-				));
-				console.log(tenderlyProvider);
-			});
-	}
+	const providerByChainId = useCallback((chainId) => {
+		return providers.find(p => p.network.chainId === chainId);
+	}, [providers]);
 
 	return (
-		<RPCProvider.Provider
-			value={{
-				closeProvider,
-				setupTenderly,
-				tenderlyProvider,
-				defaultProvider,
-				fantomProvider
-			}}
-		>
+		<RPCProvider.Provider value={{providers, providerByChainId}}>
 			{children}
 		</RPCProvider.Provider>
 	);

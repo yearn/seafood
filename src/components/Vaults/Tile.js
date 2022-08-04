@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {BsStar, BsStarFill} from 'react-icons/bs';
 import {TbCopy, TbCheck} from 'react-icons/tb';
 import {useApp} from '../../context/useApp';
-import {GetExplorerLink, highlightString, TruncateAddress} from '../../utils/utils';
+import {getAddressExplorer, highlightString, truncateAddress} from '../../utils/utils';
 import Bone from '../Bone';
 import Sparkline from './Sparkline';
 
@@ -73,9 +73,9 @@ export default function Tile({vault, queryRe, onClick}) {
 			</div>
 			<a className={'plain center'}
 				title={`Explore ${vault.address}`}
-				href={GetExplorerLink(vault.provider.network.chainId, vault.address)}
+				href={getAddressExplorer(vault.provider.network.chainId, vault.address)}
 				target={'_blank'} rel={'noreferrer'}>
-				{TruncateAddress(vault.address)}
+				{truncateAddress(vault.address)}
 			</a>
 			<div className={'right'}
 				title={`Copy ${vault.address} to your clipboard`}
