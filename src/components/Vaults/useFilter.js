@@ -1,6 +1,7 @@
 import React, {createContext, useContext, useEffect, useMemo, useState} from 'react';
 import {useApp} from '../../context/useApp';
 import {curveRe} from '../../utils/utils';
+import config from '../../config';
 
 const	FilterContext = createContext();
 
@@ -15,8 +16,7 @@ export function FilterProvider({query, setQuery, chips, setChips, children}) {
 		setFilter(vaults.filter(vault => {
 			if(query && !queryRe.test(vault.name)) return false;
 			if(chips.favorites && !favorites.vaults.includes(vault.address)) return false;
-			if(!chips.ethereum && vault.provider.network.name === 'ethereum') return false;
-			if(!chips.fantom && vault.provider.network.name === 'fantom') return false;
+			if(!chips[vault.provider.network.name]) return false;
 			return chips.curve || !curveRe.test(vault.name);
 		}));
 	}, [query, queryRe, chips, vaults, favorites]);
@@ -32,11 +32,10 @@ export function FilterProvider({query, setQuery, chips, setChips, children}) {
 }
 
 export function defaultChips() {
-	return {
+	const result = {
 		favorites: false,
-		curve: false,
-		ethereum: true,
-		fantom: true,
-		tags: ['curve', 'ethereum', 'fantom']
+		curve: false
 	};
+	config.chains.forEach(chain => result[chain.name] = true);
+	return result;
 }

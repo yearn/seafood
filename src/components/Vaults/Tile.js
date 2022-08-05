@@ -44,8 +44,8 @@ export default function Tile({vault, queryRe, onClick}) {
 			<div className={'body'}>
 				<div className={'info'}>
 					<div className={'chips'}>
-						<div className={'chip version'}>{vault.version}</div>
-						<div className={`chip ${vault.provider.network.name}`}>{vault.provider.network.name}</div>
+						<div className={'chip bg-version'}>{vault.version}</div>
+						<div className={`chip bg-${vault.provider.network.name}`}>{vault.provider.network.name}</div>
 					</div>
 					<div className={'strategies dark:group-hover:text-secondary-200'}>
 						{!v_d && <div>

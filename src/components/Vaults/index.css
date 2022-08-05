@@ -19,8 +19,7 @@
 .vault-tile .footer .right, 
 .vault-tile .main {
   @apply bg-white dark:bg-secondary-900/80 
-    hover:bg-selected-100 dark:hover:bg-selected-600
-    border-secondary-200 dark:border-secondary-800/40
+    hover:bg-selected-300 dark:hover:bg-selected-600
     active:transform active:scale-[98%]
     transition duration-200
     cursor-pointer;
@@ -28,13 +27,11 @@
 
 .vault-tile .main {
   @apply px-4 pt-4 pb-4 flex flex-col 
-    border-2
-    border-b-0
     rounded-tl-lg rounded-tr-lg;
 }
 
 .vault-tile .main.full {
-  @apply rounded pb-6 border-b-2;
+  @apply pb-6 rounded-lg;
 }
 
 .vault-tile .main .title {
@@ -60,11 +57,15 @@
 }
 
 .vault-tile .main .info .chips .chip {
-  @apply px-2 py-1 text-xs capitalize rounded drop-shadow-sm;
+  @apply px-2 py-1 text-xs capitalize
+  text-secondary-50
+  rounded-lg drop-shadow-sm;
 }
 
 .vault-tile .main .info .chips .little-chip {
-  @apply h-fit px-2 py-[1px] text-xs rounded;
+  @apply h-fit px-2 py-[1px] text-xs 
+  text-secondary-50
+  rounded-lg;
 }
 .vault-tile .main .chart{
   @apply relative flex w-full
@@ -95,32 +96,16 @@
 }
 
 .vault-tile .footer .center {
-  @apply basis-1/2 border-b-2;
+  @apply basis-1/2;
 }
 
 .vault-tile .footer .left {
-  @apply rounded-bl-lg 
-  border-l-2 border-b-2;
+  @apply rounded-bl-lg;
 }
 
 .vault-tile .footer .right {
   @apply rounded-br-lg 
-  no-underline
-  border-b-2 border-r-2;
-}
-
-.vault-tile .version {
-  @apply bg-primary-200 dark:bg-primary-900;
-}
-
-.vault-tile .ethereum {
-  @apply bg-ethereum-200
-  dark:bg-ethereum-500;
-}
-
-.vault-tile .fantom {
-  @apply bg-fantom-200
-  dark:bg-fantom-600;
+  no-underline;
 }
 
 .vault-tile .favorite {

@@ -3,7 +3,7 @@ import {GetMasterchef} from  '../ethereum/EthHelpers';
 //import {fantomMasterchefs} from  '../ethereum/Addresses';
 import React, {useState, useEffect} from 'react';
 import axios from '../axios';
-import chainIds from '../config';
+import {chainIds} from '../config';
 
 function MasterchefPage(){
 	const {providerByChainId} = useRPCProvider();

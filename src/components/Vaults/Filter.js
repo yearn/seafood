@@ -45,7 +45,7 @@ export default function Filter({showVaultCount = false, overpassOnScroll = true}
 			</div>
 		</SmallScreen>
 		<BiggerThanSmallScreen>
-			<div className={`filter pl-4 pr-8 py-2 flex items-center gap-2 ${overpassOnScroll ? overpassClass : ''}`}>
+			<div className={`filter pl-4 pr-8 py-2 flex items-center gap-3 ${overpassOnScroll ? overpassClass : ''}`}>
 				<div className={'relative flex items-center justify-center'}>
 					<input ref={queryElement} onChange={(e) => {debounceQuery(e.target.value);}} defaultValue={query} type={'text'} placeholder={'/ Filter by name'} />
 					{query && <div onClick={clearQuery} className={'absolute right-2 sm-circle-icon-button'}>

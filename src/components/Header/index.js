@@ -33,7 +33,7 @@ export default function Header() {
 			</SmallScreen>
 			<BiggerThanSmallScreen>
 				<div className={'w-full pl-4 pr-8 flex items-center justify-between'}>
-					<h1 onClick={() => {if(location.pathname !== '/') navigate('/');}} className={'text-4xl font-bold rainbow-text dark:drop-shadow-md cursor-pointer'}>{'Seafood'}</h1>
+					<h1 onClick={() => {if(location.pathname !== '/') navigate('/');}} className={'text-5xl font-bold rainbow-text drop-shadow dark:drop-shadow-md cursor-pointer'}>{'Seafood'}</h1>
 					<Menu></Menu>
 				</div>
 			</BiggerThanSmallScreen>

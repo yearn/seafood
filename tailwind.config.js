@@ -12,10 +12,7 @@ module.exports = {
         'selected': colors.pink,
         'ok': colors.green,
         'attention': colors.yellow,
-        'error': colors.red,
-        'curve': colors.sky,
-        'ethereum': colors.zinc,
-        'fantom': colors.indigo
+        'error': colors.red
       },
       height: ({ theme }) => ({
         'app-header': '64px'

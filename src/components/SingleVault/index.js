@@ -12,7 +12,7 @@ import ShowEvents from '../../components/ShowEvents';
 import axios from '../../axios';
 import InfoChart from '../../components/Vaults/InfoChart';
 import css from './index.module.css';
-import ReactSwitch from 'react-switch';
+import Switch from '../Switch';
 import Bone from '../Bone';
 import useScrollOverpass from '../Header/useScrollOverpass';
 import CopyButton from './CopyButton';
@@ -284,14 +284,13 @@ function SingleVaultPage({value}){
 				<div className={'flex items-center'}>
 					<h1>{vault.name}</h1>
 					<div className={'mx-8 flex items-center gap-2'}>
-						<ReactSwitch onChange={() => setShowGraphs(current => !current)} checked={showGraphs} className={'react-switch'} onColor={'#0084c7'} checkedIcon={false} uncheckedIcon={false}>
-						</ReactSwitch>
+						<Switch onChange={() => setShowGraphs(current => !current)} checked={showGraphs} />
 						<div onClick={() => setShowGraphs(current => !current)} className={'text-sm cursor-default'}>{'Charts'}</div>
 					</div>
 				</div>
 				<div className={'my-1 flex gap-2'}>
-					<div className={`${css.chip} chip-version`}>{vault.version}</div>
-					<div className={`${css.chip} chip-${provider.network.name}`}>
+					<div className={`${css.chip} bg-version`}>{vault.version}</div>
+					<div className={`${css.chip} bg-${provider.network.name}`}>
 						{provider.network.name}
 					</div>
 					<a target={'_blank'} href={getAddressExplorer(provider.network.chainId, value.address)} rel={'noreferrer'}>{value.address}</a>
@@ -312,7 +311,7 @@ function SingleVaultPage({value}){
 				<div className={'w-full mt-2 px-1 flex items-center justify-center gap-1'}>
 					{strategies && strategies.map(strategy => {
 						if(strategy.succeded === undefined)
-							return <div key={strategy.address} className={'grow h-1 bg-secondary-100 dark:bg-secondary-800 rounded'}></div>;
+							return <div key={strategy.address} className={'grow h-1 bg-secondary-200 dark:bg-secondary-800 rounded'}></div>;
 						else if(strategy.succeded) {
 							return <div key={strategy.address} className={'grow h-1 bg-primary-300 dark:bg-primary-600 rounded'}></div>;
 						} else {

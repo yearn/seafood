@@ -11,7 +11,7 @@ import SelectVaultFunctionOrStrategy from './SelectVaultFunctionOrStrategy';
 import SelectStrategyFunction from './SelectStrategyFunction';
 import SetInputs from './SetInputs';
 import Manual from './Manual';
-import ReactSwitch from 'react-switch';
+import Switch from '../Switch';
 import useLocalStorage from 'use-local-storage';
 
 export function AddBlockButton({className}) {
@@ -108,7 +108,7 @@ export default function AddBlockDialog({onAddBlock}) {
 
 			<div className={'flex gap-2 items-center justify-between'}>
 				<div className={'flex items-center gap-2'}>
-					<ReactSwitch onChange={toggleManual} checked={manual} className={'react-switch'} onColor={'#0084c7'} checkedIcon={false} uncheckedIcon={false} />
+					<Switch onChange={toggleManual} checked={manual} />
 					<div onClick={toggleManual} className={'text-sm cursor-default'}>{'Manual'}</div>
 				</div>
 				<div className={'flex gap-2'}>

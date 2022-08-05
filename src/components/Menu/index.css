@@ -37,12 +37,12 @@ nav.menu li.brand {
 }
 
 nav.menu li a, nav.menu li div {
-  @apply no-underline px-4 py-2 rounded;
+  @apply no-underline px-4 py-2 rounded-lg;
 }
 
 nav.menu li a:hover, nav.menu li div:hover {
-  @apply bg-selected-200 text-selected-900
-    dark:bg-selected-600 dark:text-white;
+  @apply bg-selected-300 text-selected-900
+  dark:bg-selected-600 dark:text-white;
 }
 
 nav.menu li a:active, nav.menu li div:active {
@@ -50,6 +50,6 @@ nav.menu li a:active, nav.menu li div:active {
 }
 
 nav.menu li .selected {
-  @apply bg-selected-100 text-selected-900
-    dark:bg-selected-300 dark:text-selected-900;
+  @apply bg-selected-100
+  dark:bg-primary-600/20;
 }

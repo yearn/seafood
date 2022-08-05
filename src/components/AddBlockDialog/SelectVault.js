@@ -4,7 +4,7 @@ import Tile from '../Vaults/Tile';
 import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
 import {useApp} from '../../context/useApp';
 import {curveRe} from '../../utils/utils';
-import useLocalStorage from 'use-local-storage';
+import useLocalStorage from '../../utils/useLocalStorage';
 import Filter from './Filter';
 
 function Tiles({filter, queryRe, onSelect}) {
@@ -22,11 +22,11 @@ export default function SelectVault() {
 	const {setSteps, setResult} = useAddBlockDialog();
 	const [query, setQuery] = useLocalStorage('addBlock.selectVault.query', '');
 	const queryRe = useMemo(() => { return new RegExp(query, 'i'); }, [query]);
-	const [chips, setChips] = useLocalStorage('addBlock.selectVault.chips', {
-		favorites: false,
-		curve: false,
-		tags: ['curve']
-	});
+	const [chips, setChips] = useLocalStorage(
+		'addBlock.selectVault.chips', 
+		{favorites: false, curve: false}, 
+		{defaultKeysOnly: true}
+	);
 
 	useEffect(() => {
 		if(selectedProvider) {

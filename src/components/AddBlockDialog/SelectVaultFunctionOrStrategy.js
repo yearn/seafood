@@ -4,7 +4,7 @@ import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
 import StrategyTile from './StrategyTile';
 import FunctionTile from './FunctionTile';
-import useLocalStorage from 'use-local-storage';
+import useLocalStorage from '../../utils/useLocalStorage';
 import {useApp} from '../../context/useApp';
 import Filter from './Filter';
 
@@ -16,9 +16,11 @@ export default function SelectVaultFunctionOrStrategy({addBlock}) {
 	const [filter, setFilter] = useState([]);
 	const [query, setQuery] = useLocalStorage('addBlock.selectStrategy.query', '');
 	const queryRe = useMemo(() => { return new RegExp(query, 'i'); }, [query]);
-	const [chips, setChips] = useLocalStorage('addBlock.selectStrategy.chips', {
-		favorites: false
-	});
+	const [chips, setChips] = useLocalStorage(
+		'addBlock.selectStrategy.chips', 
+		{favorites: false},
+		{defaultKeysOnly: true}
+	);
 
 	useEffect(() => {
 		(async () => {

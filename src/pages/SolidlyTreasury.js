@@ -7,7 +7,7 @@ import {formatNumber, getAddressExplorer} from '../utils/utils';
 import {sex, solid, wftm, solidsex} from '../ethereum/Addresses';
 import {GetPrices} from '../ethereum/PriceFinder';
 import {GetBalances} from '../ethereum/EthHelpers';
-import chainIds from '../config';
+import {chainIds} from '../config';
 
 function SolidlyTreasury(){
 	const {providerByChainId} = useRPCProvider();
