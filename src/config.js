@@ -1,6 +1,7 @@
 export const chainIds = {
 	'ethereum': 1,
-	'fantom': 250
+	'fantom': 250,
+	'optimism': 137
 };
 
 export default {
@@ -25,6 +26,12 @@ export default {
 			'providers': [
 				'https://rpc.ankr.com/fantom'
 			]
+		},
+		{
+			'id': chainIds.optimism,
+			'name': 'optimism',
+			'explorer': 'https://polygonscan.com',
+			'providers': []
 		}
 	]
 };
