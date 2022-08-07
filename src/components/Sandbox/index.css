@@ -13,7 +13,7 @@
   flex flex-col justify-between
   border-4 border-primary-600/40 dark:border-primary-400/40
   dark:bg-black/20
-  sm:rounded;
+  sm:rounded-lg;
 }
 
 .sandbox .content.simulating {

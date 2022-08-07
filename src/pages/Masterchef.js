@@ -1,15 +1,14 @@
 import useRPCProvider from '../context/useRpcProvider';
 import {GetMasterchef} from  '../ethereum/EthHelpers';
 //import {fantomMasterchefs} from  '../ethereum/Addresses';
-import React, {useState,useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from '../axios';
-
+import {chainIds} from '../config';
 
 function MasterchefPage(){
-	const {fantomProvider} = useRPCProvider();
+	const {providerByChainId} = useRPCProvider();
 	let [allV, setAllv] = useState([]);
 	const [values, setValues] = useState({});
-
 	const [nonce, setNonce] = useState(0);
 
 	const handleChange = (fieldId) => {
@@ -38,13 +37,14 @@ function MasterchefPage(){
 		}catch{console.log('eth failed');}
 		
 	}
+
 	function showOld(){
-		getAll(fantomProvider, true);
+		getAll(providerByChainId(chainIds.fantom), true);
 	}
 
 	useEffect(() => {
-		getAll(fantomProvider, false);
-	}, [fantomProvider]);
+		getAll(providerByChainId(chainIds.fantom), false);
+	}, [providerByChainId]);
 
 	const int = setInterval(() => {
 		//getAll();

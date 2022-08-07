@@ -1,6 +1,6 @@
 import React, {useState,useEffect} from 'react';
 import {AllStrats, AllVaults} from  '../ethereum/EthHelpers';
-import {GetExplorerLink} from '../utils/utils';
+import {getAddressExplorer} from '../utils/utils';
 import ContractActions from './ContractActions';
 
 import {BsBoxArrowInUpRight, BsClipboardPlus} from 'react-icons/bs';
@@ -37,7 +37,7 @@ function StrategyButtons({provider, vault, onSelect}){
             
         
 				
-				return <div key={strat.address}><button  onClick={() => setStrat(strat)}> {strat.name}{' - '}{vault.address}</button>< BsClipboardPlus onClick={() => navigator.clipboard.writeText(strat.address)} /><a href={GetExplorerLink(provider.network.chainId, strat.address)}>< BsBoxArrowInUpRight   /></a></div>;
+				return <div key={strat.address}><button  onClick={() => setStrat(strat)}> {strat.name}{' - '}{vault.address}</button>< BsClipboardPlus onClick={() => navigator.clipboard.writeText(strat.address)} /><a href={getAddressExplorer(provider.network.chainId, strat.address)}>< BsBoxArrowInUpRight   /></a></div>;
 				
 			})}
 			{strat && <ContractActions block={strat} onSelect={onSelect} />}

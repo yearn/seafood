@@ -3,13 +3,14 @@ import {FindName, LpState, StakedSex, StakedSolidsex, StakedVeNft} from '../ethe
 //import {fantomMasterchefs} from  '../ethereum/Addresses';
 import {fchad, solidsexsolidlp,  volYfiWftmLp,  volYfiWoofyLp} from '../ethereum/Addresses';
 import React, {useEffect, useState} from 'react';
-import {FormatNumer, GetExplorerLink} from '../utils/utils';
+import {formatNumber, getAddressExplorer} from '../utils/utils';
 import {sex, solid, wftm, solidsex} from '../ethereum/Addresses';
 import {GetPrices} from '../ethereum/PriceFinder';
 import {GetBalances} from '../ethereum/EthHelpers';
+import {chainIds} from '../config';
 
 function SolidlyTreasury(){
-	const {fantomProvider} = useRPCProvider();
+	const {providerByChainId} = useRPCProvider();
 	// let [allV, setAllv] = useState([]);
 	const [lps, setLps] = useState([]);
 	const [values, setValues] = useState({});
@@ -170,8 +171,8 @@ function SolidlyTreasury(){
 	
 
 	useEffect(() => {
-		getAll(fantomProvider);
-	}, [fantomProvider]);
+		getAll(providerByChainId(chainIds.fantom));
+	}, [providerByChainId]);
 
 	const divStyle = {
 		width: '100%',
@@ -182,22 +183,22 @@ function SolidlyTreasury(){
 			<h2>{'Total Numbers'}</h2>
 			<ul>
 				
-				<li>{'Started with 250,000 wftm worth: $' + FormatNumer(250_000*prices[wftm()]) }</li>
-				<li>{'Started with 1,118,072 solidsex worth: $' + FormatNumer(1118072*prices[solidsex()]) }</li>
+				<li>{'Started with 250,000 wftm worth: $' + formatNumber(250_000*prices[wftm()]) }</li>
+				<li>{'Started with 1,118,072 solidsex worth: $' + formatNumber(1118072*prices[solidsex()]) }</li>
 				<br />
-				<li>{'Total Holdings Now Worth: $' + FormatNumer(totals.solidBalance*prices[solid()] + totals.solidSexBalance*prices[solidsex()]+totals.wftmBalance*prices[wftm()] +totals.sexBalance*prices[sex()] + totals.solidRewards*prices[solid()]+totals.sexRewards*prices[sex()] + sexStaked.solidsexRewards*prices[solidsex()] + 43942*prices[sex()] + balances.reduce((previousValue, currentValue) => previousValue + currentValue.balance*prices[currentValue.token.address], 0)) }</li>
+				<li>{'Total Holdings Now Worth: $' + formatNumber(totals.solidBalance*prices[solid()] + totals.solidSexBalance*prices[solidsex()]+totals.wftmBalance*prices[wftm()] +totals.sexBalance*prices[sex()] + totals.solidRewards*prices[solid()]+totals.sexRewards*prices[sex()] + sexStaked.solidsexRewards*prices[solidsex()] + 43942*prices[sex()] + balances.reduce((previousValue, currentValue) => previousValue + currentValue.balance*prices[currentValue.token.address], 0)) }</li>
 				<br />
 				{balances.map(b => (
-					<li key={b.token.address}>{'Balance of ' + b.token.name + ' ' + FormatNumer(b.balance) + ' worth: $' + FormatNumer(b.balance*prices[b.token.address])} </li>
+					<li key={b.token.address}>{'Balance of ' + b.token.name + ' ' + formatNumber(b.balance) + ' worth: $' + formatNumber(b.balance*prices[b.token.address])} </li>
 				))}
-				<li>{'Total Availble Solid = ' + FormatNumer(totals.solidBalance)+ ' worth: $' + FormatNumer(totals.solidBalance*prices[solid()])}</li>
-				<li>{'Total Availble Solidsex = ' + FormatNumer(totals.solidSexBalance)+ ' worth: $' + FormatNumer(totals.solidSexBalance*prices[solidsex()]) }</li>
-				<li>{'Total Availble Wftm = ' + FormatNumer(totals.wftmBalance) + ' worth: $' + FormatNumer(totals.wftmBalance*prices[wftm()]) }</li>
-				<li>{'Total Availble Sex = ' + FormatNumer(totals.sexBalance)+ ' worth: $' + FormatNumer(totals.sexBalance*prices[sex()])}</li>
-				<li>{'Total Pending Solid Rewards = ' + FormatNumer(totals.solidRewards)+ ' worth: $' + FormatNumer(totals.solidRewards*prices[solid()])}</li>
-				<li>{'Total Pending Sex Rewards = ' + FormatNumer(totals.sexRewards) + ' worth: $' + FormatNumer(totals.sexRewards*prices[sex()])}</li>
-				<li>{'Total Pending Solidsex Rewards = ' + FormatNumer(totals.solidsexRewards) + ' worth: $' + FormatNumer(totals.solidsexRewards*prices[solidsex()])}</li>
-				<li>{'Total Staked Sex Rewards = ' + FormatNumer(43942) + ' worth: $' + FormatNumer(43942*prices[sex()])}</li>
+				<li>{'Total Availble Solid = ' + formatNumber(totals.solidBalance)+ ' worth: $' + formatNumber(totals.solidBalance*prices[solid()])}</li>
+				<li>{'Total Availble Solidsex = ' + formatNumber(totals.solidSexBalance)+ ' worth: $' + formatNumber(totals.solidSexBalance*prices[solidsex()]) }</li>
+				<li>{'Total Availble Wftm = ' + formatNumber(totals.wftmBalance) + ' worth: $' + formatNumber(totals.wftmBalance*prices[wftm()]) }</li>
+				<li>{'Total Availble Sex = ' + formatNumber(totals.sexBalance)+ ' worth: $' + formatNumber(totals.sexBalance*prices[sex()])}</li>
+				<li>{'Total Pending Solid Rewards = ' + formatNumber(totals.solidRewards)+ ' worth: $' + formatNumber(totals.solidRewards*prices[solid()])}</li>
+				<li>{'Total Pending Sex Rewards = ' + formatNumber(totals.sexRewards) + ' worth: $' + formatNumber(totals.sexRewards*prices[sex()])}</li>
+				<li>{'Total Pending Solidsex Rewards = ' + formatNumber(totals.solidsexRewards) + ' worth: $' + formatNumber(totals.solidsexRewards*prices[solidsex()])}</li>
+				<li>{'Total Staked Sex Rewards = ' + formatNumber(43942) + ' worth: $' + formatNumber(43942*prices[sex()])}</li>
 			</ul>
 			
 			<br />
@@ -207,14 +208,14 @@ function SolidlyTreasury(){
 					<div>  {'Lp: ' + lp.name }  </div> 
 				
 					<ul>
-						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, lp.address)}> {'lp: ' + lp.address} </a></li>
-						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, lp.tokenABalance.address)}> {FindName(lp.tokenABalance.address) + ' balance: ' + FormatNumer(lp.tokenABalance.balance)} </a></li>
-						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, lp.tokenBBalance.address)}> {FindName(lp.tokenBBalance.address) + ' balance: ' + FormatNumer(lp.tokenBBalance.balance)} </a></li>
-						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, sex())}> {'sex pending rewards: '  + FormatNumer(lp.sexRewards) + ' worth $' + FormatNumer(lp.sexRewards*prices[sex()])} </a></li>
-						<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, solid())}> {'solid pending rewards: '  + FormatNumer(lp.solidRewards) + ' worth $' + FormatNumer(lp.solidRewards*prices[solid()])} </a></li>
-						<li> {'Solidex Boost: ' + FormatNumer(lp.solidsexBoost, 3)+ 'x'}</li>
-						<li> {'OxDao Boost: ' + FormatNumer(lp.oxdaoBoost, 3)+ 'x'}</li>
-						<li> {'Price: ' + FormatNumer(lp.price, 4) }</li>
+						<li><a target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, lp.address)}> {'lp: ' + lp.address} </a></li>
+						<li><a target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, lp.tokenABalance.address)}> {FindName(lp.tokenABalance.address) + ' balance: ' + formatNumber(lp.tokenABalance.balance)} </a></li>
+						<li><a target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, lp.tokenBBalance.address)}> {FindName(lp.tokenBBalance.address) + ' balance: ' + formatNumber(lp.tokenBBalance.balance)} </a></li>
+						<li><a target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, sex())}> {'sex pending rewards: '  + formatNumber(lp.sexRewards) + ' worth $' + formatNumber(lp.sexRewards*prices[sex()])} </a></li>
+						<li><a target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, solid())}> {'solid pending rewards: '  + formatNumber(lp.solidRewards) + ' worth $' + formatNumber(lp.solidRewards*prices[solid()])} </a></li>
+						<li> {'Solidex Boost: ' + formatNumber(lp.solidsexBoost, 3)+ 'x'}</li>
+						<li> {'OxDao Boost: ' + formatNumber(lp.oxdaoBoost, 3)+ 'x'}</li>
+						<li> {'Price: ' + formatNumber(lp.price, 4) }</li>
 					</ul>
 					<br />
 					<button onClick={() => handleChange(lp.address)}> {'Toggle dexscreener'}</button>
@@ -224,23 +225,23 @@ function SolidlyTreasury(){
 			<h2>{'Staked Solidsex:'}</h2>
 			<div>
 				{solidsexStaked && <ul>
-					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, solidsex())}> {'staked solidex: '  + FormatNumer(solidsexStaked.tokenABalance.balance)} </a></li>
-					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, sex())}> {'sex pending rewards: '  + FormatNumer(solidsexStaked.sexRewards) + ' worth $' + FormatNumer(solidsexStaked.sexRewards*prices[sex()])} </a></li>
-					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, solid())}> {'solid pending rewards: '  + FormatNumer(solidsexStaked.solidRewards) + ' worth $' + FormatNumer(solidsexStaked.solidRewards*prices[solid()])} </a></li>
+					<li><a target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, solidsex())}> {'staked solidex: '  + formatNumber(solidsexStaked.tokenABalance.balance)} </a></li>
+					<li><a target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, sex())}> {'sex pending rewards: '  + formatNumber(solidsexStaked.sexRewards) + ' worth $' + formatNumber(solidsexStaked.sexRewards*prices[sex()])} </a></li>
+					<li><a target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, solid())}> {'solid pending rewards: '  + formatNumber(solidsexStaked.solidRewards) + ' worth $' + formatNumber(solidsexStaked.solidRewards*prices[solid()])} </a></li>
 				</ul>}
 			</div>
 			<h2>{'Staked Sex:'}</h2>
 			<div>
 				{sexStaked && <ul>
 					
-					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, solidsex())}> {'solidsex pending rewards: '  + FormatNumer(sexStaked.solidsexRewards) + ' worth $' + FormatNumer(sexStaked.solidsexRewards*prices[solidsex()])} </a></li>
+					<li><a target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, solidsex())}> {'solidsex pending rewards: '  + formatNumber(sexStaked.solidsexRewards) + ' worth $' + formatNumber(sexStaked.solidsexRewards*prices[solidsex()])} </a></li>
 				</ul>}
 			</div>
 			<h2>{'Staked Nft:'}</h2>
 			<div>
 				{solidNft && <ul>
 					
-					<li><a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(fantomProvider.network.chainId, solid())}> {'staked solid Nft: '  + FormatNumer(solidNft.tokenABalance.balance) + ' worth $' + FormatNumer(solidNft.tokenABalance.balance*prices[solid()])} </a></li>
+					<li><a target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, solid())}> {'staked solid Nft: '  + formatNumber(solidNft.tokenABalance.balance) + ' worth $' + formatNumber(solidNft.tokenABalance.balance*prices[solid()])} </a></li>
 				</ul>}
 			</div>
 		</div>;

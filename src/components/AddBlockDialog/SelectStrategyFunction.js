@@ -4,7 +4,7 @@ import FunctionTile from './FunctionTile';
 import {strategy} from '../../interfaces/interfaces';
 import {ethers} from 'ethers';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
-import useLocalStorage from 'use-local-storage';
+import useLocalStorage from '../../utils/useLocalStorage';
 import Filter from './Filter';
 
 export default function SelectStrategyFunction({addBlock}) {

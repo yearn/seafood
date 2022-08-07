@@ -1,14 +1,14 @@
 import React from 'react';
 import {BsTrash, BsCaretDownFill, BsCaretRightFill} from 'react-icons/bs';
 import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
-import {TruncateAddress} from '../../utils/utils';
+import {truncateAddress} from '../../utils/utils';
 
 export default function Block({block, onRemove, onShowEvents}) {
 	const inputs_as_array = block.inputs ? Object.entries(block.inputs) : [];
 
 	function formatValue(value, index) {
 		if(block.function.inputs[index].type === 'address') {
-			return TruncateAddress(value);
+			return truncateAddress(value);
 		} else {
 			return value;
 		}

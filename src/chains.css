@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bg-ethereum {
+  @apply bg-zinc-400
+  dark:bg-zinc-500;
+}
+
+.bg-fantom {
+  @apply bg-indigo-400
+  dark:bg-indigo-600;
+}

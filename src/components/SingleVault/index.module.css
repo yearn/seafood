@@ -19,7 +19,7 @@
 }
 
 .chip {
-  @apply px-2 py-1 text-xs capitalize rounded drop-shadow-sm;
+  @apply px-2 py-1 text-xs text-secondary-50 capitalize rounded-lg drop-shadow-sm;
 }
 
 .strategies {

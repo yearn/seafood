@@ -5,21 +5,21 @@ import {TbHistory, TbTractor} from 'react-icons/tb';
 import {AllStrats, AllVaults} from  '../../ethereum/EthHelpers';
 import useRPCProvider from '../../context/useRpcProvider';
 import RatioAdjust from '../../pages/RatioAdjusters';
-import {FormatNumer, FormatPercent, GetExplorerLink} from '../../utils/utils';
+import {formatNumber, formatPercent, getAddressExplorer} from '../../utils/utils';
 import HarvestHistory from './HarvestHistory';
 import {setupTenderly, TenderlySim} from '../../ethereum/TenderlySim';
 import ShowEvents from '../../components/ShowEvents';
 import axios from '../../axios';
 import InfoChart from '../../components/Vaults/InfoChart';
 import css from './index.module.css';
-import ReactSwitch from 'react-switch';
+import Switch from '../Switch';
 import Bone from '../Bone';
 import useScrollOverpass from '../Header/useScrollOverpass';
 import CopyButton from './CopyButton';
 
 function SingleVaultPage({value}){
 	const {overpassClass} = useScrollOverpass();
-	const {fantomProvider, defaultProvider} = useRPCProvider();
+	const {providers} = useRPCProvider();
 	const [strategies, setStrategies] = useState([]);
 	const [showHarvestHistory, setShowHarvestHistory] = useState({});
 	const [harvestingAll, setHarvestingAll] = useState(false);
@@ -27,7 +27,7 @@ function SingleVaultPage({value}){
 	const [showRatio, toggleRatios] = useState(false);
 	const [zeros, setStateZeros] = useState({});
 	const [showGraphs, setShowGraphs] = useLocalStorage('SingleVault.settings.showGraphs', false);
-	const provider = value.chain == 250 ? fantomProvider : defaultProvider;
+	const provider = providers.find(p => p.network.chainId == value.chain);
 	const anyHarvests = strategies.some(s => s.succeded);
 
 	useEffect(() => {
@@ -148,8 +148,8 @@ function SingleVaultPage({value}){
 		let after = total_user_apr/vault.totalAssets;
 		return <div className={'flex items-center gap-5'}>
 			<div>{'Total Vault APR'}</div>
-			<div>{`Before Fees ${FormatPercent(apr / 100)}`}</div>
-			<div>{`After Fees ${FormatPercent(after / 100)}`}</div>
+			<div>{`Before Fees ${formatPercent(apr / 100)}`}</div>
+			<div>{`After Fees ${formatPercent(after / 100)}`}</div>
 		</div>;
 	}
 
@@ -159,8 +159,8 @@ function SingleVaultPage({value}){
 		return <div className={'flex items-center gap-5'}>
 			<a target={'_blank'} href={strategy.tenderlyUrl} rel={'noreferrer'}>{'Harvest simulation'}</a>
 			<div>{'APR'}</div>
-			<div>{`Before fees ${FormatPercent(apr.beforeFee / 100)}`}</div>
-			<div>{`After fees ${FormatPercent(apr.afterFee / 100)}`}</div>
+			<div>{`Before fees ${formatPercent(apr.beforeFee / 100)}`}</div>
+			<div>{`After fees ${formatPercent(apr.afterFee / 100)}`}</div>
 		</div>;
 	}
 
@@ -230,14 +230,14 @@ function SingleVaultPage({value}){
 				</div>
 			</div>
 			<div className={'-mt-2 flex items-center gap-2'}>
-				<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, strategy.address)} rel={'noreferrer'}>{strategy.address}</a>
+				<a target={'_blank'} href={getAddressExplorer(provider.network.chainId, strategy.address)} rel={'noreferrer'}>{strategy.address}</a>
 				<CopyButton clip={strategy.address}></CopyButton>
 			</div>
 
 			{strategy.genlender && strategy.genlender.map(lender => <div key={lender.add} className={'flex items-center gap-5'}>
-				<div>{'Lender '}<a target={'_blank'} rel={'noreferrer'} href={GetExplorerLink(provider.network.chainId, lender.add)}>{lender.name}</a></div>
-				<div>{'Deposits ' + FormatNumer(lender.assets/(10 **vault.token.decimals))}</div>
-				<div>{'APR ' + FormatPercent(lender.rate/(10 **18))}</div>
+				<div>{'Lender '}<a target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(provider.network.chainId, lender.add)}>{lender.name}</a></div>
+				<div>{'Deposits ' + formatNumber(lender.assets/(10 **vault.token.decimals))}</div>
+				<div>{'APR ' + formatPercent(lender.rate/(10 **18))}</div>
 			</div>)}
 
 			{zeros[strategy.address] && <a target={'_blank'} rel={'noreferrer'} href={zeros[strategy.address].tenderlyUrl}>
@@ -251,8 +251,8 @@ function SingleVaultPage({value}){
 					<TimeAgo date={since(strategy.lastTime)}></TimeAgo>
 				</div>
 				{strategy.beforeDebt > 1 && <>
-					<div>{`Real ratio ${FormatPercent(strategy.beforeDebt / strategy.vaultAssets)}`}</div>
-					<div>{`Desired ratio ${FormatPercent(strategy.debtRatio / 10_000)}`}</div>
+					<div>{`Real ratio ${formatPercent(strategy.beforeDebt / strategy.vaultAssets)}`}</div>
+					<div>{`Desired ratio ${formatPercent(strategy.debtRatio / 10_000)}`}</div>
 				</>}
 			</div>
 
@@ -284,23 +284,22 @@ function SingleVaultPage({value}){
 				<div className={'flex items-center'}>
 					<h1>{vault.name}</h1>
 					<div className={'mx-8 flex items-center gap-2'}>
-						<ReactSwitch onChange={() => setShowGraphs(current => !current)} checked={showGraphs} className={'react-switch'} onColor={'#0084c7'} checkedIcon={false} uncheckedIcon={false}>
-						</ReactSwitch>
+						<Switch onChange={() => setShowGraphs(current => !current)} checked={showGraphs} />
 						<div onClick={() => setShowGraphs(current => !current)} className={'text-sm cursor-default'}>{'Charts'}</div>
 					</div>
 				</div>
 				<div className={'my-1 flex gap-2'}>
-					<div className={`${css.chip} chip-version`}>{vault.version}</div>
-					<div className={`${css.chip} chip-${provider.network.name}`}>
+					<div className={`${css.chip} bg-version`}>{vault.version}</div>
+					<div className={`${css.chip} bg-${provider.network.name}`}>
 						{provider.network.name}
 					</div>
-					<a target={'_blank'} href={GetExplorerLink(provider.network.chainId, value.address)} rel={'noreferrer'}>{value.address}</a>
+					<a target={'_blank'} href={getAddressExplorer(provider.network.chainId, value.address)} rel={'noreferrer'}>{value.address}</a>
 					<CopyButton clip={value.address}></CopyButton>
 				</div>
 				<div className={'flex items-center gap-5'}>
-					<div>{'Total Assets '}{FormatNumer(vault.totalAssets / (10 ** vault.token.decimals))}</div>
+					<div>{'Total Assets '}{formatNumber(vault.totalAssets / (10 ** vault.token.decimals))}</div>
 					<div>{'Free Assets '}{((vault.totalAssets - vault.totalDebt) / (10 ** vault.token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
-					<div>{`${FormatPercent(vault.debtRatio/10_000, 0)} Allocated`}</div>
+					<div>{`${formatPercent(vault.debtRatio/10_000, 0)} Allocated`}</div>
 				</div>
 				{harvestingAll ? <Bone></Bone> : anyHarvests ? VaultApr() : <Bone invisible={true}></Bone>}
 			</div>
@@ -312,7 +311,7 @@ function SingleVaultPage({value}){
 				<div className={'w-full mt-2 px-1 flex items-center justify-center gap-1'}>
 					{strategies && strategies.map(strategy => {
 						if(strategy.succeded === undefined)
-							return <div key={strategy.address} className={'grow h-1 bg-secondary-100 dark:bg-secondary-800 rounded'}></div>;
+							return <div key={strategy.address} className={'grow h-1 bg-secondary-200 dark:bg-secondary-800 rounded'}></div>;
 						else if(strategy.succeded) {
 							return <div key={strategy.address} className={'grow h-1 bg-primary-300 dark:bg-primary-600 rounded'}></div>;
 						} else {
