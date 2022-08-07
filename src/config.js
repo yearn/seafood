@@ -1,7 +1,7 @@
 export const chainIds = {
 	'ethereum': 1,
 	'fantom': 250,
-	'optimism': 137
+	'optimism': 10
 };
 
 export default {
@@ -30,7 +30,7 @@ export default {
 		{
 			'id': chainIds.optimism,
 			'name': 'optimism',
-			'explorer': 'https://polygonscan.com',
+			'explorer': 'https://optimistic.etherscan.io/',
 			'providers': []
 		}
 	]
