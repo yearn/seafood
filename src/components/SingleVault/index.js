@@ -61,23 +61,23 @@ function SingleVaultPage({value}){
 		const profit = strategy.paramsAfterHarvest.totalGain - strategy.beforeGain;
 		const loss = strategy.paramsAfterHarvest.totalLoss - strategy.beforeLoss;
 
-		const pnlToDept = (loss > profit)
+		const pnlToDebt = (loss > profit)
 			? -1 * loss / strategy.beforeDebt
 			: profit / strategy.beforeDebt;
 
-		const annualizedPnlToDept = pnlToDept * 8760 / strategy.lastTime;
-		
+		const annualizedPnlToDebt = pnlToDebt * 8760 / strategy.lastTime;
+
 		const performanceFee = vault.performanceFee / 10_000;
 		const managementFee = vault.managementFee / 10_000;
-		const delegatedToDept = strategy.delegatedAssets / strategy.beforeDebt;
-		
-		let annualizedPnlToDeptAfterFees = 
-			annualizedPnlToDept * (1 - performanceFee) 
-			- managementFee * (1 - delegatedToDept);
+		const delegatedToDebt = strategy.delegatedAssets / strategy.beforeDebt;
 
-		annualizedPnlToDeptAfterFees = Math.max(annualizedPnlToDeptAfterFees, 0);
-		
-		return {beforeFee: annualizedPnlToDept, afterFee: annualizedPnlToDeptAfterFees};
+		let annualizedPnlToDebtAfterFees = 
+			annualizedPnlToDebt * (1 - performanceFee) 
+			- managementFee * (1 - delegatedToDebt);
+
+		annualizedPnlToDebtAfterFees = Math.max(annualizedPnlToDebtAfterFees, 0);
+
+		return {beforeFee: annualizedPnlToDebt, afterFee: annualizedPnlToDebtAfterFees};
 	}, [vault]);
 
 	const harvestStrategy = useCallback(async (tenderly, strategy) => {
