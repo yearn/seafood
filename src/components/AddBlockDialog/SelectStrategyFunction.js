@@ -1,11 +1,13 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
-import FunctionTile from './FunctionTile';
+import {FunctionTile} from '../tiles';
 import {strategy} from '../../interfaces/interfaces';
 import {ethers} from 'ethers';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import useLocalStorage from '../../utils/useLocalStorage';
 import Filter from './Filter';
+import List from './List';
+import Header from './Header';
 
 export default function SelectStrategyFunction({addBlock}) {
 	const {selectedProvider} = useSelectedProvider();
@@ -55,8 +57,8 @@ export default function SelectStrategyFunction({addBlock}) {
 		}
 	}
 
-	return <div className={'max-h-full flex flex-col'}>
-		<div className={'header'}>
+	return <>
+		<Header>
 			<div className={'w-full sm:w-1/3'}>
 				<Filter query={query} setQuery={setQuery} chips={chips} setChips={setChips}></Filter>
 			</div>
@@ -65,12 +67,12 @@ export default function SelectStrategyFunction({addBlock}) {
 				{'Select a function'}
 			</div>
 			<div className={'hidden sm:block w-1/3 flex'}></div>
-		</div>
+		</Header>
 
-		<div className={'tiles'}>
+		<List>
 			{filter.map((item, index) => <div key={index}>
 				<FunctionTile func={item} queryRe={queryRe} onClick={() => onClickFunction(item)}></FunctionTile>
 			</div>)}
-		</div>
-	</div>;
+		</List>
+	</>;
 }

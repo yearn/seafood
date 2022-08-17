@@ -1,19 +1,13 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
-import Tile from '../Vaults/Tile';
 import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
 import {useApp} from '../../context/useApp';
 import {curveRe} from '../../utils/utils';
 import useLocalStorage from '../../utils/useLocalStorage';
 import Filter from './Filter';
-
-function Tiles({filter, queryRe, onSelect}) {
-	return <>
-		{filter.map(vault => {
-			return <Tile key={vault.address} vault={vault} queryRe={queryRe} onClick={() => onSelect(vault)}></Tile>;
-		})}
-	</>;
-}
+import Header from './Header';
+import List from './List';
+import {VaultTile} from '../tiles';
 
 export default function SelectVault() {
 	const {vaults, favorites} = useApp();
@@ -44,16 +38,21 @@ export default function SelectVault() {
 		setSteps(steps => {return [...steps, stepEnum.selectVaultFunctionOrStrategy];});
 	}
 
-	return <div className={'max-h-full flex flex-col'}>
-		<div className={'header'}>
+	return <>
+		<Header>
 			<div className={'w-full sm:w-1/3'}>
 				<Filter query={query} setQuery={setQuery} chips={chips} setChips={setChips}></Filter>
 			</div>
 			<div className={'hidden sm:block w-1/3 text-center text-lg font-bold'}>{'Select a vault'}</div>
 			<div className={'hidden sm:block w-1/3 flex'}></div>
-		</div>
-		<div className={'tiles'}>
-			<Tiles filter={filter} queryRe={queryRe} onSelect={onSelect}></Tiles>
-		</div>
-	</div>;
+		</Header>
+		<List>
+			{filter.map(vault => {
+				return <VaultTile key={vault.address} 
+					vault={vault} 
+					queryRe={queryRe} 
+					onClick={() => onSelect(vault)} />;
+			})}
+		</List>
+	</>;
 }

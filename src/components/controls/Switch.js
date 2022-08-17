@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactSwitch from 'react-switch';
-import {useApp} from '../context/useApp';
+import {useApp} from '../../context/useApp';
 
 export default function Switch({checked, onChange}) {
 	const {darkMode} = useApp();

@@ -15,8 +15,15 @@ export default function CopyButton({clip}) {
 		}
 	}
 
-	return <button onClick={copy} className={'sm-tb-icon-button'}>
-		{!copied && <TbCopy></TbCopy>}
-		{copied && <TbCheck></TbCheck>}
+	return <button onClick={copy} className={`
+		w-[26px] h-[26px] p-0
+		flex items-center justify-center 
+		bg-transparent
+		hover:bg-selected-400 hover:dark:bg-selected-600
+		active:transform active:scale-95
+		rounded-full cursor-pointer
+		transition duration-200`}>
+		{!copied && <TbCopy className={'stroke-secondary-600 dark:stroke-secondary-300'}></TbCopy>}
+		{copied && <TbCheck className={'stroke-secondary-600 dark:stroke-secondary-300'}></TbCheck>}
 	</button>;
 }

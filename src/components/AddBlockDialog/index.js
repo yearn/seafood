@@ -5,16 +5,15 @@ import {BsBox} from 'react-icons/bs';
 import {useAddBlockDialog, stepEnum, defaultResult} from './useAddBlockDialog';
 import {GetVaultContract} from '../../ethereum/EthHelpers';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
-import CloseDialog from '../CloseDialog';
 import SelectVault from './SelectVault';
 import SelectVaultFunctionOrStrategy from './SelectVaultFunctionOrStrategy';
 import SelectStrategyFunction from './SelectStrategyFunction';
 import SetInputs from './SetInputs';
 import Manual from './Manual';
-import Switch from '../Switch';
+import {Button, Dialog, Switch} from '../controls';
 import useLocalStorage from 'use-local-storage';
 
-export function AddBlockButton({className}) {
+export function AddBlockButton() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const {setSteps, setResult} = useAddBlockDialog();
@@ -25,10 +24,7 @@ export function AddBlockButton({className}) {
 		navigate(`${location.pathname}#add-block`);
 	}
 
-	return <button onClick={onClick} className={`iconic ${className}`}>
-		<BsBox></BsBox>
-		{'Add block'}
-	</button>;
+	return <Button icon={BsBox} label={'Add block'} onClick={onClick} iconClassName={'text-base'} />;
 }
 
 export default function AddBlockDialog({onAddBlock}) {
@@ -92,31 +88,26 @@ export default function AddBlockDialog({onAddBlock}) {
 		setSteps([stepEnum.selectVault]);
 	}
 
-	return <div className={`dialog-container${show ? '' : ' invisible'}`}>
-		<div className={'dialog'}>
-			<CloseDialog></CloseDialog>
-	
-			<div className={'grow overflow-y-auto'}>
-				{currentStep === stepEnum.selectVault && <>
-					{!manual && <SelectVault></SelectVault>}
-					{manual && <Manual></Manual>}
-				</>}
-				{currentStep === stepEnum.selectVaultFunctionOrStrategy && <SelectVaultFunctionOrStrategy addBlock={addBlock}></SelectVaultFunctionOrStrategy>}
-				{currentStep === stepEnum.selectStrategyFunction && <SelectStrategyFunction addBlock={addBlock}></SelectStrategyFunction>}
-				{currentStep === stepEnum.setInputs && <SetInputs></SetInputs>}
-			</div>
+	return <Dialog show={show}>
+		<div className={'grow overflow-y-auto flex flex-col'}>
+			{currentStep === stepEnum.selectVault && <>
+				{!manual && <SelectVault></SelectVault>}
+				{manual && <Manual></Manual>}
+			</>}
+			{currentStep === stepEnum.selectVaultFunctionOrStrategy && <SelectVaultFunctionOrStrategy addBlock={addBlock}></SelectVaultFunctionOrStrategy>}
+			{currentStep === stepEnum.selectStrategyFunction && <SelectStrategyFunction addBlock={addBlock}></SelectStrategyFunction>}
+			{currentStep === stepEnum.setInputs && <SetInputs></SetInputs>}
+		</div>
 
-			<div className={'flex gap-2 items-center justify-between'}>
-				<div className={'flex items-center gap-2'}>
-					<Switch onChange={toggleManual} checked={manual} />
-					<div onClick={toggleManual} className={'text-sm cursor-default'}>{'Manual'}</div>
-				</div>
-				<div className={'flex gap-2'}>
-					<button disabled={steps.length < 2} onClick={onPreviousStep}>{'< Back'}</button>
-					<button disabled={!result?.valid} onClick={onClickAddBlock}>{'Add block'}</button>
-				</div>
+		<div className={'flex gap-2 items-center justify-between'}>
+			<div className={'flex items-center gap-2'}>
+				<Switch onChange={toggleManual} checked={manual} />
+				<div onClick={toggleManual} className={'text-sm cursor-default'}>{'Manual'}</div>
+			</div>
+			<div className={'flex gap-2'}>
+				<Button label={'< Back'} disabled={steps.length < 2} onClick={onPreviousStep} />
+				<Button label={'Add block'} disabled={!result?.valid} onClick={onClickAddBlock} />
 			</div>
 		</div>
-		<div onClick={close} className={'absolute -z-10 inset-0'}></div>
-	</div>;
+	</Dialog>;
 }

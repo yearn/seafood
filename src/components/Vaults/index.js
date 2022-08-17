@@ -4,7 +4,6 @@ import {mergeDeep} from '../../utils/mergeDeep';
 import {FilterProvider, defaultChips} from './useFilter';
 import List from './List';
 import Filter from './Filter';
-import './index.css';
 
 export default function Vaults() {
 	const [query, setQuery] = useLocalStorage('Vaults.filter.query', '');

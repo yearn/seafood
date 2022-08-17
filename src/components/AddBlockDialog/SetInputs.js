@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {ethers} from 'ethers';
-import {BsAsterisk, BsCheckLg} from 'react-icons/bs';
 import {useDebouncedCallback} from 'use-debounce';
 import {useAddBlockDialog} from './useAddBlockDialog';
 import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
+import Header from './Header';
+import Inputs from './Inputs';
+import Input from './Input';
 
 export default function SetInputs() {
 	const {result, setResult} = useAddBlockDialog();
@@ -43,8 +45,8 @@ export default function SetInputs() {
 		}
 	}
 
-	return <div className={'h-full flex flex-col'}>
-		<div className={'header'}>
+	return <>
+		<Header>
 			<div className={'w-full text-center'}>
 				<SmallScreen>
 					<div className={'text-sm font-bold whitespace-nowrap'}>
@@ -60,23 +62,15 @@ export default function SetInputs() {
 					</div>
 				</BiggerThanSmallScreen>
 			</div>
-		</div>
+		</Header>
 
-		<div className={'inputs'}>
-			<div className={'scroll-container'}>
-				{result.function.inputs.map((input, index) => 
-					<div key={index} className={'input'}>
-						<h3 className={'text-lg mb-2'}>{input.name}</h3>
-						<div className={'flex items-center'}>
-							<input type={'text'} onChange={(e) => {debounceInput({index, value: e.target.value});}} placeholder={input.type} />
-							<div className={'validation'}>
-								{inputValues[index].valid && <BsCheckLg className={'valid'}></BsCheckLg>}
-								{!inputValues[index].valid && <BsAsterisk className={'invalid'}></BsAsterisk>}
-							</div>
-						</div>
-					</div>
-				)}
-			</div>
-		</div>
-	</div>;
+		<Inputs>
+			{result.function.inputs.map((input, index) => 
+				<div key={index} className={'w-4/5 md:w-2/5'}>
+					<h3 className={'text-lg mb-2'}>{input.name}</h3>
+					<Input valid={inputValues[index].valid} placeholder={input.type} onChange={(e) => {debounceInput({index, value: e.target.value});}} />
+				</div>
+			)}
+		</Inputs>
+	</>;
 }

@@ -9,6 +9,7 @@ import AddBlockDialog, {AddBlockButton} from '../AddBlockDialog';
 import SelectProvider from '../SelectProvider';
 import EventsDialog from './EventsDialog';
 import {SmallScreen} from '../../utils/breakpoints';
+import {Button} from '../controls';
 
 export default function Simulator() {
 	const location = useLocation();
@@ -22,7 +23,9 @@ export default function Simulator() {
 	}
 
 	return <>
-		<ReactSortable list={blocks} setList={setBlocks} className={'simulator'}>
+		<ReactSortable list={blocks} setList={setBlocks} className={`
+			sm:pt-8 sm:pb-32
+			grid grid-flow-row grid-cols-1 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4`}>
 			{blocks.map((block) => 
 				<div key={block.index} className={'flex flex-col justify-center'}>
 					<Block block={block} onRemove={removeBlock} onShowEvents={onShowBlockEvents}></Block>
@@ -31,22 +34,23 @@ export default function Simulator() {
 		<SmallScreen>
 			<div className={`${blocks.length === 0 ? 'mt-64' : 'mt-8'} mb-32 flex flex-col items-center gap-4`}>
 				<AddBlockDialogProvider>
-					<AddBlockButton className={'big'}></AddBlockButton>
+					<AddBlockButton></AddBlockButton>
 					<AddBlockDialog onAddBlock={addBlock}></AddBlockDialog>
 				</AddBlockDialogProvider>
 				<div className={'flex gap-2'}>
 					<SelectProvider disabled={blocks.length > 0}></SelectProvider>
-					<button disabled={blocks.length < 1} onClick={reset}>{'Reset'}</button>
+					<Button label={'Reset'} disabled={blocks.length < 1} onClick={reset} />
 				</div>
 			</div>
 		</SmallScreen>
 
 		<EventsDialog block={showEventsForBlock}></EventsDialog>
 		<SmallScreen>
-			<div className={'actions'}>
-				<div className={'button-ring-container'}>
-					<button onClick={simulate} disabled={blocks.length === 0}><BsPlay className={'text-4xl'}></BsPlay></button>
-				</div>
+			<div className={`
+				fixed bottom-0 left-0 w-full 
+				px-8 py-4 flex items-center justify-center
+				backdrop-blur-md`}>
+				<Button icon={BsPlay} onClick={simulate} disabled={blocks.length === 0} iconClassName={'text-4xl'} />
 			</div>
 		</SmallScreen>
 	</>;

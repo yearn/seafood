@@ -2,6 +2,7 @@ import React from 'react';
 import {BsTrash, BsCaretDownFill, BsCaretRightFill} from 'react-icons/bs';
 import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import {truncateAddress} from '../../utils/utils';
+import {SmallIconButton} from '../controls';
 
 export default function Block({block, onRemove, onShowEvents}) {
 	const inputs_as_array = block.inputs ? Object.entries(block.inputs) : [];
@@ -30,19 +31,19 @@ export default function Block({block, onRemove, onShowEvents}) {
 		return '#Failed';
 	}
 
-	return <div className={'block-container'}>
-		<div className={`block border-2 ${borderColor()}`}>
-			<h2>{block.function.name}</h2>
+	return <div className={'flex flex-col sm:flex-row sm:h-fit'}>
+		<div className={`p-4 w-full h-fit bg-secondary-200 dark:bg-secondary-800 rounded-lg border-2 ${borderColor()}`}>
+			<h2 className={'text-2xl'}>{block.function.name}</h2>
 
 			<div>{block.name}</div>
 			{block.name !== block.block.name && <>
 				<div>{block.block.name}</div>
 			</>}
 
-			<ul>
+			<ul className={'mt-4'}>
 				{inputs_as_array.map((input, index) => 
 					<li key={index} className={'flex'}>
-						<div className={'input-name'}>{`${input[0]}: `}</div>
+						<div className={'text-secondary-400 mr-2'}>{`${input[0]}: `}</div>
 						<div>{formatValue(input[1], index)}</div>
 					</li>
 				)}
@@ -64,19 +65,19 @@ export default function Block({block, onRemove, onShowEvents}) {
 					}
 				</div>
 				<div className={'basis-1/3 flex justify-end'}>
-					<div className={'sm-circle-icon-button'} onClick={() => onRemove(block.index)}>
-						<BsTrash></BsTrash>
-					</div>
+					<SmallIconButton icon={BsTrash} onClick={() => onRemove(block.index)} />
 				</div>
 			</div>
 		</div>
 
-		<div className={'caret'}>
+		<div className={`
+			-mt-4 mb-2 flex justify-center text-5xl
+			sm:mt-0 sm:mb-0 sm:flex-col sm:-ml-5`}>
 			<SmallScreen>
-				<BsCaretDownFill></BsCaretDownFill>
+				<BsCaretDownFill className={'fill-secondary-200 dark:fill-secondary-800'}></BsCaretDownFill>
 			</SmallScreen>
 			<BiggerThanSmallScreen>
-				<BsCaretRightFill></BsCaretRightFill>
+				<BsCaretRightFill className={'fill-secondary-200 dark:fill-secondary-800'}></BsCaretRightFill>
 			</BiggerThanSmallScreen>
 		</div>
 	</div>;

@@ -2,6 +2,7 @@ import React, {useRef} from 'react';
 import {BsStarFill, BsX} from 'react-icons/bs';
 import useKeypress from 'react-use-keypress';
 import {useDebouncedCallback} from 'use-debounce';
+import {Chip, Input, SmallIconButton} from '../controls';
 
 export default function Filter({query, setQuery, chips, setChips}) {
 	const queryElement = useRef();
@@ -26,25 +27,25 @@ export default function Filter({query, setQuery, chips, setChips}) {
 		};
 	}
 
-	return <div className={'filter flex items-center gap-3'}>
+	return <div className={'flex items-center gap-3'}>
 		<div className={'relative flex items-center justify-center'}>
-			<input ref={queryElement} 
+			<Input _ref={queryElement} 
 				onChange={(e) => {debounceQuery(e.target.value);}} 
 				defaultValue={query} 
-				type={'text'} 
-				placeholder={'/ Filter by name'} />
-			{query && <div onClick={clearQuery} className={'absolute right-2 sm-circle-icon-button'}>
-				<BsX />
-			</div>}
+				type={'text'}
+				placeholder={'/ Filter by name'}
+				className={`
+				w-full py-2 px-3 rounded-lg leading-tight border
+				bg-secondary-300 border-secondary-300 text-primary-900
+				dark:bg-secondary-900/80 dark:border-secondary-800 dark:text-primary-200
+				focus:border-selected-400 focus:dark:border-selected-600 focus:ring-0`} />
+			{query && <SmallIconButton icon={BsX} onClick={clearQuery} className={'absolute right-2'} />}
 		</div>
 		<div className={'flex flex-row gap-3'}>
-			{typeof chips.favorites !== 'undefined' && <div onClick={toggle('favorites')}
-				className={`chip iconic favorite ${chips.favorites ? 'hot' : ''}`}>
-				<BsStarFill />
-			</div>}
+			{typeof chips.favorites !== 'undefined' && 
+				<Chip icon={BsStarFill} onClick={toggle('favorites')} hot={chips.favorites} />}
 			{Object.keys(chips).filter(key => key !== 'favorites').map(key => {
-				return <div key={key} onClick={toggle(key)} 
-					className={`chip ${chips[key] ? 'hot-chip' : ''}`}>{key}</div>;
+				return <Chip key={key} label={key} onClick={toggle(key)} hot={chips[key]}></Chip>;
 			})}
 		</div>
 	</div>;

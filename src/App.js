@@ -10,7 +10,6 @@ import {AppProvider} from './context/useApp';
 import Chrome from './components/Chrome';
 import Vaults from './components/Vaults';
 import Vault from './components/Vault';
-import Insights from './components/Insights';
 import SolidlyTreasury from './pages/SolidlyTreasury';
 
 function App() {
@@ -22,7 +21,6 @@ function App() {
 						<Routes>
 							<Route path={'/'} exact={true} element={<Vaults />}></Route>
 							<Route path={'/vault/:address'} element={<Vault />} />
-							<Route path={'/insights'} element={<Insights />}></Route>
 							<Route path={'/vault'} element={<SingleVaultPage />}></Route>
 							<Route path={'/masterchef'} element={<MasterchefPage />}></Route>
 							<Route path={'/solidly'} element={<SolidlyTreasury />}></Route>

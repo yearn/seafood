@@ -4,42 +4,34 @@ import {BsBox, BsCode, BsPlay} from 'react-icons/bs';
 import SelectProvider from '../SelectProvider';
 import {AddBlockDialogProvider} from '../AddBlockDialog/useAddBlockDialog';
 import AddBlockDialog, {AddBlockButton} from '../AddBlockDialog';
-import useScrollOverpass from '../Header/useScrollOverpass';
+import useScrollOverpass from '../../context/useScrollOverpass';
 import {useBlocks} from './useBlocks';
+import {Button} from '../controls';
 
 export default function Toolbar() {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const {overpassClass} = useScrollOverpass();
+	const {overpassClassName} = useScrollOverpass();
 	const {blocks, addBlock, simulate, reset} = useBlocks();
 
-	return <div className={`toolbar ${overpassClass}`}>
+	return <div className={`sticky top-0 pl-8 pr-8 py-2 flex items-center justify-between ${overpassClassName}`}>
 		<div className={'flex gap-2 items-center'}>
 			<SelectProvider disabled={blocks.length > 0}></SelectProvider>
 			<AddBlockDialogProvider>
 				<AddBlockButton></AddBlockButton>
 				<AddBlockDialog onAddBlock={addBlock}></AddBlockDialog>
 			</AddBlockDialogProvider>
-			<div className={'button-ring-container'}>
-				<button onClick={simulate} disabled={blocks.length < 1} className={'iconic'}>
-					<BsPlay className={'text-xl'}></BsPlay>
-					{'Simulate'}
-				</button>
-			</div>
+			<Button icon={BsPlay} label={'Simulate'} onClick={simulate} disabled={blocks.length < 1} />
 		</div>
 
 		<div className={'flex gap-2 items-center'}>
 			{location.hash === '' && 
-				<button onClick={() => navigate(`${location.pathname}#code`)} className={'iconic no-text'}>
-					<BsCode className={'text-xl'}></BsCode>
-				</button>
+				<Button icon={BsCode} onClick={() => navigate(`${location.pathname}#code`)} />
 			}
 			{location.hash === '#code' && 
-				<button onClick={() => navigate(-1)} className={'iconic no-text'}>
-					<BsBox className={'text-xl'}></BsBox>
-				</button>
+				<Button icon={BsBox} onClick={() => navigate(-1)} />
 			}
-			<button onClick={reset} disabled={blocks.length < 1}>{'Reset'}</button>
+			<Button label={'Reset'} onClick={reset} disabled={blocks.length < 1} />
 		</div>
 	</div>;
 }
