@@ -8,7 +8,7 @@ import {useFilter} from './useFilter';
 import Chips from './Chips';
 import {Input, SmallIconButton} from '../controls';
 
-export default function Filter({showVaultCount = false, overpassOnScroll = true}) {
+export default function Filter({showVaultCount = false}) {
 	const queryElement = useRef();
 	const {query, setQuery, filter} = useFilter();
 	const debounceQuery = useDebouncedCallback(value => {setQuery(value);}, 250);
@@ -40,7 +40,7 @@ export default function Filter({showVaultCount = false, overpassOnScroll = true}
 
 	return <>
 		<SmallScreen>
-			<div className={`sticky top-0 z-10 py-4 ${overpassOnScroll ? overpassClassName : ''}`}>
+			<div className={`sticky top-0 z-10 py-4 ${overpassClassName}`}>
 				<div className={'flex items-center justify-between'}>
 					<div className={'w-1/5'}></div>
 					<div className={'w-3/5 relative flex items-center justify-center'}>
@@ -57,7 +57,7 @@ export default function Filter({showVaultCount = false, overpassOnScroll = true}
 			</div>
 		</SmallScreen>
 		<BiggerThanSmallScreen>
-			<div className={`sticky top-0 z-10 pl-4 pr-8 py-2 flex items-center gap-3 ${overpassOnScroll ? overpassClassName : ''}`}>
+			<div className={`sticky top-0 z-10 pl-4 pr-8 py-2 flex items-center gap-3 ${overpassClassName}`}>
 				<div className={'relative flex items-center justify-center'}>
 					<SearchBox />
 					{query && <SmallIconButton icon={BsX} onClick={clearQuery} className={'absolute right-2'} />}

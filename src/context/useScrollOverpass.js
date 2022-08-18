@@ -7,7 +7,7 @@ export default function useScrollOverpass() {
 	const [show, setShow] = useState(false);
 	const [overpassClassName, setOverpassClassName] = useState('');
 	const showClassName = 'bg-secondary-100/60 dark:bg-secondary-900/60 backdrop-blur-md shadow-md';
-	const hideClassName = 'bg-transparent dark:bg-transparent backdrop-blur-none shadow-none';
+	const hideClassName = 'opacity-0 transition duration-200';
 
 	useScrollPosition(({prevPos, currPos}) => {
 		if(currPos.y > -16) {

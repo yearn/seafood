@@ -21,7 +21,7 @@ export default function Header() {
 		}else if(currPos.y > -118) {
 			setShow(true);
 		}else if((currPos.y > prevPos.y) != show) {
-			setShow(show => {return !show;});
+			setShow(current => !current);
 			if(show && !mediumBreakpoint) setEffectClass(hideScrollOverpassClassName);
 			if(!show) setEffectClass('');
 		}
@@ -32,15 +32,19 @@ export default function Header() {
 			fixed z-50 top-0 p-4 flex flex-col
 			bg-transparent dark:bg-transparent
 			sm:static sm:h-[64px] sm:flex-row sm:justify-between
-			${!mediumBreakpoint ? effectClass : ''}`}>
+			${effectClass}`}>
 			<SmallScreen>
-				<button onClick={() => navigate('#menu')} className={'m-0 p-0 text-4xl bg-transparent shadow-none w-1/5'}>
+				<button onClick={() => navigate('#menu')} 
+					className={'m-0 p-0 text-4xl bg-transparent shadow-none w-1/5'}>
 					<BsList className={'fill-secondary-600'} />
 				</button>
 			</SmallScreen>
 			<BiggerThanSmallScreen>
 				<div className={'w-full pl-4 pr-8 flex items-center justify-between'}>
-					<h1 onClick={() => {if(location.pathname !== '/') navigate('/');}} className={'text-5xl font-bold rainbow-text drop-shadow dark:drop-shadow-md cursor-pointer'}>{'Seafood'}</h1>
+					<h1 onClick={() => {if(location.pathname !== '/') navigate('/');}} 
+						className={'text-5xl font-bold rainbow-text drop-shadow dark:drop-shadow-md cursor-pointer'}>
+						{'Seafood'}
+					</h1>
 					<Menu></Menu>
 				</div>
 			</BiggerThanSmallScreen>
