@@ -40,7 +40,7 @@ export default function Menu({action}) {
 		sm:flex-row
 		sm:bg-transparent sm:dark:bg-transparent
 		sm:opacity-100 sm:pointer-events-auto
-		${action && action === 'show' 
+		${action && action === 'show'
 		? 'opacity-100 animate-slide-in-x pointer-events-auto' 
 		: 'opacity-0 animate-slide-out-x'}`}>
 		<SmallScreen>

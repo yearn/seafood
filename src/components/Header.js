@@ -46,7 +46,7 @@ export default function Header() {
 			</BiggerThanSmallScreen>
 		</header>
 		<SmallScreen>
-			<Menu show={(location.hash === '#menu') ? 'show' : 'hide'}></Menu>
+			<Menu action={(location.hash === '#menu') ? 'show' : 'hide'}></Menu>
 		</SmallScreen>
 	</>;
 }
