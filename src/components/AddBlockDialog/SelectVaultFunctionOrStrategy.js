@@ -2,11 +2,12 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {GetVaultContract} from '../../ethereum/EthHelpers';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
-import StrategyTile from './StrategyTile';
-import FunctionTile from './FunctionTile';
+import {FunctionTile, StrategyTile} from '../tiles';
 import useLocalStorage from '../../utils/useLocalStorage';
 import {useApp} from '../../context/useApp';
 import Filter from './Filter';
+import Header from './Header';
+import List from './List';
 
 export default function SelectVaultFunctionOrStrategy({addBlock}) {
 	const {favorites, strats} = useApp();
@@ -84,8 +85,8 @@ export default function SelectVaultFunctionOrStrategy({addBlock}) {
 		}
 	}
 
-	return <div className={'max-h-full flex flex-col'}>
-		<div className={'header'}>
+	return <>
+		<Header>
 			<div className={'w-full sm:w-1/3'}>
 				<Filter query={query} setQuery={setQuery} chips={chips} setChips={setChips}></Filter>
 			</div>
@@ -94,15 +95,15 @@ export default function SelectVaultFunctionOrStrategy({addBlock}) {
 				{'Select a function or strategy'}
 			</div>
 			<div className={'hidden sm:block w-1/3 flex'}></div>
-		</div>
+		</Header>
 
-		<div className={'tiles'}>
+		<List>
 			{filter.map((item, index) => <div key={index}>
 				{item.type === 'strategy' && 
 					<StrategyTile strategy={item} queryRe={queryRe} onClick={() => onClickStrategy(item)}></StrategyTile>}
 				{item.type === 'function' && 
 					<FunctionTile func={item} queryRe={queryRe} onClick={() => onClickFunction(item)}></FunctionTile>}
 			</div>)}
-		</div>
-	</div>;
+		</List>
+	</>;
 }

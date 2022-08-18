@@ -4,6 +4,7 @@ import {GetMasterchef} from  '../ethereum/EthHelpers';
 import React, {useState, useEffect} from 'react';
 import axios from '../axios';
 import {chainIds} from '../config';
+import {A, Button} from '../components/controls';
 
 function MasterchefPage(){
 	const {providerByChainId} = useRPCProvider();
@@ -65,16 +66,16 @@ function MasterchefPage(){
 				<div>  {'Deposited: ' + strat.currentDeposits.toLocaleString(undefined, {maximumFractionDigits:2}) + ' '+ strat.wantToken.name + ' which is ' + ((strat.currentDeposits/ strat.totalMasterChefDeposits)*100).toLocaleString(undefined, {maximumFractionDigits:2}) + '% of total deposits' }  </div> 
 				<div>  {'Time left: ' + strat.masterchef.timeLeft.toLocaleString(undefined, {maximumFractionDigits:2}) + 'h '}  </div> 
 				<ul>
-					<li><a target={'_blank'} rel={'noreferrer'} href={strat.url}> {'Strat: ' + strat.address} </a></li>
-					<li><a target={'_blank'} rel={'noreferrer'} href={strat.masterchef.url}> {'Masterchef: ' + strat.masterchef.address} </a></li>
-					<li><a target={'_blank'} rel={'noreferrer'} href={strat.emissionToken.url}> {'EmissionToken ' + strat.emissionToken.name + ': '+ strat.emissionToken.address} </a></li>
+					<li><A target={'_blank'} rel={'noreferrer'} href={strat.url}> {'Strat: ' + strat.address} </A></li>
+					<li><A target={'_blank'} rel={'noreferrer'} href={strat.masterchef.url}> {'Masterchef: ' + strat.masterchef.address} </A></li>
+					<li><A target={'_blank'} rel={'noreferrer'} href={strat.emissionToken.url}> {'EmissionToken ' + strat.emissionToken.name + ': '+ strat.emissionToken.address} </A></li>
 				</ul>
 				<br />
-				<button onClick={() => handleChange(strat.address)}> {'Toggle dexscreener'}</button>
+				<Button label={'Toggle dexscreener'} onClick={() => handleChange(strat.address)} />
 				{values[strat.address] && <iframe style={divStyle} src={strat.emissionToken.dexScreener}></iframe>}
 				<br /></div>
 		))}
-		<button onClick={() => showOld()}> {'show expired strats'}</button>
+		<Button label={'show expired strats'} onClick={() => showOld()} />
 		</div>;
 	}else{
 		return <div>{'loading...'}</div>;

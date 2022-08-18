@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {TextArea} from '../components/controls';
 
 function RatioAdjust({strats}){
 	const [values, setValues] = useState({});
@@ -58,7 +59,7 @@ function RatioAdjust({strats}){
 		<div key={strat.address}> 
 			<br />
 			<label>{'Strat: '}{strat.name}{' - Real ratio: '}{(100*strat.beforeDebt/strat.vaultAssets).toLocaleString(undefined, {maximumFractionDigits:2})}{'% - Desired ratio:  '}
-				<textarea key={strat.address} value={values[strat.address] ? values[strat.address] : (strat.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})} onChange={event => handleChange(strat.address, event.target.value)}/>
+				<TextArea key={strat.address} defaultValue={values[strat.address] ? values[strat.address] : (strat.debtRatio/100).toLocaleString(undefined, {maximumFractionDigits:2})} onChange={event => handleChange(strat.address, event.target.value)}/>
 			</label>
 		</div>
 	));

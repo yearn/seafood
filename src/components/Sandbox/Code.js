@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {TbCopy, TbCheck} from 'react-icons/tb';
 import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
+import {Button} from '../controls';
 import {useBlocks} from './useBlocks';
 
 export default function Code() {
@@ -60,18 +61,15 @@ export default function Code() {
 		)}
 
 		<SmallScreen>
-			<div className={'actions'}>
-				<button onClick={onCopyCode}>
-					{!copied && <TbCopy className={'text-4xl'}></TbCopy>}
-					{copied && <TbCheck className={'text-4xl'}></TbCheck>}
-				</button>
+			<div className={`
+				fixed bottom-0 left-0 w-full 
+				px-8 py-4 flex items-center justify-center
+				backdrop-blur-md`}>
+				<Button icon={copied ? TbCheck : TbCopy} onClick={onCopyCode} />
 			</div>
 		</SmallScreen>
 		<BiggerThanSmallScreen>
-			<button onClick={onCopyCode} className={'absolute top-36 right-14 big iconic no-text'}>
-				{!copied && <TbCopy className={'text-xl'}></TbCopy>}
-				{copied && <TbCheck className={'text-xl'}></TbCheck>}
-			</button>
+			<Button icon={copied ? TbCheck : TbCopy} onClick={onCopyCode} className={'absolute top-36 right-14'} />
 		</BiggerThanSmallScreen>
 	</div>;
 }

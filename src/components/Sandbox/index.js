@@ -9,7 +9,6 @@ import Toolbar from './Toolbar';
 import Tabs from './Tabs';
 import Simulator from './Simulator';
 import Code from './Code';
-import './index.css';
 
 export default function Sandbox() {
 	const location = useLocation();
@@ -52,12 +51,18 @@ export default function Sandbox() {
 
 	return <SelectedProviderContext.Provider value={{selectedProvider, setSelectedProvider}}>
 		<BlocksContext.Provider value={{blocks, setBlocks, addBlock, simulate, simulating, removeBlock, reset}}>
-			<div className={'sandbox'}>
+			<div className={'grow flex flex-col sm:z-[100]'}>
 				<BiggerThanSmallScreen>
 					<Toolbar></Toolbar>
 				</BiggerThanSmallScreen>
 
-				<div className={`content ${simulating ? 'simulating' : ''}`}>
+				<div className={`
+					grow sm:mx-8 sm:mb-4 px-4 pt-24 pb-16 sm:px-8 sm:py-0 
+					flex flex-col justify-between
+					border-4 border-primary-500 dark:border-primary-900/40
+					dark:bg-black/20
+					sm:rounded-lg
+					${simulating ? 'border-selected-600 dark:border-selected-400 animate-pulse' : ''}`}>
 					<BiggerThanSmallScreen>
 						{(location.hash === '' || location.hash === '#add-block' || location.hash === '#events') &&
 							<>

@@ -1,12 +1,14 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {ethers} from 'ethers';
 import {useDebouncedCallback} from 'use-debounce';
-import {BsAsterisk, BsCheckLg} from 'react-icons/bs';
 import {useApp} from '../../context/useApp';
 import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import {GetBasicStrat, GetBasicVault} from '../../ethereum/EthHelpers';
 import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
 import useLocalStorage from 'use-local-storage';
+import {Button, Select} from '../controls';
+import Inputs from './Inputs';
+import Input from './Input';
 
 export default function Manual() {
 	const {vaults, strats, favorites} = useApp();
@@ -132,32 +134,20 @@ export default function Manual() {
 		debounceAddress(e.target.value);
 	}
 
-	return <div className={'h-full flex flex-col'}>
-		<div className={'inputs'}>
-			<div className={'scroll-container'}>
+	return <>
+		<Inputs>
+			<div className={'w-4/5 md:w-2/5 min-h-full flex flex-col items-center justify-center gap-4'}>
 				<p className={'pl-8 pr-12 py-4 text-3xl'}>{'Enter a vault or strategy address'}</p>
-				<div className={'input flex items-center'}>
-					<input type={'text'} defaultValue={defaultValue.address} onChange={(e) => {debounceAddress(e.target.value);}} placeholder={'address'} />
-					<div className={'validation'}>
-						{valid && <BsCheckLg className={'valid'}></BsCheckLg>}
-						{!valid && <BsAsterisk className={'invalid'}></BsAsterisk>}
-					</div>
-				</div>
-				<div className={'input'}>
-					<select value={defaultValue.address} onChange={onSelectFavorite} className={'w-full'}>
-						<option value={''}>{'Or choose a favorite'}</option>
-						{favoritesList.map(favorite => 
-							<option key={favorite.address} value={favorite.address}>{favorite.name}</option>
-						)}
-					</select>
-				</div>
+				<Input valid={valid} placeholder={'address'} defaultValue={defaultValue.address} onChange={(e) => {debounceAddress(e.target.value);}} />
+				<Select value={defaultValue.address} onChange={onSelectFavorite} options={[
+					{key: '', value: 'Or choose a favorite'},
+					...favoritesList.map(f => ({key: f.address, value: f.name}))
+				]} className={'w-full'} />
 				<div className={'mt-4 text-lg'}>
 					&nbsp;{block?.name}&nbsp;
 				</div>
-				<button onClick={onSelectFunction} className={valid ? '' : 'invisible'}>
-					{`Select ${type} function`}
-				</button>
+				<Button label={`Select ${type} function`} onClick={onSelectFunction} className={valid ? '' : 'invisible'} />
 			</div>
-		</div>
-	</div>;
+		</Inputs>
+	</>;
 }

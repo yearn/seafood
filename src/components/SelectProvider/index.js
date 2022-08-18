@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import useRPCProvider from '../../context/useRpcProvider';
+import {Select} from '../controls';
 import {useSelectedProvider} from './useSelectedProvider';
 
 export default function SelectProvider({disabled}){
@@ -13,11 +14,10 @@ export default function SelectProvider({disabled}){
 		setSelectedProvider(provider);
 	}
 
-	return <select disabled={disabled} value={state} onChange={onChange} className={'capitalize'}>
-		{providers.map(provider => 
-			<option key={provider.network.chainId} value={provider.network.chainId}>
-				{provider.network.name}
-			</option>
-		)}
-	</select>;
+	return <Select 
+		disabled={disabled}
+		value={state} 
+		onChange={onChange}
+		options={providers.map(p => ({key: p.network.chainId, value: p.network.name}))}
+		className={'capitalize'} />;
 }

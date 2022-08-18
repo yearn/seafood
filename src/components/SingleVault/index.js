@@ -8,17 +8,15 @@ import RatioAdjust from '../../pages/RatioAdjusters';
 import {formatNumber, formatPercent, getAddressExplorer} from '../../utils/utils';
 import HarvestHistory from './HarvestHistory';
 import {setupTenderly, TenderlySim} from '../../ethereum/TenderlySim';
-import ShowEvents from '../../components/ShowEvents';
+import EventList from '../EventList';
 import axios from '../../axios';
-import InfoChart from '../../components/Vaults/InfoChart';
-import css from './index.module.css';
-import Switch from '../Switch';
-import Bone from '../Bone';
-import useScrollOverpass from '../Header/useScrollOverpass';
+import InfoChart from './InfoChart';
+import {A, Bone, Button, Switch} from '../controls';
+import useScrollOverpass from '../../context/useScrollOverpass';
 import CopyButton from './CopyButton';
 
 function SingleVaultPage({value}){
-	const {overpassClass} = useScrollOverpass();
+	const {overpassClassName} = useScrollOverpass();
 	const {providers} = useRPCProvider();
 	const [strategies, setStrategies] = useState([]);
 	const [showHarvestHistory, setShowHarvestHistory] = useState({});
@@ -157,7 +155,7 @@ function SingleVaultPage({value}){
 		if(!strategy.succeded) return;
 		const apr = getStrategyApr(strategy);
 		return <div className={'flex items-center gap-5'}>
-			<a target={'_blank'} href={strategy.tenderlyUrl} rel={'noreferrer'}>{'Harvest simulation'}</a>
+			<A target={'_blank'} href={strategy.tenderlyUrl} rel={'noreferrer'}>{'Harvest simulation'}</A>
 			<div>{'APR'}</div>
 			<div>{`Before fees ${formatPercent(apr.beforeFee / 100)}`}</div>
 			<div>{`After fees ${formatPercent(apr.afterFee / 100)}`}</div>
@@ -220,31 +218,43 @@ function SingleVaultPage({value}){
 	}
 
 	const Strategies = strategies.map((strategy) => (
-		<div key={strategy.address} className={css.strategy}>
+		<div key={strategy.address} className={`
+			-mx-4 pt-4 pb-6 px-4
+			rounded border-b border-dashed border-primary-900/40
+			hover:bg-primary-200/5
+			transition duration-200`}>
 			<div className={'flex items-center justify-between'}>
-				<h2>{strategy.name}</h2>
+				<h2 className={'font-bold text-xl'}>{strategy.name}</h2>
 				<div className={'flex items-center gap-2'}>
-					<button onClick={() => runSimZero(strategy)}>{'Sim 0'}</button>
-					<button onClick={async () => await onHarvestStrategy(strategy)} disabled={strategy.harvesting} className={`iconic no-text ${strategy.harvesting ? 'border-primary-400 animate-pulse' : ''}`} title={`Harvest ${strategy.name}`}><TbTractor className={'text-2xl'} /></button>
-					<button onClick={() => toggleHarvestHistory(strategy)} className={'iconic no-text'} title={'Harvest history'}><TbHistory className={'text-2xl'} /></button>
+					<Button label={'Sim 0'} onClick={() => runSimZero(strategy)} />
+					<Button icon={TbTractor} 
+						title={`Harvest ${strategy.name}`} 
+						onClick={async () => await onHarvestStrategy(strategy)} 
+						flash={strategy.harvesting}
+						disabled={strategy.harvesting} 
+						iconClassName={'text-2xl'} />
+					<Button icon={TbHistory} 
+						title={'Harvest history'} 
+						onClick={() => toggleHarvestHistory(strategy)} 
+						iconClassName={'text-2xl'} />
 				</div>
 			</div>
 			<div className={'-mt-2 flex items-center gap-2'}>
-				<a target={'_blank'} href={getAddressExplorer(provider.network.chainId, strategy.address)} rel={'noreferrer'}>{strategy.address}</a>
+				<A target={'_blank'} href={getAddressExplorer(provider.network.chainId, strategy.address)} rel={'noreferrer'}>{strategy.address}</A>
 				<CopyButton clip={strategy.address}></CopyButton>
 			</div>
 
 			{strategy.genlender && strategy.genlender.map(lender => <div key={lender.add} className={'flex items-center gap-5'}>
-				<div>{'Lender '}<a target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(provider.network.chainId, lender.add)}>{lender.name}</a></div>
+				<div>{'Lender '}<A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(provider.network.chainId, lender.add)}>{lender.name}</A></div>
 				<div>{'Deposits ' + formatNumber(lender.assets/(10 **vault.token.decimals))}</div>
 				<div>{'APR ' + formatPercent(lender.rate/(10 **18))}</div>
 			</div>)}
 
-			{zeros[strategy.address] && <a target={'_blank'} rel={'noreferrer'} href={zeros[strategy.address].tenderlyUrl}>
+			{zeros[strategy.address] && <A target={'_blank'} rel={'noreferrer'} href={zeros[strategy.address].tenderlyUrl}>
 				{(zeros[strategy.address].success ? ' succeeded ' : 'failed ')}
-			</a>}
+			</A>}
 
-			{(zeros[strategy.address] && zeros[strategy.address].result) && <ShowEvents events={zeros[strategy.address].result.events} />}
+			{(zeros[strategy.address] && zeros[strategy.address].result) && <EventList events={zeros[strategy.address].result.events} />}
 
 			<div className={'flex items-center gap-5'}>
 				<div>{'Last harvest '}
@@ -260,7 +270,7 @@ function SingleVaultPage({value}){
 				{strategy.harvesting ? <Bone></Bone> : strategy.succeded === undefined ? <Bone invisible={true}></Bone> 
 					: strategy.succeded
 						? StrategyApr(strategy) 
-						: <a target={'_blank'} href={strategy.tenderlyUrl} rel={'noreferrer'}>{'Harvest failed'}</a>}
+						: <A target={'_blank'} href={strategy.tenderlyUrl} rel={'noreferrer'}>{'Harvest failed'}</A>}
 			</div>
 
 			{strategy.harvestHistory && showGraphs && <div>
@@ -278,22 +288,22 @@ function SingleVaultPage({value}){
 		return <div>{'loading...'}</div>;
 	}
 
-	return <div className={css.main}>
-		<div className={`${css.header} ${overpassClass}`}>
+	return <div className={'px-8'}>
+		<div className={`sticky top-0 z-10 -mx-8 px-8 py-2 flex items-center justify-between ${overpassClassName}`}>
 			<div>
 				<div className={'flex items-center'}>
-					<h1>{vault.name}</h1>
+					<h1 className={'font-bold text-5xl'}>{vault.name}</h1>
 					<div className={'mx-8 flex items-center gap-2'}>
 						<Switch onChange={() => setShowGraphs(current => !current)} checked={showGraphs} />
 						<div onClick={() => setShowGraphs(current => !current)} className={'text-sm cursor-default'}>{'Charts'}</div>
 					</div>
 				</div>
 				<div className={'my-1 flex gap-2'}>
-					<div className={`${css.chip} bg-version`}>{vault.version}</div>
-					<div className={`${css.chip} bg-${provider.network.name}`}>
+					<div className={'px-2 py-1 text-xs text-secondary-50 capitalize rounded-lg drop-shadow-sm bg-primary-400 dark:bg-primary-900'}>{vault.version}</div>
+					<div className={`px-2 py-1 text-xs text-secondary-50 capitalize rounded-lg drop-shadow-sm bg-${provider.network.name}`}>
 						{provider.network.name}
 					</div>
-					<a target={'_blank'} href={getAddressExplorer(provider.network.chainId, value.address)} rel={'noreferrer'}>{value.address}</a>
+					<A target={'_blank'} href={getAddressExplorer(provider.network.chainId, value.address)} rel={'noreferrer'}>{value.address}</A>
 					<CopyButton clip={value.address}></CopyButton>
 				</div>
 				<div className={'flex items-center gap-5'}>
@@ -305,9 +315,12 @@ function SingleVaultPage({value}){
 			</div>
 
 			<div className={'flex flex-col items-center'}>
-				<button disabled={harvestingAll} onClick={onHarvestAll} className={`iconic ${harvestingAll ? 'border-primary-400 animate-pulse' : ''}`}>
-					<TbTractor className={'text-2xl'}></TbTractor>{'Harvest all strategies'}
-				</button>
+				<Button icon={TbTractor} 
+					label={'Harvest all strategies'}
+					onClick={onHarvestAll} 
+					flash={harvestingAll}
+					disabled={harvestingAll}
+					iconClassName={'text-2xl'} />
 				<div className={'w-full mt-2 px-1 flex items-center justify-center gap-1'}>
 					{strategies && strategies.map(strategy => {
 						if(strategy.succeded === undefined)
@@ -322,13 +335,13 @@ function SingleVaultPage({value}){
 			</div>
 		</div>
 
-		<div className={css.strategies}>
+		<div className={'mt-4'}>
 			{Strategies}
 		</div>
 
 		<div className={'my-8'}>
 			<div>{showRatio && <RatioAdjust strats={strategies} />}</div>
-			<div><button onClick={() => toggleRatios(!showRatio)}>{' Adjust Ratios?'}</button></div>
+			<div><Button label={'Adjust ratios?'} onClick={() => toggleRatios(!showRatio)} /></div>
 		</div>
 	</div>; 
 }

@@ -14,9 +14,6 @@ module.exports = {
         'attention': colors.yellow,
         'error': colors.red
       },
-      height: ({ theme }) => ({
-        'app-header': '64px'
-      }),
       keyframes: {
         'slide-in-x': {
           '0%': { transform: 'translateX(-5%)' },
