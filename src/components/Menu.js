@@ -48,7 +48,7 @@ export default function Menu({action}) {
 		</SmallScreen>
 		<ul className={'flex flex-col sm:flex-row justify-center'}>
 			<SmallScreen>
-				<MenuItem className={'mb-8 text-4xl font-bold'}>{'Seafood'}</MenuItem>
+				<MenuItem><div className={'mb-8 font-[Silkscreen] text-4xl rainbow-text'}>{'Seafood'}</div></MenuItem>
 			</SmallScreen>
 			<MenuItem>
 				<MenuLink to={'/'} label={'Vaults'}></MenuLink>

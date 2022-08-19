@@ -10,9 +10,8 @@ import Chip from './Chip';
 import Sparkline from './Sparkline';
 
 export default function VaultTile({vault, queryRe, onClick}) {
-	const {favorites, strats} = useApp();
+	const {favorites} = useApp();
 	const [copied, setCopied] = useState(false);
-	const summary = strats.find(element => element.address === vault.address);
 
 	function toggleFavorite(vault) {
 		return () => {
@@ -55,15 +54,15 @@ export default function VaultTile({vault, queryRe, onClick}) {
 						text-secondary-900 dark:text-secondary-500
 						dark:group-hover:text-secondary-200
 						transition duration-200`}>
-						{!summary && <div>
+						{!vault.strats && <div>
 							<div><Bone></Bone></div>
 							<div><Bone></Bone></div>
 							<div><Bone></Bone></div>
 						</div>}
-						{summary && <div>
-							<div>{summary.strats.length + ' Strategies'}</div>
-							<div>{(summary.debtRatio / 100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated'}</div>
-							<div>{((summary.totalAssets - summary.totalDebt) / (10 ** summary.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}{' Free'}</div>
+						{vault.strats && <div>
+							<div>{vault.strats.length + ' Strategies'}</div>
+							<div>{(vault.debtRatio / 100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated'}</div>
+							<div>{((vault.totalAssets - vault.totalDebt) / (10 ** vault.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}{' Free'}</div>
 						</div>}
 					</div>
 				</div>
@@ -72,8 +71,8 @@ export default function VaultTile({vault, queryRe, onClick}) {
 					text-secondary-900 dark:text-secondary-500
 					transition duration-200
 					dark:group-hover:text-secondary-200`}>
-					{summary && <Sparkline />}
-					{summary && <div className={`
+					{vault.strats && <Sparkline />}
+					{vault.strats && <div className={`
 						absolute bottom-0 right-0 
 						px-2 py-1 text-xs capitalize rounded
 						backdrop-blur-sm

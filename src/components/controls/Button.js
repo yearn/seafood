@@ -1,10 +1,9 @@
 import React from 'react';
 
-export default function Button({icon, label, title, onClick, flash, disabled, className, iconClassName}) {
+export default function Button({icon, label, title, onClick, ping, disabled, className, iconClassName}) {
 	return <button onClick={onClick} disabled={disabled} title={title} className={`
-		flex items-center justify-center
-		h-10 px-4 border-2 
-		${flash ? 'border-primary-400 animate-pulse' : 'border-transparent'}
+		relative flex items-center justify-center
+		h-10 px-4 border-2 border-transparent
 		bg-primary-500 text-secondary-50 hover:bg-selected-400
 		dark:bg-primary-900/40 dark:hover:bg-selected-600
 		active:transform active:scale-95
@@ -30,6 +29,16 @@ export default function Button({icon, label, title, onClick, flash, disabled, cl
 		</>}
 
 		{label}
+
+		{ping && <div className={'absolute -top-1 -right-1 flex h-3 w-3'}>
+			<div className={`
+				absolute h-full w-full rounded-full 
+				bg-selected-400 
+				opacity-75 animate-ping`}></div>
+			<div className={`
+				relative rounded-full h-3 w-3 
+				${disabled ? 'bg-primary-500' : 'bg-selected-500'}`}></div>
+		</div>}
 
 	</button>;
 }

@@ -3,7 +3,7 @@ import config from '../config';
 
 async function setupTenderly(chainId){
 	const payload = {network_id: chainId};
-	const result = await fetch(config.forkUrl, {
+	const result = await fetch(config.tenderly.forkUrl, {
 		method: 'POST',
 		body: JSON.stringify(payload),
 	});

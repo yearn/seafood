@@ -12,7 +12,6 @@ export const AppProvider = ({children}) => {
 	const {providers} = useRpcProvider();
 	const [loading, setLoading] = useState(false);
 	const [vaults, setVaults] = useState([]);
-	const [strats, setStrats] = useState([]);
 	const [favoriteVaults, setFavoriteVaults] = useLocalStorage('favoriteVaults', []);
 	const [favoriteStrategies, setFavoriteStrategies] = useLocalStorage('favoriteStrategies', []);
 	const [darkMode, setDarkMode] = useLocalStorage('darkMode', null);
@@ -29,12 +28,12 @@ export const AppProvider = ({children}) => {
 					}));
 				});
 
+				setVaults(freshVaults);
 				const strategyPromises = providers.map(p => AllStratsFromAllVaults(freshVaults.filter(v => v.provider.network.name === p.network.name), p));
 				Promise.all(strategyPromises).then(result => {
-					setStrats(result.flat(1));
+					setVaults(result.flat(1));
 				});
 
-				setVaults(freshVaults);
 				setLoading(false);
 			});
 		}
@@ -49,7 +48,6 @@ export const AppProvider = ({children}) => {
 	return <AppContext.Provider value={{
 		loading,
 		vaults,
-		strats,
 		favorites: {
 			vaults: favoriteVaults,
 			setVaults: setFavoriteVaults,

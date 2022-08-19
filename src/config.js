@@ -4,7 +4,11 @@ export const chainIds = {
 };
 
 export default {
-	'forkUrl': 'https://simulate.yearn.network/fork',
+	'tenderly': {
+		'forkUrl': 'https://simulate.yearn.network/fork',
+		'dashboardUrl': 'https://dashboard.tenderly.co/yearn/yearn-web/fork',
+		'rpcUrl': 'https://rpc.tenderly.co/fork/'
+	},
 	'chains': [
 		{
 			'id': chainIds.ethereum,

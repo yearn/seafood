@@ -15,7 +15,7 @@ function Cell({textAlign = 'text-right', children}) {
 function HarvestHistory({history}){
 	return <>
 		<SmallScreen>
-			<div className={'w-full mt-4 overflow-x-auto'}>
+			<div className={'w-full overflow-x-auto'}>
 				<table>
 					<thead>
 						<tr>
