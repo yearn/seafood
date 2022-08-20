@@ -54,8 +54,16 @@ function SingleVaultPage({value}){
 	}, [vault, provider]);
 
 	const getStrategyApr = useCallback((strategy) => {
-		if(!strategy.succeded || strategy.beforeDebt === 0){
+		if(!strategy.succeded) {
 			return {beforeFee: 0, afterFee: 0};
+		}
+
+		if(strategy.beforeDebt.eq(0)) {
+			if(strategy.estimatedTotalAssets.gt(0)) {
+				return {beforeFee: Infinity, afterFee: Infinity};
+			} else {
+				return {beforeFee: 0, afterFee: 0};
+			}
 		}
 
 		const profit = strategy.paramsAfterHarvest.totalGain - strategy.beforeGain;

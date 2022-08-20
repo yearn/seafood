@@ -548,7 +548,6 @@ async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
 	}catch(ex){
 		//nothing
 	}
-	
 
 	let name = 'TBD';
 	try {
@@ -559,15 +558,14 @@ async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
 	}
 
 	if(name.includes('StrategyLenderYieldOptimiser')){
-
-
 		let status = await s.lendStatuses();
 		console.log(status);
-
-
-
 		genlender = status;
 	}
+
+	const estimatedTotalAssets = await s.estimatedTotalAssets();
+	const isActive = params.debtRatio > 0 || estimatedTotalAssets > 0;
+
 	return {
 		name: name,
 		contract: s,
@@ -580,7 +578,9 @@ async function StratInfo(vault, strat, provider, currentTime, totalAssets, gov){
 		lastTime: (currentTime- params.lastReport)/60/60,
 		vaultAssets: totalAssets,
 		governance: gov,
-		genlender: genlender
+		genlender: genlender,
+		estimatedTotalAssets,
+		isActive,
 	};
     
 }
