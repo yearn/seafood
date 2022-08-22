@@ -52,29 +52,38 @@ function SingleVaultPage({value}){
 	}, [vault, provider]);
 
 	const getStrategyApr = useCallback((strategy) => {
-		if(!strategy.succeded){
+		if(!strategy.succeded) {
 			return {beforeFee: 0, afterFee: 0};
+		}
+
+		if(strategy.beforeDebt.eq(0)) {
+			if(strategy.estimatedTotalAssets.gt(0)) {
+				return {beforeFee: Infinity, afterFee: Infinity};
+			} else {
+				return {beforeFee: 0, afterFee: 0};
+			}
 		}
 
 		const profit = strategy.paramsAfterHarvest.totalGain - strategy.beforeGain;
 		const loss = strategy.paramsAfterHarvest.totalLoss - strategy.beforeLoss;
 
-		let percent = 0;
-		if (strategy.beforeDebt > 0) {
-			if (loss > profit){
-				percent = -1 * loss / strategy.beforeDebt; 
-			} else {
-				percent = profit / strategy.beforeDebt;
-			}
-		}
+		const pnlToDebt = (loss > profit)
+			? -1 * loss / strategy.beforeDebt
+			: profit / strategy.beforeDebt;
+
+		const annualizedPnlToDebt = pnlToDebt * 8760 / strategy.lastTime;
 
 		const performanceFee = vault.performanceFee / 10_000;
 		const managementFee = vault.managementFee / 10_000;
-		const over_year = (100 * percent * 8760 / strategy.lastTime);
-		const delegated_percent = strategy.delegatedAssets / strategy.beforeDebt;
-		let user_apr = (over_year * (1 - performanceFee)) - (managementFee * (1 - delegated_percent));
-		user_apr = user_apr > 0 ? user_apr : 0;
-		return {beforeFee: over_year, afterFee: user_apr};    
+		const delegatedToDebt = strategy.delegatedAssets / strategy.beforeDebt;
+
+		let annualizedPnlToDebtAfterFees = 
+			annualizedPnlToDebt * (1 - performanceFee) 
+			- managementFee * (1 - delegatedToDebt);
+
+		annualizedPnlToDebtAfterFees = Math.max(annualizedPnlToDebtAfterFees, 0);
+
+		return {beforeFee: annualizedPnlToDebt, afterFee: annualizedPnlToDebtAfterFees};
 	}, [vault]);
 
 	const harvestStrategy = useCallback(async (tenderly, strategy) => {
@@ -146,8 +155,8 @@ function SingleVaultPage({value}){
 		let after = total_user_apr/vault.totalAssets;
 		return <div className={'flex items-center gap-5'}>
 			<div>{'Total Vault APR'}</div>
-			<div>{`Before Fees ${formatPercent(apr / 100)}`}</div>
-			<div>{`After Fees ${formatPercent(after / 100)}`}</div>
+			<div>{`Before Fees ${formatPercent(apr)}`}</div>
+			<div>{`After Fees ${formatPercent(after)}`}</div>
 		</div>;
 	}
 
@@ -157,8 +166,8 @@ function SingleVaultPage({value}){
 		return <div className={'flex items-center gap-5'}>
 			<A target={'_blank'} href={strategy.tenderlyUrl} rel={'noreferrer'}>{'Harvest simulation'}</A>
 			<div>{'APR'}</div>
-			<div>{`Before fees ${formatPercent(apr.beforeFee / 100)}`}</div>
-			<div>{`After fees ${formatPercent(apr.afterFee / 100)}`}</div>
+			<div>{`Before fees ${formatPercent(apr.beforeFee)}`}</div>
+			<div>{`After fees ${formatPercent(apr.afterFee)}`}</div>
 		</div>;
 	}
 

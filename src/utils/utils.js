@@ -21,21 +21,21 @@ function formatNumber(number, decimals = 2){
 	if(Number.isFinite(number))
 		return number.toLocaleString(undefined, {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
 	else
-		return '--';
+		return '∞';
 }
 
 function formatPercent(number, decimals = 2){
 	if(Number.isFinite(number))
 		return number.toLocaleString(undefined, {style: 'percent', minimumFractionDigits: decimals, maximumFractionDigits: decimals});
 	else
-		return '--';
+		return '∞';
 }
 
 function formatCurrency(number, currency = 'USD') {
 	if(Number.isFinite(number))
 		return number.toLocaleString(undefined, {style: 'currency', currency});
 	else
-		return '--';
+		return '∞';
 }
 
 function highlightString(string, highlightRe) {
