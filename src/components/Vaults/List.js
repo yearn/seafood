@@ -12,7 +12,7 @@ export default function List() {
 		grid grid-flow-row gap-2 grid-cols-1 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4`}>
 		{filter.map(vault => {
 			return <VaultTile key={vault.address} vault={vault} queryRe={queryRe} onClick={(event) => {
-				if (event.ctrlKey || event.shiftKey) {
+				if (event.ctrlKey || event.shiftKey || event.metaKey) {
 					window.open(`/vault/${vault.address}`, '_blank');
 				}else{
 					navigate(`/vault/${vault.address}`);
