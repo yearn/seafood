@@ -3,7 +3,7 @@ import React, {useContext, createContext, useState, useEffect, useCallback} from
 import Web3WsProvider from 'web3-providers-ws';
 import config from '../config';
 
-function makeSocketProvider(url, name, chainId) {
+function createWssProvider(url, name, chainId) {
 	return new ethers.providers.Web3Provider(
 		new Web3WsProvider(url, {
 			timeout: 30_000,
@@ -21,6 +21,15 @@ function makeSocketProvider(url, name, chainId) {
 		{name, chainId});
 }
 
+function createHttpsProvider(url, name, chainId) {
+	return new ethers.providers.JsonRpcProvider(url, {name, chainId});
+}
+
+function createProvider(url, name, chainId) {
+	if(url.startsWith('wss')) return createWssProvider(url, name, chainId);
+	if(url.startsWith('https')) return createHttpsProvider(url, name, chainId);
+}
+
 async function raceAll(promises) {
 	const result = await Promise.race(promises);
 	await Promise.all(promises);
@@ -30,8 +39,10 @@ async function raceAll(promises) {
 async function bestProvider(rpcs, name, chainId) {
 	const providers = [];
 	rpcs.filter(rpc => rpc).forEach(rpc => {
-		providers.push(makeSocketProvider(rpc, name, chainId));
+		providers.push(createProvider(rpc, name, chainId));
 	});
+
+	if(providers.length === 1) return providers[0];
 
 	const promises = [];
 	providers.forEach(provider => {
