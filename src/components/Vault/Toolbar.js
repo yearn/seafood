@@ -23,7 +23,7 @@ export default function Toolbar() {
 		fixed bottom-0 z-10
 		w-full px-4 py-4
 		flex flex-col items-center gap-4
-		border-t border-secondary-900
+		border-t border-white dark:border-secondary-900
 		${showClassName}`}>
 		<div className={'w-full flex items-center justify-center gap-4'}>
 			<Button title={'Toggle harvest charts'} 

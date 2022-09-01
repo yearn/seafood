@@ -14,7 +14,7 @@ export default function Strategy({strategy}) {
 	const simulator = useSimulator();
 	const strategyHarvestHistory = harvestHistory.filter(h => h.strategy_address === strategy.address);
 	const [showHarvestHistory, setShowHarvestHistory] = useState(false);
-	const lastStrategy = useMemo(() => strategy.address === vault.strats_detailed.at(-1).address, [vault]);
+	const lastStrategy = useMemo(() => strategy.address === vault.strats_detailed.at(-1).address, [strategy, vault]);
 
 	function latestHarvest(strategy) {
 		return new Date(strategy.lastReport * 1000);
@@ -130,7 +130,7 @@ export default function Strategy({strategy}) {
 		{showHarvestHistory && <HarvestHistory history={strategyHarvestHistory} />}
 
 		<div className={`
-			w-full pt-6 sm:pt-12 border-b border-dashed
-			${lastStrategy ? 'border-transparent' : 'border-primary-900/40'}`} />
+			w-full pt-6 sm:pt-12 border-b
+			${lastStrategy ? 'border-transparent' : 'border-primary-900/10 dark:border-primary-900/20'}`} />
 	</div>;
 }

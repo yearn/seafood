@@ -8,6 +8,10 @@ import {useVault} from './VaultProvider';
 import {useSimulator} from './SimulatorProvider';
 import SimulatorStatus from './SimulatorStatus';
 
+function Divider() {
+	return <div className={'hidden sm:block -mx-2 text-xl text-secondary-200 dark:text-secondary-900'}>{'•'}</div>;
+}
+
 export default function Summary() {
 	const {vault, token, provider} = useVault();
 	const {overpassClassName} = useScrollOverpass();
@@ -31,21 +35,21 @@ export default function Summary() {
 		<div className={'sm:w-fit px-4 flex flex-col sm:flex-row sm:items-center sm:gap-8'}>
 			<h1 className={'font-bold text-5xl'}>{vault.name}</h1>
 
-			<div className={'hidden sm:block -mx-2 text-secondary-900'}>{'•'}</div>
+			<Divider />
 
-			<div className={'grid grid-cols-4 sm:grid-cols-3 sm:gap-x-2'}>
-				<div className={'col-span-2 sm:col-span-1'}>{'Total Assets'}</div>
+			<div className={'grid grid-cols-3 sm:gap-x-2'}>
+				<div className={''}>{'Total Assets'}</div>
 				<div className={'text-right'}>{'Free Assets '}</div>
 				<div className={'text-right'}>{'Allocated'}</div>
-				<div className={'col-span-2 sm:col-span-1 font-mono'}>{formatTokens(vault.totalAssets, token.decimals)}</div>
+				<div className={'font-mono'}>{formatTokens(vault.totalAssets, token.decimals)}</div>
 				<div className={'sm:pl-2 font-mono text-right'}>{(formatTokens(vault.totalAssets - vault.totalDebt, token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
 				<div className={'font-mono text-right'}>{formatPercent(vault.debtRatio/10_000, 0)}</div>
 			</div>
 
-			<div className={'hidden sm:block -mx-2 text-secondary-900'}>{'•'}</div>
+			<Divider />
 
-			<div className={'grid grid-cols-4 sm:grid-cols-3'}>
-				<div className={'col-span-2 sm:col-span-1 row-span-2 flex justify-start'}>{'Vault APR'}</div>
+			<div className={'grid grid-cols-3'}>
+				<div className={'row-span-2 flex justify-start'}>{'Vault APR'}</div>
 				<div className={'text-right'}>{'Before Fees'}</div>
 				<div className={'text-right'}>{'After Fees'}</div>
 				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>

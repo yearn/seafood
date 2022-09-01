@@ -89,7 +89,7 @@ export default function Code() {
 			fixed bottom-0 z-10
 			w-full px-4 py-4
 			flex flex-col items-center gap-4
-			border-t border-secondary-900
+			border-t border-white dark:border-secondary-900
 			${showClassName}`}>
 			<Button icon={copied ? TbCheck : TbCopy} onClick={onCopyCode} className={'w-full'} />
 		</div>

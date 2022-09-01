@@ -32,8 +32,8 @@ export default function Button({icon, label, title, onClick, notify, ping, disab
 
 		{notify && <div className={'absolute -top-1 -right-1 flex h-3 w-3'}>
 			<div className={`
-				relative rounded-full h-3 w-3 
-				${disabled ? 'bg-primary-500' : 'bg-selected-500'}`}></div>
+				relative rounded-full h-3 w-3 shadow
+				${disabled ? 'bg-primary-500' : 'bg-attention-400 dark:bg-attention-500'}`}></div>
 		</div>}
 
 		{ping && <div className={'absolute -top-1 -right-1 flex h-3 w-3'}>
