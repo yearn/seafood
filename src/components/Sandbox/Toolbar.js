@@ -14,7 +14,7 @@ export default function Toolbar() {
 	const {overpassClassName} = useScrollOverpass();
 	const {blocks, addBlock, simulate, reset} = useBlocks();
 
-	return <div className={`sticky top-0 pl-8 pr-8 py-2 flex items-center justify-between ${overpassClassName}`}>
+	return <div className={`sticky top-0 pl-4 pr-4 py-2 flex items-center justify-between ${overpassClassName}`}>
 		<div className={'flex gap-2 items-center'}>
 			<SelectProvider disabled={blocks.length > 0}></SelectProvider>
 			<AddBlockDialogProvider>

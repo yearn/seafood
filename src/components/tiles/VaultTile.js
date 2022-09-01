@@ -47,7 +47,7 @@ export default function VaultTile({vault, queryRe, onClick}) {
 				<div className={'mt-3 flex flex-col gap-2 items-start'}>
 					<div className={'flex gap-2 items-center'}>
 						<Chip label={vault.version} className={'bg-primary-400 dark:bg-primary-900'} />
-						<Chip label={vault.provider.network.name} className={`bg-${vault.provider.network.name}`} />
+						<Chip label={vault.network.name} className={`bg-${vault.network.name}`} />
 					</div>
 					<div className={`
 						w-36 text-sm -mr-[10px]
@@ -92,7 +92,7 @@ export default function VaultTile({vault, queryRe, onClick}) {
 				{favorites.vaults.includes(vault.address) && <>&nbsp;<BsStarFill className={'fill-attention-400 glow-attention-md'} />&nbsp;</>}
 			</Panel>
 			<Panel title={`Explore ${vault.address}`} 
-				onClick={() => window.open(getAddressExplorer(vault.provider.network.chainId, vault.address), '_blank', 'noreferrer')} className={`
+				onClick={() => window.open(getAddressExplorer(vault.network.chainId, vault.address), '_blank', 'noreferrer')} className={`
 				p-4 h-14 flex items-center justify-center 
 				text-sm basis-1/2`} >
 				{truncateAddress(vault.address)}

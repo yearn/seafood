@@ -27,7 +27,7 @@ export default function SelectVault() {
 			setFilter(vaults.filter(vault => {
 				if(query && !queryRe.test(vault.name)) return false;
 				if(chips.favorites && !favorites.vaults.includes(vault.address)) return false;
-				if(selectedProvider.network.name != vault.provider.network.name) return false;
+				if(selectedProvider.network.name != vault.network.name) return false;
 				return chips.curve || !curveRe.test(vault.name);
 			}));
 		}

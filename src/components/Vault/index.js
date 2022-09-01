@@ -12,8 +12,16 @@ function Layout() {
 	const {loading, vault} = useVault();
 
 	if(loading) return <div className={`
-		w-full h-screen flex items-center justify-center rainbow-text`}>
-		{'Loading..'}
+		absolute w-full h-screen flex items-center justify-center`}>
+		<div className={`
+			relative flex items-center justify-center h-3 w-3`}>
+			<div className={`
+				absolute h-full w-full rounded-full 
+				bg-selected-400 
+				opacity-75 animate-ping`} />
+			<div className={`
+				rounded-full h-2 w-2 bg-selected-500`} />
+		</div>
 	</div>;
 
 	return <div>
