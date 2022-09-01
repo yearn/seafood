@@ -4,16 +4,63 @@ import useScrollOverpass from '../../context/useScrollOverpass';
 import {useChrome} from '../Chrome';
 import {Button} from '../controls';
 import CloseDialog from '../controls/Dialog/Close';
+import {useSimulator} from './SimulatorProvider';
+import {useVault} from './VaultProvider';
 
 export default function Code() {
 	const {setHeader} = useChrome();
-	const [linesOfCode] = useState(['i am line one', 'i am line two', '\ti am line two - b']);
+	const {vault} = useVault();
+	const {debtRatioUpdates} = useSimulator();
+	const [linesOfCode, setLinesOfCode] = useState(['@sign']);
 	const [copied, setCopied] = useState(false);
 	const {showClassName} = useScrollOverpass();
 
 	useEffect(() => {
 		setHeader(false);
 	}, [setHeader]);
+
+	useEffect(() => {
+		const lines = ['@sign'];
+		const updates = [];
+
+		vault.strats_detailed.forEach(strategy => {
+			const debtRatioUpdate = debtRatioUpdates[strategy.address];
+			if(debtRatioUpdate !== undefined) {
+				const delta =  debtRatioUpdate - strategy.debtRatio;
+				updates.push({
+					address: strategy.address,
+					name: strategy.name,
+					debtRatio: debtRatioUpdate,
+					delta
+				});
+			}
+		});
+
+		if(updates.length) {
+			updates.sort((a, b) => a.delta > b.delta ? 1 : -1);
+			lines.push('def auto_debt_adjust():');
+			lines.push('\tstrategies=[]');
+			lines.push('');
+			lines.push(`\t# ${vault.name}`);
+			lines.push(`\tvault = safe.contract("${vault.address}")`);
+			updates.forEach(update => {
+				lines.push('');
+				lines.push(`\t# ${update.name}`);
+				lines.push(`\t# Change debt ratio by ${update.delta > 0 ? '+' : ''}${update.delta} bps`);
+				lines.push(`\tstrategy = safe.contract("${update.address}")`);
+				lines.push(`\tvault.updateStrategyDebtRatio(strategy, ${update.debtRatio})`);
+				lines.push('\tstrategies.append(strategy)');
+			});
+			lines.push('');
+			lines.push('\tharvest_n_check_many(safe, strategies)');
+			lines.push('');
+			lines.push('');
+			lines.push('/robowoofy fn=auto_debt_adjust send=true');
+			lines.push('');
+		}
+
+		setLinesOfCode(lines);
+	}, [vault, debtRatioUpdates, setLinesOfCode]);
 
 	function onCopyCode() {
 		try {

@@ -65,6 +65,7 @@ async function AllStrats(vault, defaultProvider){
 }   
 
 async function AllStratsFromAllVaults(vaults, defaultProvider){
+	console.log('AllStratsFromAllVaults - start');
 	const multicall = new Multicall({ethersProvider: defaultProvider, tryAggregate: true});
 	const contractCallContext =  vaults.map(vault => (
 		{
@@ -99,9 +100,8 @@ async function AllStratsFromAllVaults(vaults, defaultProvider){
 			]
 		}));
 	
-	console.log('multicall-1 start');
+
 	const results = await multicall.call(contractCallContext);
-	console.log('mulicall-1 complete');
 
 	const vaults_enlarged = [];
 	const all_strats = [];
@@ -165,9 +165,7 @@ async function AllStratsFromAllVaults(vaults, defaultProvider){
 			};
 		});
 
-		console.log('multicall-2 start');
 		const results2 = await multicall.call(contractCallContextStrats);
-		console.log('multicall-2 complete');
 
 		for(let v of vaults_enlarged){
 			let x = results2.results[v.address];
@@ -191,9 +189,7 @@ async function AllStratsFromAllVaults(vaults, defaultProvider){
 		};}
 	);
 
-	console.log('multicall-3 start');
 	const results3 = await multicall.call(contractCallContextAllStrats);
-	console.log('multicall-3 complete');
 
 	for(let v of vaults_enlarged){
 		for(let s of v.strats_detailed){
@@ -213,6 +209,7 @@ async function AllStratsFromAllVaults(vaults, defaultProvider){
 		}
 	}
 
+	console.log('AllStratsFromAllVaults - complete');
 	return vaults_enlarged;
 }
 

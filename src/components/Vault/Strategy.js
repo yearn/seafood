@@ -92,7 +92,7 @@ export default function Strategy({strategy}) {
 				focus:dark:border-selected-600 focus:ring-0
 				rounded-md shadow-inner`}
 				defaultValue={formatNumber(100 * (simulator.debtRatioUpdates[strategy.address] || strategy.debtRatio) / 10_000)}
-				onChange={value => simulator.updateDebtRatio(strategy, parseFloat(value.target.value || 0) * 100)}
+				onChange={value => simulator.updateDebtRatio(strategy, Math.floor(parseFloat(value.target.value || 0) * 100))}
 				min={0} max={100} step={0.01} />
 			</div>
 		</div>}
