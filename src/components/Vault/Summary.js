@@ -15,11 +15,11 @@ export default function Summary() {
 
 	return <div className={`
 		sticky top-0 z-10
-		flex flex-col sm:flex-row sm:items-center sm:justify-between
+		flex flex-col 
 		${overpassClassName}`}>
 
-		<div className={'w-full py-5 pr-4 flex items-center justify-between gap-4'}>
-			<div className={'w-1/5'}></div>
+		<div className={'w-full sm:w-fit py-5 pr-4 sm:py-2 sm:pr-0 flex items-center justify-between gap-4'}>
+			<div className={'w-1/5 sm:w-0'}></div>
 			<Chip className={`bg-${provider.network.name}`}>{provider.network.name}</Chip>
 			<Chip className={'bg-primary-400 dark:bg-primary-900'}>{vault.version}</Chip>
 			<A target={'_blank'} href={getAddressExplorer(provider.network.chainId, vault.address)} rel={'noreferrer'}>
@@ -28,19 +28,24 @@ export default function Summary() {
 			<CopyButton clip={vault.address}></CopyButton>
 		</div>
 
-		<div className={'px-4 flex flex-col'}>
+		<div className={'sm:w-fit px-4 flex flex-col sm:flex-row sm:items-center sm:gap-8'}>
 			<h1 className={'font-bold text-5xl'}>{vault.name}</h1>
-			<div className={'grid grid-cols-4'}>
-				<div className={'col-span-2'}>{'Total Assets'}</div>
+
+			<div className={'hidden sm:block -mx-2 text-secondary-900'}>{'•'}</div>
+
+			<div className={'grid grid-cols-4 sm:grid-cols-3 sm:gap-x-2'}>
+				<div className={'col-span-2 sm:col-span-1'}>{'Total Assets'}</div>
 				<div className={'text-right'}>{'Free Assets '}</div>
 				<div className={'text-right'}>{'Allocated'}</div>
-				<div className={'col-span-2 font-mono'}>{formatTokens(vault.totalAssets, token.decimals)}</div>
-				<div className={'font-mono text-right'}>{(formatTokens(vault.totalAssets - vault.totalDebt, token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
+				<div className={'col-span-2 sm:col-span-1 font-mono'}>{formatTokens(vault.totalAssets, token.decimals)}</div>
+				<div className={'sm:pl-2 font-mono text-right'}>{(formatTokens(vault.totalAssets - vault.totalDebt, token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
 				<div className={'font-mono text-right'}>{formatPercent(vault.debtRatio/10_000, 0)}</div>
 			</div>
 
-			<div className={'grid grid-cols-4'}>
-				<div className={'col-span-2 row-span-2 flex justify-start'}>{'Vault APR'}</div>
+			<div className={'hidden sm:block -mx-2 text-secondary-900'}>{'•'}</div>
+
+			<div className={'grid grid-cols-4 sm:grid-cols-3'}>
+				<div className={'col-span-2 sm:col-span-1 row-span-2 flex justify-start'}>{'Vault APR'}</div>
 				<div className={'text-right'}>{'Before Fees'}</div>
 				<div className={'text-right'}>{'After Fees'}</div>
 				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>

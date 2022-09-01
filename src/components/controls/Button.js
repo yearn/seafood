@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Button({icon, label, title, onClick, ping, disabled, className, iconClassName}) {
+export default function Button({icon, label, title, onClick, notify, ping, disabled, className, iconClassName}) {
 	return <button onClick={onClick} disabled={disabled} title={title} className={`
 		relative flex items-center justify-center
 		h-10 px-4 border-2 border-transparent
@@ -29,6 +29,12 @@ export default function Button({icon, label, title, onClick, ping, disabled, cla
 		</>}
 
 		{label}
+
+		{notify && <div className={'absolute -top-1 -right-1 flex h-3 w-3'}>
+			<div className={`
+				relative rounded-full h-3 w-3 
+				${disabled ? 'bg-primary-500' : 'bg-selected-500'}`}></div>
+		</div>}
 
 		{ping && <div className={'absolute -top-1 -right-1 flex h-3 w-3'}>
 			<div className={`

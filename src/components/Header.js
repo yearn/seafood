@@ -44,7 +44,7 @@ export default function Header() {
 				</button>
 			</SmallScreen>
 			<BiggerThanSmallScreen>
-				<div className={'w-full pl-4 pr-8 flex items-center justify-between'}>
+				<div className={'w-full pr-8 flex items-center justify-between'}>
 					<h1 onClick={() => {if(location.pathname !== '/') navigate('/');}} 
 						className={'font-[Silkscreen] text-5xl rainbow-text drop-shadow dark:drop-shadow-md cursor-pointer'}>
 						{'Seafood'}

@@ -34,7 +34,7 @@ export default function Toolbar() {
 			<Button title={'Get code'}
 				icon={BsCode}
 				onClick={navigateToCode}
-				ping={simulator.codeNotifications}
+				notify={simulator.codeNotifications}
 				className={'grow'}
 				iconClassName={'text-2xl'} />
 			<Button title={'Harvest all'} 
