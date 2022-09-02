@@ -9,24 +9,29 @@ export const useApp = () => useContext(AppContext);
 export const AppProvider = ({children}) => {
 	const {providers} = useRpcProvider();
 	const [loading, setLoading] = useState(false);
-	const [vaults, setVaults] = useLocalStorage('vaults', [], {parseBigNumbers: true});
-	const [vaultsTimestamp, setVaultsTimestamp] = useLocalStorage('vaultsTimestamp', 0);
+	const [cache, setCache] = useLocalStorage('cache', [], {parseBigNumbers: true});
+	const [cacheTimestamp, setCacheTimestamp] = useLocalStorage('cacheTimestamp', 0);
+	const [vaults, setVaults] = useState([]);
 	const [favoriteVaults, setFavoriteVaults] = useLocalStorage('favoriteVaults', []);
 	const [favoriteStrategies, setFavoriteStrategies] = useLocalStorage('favoriteStrategies', []);
 	const [darkMode, setDarkMode] = useLocalStorage('darkMode', null);
 
 	const cacheExpired = useCallback(() => {
 		const cacheExpiration = 15 * 60 * 1000;
-		return Date.now() - vaultsTimestamp > cacheExpiration;
-	}, [vaultsTimestamp]);
+		return Date.now() - cacheTimestamp > cacheExpiration;
+	}, [cacheTimestamp]);
 
-	const syncVaults = useCallback(() => {
-		if(!loading) setVaultsTimestamp(0);
-	}, [loading, setVaultsTimestamp]);
+	const syncCache = useCallback(() => {
+		if(!loading) setCacheTimestamp(0);
+	}, [loading, setCacheTimestamp]);
+
+	useEffect(() => {
+		if(!cacheExpired()) setVaults(cache);
+	}, [cache, cacheExpired]);
 
 	useEffect(() => {
 		if(providers.length > 0 && cacheExpired()) {
-			setVaults([]);
+			setCache([]);
 			setLoading(true);
 			const fetches = providers.map(p => axios.post('/api/getVaults/AllVaults', p.network));
 			Promise.all(fetches).then(results => {
@@ -40,17 +45,17 @@ export const AppProvider = ({children}) => {
 					}));
 				});
 
-				setVaults(freshVaults);
+				setCache(freshVaults);
 				const strategyPromises = providers.map(p => 
 					AllStratsFromAllVaults(freshVaults.filter(v => v.network.name === p.network.name), p));
 				Promise.all(strategyPromises).then(result => {
-					setVaults(result.flat(1));
-					setVaultsTimestamp(Date.now());
+					setCache(result.flat(1));
+					setCacheTimestamp(Date.now());
 					setLoading(false);
 				});
 			});
 		}
-	}, [providers, cacheExpired, setVaults, setVaultsTimestamp, setLoading]);
+	}, [providers, cacheExpired, setCache, setCacheTimestamp, setLoading]);
 
 	useEffect(() => {
 		if(darkMode === null) {
@@ -61,8 +66,8 @@ export const AppProvider = ({children}) => {
 	return <AppContext.Provider value={{
 		loading,
 		vaults,
-		vaultsTimestamp,
-		syncVaults,
+		cacheTimestamp,
+		syncCache,
 		favorites: {
 			vaults: favoriteVaults,
 			setVaults: setFavoriteVaults,

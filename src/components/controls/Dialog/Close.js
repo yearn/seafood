@@ -13,8 +13,6 @@ export default function Close({onClick}) {
 
 		w-12 h-12 text-4xl
 		flex items-center justify-center
-		hover:bg-selected-200 
-		dark:hover:bg-selected-600 
 		active:scale-90
 
 		rounded-full cursor-pointer

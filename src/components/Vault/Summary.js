@@ -43,7 +43,7 @@ export default function Summary() {
 				<div className={'text-right'}>{'Allocated'}</div>
 				<div className={'font-mono'}>{formatTokens(vault.totalAssets, token.decimals)}</div>
 				<div className={'sm:pl-2 font-mono text-right'}>{(formatTokens(vault.totalAssets - vault.totalDebt, token.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}</div>
-				<div className={'font-mono text-right'}>{formatPercent(vault.debtRatio/10_000, 0)}</div>
+				<div className={'font-mono text-right'}>{formatPercent(vault.debtRatio/10_000, 0, '--')}</div>
 			</div>
 
 			<Divider />

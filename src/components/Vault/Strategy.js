@@ -83,7 +83,7 @@ export default function Strategy({strategy}) {
 					<div className={'flex items-center gap-4 font-mono text-xl'}>
 						{'%'}
 						<Input type={'number'} className={`
-						w-[100px] py-2 px-2 inline
+						w-[112px] py-2 px-2 inline
 						border-transparent leading-tight
 						text-xl text-right 
 						${simulator.debtRatioUpdates[strategy.address] !== undefined

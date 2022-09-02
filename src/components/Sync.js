@@ -3,7 +3,7 @@ import {useApp} from '../context/useApp';
 import TimeAgo from 'react-timeago';
 
 export default function Sync() {
-	const {loading, vaultsTimestamp, syncVaults} = useApp();
+	const {loading, cacheTimestamp, syncCache} = useApp();
 
 	function timeAgoFormatter(value, unit, suffix, epochMilliseconds, nextFormatter) {
 		if(unit === 'second') {
@@ -13,15 +13,15 @@ export default function Sync() {
 		}
 	}
 
-	return <div onClick={syncVaults} className={`
+	return <div onClick={syncCache} className={`
 		flex items-center gap-3
 		${loading ? '' : 'cursor-pointer'}`}>
 		<div className={`
 			text-[0.62rem]
 			${loading ? 'text-selected-500' : 'text-primary-600 dark:text-primary-400'}`}>
 			{loading && 'Syncing'}
-			{!loading && vaultsTimestamp > 0 && <div>
-				{'Synced '}<TimeAgo date={vaultsTimestamp} minPeriod={60} formatter={timeAgoFormatter}></TimeAgo>
+			{!loading && cacheTimestamp > 0 && <div>
+				{'Synced '}<TimeAgo date={cacheTimestamp} minPeriod={60} formatter={timeAgoFormatter}></TimeAgo>
 			</div>}
 		</div>
 		<div className={'relative flex items-center justify-center h-3 w-3'}>
