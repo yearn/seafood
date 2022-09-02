@@ -10,7 +10,7 @@ import Header from './Header';
 import List from './List';
 
 export default function SelectVaultFunctionOrStrategy({addBlock}) {
-	const {favorites, strats} = useApp();
+	const {favorites, vaults} = useApp();
 	const {selectedProvider} = useSelectedProvider();
 	const {setSteps, result, setResult} = useAddBlockDialog();
 	const [items, setItems] = useState([]);
@@ -25,7 +25,7 @@ export default function SelectVaultFunctionOrStrategy({addBlock}) {
 
 	useEffect(() => {
 		(async () => {
-			const strategies = strats.find(v => v.address === result.vault.address).strats_detailed
+			const strategies = vaults.find(v => v.address === result.vault.address).strategies
 				.map(s => {return {
 					type: 'strategy',
 					...s
@@ -41,7 +41,7 @@ export default function SelectVaultFunctionOrStrategy({addBlock}) {
 
 			setItems([...strategies, ...functions]);
 		})();
-	}, [strats, selectedProvider, result]);
+	}, [vaults, selectedProvider, result]);
 
 	useEffect(() => {
 		setFilter(items.filter(i => {
@@ -62,7 +62,7 @@ export default function SelectVaultFunctionOrStrategy({addBlock}) {
 		];});
 	}
 
-	function onClickFunction(func) {
+	async function onClickFunction(func) {
 		func.source = 'vault';
 		if(func.inputs.length === 0) {
 			addBlock({

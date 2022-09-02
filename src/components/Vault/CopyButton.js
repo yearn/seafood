@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {TbCopy, TbCheck} from 'react-icons/tb';
 
-export default function CopyButton({clip}) {
+export default function CopyButton({clip, className}) {
 	const [copied, setCopied] = useState(false);
 
 	function copy() {
@@ -22,7 +22,8 @@ export default function CopyButton({clip}) {
 		hover:bg-selected-400 hover:dark:bg-selected-600
 		active:transform active:scale-95
 		rounded-full cursor-pointer
-		transition duration-200`}>
+		transition duration-200
+		${className}`}>
 		{!copied && <TbCopy className={'stroke-secondary-600 dark:stroke-secondary-300'}></TbCopy>}
 		{copied && <TbCheck className={'stroke-secondary-600 dark:stroke-secondary-300'}></TbCheck>}
 	</button>;

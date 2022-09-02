@@ -10,9 +10,8 @@ import Chip from './Chip';
 import Sparkline from './Sparkline';
 
 export default function VaultTile({vault, queryRe, onClick}) {
-	const {favorites, strats} = useApp();
+	const {favorites} = useApp();
 	const [copied, setCopied] = useState(false);
-	const summary = strats.find(element => element.address === vault.address);
 
 	function toggleFavorite(vault) {
 		return () => {
@@ -48,22 +47,22 @@ export default function VaultTile({vault, queryRe, onClick}) {
 				<div className={'mt-3 flex flex-col gap-2 items-start'}>
 					<div className={'flex gap-2 items-center'}>
 						<Chip label={vault.version} className={'bg-primary-400 dark:bg-primary-900'} />
-						<Chip label={vault.provider.network.name} className={`bg-${vault.provider.network.name}`} />
+						<Chip label={vault.network.name} className={`bg-${vault.network.name}`} />
 					</div>
 					<div className={`
 						w-36 text-sm -mr-[10px]
 						text-secondary-900 dark:text-secondary-500
 						dark:group-hover:text-secondary-200
 						transition duration-200`}>
-						{!summary && <div>
+						{!vault.strategies && <div>
 							<div><Bone></Bone></div>
 							<div><Bone></Bone></div>
 							<div><Bone></Bone></div>
 						</div>}
-						{summary && <div>
-							<div>{summary.strats.length + ' Strategies'}</div>
-							<div>{(summary.debtRatio / 100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated'}</div>
-							<div>{((summary.totalAssets - summary.totalDebt) / (10 ** summary.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}{' Free'}</div>
+						{vault.strategies && <div>
+							<div>{vault.strategies.length + ' Strategies'}</div>
+							<div>{(vault.debtRatio / 100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated'}</div>
+							<div>{((vault.totalAssets - vault.totalDebt) / (10 ** vault.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}{' Free'}</div>
 						</div>}
 					</div>
 				</div>
@@ -72,8 +71,8 @@ export default function VaultTile({vault, queryRe, onClick}) {
 					text-secondary-900 dark:text-secondary-500
 					transition duration-200
 					dark:group-hover:text-secondary-200`}>
-					{summary && <Sparkline />}
-					{summary && <div className={`
+					{vault.strategies && <Sparkline />}
+					{vault.strategies && <div className={`
 						absolute bottom-0 right-0 
 						px-2 py-1 text-xs capitalize rounded
 						backdrop-blur-sm
@@ -93,7 +92,7 @@ export default function VaultTile({vault, queryRe, onClick}) {
 				{favorites.vaults.includes(vault.address) && <>&nbsp;<BsStarFill className={'fill-attention-400 glow-attention-md'} />&nbsp;</>}
 			</Panel>
 			<Panel title={`Explore ${vault.address}`} 
-				onClick={() => window.open(getAddressExplorer(vault.provider.network.chainId, vault.address), '_blank', 'noreferrer')} className={`
+				onClick={() => window.open(getAddressExplorer(vault.network.chainId, vault.address), '_blank', 'noreferrer')} className={`
 				p-4 h-14 flex items-center justify-center 
 				text-sm basis-1/2`} >
 				{truncateAddress(vault.address)}

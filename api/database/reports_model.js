@@ -9,19 +9,25 @@ const pool = new Pool({
 
 var format = require('pg-format');
 
-const getReports = (strat) => {
-
+const getReports = (strategies) => {
 	return new Promise(function(resolve, reject) {
+		if(!strategies?.length) {
+			resolve([]);
+		} else {
 
-		const text = format('SELECT * FROM reports WHERE strategy_address = %L ORDER BY block DESC LIMIT 100', strat.address);
-		pool.query(text, (error, results) => {
-			if (error) {
-				reject(error);
-			}
-			
-			
-			resolve(results.rows);
-		});
+			const query = format(
+				'SELECT * FROM reports WHERE strategy_address IN (%L) ORDER BY block DESC LIMIT 100', 
+				strategies
+			);
+
+			pool.query(query, (error, results) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(results.rows);
+				}
+			});
+		}
 	}); 
 };
 module.exports = {

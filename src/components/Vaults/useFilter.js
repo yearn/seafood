@@ -16,7 +16,7 @@ export function FilterProvider({query, setQuery, chips, setChips, children}) {
 		setFilter(vaults.filter(vault => {
 			if(query && !queryRe.test(vault.name)) return false;
 			if(chips.favorites && !favorites.vaults.includes(vault.address)) return false;
-			if(!chips[vault.provider.network.name]) return false;
+			if(!chips[vault.network.name]) return false;
 			return chips.curve || !curveRe.test(vault.name);
 		}));
 	}, [query, queryRe, chips, vaults, favorites]);

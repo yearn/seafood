@@ -5,6 +5,7 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {BiggerThanSmallScreen, SmallScreen, useMediumBreakpoint} from '../utils/breakpoints';
 import useScrollOverpass from '../context/useScrollOverpass';
 import Menu from './Menu';
+import Wordmark from './Wordmark';
 
 export default function Header() {
 	const navigate = useNavigate();
@@ -15,15 +16,19 @@ export default function Header() {
 	const {hideClassName: hideScrollOverpassClassName} = useScrollOverpass();
 
 	useScrollPosition(({prevPos, currPos}) => {
+		const yDelta = Math.abs(currPos.y - prevPos.y);
 		if(currPos.y > -16) {
 			setShow(true);
 			setEffectClass('');
-		}else if(currPos.y > -118) {
+		} else if(currPos.y > -118) {
 			setShow(true);
-		}else if((currPos.y > prevPos.y) != show) {
-			setShow(current => !current);
+		} else if((currPos.y > prevPos.y) != show && yDelta <= 118) {
 			if(show && !mediumBreakpoint) setEffectClass(hideScrollOverpassClassName);
 			if(!show) setEffectClass('');
+			setShow(show => !show);
+		} else if(yDelta > 118) {
+			setShow(true);
+			setEffectClass('xyz');
 		}
 	}, [show]);
 
@@ -36,15 +41,14 @@ export default function Header() {
 			<SmallScreen>
 				<button onClick={() => navigate('#menu')} 
 					className={'m-0 p-0 text-4xl bg-transparent shadow-none w-1/5'}>
-					<BsList className={'fill-secondary-600'} />
+					<BsList className={'fill-secondary-900 dark:fill-secondary-200'} />
 				</button>
 			</SmallScreen>
 			<BiggerThanSmallScreen>
-				<div className={'w-full pl-4 pr-8 flex items-center justify-between'}>
-					<h1 onClick={() => {if(location.pathname !== '/') navigate('/');}} 
-						className={'text-5xl font-bold rainbow-text drop-shadow dark:drop-shadow-md cursor-pointer'}>
-						{'Seafood'}
-					</h1>
+				<div className={'w-full pr-8 flex items-center justify-between'}>
+					<Wordmark
+						onClick={() => {if(location.pathname !== '/') navigate('/');}}
+						className={'pl-1 text-[2.5rem] drop-shadow dark:drop-shadow-md cursor-pointer'} />
 					<Menu></Menu>
 				</div>
 			</BiggerThanSmallScreen>

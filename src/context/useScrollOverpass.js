@@ -6,22 +6,30 @@ export default function useScrollOverpass() {
 	const mediumBreakpoint = useMediumBreakpoint();
 	const [show, setShow] = useState(false);
 	const [overpassClassName, setOverpassClassName] = useState('');
-	const showClassName = 'bg-secondary-100/60 dark:bg-secondary-900/60 backdrop-blur-md shadow-md';
-	const hideClassName = 'opacity-0 transition duration-200';
+	const showClassName = 'bg-secondary-100/60 dark:bg-black/60 backdrop-blur-md shadow';
+	const hideClassName = 'opacity-0 transition duration-200 pointer-events-none';
 
 	useScrollPosition(({prevPos, currPos}) => {
+		const yDelta = Math.abs(currPos.y - prevPos.y);
 		if(currPos.y > -16) {
 			setShow(true);
 			setOverpassClassName('');
-		}else if(currPos.y > -118) {
+		} else if(currPos.y > -118) {
 			setShow(true);
 			setOverpassClassName(showClassName);
-		}else if((currPos.y > prevPos.y) != show) {
-			setShow(show => {return !show;});
+		} else if((currPos.y > prevPos.y) != show && yDelta <= 118) {
 			if(show && !mediumBreakpoint) setOverpassClassName(hideClassName);
 			if(!show) setOverpassClassName(showClassName);
+			setShow(show => !show);
+		} else if(yDelta > 118) {
+			setShow(true);
+			setOverpassClassName(showClassName);
 		}
 	}, [show]);
 
-	return {overpassClassName, showClassName, hideClassName};
+	return {
+		overpassClassName, 
+		showClassName, 
+		hideClassName
+	};
 }

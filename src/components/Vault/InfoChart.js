@@ -21,7 +21,6 @@ ChartJS.register(
 	Legend
 );
 
-
 export default function InfoChart({name, x, y}) {
 	const chart = useRef();
 	const [data, setData] = useState({datasets: []});
@@ -45,24 +44,20 @@ export default function InfoChart({name, x, y}) {
 		gradient.addColorStop(1, '#ec4899');
 		return gradient;
 	}
-      
-	const labels = x;
 
 	useEffect(() => {
 		if(chart.current) {
 			setData({
-				labels,
-				datasets: [
-					{
-						label: name,
-						data: y,
-						borderColor: createGradient(chart.current.ctx, chart.current.chartArea),
-						backgroundColor: 'rgba(255, 99, 132, 0.5)',
-					},
-				],
+				labels: x,
+				datasets: [{
+					label: name,
+					data: y,
+					borderColor: createGradient(chart.current.ctx, chart.current.chartArea),
+					backgroundColor: 'rgba(255, 99, 132, 0.5)'
+				}]
 			});
 		}
-	}, [chart, labels, name, y]);
+	}, [chart, name, x, y]);
 
 	return <Line ref={chart} options={options} data={data} />;
 }

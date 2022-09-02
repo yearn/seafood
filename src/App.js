@@ -1,6 +1,5 @@
 import React from 'react';
 import {Route, Routes, BrowserRouter} from 'react-router-dom';
-import SingleVaultPage from './components/SingleVault';
 import MasterchefPage from './pages/Masterchef';
 import TestAPI from './pages/TestAPI';
 import {RPCProviderContextApp} from './context/useRpcProvider';
@@ -21,7 +20,6 @@ function App() {
 						<Routes>
 							<Route path={'/'} exact={true} element={<Vaults />}></Route>
 							<Route path={'/vault/:address'} element={<Vault />} />
-							<Route path={'/vault'} element={<SingleVaultPage />}></Route>
 							<Route path={'/masterchef'} element={<MasterchefPage />}></Route>
 							<Route path={'/solidly'} element={<SolidlyTreasury />}></Route>
 							<Route path={'/testAPI'} element={<TestAPI />}></Route>

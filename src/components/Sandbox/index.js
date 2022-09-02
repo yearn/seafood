@@ -57,7 +57,7 @@ export default function Sandbox() {
 				</BiggerThanSmallScreen>
 
 				<div className={`
-					grow sm:mx-8 sm:mb-4 px-4 pt-24 pb-16 sm:px-8 sm:py-0 
+					grow sm:mx-4 sm:mb-4 px-4 pt-24 pb-16 sm:px-8 sm:py-0 
 					flex flex-col justify-between
 					border-4 border-primary-500 dark:border-primary-900/40
 					dark:bg-black/20
