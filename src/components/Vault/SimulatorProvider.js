@@ -41,8 +41,10 @@ export default function SimulatorProvider({children}) {
 			const results = strategyResults[strategy.address];
 			if(results?.status === 'ok') {
 				any = true;
-				aprBeforeFees += results.output.apr.beforeFee * strategy.totalDebt;
-				aprAfterFees += results.output.apr.afterFee * strategy.totalDebt;
+				if(isFinite(results.output.apr.beforeFee) && isFinite(results.output.apr.afterFee)) {
+					aprBeforeFees += results.output.apr.beforeFee * strategy.totalDebt;
+					aprAfterFees += results.output.apr.afterFee * strategy.totalDebt;
+				}
 			}
 		}
 
