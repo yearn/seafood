@@ -48,7 +48,7 @@ export default function Header() {
 				<div className={'w-full pr-8 flex items-center justify-between'}>
 					<Wordmark
 						onClick={() => {if(location.pathname !== '/') navigate('/');}}
-						className={'text-[2.5rem] drop-shadow dark:drop-shadow-md cursor-pointer'} />
+						className={'pl-1 text-[2.5rem] drop-shadow dark:drop-shadow-md cursor-pointer'} />
 					<Menu></Menu>
 				</div>
 			</BiggerThanSmallScreen>
