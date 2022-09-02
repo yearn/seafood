@@ -29,7 +29,7 @@ export default function VaultProvider({children}) {
 				setToken(token);
 			});
 
-			const strategies = vault.strats_detailed.map(strategy => strategy.address);
+			const strategies = vault.strategies.map(strategy => strategy.address);
 			axios.post('/api/getVaults/AllStrategyReports', strategies).then(response => {
 				setHarvestHistory(response.data);
 			});

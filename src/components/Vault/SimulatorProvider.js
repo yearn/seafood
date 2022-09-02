@@ -37,7 +37,7 @@ export default function SimulatorProvider({children}) {
 		let aprBeforeFees = 0;
 		let aprAfterFees = 0;
 
-		for(const strategy of vault.strats_detailed) {
+		for(const strategy of vault.strategies) {
 			const results = strategyResults[strategy.address];
 			if(results?.status === 'ok') {
 				any = true;
@@ -146,7 +146,7 @@ export default function SimulatorProvider({children}) {
 
 	const harvestAll = useCallback(async () => {
 		setSimulatingAll(true);
-		for(let strategy of vault.strats_detailed) {
+		for(let strategy of vault.strategies) {
 			await harvest(strategy);
 		}
 		setSimulatingAll(false);

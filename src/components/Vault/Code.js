@@ -23,7 +23,7 @@ export default function Code() {
 		const lines = ['@sign'];
 		const updates = [];
 
-		vault.strats_detailed.forEach(strategy => {
+		vault.strategies.forEach(strategy => {
 			const debtRatioUpdate = debtRatioUpdates[strategy.address];
 			if(debtRatioUpdate !== undefined) {
 				const delta =  debtRatioUpdate - strategy.debtRatio;

@@ -1,5 +1,6 @@
 import {ethers} from 'ethers';
 import config from '../config';
+import {GetStrategyContract, GetVaultContract} from './EthHelpers';
 
 async function setupTenderly(chainId){
 	const payload = {network_id: chainId};
@@ -23,12 +24,15 @@ async function TenderlySim(blocks, tenderlyProvider){
 		
 		let block = blocks[i];
 
-
+		block.contract = await GetVaultContract(block.address, tenderlyProvider);
 		let gov = await block.contract.governance();
 		let signer = tenderlyProvider.getSigner(gov);
-		// console.log('doing ', block.function.name);
-		const blockWithSigner = block.block.contract.connect(signer);
-		// console.log(blockWithSigner);
+
+		const blockWithSigner = block.block.type === 'strategy'
+			? GetStrategyContract(block.block.address, tenderlyProvider).connect(signer)
+			: block.contract.connect(signer);
+
+		console.log(blocks);
 
 		// console.log(block.function.name + '(' + block.function.inputs.map(x => x.type) + ')');
 		let func = blockWithSigner.functions[block.function.name + '(' + block.function.inputs.map(x => x.type) + ')'];

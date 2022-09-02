@@ -14,7 +14,7 @@ export default function Strategy({strategy}) {
 	const simulator = useSimulator();
 	const strategyHarvestHistory = harvestHistory.filter(h => h.strategy_address === strategy.address);
 	const [showHarvestHistory, setShowHarvestHistory] = useState(false);
-	const lastStrategy = useMemo(() => strategy.address === vault.strats_detailed.at(-1).address, [strategy, vault]);
+	const lastStrategy = useMemo(() => strategy.address === vault.strategies.at(-1).address, [strategy, vault]);
 
 	function latestHarvest(strategy) {
 		return new Date(strategy.lastReport * 1000);

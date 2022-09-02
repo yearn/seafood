@@ -104,11 +104,11 @@ async function AllStratsFromAllVaults(vaults, defaultProvider){
 	const results = await multicall.call(contractCallContext);
 
 	const vaults_enlarged = [];
-	const all_strats = [];
+	const allStrategyAddresses = [];
 
 	for(let v = 0; v < vaults.length; v++) {
 		const vault = vaults[v];
-		const strats = [];
+		const strategyAddresses = [];
 		const resultsArray = results.results[vault.address].callsReturnContext;
 		let res, s, governance, totalAssets, totalDebt, decimals, version, debtRatio, managementFee, performanceFee;
 
@@ -126,8 +126,8 @@ async function AllStratsFromAllVaults(vaults, defaultProvider){
 			else{
 				s = res;
 				if(s === '0x0000000000000000000000000000000000000000') break;
-				strats.push(s);
-				all_strats.push(s);
+				strategyAddresses.push(s);
+				allStrategyAddresses.push(s);
 			}
 		}
 
@@ -142,8 +142,7 @@ async function AllStratsFromAllVaults(vaults, defaultProvider){
 			debtRatio,
 			managementFee,
 			performanceFee,
-			strats,
-			strats_detailed: []
+			strategies: strategyAddresses.map(a => ({address: a}))
 		});
 	}
 
@@ -156,12 +155,11 @@ async function AllStratsFromAllVaults(vaults, defaultProvider){
 
 	for( let arr of arrayOfArrays){
 		const contractCallContextStrats =  arr.map(vault => {
-			// console.log('length of strats:', vault.strats.length);
 			return {
 				reference: vault.address,
 				contractAddress: vault.address,
 				abi: vault.version.includes('0.3.0') | vault.version.includes('0.3.1') ? vault030: vault043,
-				calls: vault.strats.map(strat => ({reference: 'strategies', methodName: 'strategies', methodParameters: [strat]}))
+				calls: vault.strategies.map(strategy => ({reference: 'strategies', methodName: 'strategies', methodParameters: [strategy.address]}))
 			};
 		});
 
@@ -170,12 +168,12 @@ async function AllStratsFromAllVaults(vaults, defaultProvider){
 		for(let v of vaults_enlarged){
 			let x = results2.results[v.address];
 			if(x != undefined){
-				v.strats_detailed = x.callsReturnContext.map(ret => StrategiesDecode(ret.methodParameters[0],v, ret.returnValues));
+				v.strategies = x.callsReturnContext.map(ret => StrategiesDecode(ret.methodParameters[0],v, ret.returnValues));
 			}
 		}
 	}
 
-	const contractCallContextAllStrats =  all_strats.map(strat => {
+	const contractCallContextAllStrats =  allStrategyAddresses.map(strat => {
 		return {
 			reference: strat,
 			contractAddress: strat,
@@ -192,7 +190,7 @@ async function AllStratsFromAllVaults(vaults, defaultProvider){
 	const results3 = await multicall.call(contractCallContextAllStrats);
 
 	for(let v of vaults_enlarged){
-		for(let s of v.strats_detailed){
+		for(let s of v.strategies){
 			let x = results3.results[s.address];
 			if(x != undefined){
 				s.name = x.callsReturnContext[0].returnValues[0];

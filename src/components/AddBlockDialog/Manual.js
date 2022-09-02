@@ -24,7 +24,7 @@ export default function Manual() {
 
 	const locateStrategy = useCallback((address) => {
 		for(let v = 0; v < strats.length; v++) {
-			const strategy = strats[v].strats_detailed?.find(s => s.address === address);
+			const strategy = strats[v].strategies?.find(s => s.address === address);
 			if(strategy) {
 				return {
 					vault: strats[v],

@@ -28,7 +28,7 @@ function Layout() {
 		{location.hash === '' && <>
 			<Summary />
 			<div className={'flex flex-col gap-2 pb-20'}>
-				{vault.strats_detailed.map((strategy, index) => 
+				{vault.strategies.map((strategy, index) => 
 					<Strategy key={index} strategy={strategy} />
 				)}
 			</div>
