@@ -5,6 +5,7 @@ import {useApp} from '../context/useApp';
 import {SmallScreen, useMediumBreakpoint} from '../utils/breakpoints';
 import CloseDialog from './controls/Dialog/Close';
 import Sync from './Sync';
+import Wordmark from './Wordmark';
 
 function MenuItem({className, children}) {
 	return <li className={`
@@ -54,9 +55,7 @@ export default function Menu({action}) {
 		<ul className={'flex flex-col sm:flex-row items-center justify-center'}>
 			<SmallScreen>
 				<MenuItem>
-					<div className={'mb-8 font-[Silkscreen] text-4xl rainbow-text'}>
-						{'Seafood'}
-					</div>
+					<Wordmark className={'mb-8 text-4xl'} />
 				</MenuItem>
 			</SmallScreen>
 			<div className={'w-fit sm:mr-2'}>

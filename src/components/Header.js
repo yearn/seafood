@@ -5,6 +5,7 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {BiggerThanSmallScreen, SmallScreen, useMediumBreakpoint} from '../utils/breakpoints';
 import useScrollOverpass from '../context/useScrollOverpass';
 import Menu from './Menu';
+import Wordmark from './Wordmark';
 
 export default function Header() {
 	const navigate = useNavigate();
@@ -45,10 +46,9 @@ export default function Header() {
 			</SmallScreen>
 			<BiggerThanSmallScreen>
 				<div className={'w-full pr-8 flex items-center justify-between'}>
-					<h1 onClick={() => {if(location.pathname !== '/') navigate('/');}} 
-						className={'font-[Silkscreen] text-4xl rainbow-text drop-shadow dark:drop-shadow-md cursor-pointer'}>
-						{'Seafood'}
-					</h1>
+					<Wordmark
+						onClick={() => {if(location.pathname !== '/') navigate('/');}}
+						className={'text-[2.5rem] drop-shadow dark:drop-shadow-md cursor-pointer'} />
 					<Menu></Menu>
 				</div>
 			</BiggerThanSmallScreen>
