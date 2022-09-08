@@ -1,14 +1,23 @@
-import React, {createContext, useContext, useState} from 'react';
-import {useApp} from '../context/useApp';
+import React, {createContext, useContext, useEffect, useState} from 'react';
+import useLocalStorage from '../utils/useLocalStorage';
 import Header from './Header';
 
 const	ChromeContext = createContext();
 export const useChrome = () => useContext(ChromeContext);
-export default function Chrome({children}) {
-	const {darkMode} = useApp();
-	const [header, setHeader] = useState(true);
+export default function Chrome({startWithHeader = true, fancy = false, children}) {
+	const [header, setHeader] = useState(startWithHeader);
+	const [darkMode, setDarkMode] = useLocalStorage('darkMode', null);
 
-	return <ChromeContext.Provider value={{header, setHeader}}>
+	useEffect(() => {
+		if(darkMode === null) {
+			setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+		}
+	}, [darkMode, setDarkMode]);
+
+	return <ChromeContext.Provider value={{
+		darkMode, setDarkMode,
+		header, setHeader
+	}}>
 		<div className={(darkMode ? 'dark' : '') + ' max-w-full'}>
 			<div className={'text-secondary-900 dark:text-secondary-200'}>
 				<div className={`
@@ -17,7 +26,13 @@ export default function Chrome({children}) {
 				sm:bg-gradient-radial-to-br sm:from-secondary-50 sm:via-secondary-50 sm:to-secondary-100
 				dark:bg-gradient-to-br dark:from-indigo-900 dark:to-black
 				dark:sm:bg-gradient-radial-to-br dark:sm:from-indigo-900 dark:sm:via-secondary-900 dark:sm:to-black`} />
-				<div className={'absolute z-10 w-full min-h-full flex flex-col'}>
+				{fancy && <div className={`
+					fixed z-[9] w-full h-full 
+					mix-blend-overlay
+					opacity-100 dark:opacity-20
+					bg-[url(https://thumbs.dreamstime.com/b/japanese-great-wave-pattern-print-seamless-background-illustration-japanese-great-wave-seamless-pattern-background-136072687.jpg)]`} />}
+				<div className={`
+					absolute z-10 w-full min-h-full flex flex-col`}>
 					{header && <Header></Header>}
 					{children}
 				</div>

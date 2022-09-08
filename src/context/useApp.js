@@ -14,7 +14,6 @@ export const AppProvider = ({children}) => {
 	const [vaults, setVaults] = useState([]);
 	const [favoriteVaults, setFavoriteVaults] = useLocalStorage('favoriteVaults', []);
 	const [favoriteStrategies, setFavoriteStrategies] = useLocalStorage('favoriteStrategies', []);
-	const [darkMode, setDarkMode] = useLocalStorage('darkMode', null);
 
 	const cacheExpired = useCallback(() => {
 		const cacheExpiration = 15 * 60 * 1000;
@@ -57,12 +56,6 @@ export const AppProvider = ({children}) => {
 		}
 	}, [providers, cacheExpired, setCache, setCacheTimestamp, setLoading]);
 
-	useEffect(() => {
-		if(darkMode === null) {
-			setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-		}
-	}, [darkMode, setDarkMode]);
-
 	return <AppContext.Provider value={{
 		loading,
 		vaults,
@@ -74,7 +67,5 @@ export const AppProvider = ({children}) => {
 			strategies: favoriteStrategies,
 			setStrategies: setFavoriteStrategies
 		},
-		darkMode, 
-		setDarkMode
 	}}>{children}</AppContext.Provider>;
 };

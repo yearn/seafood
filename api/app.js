@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var testAPIRouter = require('./routes/testAPI');
 var getVaultsRouter = require('./routes/getVaults');
+var githubRouter = require('./routes/github');
 
 var app = express();
 
@@ -25,6 +26,7 @@ app.use('/api/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/testAPI', testAPIRouter);
 app.use('/api/getVaults', getVaultsRouter);
+app.use('/api/github', githubRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
