@@ -18,7 +18,7 @@ export default function Login() {
 			<Button label={'Login with Github'}
 				icon={TbBrandGithub}
 				onClick={() => 
-					window.location = `https://github.com/login/oauth/authorize?client_id=${'d4c1d5ec6313e81c6f09'}`
+					window.location = `https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}`
 				}
 				className={'py-6 text-xl sm:py-8 sm:px-6 sm:text-2xl'}
 				iconClassName={'text-2xl sm:text-4xl'} />
