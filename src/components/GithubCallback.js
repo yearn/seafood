@@ -11,10 +11,19 @@ export default function GithubCallback() {
 	const {setBearer} = useAuth();
 
 	useEffect(() => {
-		axios.post('/api/github/callback', {code: query.get('code')}).then(result => {
-			setBearer(result.data.bearer);
-			navigate('/');
-		});
+		const deployment = query.get('deployment');
+		const code = query.get('code');
+		if(deployment === 'localhost') {
+			navigate(`/github/callback?code=${code}`);
+		} else if(deployment) {
+			window.location = `https://${deployment}.${process.env.REACT_APP_STAGING_HOST}`
+				+ `/github/callback?code=${code}`;
+		} else {
+			axios.post('/api/github/callback', {code}).then(result => {
+				setBearer(result.data.bearer);
+				navigate('/');
+			});
+		}
 	}, [query, navigate, setBearer]);
 
 	return <div className={'w-full h-screen flex items-center justify-center'}>

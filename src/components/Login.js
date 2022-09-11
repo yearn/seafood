@@ -17,9 +17,16 @@ export default function Login() {
 		<div className={'sm:w-1/2 flex items-center justify-center'}>
 			<Button label={'Login with Github'}
 				icon={TbBrandGithub}
-				onClick={() => 
-					window.location = `https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}`
-				}
+				onClick={() => {
+					const subdomain = window.location.hostname.split('.')[0];
+					const deployment = subdomain !== 'seafood' ? subdomain : '';
+					const redirect = process.env.REACT_APP_GITHUB_REDIRECT
+						+ `?deployment=${deployment}`;
+					const authorizeUrl = 'https://github.com/login/oauth/authorize'
+						+ `?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}`
+						+ `&redirect_uri=${redirect}`;
+					window.location = encodeURI(authorizeUrl);
+				}}
 				className={'py-6 text-xl sm:py-8 sm:px-6 sm:text-2xl'}
 				iconClassName={'text-2xl sm:text-4xl'} />
 		</div>
