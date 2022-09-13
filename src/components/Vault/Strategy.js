@@ -56,7 +56,7 @@ export default function Strategy({strategy}) {
 						{strategy.lendStatuses.map((lender, index) => 
 							<div key={index} className={'grid grid-cols-4'}>
 								<div className={'col-span-2'}><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(provider.network.chainId, lender.address)}>{lender.name}</A></div>
-								<div className={'text-right font-mono'}>{formatTokens(lender.deposits, token.decimals)}</div>
+								<div className={'text-right font-mono'}>{formatTokens(lender.deposits, token.decimals, 2, true)}</div>
 								<div className={'text-right font-mono'}>{formatPercent(lender.apr/(10 ** 18))}</div>
 							</div>)}
 					</div>}
@@ -69,7 +69,7 @@ export default function Strategy({strategy}) {
 					{strategy.totalDebt > 0 && <>
 						<div>
 							<div className={'text-right'}>{'Assets'}</div>
-							<div className={'text-right font-mono'}>{formatTokens(strategy.estimatedTotalAssets, token.decimals)}</div>
+							<div className={'text-right font-mono'}>{formatTokens(strategy.estimatedTotalAssets, token.decimals, 2, true)}</div>
 						</div>
 						<div>
 							<div className={'text-right'}>{'Real ratio'}</div>

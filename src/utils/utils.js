@@ -21,29 +21,61 @@ function truncateAddress(address) {
 	return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
 
-function formatNumber(number, decimals = 2, nonFinite = '∞'){
-	if(Number.isFinite(number))
-		return number.toLocaleString(undefined, {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
-	else
+function formatNumber(number, decimals = 2, nonFinite = '∞', compact = false) {
+	if(Number.isFinite(number)) {
+		let magnitude = '';
+		if(compact) {
+			if(number > 1_000_000_000) {
+				magnitude = 'M';
+				number = number / 1000;
+			} else if(number > 1_000_000) {
+				magnitude = 'K';
+				number = number / 1000;
+			}
+		}
+
+		const formatted =  number.toLocaleString(
+			navigator?.language, 
+			{
+				minimumFractionDigits: magnitude ? 0 : decimals, 
+				maximumFractionDigits: magnitude ? 0 : decimals
+			}
+		);
+
+		return `${formatted}${magnitude ? ' ' + magnitude : ''}`;
+
+	} else {
 		return nonFinite;
+	}
 }
 
-function formatPercent(number, decimals = 2, nonFinite = '∞'){
+function formatPercent(number, decimals = 2, nonFinite = '∞') {
 	if(Number.isFinite(number))
-		return number.toLocaleString(undefined, {style: 'percent', minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+		return number.toLocaleString(
+			navigator?.language, 
+			{
+				style: 'percent', 
+				minimumFractionDigits: decimals, 
+				maximumFractionDigits: decimals
+			});
 	else
 		return nonFinite;
 }
 
 function formatCurrency(number, currency = 'USD', nonFinite = '∞') {
 	if(Number.isFinite(number))
-		return number.toLocaleString(undefined, {style: 'currency', currency});
+		return number.toLocaleString(
+			navigator?.language, 
+			{
+				style: 'currency', 
+				currency
+			});
 	else
 		return nonFinite;
 }
 
-function formatTokens(tokens, tokenDecimals, decimals = 2) {
-	return formatNumber(tokens / 10 ** tokenDecimals, decimals);
+function formatTokens(tokens, tokenDecimals, decimals = 2, compact = false) {
+	return formatNumber(tokens / 10 ** tokenDecimals, decimals, '∞', compact);
 }
 
 function highlightString(string, highlightRe) {
