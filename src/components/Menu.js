@@ -32,11 +32,11 @@ export default function Menu({action}) {
 	const mediumBreakpoint = useMediumBreakpoint();
 
 	return <nav className={`
-		fixed z-[100] top-0
+		fixed z-50 top-0
 		w-full h-screen p-8
 		flex flex-col items-center justify-center
 		bg-secondary-100 dark:bg-secondary-900
-		pointer-events-none opacity-0
+		pointer-events-none
 
 		sm:static sm:w-fit sm:h-auto sm:p-0
 		sm:flex-row
