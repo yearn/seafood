@@ -28,7 +28,6 @@ export default function Header() {
 			setShow(show => !show);
 		} else if(yDelta > 118) {
 			setShow(true);
-			setEffectClass('xyz');
 		}
 	}, [show]);
 
