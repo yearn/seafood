@@ -6,6 +6,7 @@ import Strategy from './Strategy';
 import SimulatorProvider from './SimulatorProvider';
 import {useLocation} from 'react-router-dom';
 import Code from './Code';
+import Loading from '../Loading';
 
 function Layout() {
 	const location = useLocation();
@@ -13,15 +14,7 @@ function Layout() {
 
 	if(loading) return <div className={`
 		absolute w-full h-screen flex items-center justify-center`}>
-		<div className={`
-			relative flex items-center justify-center h-3 w-3`}>
-			<div className={`
-				absolute h-full w-full rounded-full 
-				bg-selected-400 
-				opacity-75 animate-ping`} />
-			<div className={`
-				rounded-full h-2 w-2 bg-selected-500`} />
-		</div>
+		<Loading />
 	</div>;
 
 	return <div>
