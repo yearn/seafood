@@ -24,7 +24,7 @@ export default function Profile() {
 		window.open(profile.html_url, '_blank', 'noreferrer');	
 	}, [profile]);
 
-	if(!profile) return <div className={'aspect-square w-28 sm:w-10 bg-selected-200 rounded-full'} />;
+	if(!profile) return <div className={'aspect-square w-28 sm:w-10 bg-transparent rounded-full'} />;
 
 	return <div className={`
 		group relative flex flex-col items-center justify-center`}>
