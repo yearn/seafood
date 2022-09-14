@@ -9,6 +9,29 @@ import {useVault} from './VaultProvider';
 import HarvestHistory from './HarvestHistory';
 import {useSimulator} from './SimulatorProvider';
 
+function Field({value, simulated, delta, className, children}) {
+	return <div className={`
+		font-mono text-right
+		${simulated ? value >= 0 
+		? 'text-primary-600 dark:text-primary-400' 
+		: 'text-error-600 dark:text-error-400' : ''}
+		${className}`}>
+		{delta && value > 0 ? '+' : '' }{children}
+	</div>;	
+}
+
+function Tokens({value, token, simulated, delta, className}) {
+	return <Field value={value} simulated={simulated} delta={delta} className={className}>
+		{formatTokens(value, token.decimals, 2, true)}
+	</Field>;
+}
+
+function Percentage({value, simulated, delta, className}) {
+	return <Field value={value} simulated={simulated} delta={delta} className={className}>
+		{formatPercent(value)}
+	</Field>;
+}
+
 export default function Strategy({strategy}) {
 	const {vault, provider, token, harvestHistory, showHarvestChart} = useVault();
 	const simulator = useSimulator();
@@ -56,8 +79,8 @@ export default function Strategy({strategy}) {
 						{strategy.lendStatuses.map((lender, index) => 
 							<div key={index} className={'grid grid-cols-4'}>
 								<div className={'col-span-2'}><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(provider.network.chainId, lender.address)}>{lender.name}</A></div>
-								<div className={'text-right font-mono'}>{formatTokens(lender.deposits, token.decimals, 2, true)}</div>
-								<div className={'text-right font-mono'}>{formatPercent(lender.apr/(10 ** 18))}</div>
+								<Tokens value={lender.deposits} token={token} />
+								<Percentage value={lender.apr/(10 ** 18)} />
 							</div>)}
 					</div>}
 
@@ -69,11 +92,11 @@ export default function Strategy({strategy}) {
 					{strategy.totalDebt > 0 && <>
 						<div>
 							<div className={'text-right'}>{'Assets'}</div>
-							<div className={'text-right font-mono'}>{formatTokens(strategy.estimatedTotalAssets, token.decimals, 2, true)}</div>
+							<Tokens value={strategy.estimatedTotalAssets} token={token} />
 						</div>
 						<div>
 							<div className={'text-right'}>{'Real ratio'}</div>
-							<div className={'text-right font-mono'}>{formatPercent(strategy.totalDebt / vault.totalAssets)}</div>
+							<Percentage value={strategy.totalDebt / vault.totalAssets} />
 						</div>
 					</>}
 				</div>
@@ -106,8 +129,17 @@ export default function Strategy({strategy}) {
 					<div className={'text-right'}>{'After fees'}</div>
 					<A className={'text-primary-600 dark:text-primary-400'} target={'_blank'} href={simulator.strategyResults[strategy.address].simulationUrl} rel={'noreferrer'}>{'Success'}</A>
 					<div></div>
-					<div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(simulator.strategyResults[strategy.address].output.apr.beforeFee)}</div>
-					<div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(simulator.strategyResults[strategy.address].output.apr.afterFee)}</div>
+					<Percentage value={simulator.strategyResults[strategy.address].output.apr.beforeFee} simulated={true} />
+					<Percentage value={simulator.strategyResults[strategy.address].output.apr.afterFee} simulated={true} />
+
+					<div></div>
+					<div></div>
+					<div className={'text-right'}>{'Assets'}</div>
+					<div className={'text-right'}>{'Debt'}</div>
+					<div></div>
+					<div></div>
+					<Tokens value={simulator.strategyResults[strategy.address].output.flow.assets} token={token} simulated={true} delta={true} />
+					<Percentage value={simulator.strategyResults[strategy.address].output.flow.debt} simulated={true} delta={true} />
 				</div>}
 
 				{simulator.strategyResults[strategy.address]?.status === 'error' && <div>

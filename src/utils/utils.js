@@ -26,10 +26,10 @@ function formatNumber(number, decimals = 2, nonFinite = '∞', compact = false) 
 		let magnitude = '';
 		if(compact) {
 			if(number > 1_000_000_000) {
-				magnitude = 'M';
+				magnitude = 'm';
 				number = number / 1000;
 			} else if(number > 1_000_000) {
-				magnitude = 'K';
+				magnitude = 'k';
 				number = number / 1000;
 			}
 		}
@@ -42,7 +42,7 @@ function formatNumber(number, decimals = 2, nonFinite = '∞', compact = false) 
 			}
 		);
 
-		return `${formatted}${magnitude ? ' ' + magnitude : ''}`;
+		return `${formatted}${magnitude ? magnitude : ''}`;
 
 	} else {
 		return nonFinite;
