@@ -7,3 +7,8 @@
   @apply bg-indigo-400
   dark:bg-indigo-600;
 }
+
+.bg-optimism {
+  @apply bg-red-400
+  dark:bg-red-600;
+}

@@ -66,7 +66,9 @@ export const RPCProviderContextApp = ({children}) => {
 		(async () => {
 			const freshProviders = [];
 			for(const chain of config.chains) {
-				freshProviders.push(await bestProvider(chain.providers, chain.name, chain.id));
+				if(chain.providers.length) {
+					freshProviders.push(await bestProvider(chain.providers, chain.name, chain.id));
+				}
 			}
 			setProviders(freshProviders);
 		})();

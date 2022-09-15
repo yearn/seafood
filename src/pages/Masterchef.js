@@ -3,7 +3,7 @@ import {GetMasterchef} from  '../ethereum/EthHelpers';
 //import {fantomMasterchefs} from  '../ethereum/Addresses';
 import React, {useState, useEffect} from 'react';
 import axios from '../axios';
-import {chainIds} from '../config';
+import {chainId} from '../utils/utils';
 import {A, Button} from '../components/controls';
 
 function MasterchefPage(){
@@ -40,11 +40,11 @@ function MasterchefPage(){
 	}
 
 	function showOld(){
-		getAll(providerByChainId(chainIds.fantom), true);
+		getAll(providerByChainId(chainId('fantom')), true);
 	}
 
 	useEffect(() => {
-		getAll(providerByChainId(chainIds.fantom), false);
+		getAll(providerByChainId(chainId('fantom')), false);
 	}, [providerByChainId]);
 
 	const int = setInterval(() => {

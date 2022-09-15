@@ -3,6 +3,10 @@ import config from '../config';
 
 const curveRe = /curve|crv/i;
 
+function chainId(name) {
+	return config.chains.find(chain => chain.name === name)?.id;
+}
+
 function getAddressExplorer(chainId, address){
 	const chain = config.chains.find(chain => chain.id === chainId);
 	return `${chain.explorer}/address/${address}`;
@@ -59,6 +63,7 @@ function highlightString(string, highlightRe) {
 }
 
 export {
+	chainId,
 	curveRe, 
 	getAddressExplorer, 
 	getTxExplorer, 

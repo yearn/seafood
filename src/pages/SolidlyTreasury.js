@@ -7,7 +7,7 @@ import {formatNumber, getAddressExplorer} from '../utils/utils';
 import {sex, solid, wftm, solidsex} from '../ethereum/Addresses';
 import {GetPrices} from '../ethereum/PriceFinder';
 import {GetBalances} from '../ethereum/EthHelpers';
-import {chainIds} from '../config';
+import {chainId} from '../utils/utils';
 import {A, Button} from '../components/controls';
 
 function SolidlyTreasury(){
@@ -172,7 +172,7 @@ function SolidlyTreasury(){
 	
 
 	useEffect(() => {
-		getAll(providerByChainId(chainIds.fantom));
+		getAll(providerByChainId(chainId('fantom')));
 	}, [providerByChainId]);
 
 	const divStyle = {
@@ -209,11 +209,11 @@ function SolidlyTreasury(){
 					<div>  {'Lp: ' + lp.name }  </div> 
 				
 					<ul>
-						<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, lp.address)}> {'lp: ' + lp.address} </A></li>
-						<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, lp.tokenABalance.address)}> {FindName(lp.tokenABalance.address) + ' balance: ' + formatNumber(lp.tokenABalance.balance)} </A></li>
-						<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, lp.tokenBBalance.address)}> {FindName(lp.tokenBBalance.address) + ' balance: ' + formatNumber(lp.tokenBBalance.balance)} </A></li>
-						<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, sex())}> {'sex pending rewards: '  + formatNumber(lp.sexRewards) + ' worth $' + formatNumber(lp.sexRewards*prices[sex()])} </A></li>
-						<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, solid())}> {'solid pending rewards: '  + formatNumber(lp.solidRewards) + ' worth $' + formatNumber(lp.solidRewards*prices[solid()])} </A></li>
+						<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainId('fantom'), lp.address)}> {'lp: ' + lp.address} </A></li>
+						<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainId('fantom'), lp.tokenABalance.address)}> {FindName(lp.tokenABalance.address) + ' balance: ' + formatNumber(lp.tokenABalance.balance)} </A></li>
+						<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainId('fantom'), lp.tokenBBalance.address)}> {FindName(lp.tokenBBalance.address) + ' balance: ' + formatNumber(lp.tokenBBalance.balance)} </A></li>
+						<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainId('fantom'), sex())}> {'sex pending rewards: '  + formatNumber(lp.sexRewards) + ' worth $' + formatNumber(lp.sexRewards*prices[sex()])} </A></li>
+						<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainId('fantom'), solid())}> {'solid pending rewards: '  + formatNumber(lp.solidRewards) + ' worth $' + formatNumber(lp.solidRewards*prices[solid()])} </A></li>
 						<li> {'Solidex Boost: ' + formatNumber(lp.solidsexBoost, 3)+ 'x'}</li>
 						<li> {'OxDao Boost: ' + formatNumber(lp.oxdaoBoost, 3)+ 'x'}</li>
 						<li> {'Price: ' + formatNumber(lp.price, 4) }</li>
@@ -226,23 +226,23 @@ function SolidlyTreasury(){
 			<h2>{'Staked Solidsex:'}</h2>
 			<div>
 				{solidsexStaked && <ul>
-					<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, solidsex())}> {'staked solidex: '  + formatNumber(solidsexStaked.tokenABalance.balance)} </A></li>
-					<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, sex())}> {'sex pending rewards: '  + formatNumber(solidsexStaked.sexRewards) + ' worth $' + formatNumber(solidsexStaked.sexRewards*prices[sex()])} </A></li>
-					<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, solid())}> {'solid pending rewards: '  + formatNumber(solidsexStaked.solidRewards) + ' worth $' + formatNumber(solidsexStaked.solidRewards*prices[solid()])} </A></li>
+					<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainId('fantom'), solidsex())}> {'staked solidex: '  + formatNumber(solidsexStaked.tokenABalance.balance)} </A></li>
+					<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainId('fantom'), sex())}> {'sex pending rewards: '  + formatNumber(solidsexStaked.sexRewards) + ' worth $' + formatNumber(solidsexStaked.sexRewards*prices[sex()])} </A></li>
+					<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainId('fantom'), solid())}> {'solid pending rewards: '  + formatNumber(solidsexStaked.solidRewards) + ' worth $' + formatNumber(solidsexStaked.solidRewards*prices[solid()])} </A></li>
 				</ul>}
 			</div>
 			<h2>{'Staked Sex:'}</h2>
 			<div>
 				{sexStaked && <ul>
 					
-					<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, solidsex())}> {'solidsex pending rewards: '  + formatNumber(sexStaked.solidsexRewards) + ' worth $' + formatNumber(sexStaked.solidsexRewards*prices[solidsex()])} </A></li>
+					<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainId('fantom'), solidsex())}> {'solidsex pending rewards: '  + formatNumber(sexStaked.solidsexRewards) + ' worth $' + formatNumber(sexStaked.solidsexRewards*prices[solidsex()])} </A></li>
 				</ul>}
 			</div>
 			<h2>{'Staked Nft:'}</h2>
 			<div>
 				{solidNft && <ul>
 					
-					<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainIds.fantom, solid())}> {'staked solid Nft: '  + formatNumber(solidNft.tokenABalance.balance) + ' worth $' + formatNumber(solidNft.tokenABalance.balance*prices[solid()])} </A></li>
+					<li><A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(chainId('fantom'), solid())}> {'staked solid Nft: '  + formatNumber(solidNft.tokenABalance.balance) + ' worth $' + formatNumber(solidNft.tokenABalance.balance*prices[solid()])} </A></li>
 				</ul>}
 			</div>
 		</div>;

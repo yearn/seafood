@@ -51,7 +51,7 @@ export default function Sandbox() {
 
 	return <SelectedProviderContext.Provider value={{selectedProvider, setSelectedProvider}}>
 		<BlocksContext.Provider value={{blocks, setBlocks, addBlock, simulate, simulating, removeBlock, reset}}>
-			<div className={'grow flex flex-col sm:z-40'}>
+			<div className={'grow flex flex-col sm:z-50'}>
 				<BiggerThanSmallScreen>
 					<Toolbar></Toolbar>
 				</BiggerThanSmallScreen>
