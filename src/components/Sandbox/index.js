@@ -9,6 +9,9 @@ import Toolbar from './Toolbar';
 import Tabs from './Tabs';
 import Simulator from './Simulator';
 import Code from './Code';
+import {AddBlockDialogProvider} from '../AddBlockDialog/useAddBlockDialog';
+import AddBlockDialog from '../AddBlockDialog';
+import EventsDialog, {EventsDialogProvider} from './EventsDialog';
 
 export default function Sandbox() {
 	const location = useLocation();
@@ -50,43 +53,49 @@ export default function Sandbox() {
 	}
 
 	return <SelectedProviderContext.Provider value={{selectedProvider, setSelectedProvider}}>
-		<BlocksContext.Provider value={{blocks, setBlocks, addBlock, simulate, simulating, removeBlock, reset}}>
-			<div className={'grow flex flex-col sm:z-50'}>
-				<BiggerThanSmallScreen>
-					<Toolbar></Toolbar>
-				</BiggerThanSmallScreen>
+		<AddBlockDialogProvider>
+			<EventsDialogProvider>
+				<BlocksContext.Provider value={{blocks, setBlocks, addBlock, simulate, simulating, removeBlock, reset}}>
+					<AddBlockDialog onAddBlock={addBlock}></AddBlockDialog>
+					<EventsDialog />
+					<div className={'grow flex flex-col sm:z-40'}>
+						<BiggerThanSmallScreen>
+							<Toolbar></Toolbar>
+						</BiggerThanSmallScreen>
 
-				<div className={`
-					grow sm:mx-4 sm:mb-4 px-4 pt-24 pb-16 sm:px-8 sm:py-0 
-					flex flex-col justify-between
-					border-4 border-primary-500 dark:border-primary-900/40
-					dark:bg-black/20
-					sm:rounded-lg
-					${simulating ? 'border-selected-600 dark:border-selected-400 animate-pulse' : ''}`}>
-					<BiggerThanSmallScreen>
-						{(location.hash === '' || location.hash === '#add-block' || location.hash === '#events') &&
-							<>
-								{blocks.length === 0 && 
-									<div className={'grow flex items-center justify-center text-2xl'}>
-										<div className={'rainbow-text'}>{'><(((*> - The sandbox is empty'}</div>
-									</div>
+						<div className={`
+							grow sm:mx-4 sm:mb-4 px-4 pt-24 pb-16 sm:px-8 sm:py-0 
+							flex flex-col justify-between
+							border-4 border-primary-500 dark:border-primary-900/40
+							dark:bg-black/20
+							sm:rounded-lg
+							${simulating ? 'border-selected-600 dark:border-selected-400 animate-pulse' : ''}`}>
+							<BiggerThanSmallScreen>
+								{(location.hash === '' || location.hash === '#add-block' || location.hash === '#events') &&
+									<>
+										{blocks.length === 0 && 
+											<div className={'grow flex items-center justify-center text-2xl'}>
+												<div className={'rainbow-text'}>{'><(((*> - The sandbox is empty'}</div>
+											</div>
+										}
+										{blocks.length > 0 && <Simulator />}
+									</>
 								}
-								{blocks.length > 0 && <Simulator />}
-							</>
-						}
-						{location.hash === '#code' && 
-							<Code />}
-					</BiggerThanSmallScreen>
+								{location.hash === '#code' && 
+									<Code />}
+							</BiggerThanSmallScreen>
 
-					<SmallScreen>
-						<Tabs></Tabs>
-						{(location.hash === '' || location.hash === '#add-block' || location.hash === '#events') &&
-							<Simulator />}
-						{location.hash === '#code' && 
-							<Code />}
-					</SmallScreen>
-				</div>
-			</div>
-		</BlocksContext.Provider>
+							<SmallScreen>
+								<Tabs></Tabs>
+								{(location.hash === '' || location.hash === '#add-block' || location.hash === '#events') &&
+									<Simulator />}
+								{location.hash === '#code' && 
+									<Code />}
+							</SmallScreen>
+						</div>
+					</div>
+				</BlocksContext.Provider>
+			</EventsDialogProvider>
+		</AddBlockDialogProvider>
 	</SelectedProviderContext.Provider>;
 }

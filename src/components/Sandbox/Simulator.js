@@ -1,24 +1,23 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {ReactSortable} from 'react-sortablejs';
 import {BsPlay} from 'react-icons/bs';
 import {useBlocks} from './useBlocks';
 import Block from './Block';
-import {AddBlockDialogProvider} from '../AddBlockDialog/useAddBlockDialog';
-import AddBlockDialog, {AddBlockButton} from '../AddBlockDialog';
+import {AddBlockButton} from '../AddBlockDialog';
 import SelectProvider from '../SelectProvider';
-import EventsDialog from './EventsDialog';
+import {useEventsDialog} from './EventsDialog';
 import {SmallScreen} from '../../utils/breakpoints';
 import {Button} from '../controls';
 
 export default function Simulator() {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const {blocks, setBlocks, addBlock, simulate, reset, removeBlock} = useBlocks();
-	const [showEventsForBlock, setShowEventsForBlock] = useState();
+	const {blocks, setBlocks, simulate, reset, removeBlock} = useBlocks();
+	const {setBlock: setEventsDialogBlock} = useEventsDialog();
 
 	function onShowBlockEvents(index) {
-		setShowEventsForBlock(blocks[index]);
+		setEventsDialogBlock(blocks[index]);
 		navigate(`${location.pathname}#events`);
 	}
 
@@ -33,10 +32,7 @@ export default function Simulator() {
 		</ReactSortable>
 		<SmallScreen>
 			<div className={`${blocks.length === 0 ? 'mt-64' : 'mt-8'} mb-32 flex flex-col items-center gap-4`}>
-				<AddBlockDialogProvider>
-					<AddBlockButton></AddBlockButton>
-					<AddBlockDialog onAddBlock={addBlock}></AddBlockDialog>
-				</AddBlockDialogProvider>
+				<AddBlockButton></AddBlockButton>
 				<div className={'flex gap-2'}>
 					<SelectProvider disabled={blocks.length > 0}></SelectProvider>
 					<Button label={'Reset'} disabled={blocks.length < 1} onClick={reset} />
@@ -44,7 +40,6 @@ export default function Simulator() {
 			</div>
 		</SmallScreen>
 
-		<EventsDialog block={showEventsForBlock}></EventsDialog>
 		<SmallScreen>
 			<div className={`
 				fixed bottom-0 left-0 w-full 
