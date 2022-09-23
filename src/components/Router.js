@@ -33,7 +33,7 @@ export default function Router() {
 					<Route path={'/testAPI'} element={<TestAPI />} />
 					<Route path={'/settings'} element={<Settings />} />
 					<Route path={'/sandbox/*'} element={<Sandbox />} />
-					<Route path={'/github/callback'} exact={true} element={<></>} />
+					<Route path={'/github/callback'} exact={true} element={<GithubCallback />} />
 				</Routes>
 			</Chrome>
 		</AppProvider>}
