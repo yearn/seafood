@@ -4,8 +4,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 var getVaultsRouter = require('./routes/getVaults');
+var githubRouter = require('./routes/github');
 
 app.use('/api/getVaults', getVaultsRouter);
+app.use('/api/github', githubRouter);
 
 app.get('/api/', (req, res) => res.send('Home Page Route'));
 
