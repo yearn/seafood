@@ -17,12 +17,14 @@ export default function Router() {
 	const {authenticated} = useAuth();
 
 	return <>
-		{!authenticated && <Chrome startWithHeader={false} fancy={true}>
-			<Routes>
-				<Route path={'/'} exact={true} element={<Login />} />
-				<Route path={'/github/callback'} exact={true} element={<GithubCallback />} />
-			</Routes>
-		</Chrome>}
+		{!authenticated && <Routes>
+			<Route path={'/'} exact={true} element={
+				<Chrome startWithHeader={false} fancy={true}><Login /></Chrome>
+			} />
+			<Route path={'/github/callback'} exact={true} element={
+				<Chrome startWithHeader={false}><GithubCallback /></Chrome>
+			} />
+		</Routes>}
 		{authenticated && <AppProvider>
 			<Chrome>
 				<Routes>
