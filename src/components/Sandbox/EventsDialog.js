@@ -1,11 +1,21 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, createContext, useContext} from 'react';
 import {useLocation} from 'react-router-dom';
 import {Dialog} from '../controls';
 import EventList from '../EventList';
 
-export default function EventsDialog({block}) {
+const EventsDialogContext = createContext();
+export const useEventsDialog = () => useContext(EventsDialogContext);
+export function EventsDialogProvider({children}) {
+	const [block, setBlock] = useState();
+	return <EventsDialogContext.Provider value={{block, setBlock}}>
+		{children}
+	</EventsDialogContext.Provider>;
+}
+
+export default function EventsDialog() {
 	const location = useLocation();
 	const [show, setShow] = useState(false);
+	const {block} = useEventsDialog();
 
 	useEffect(() => {
 		setShow(location.hash === '#events');
