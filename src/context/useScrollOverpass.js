@@ -11,20 +11,37 @@ export default function useScrollOverpass() {
 
 	useScrollPosition(({prevPos, currPos}) => {
 		const yDelta = Math.abs(currPos.y - prevPos.y);
-		if(currPos.y > -16) {
-			setShow(true);
-			setOverpassClassName('');
-		} else if(currPos.y > -118) {
-			setShow(true);
-			setOverpassClassName(showClassName);
-		} else if((currPos.y > prevPos.y) != show && yDelta <= 118) {
-			if(show && !mediumBreakpoint) setOverpassClassName(hideClassName);
-			if(!show) setOverpassClassName(showClassName);
-			setShow(show => !show);
-		} else if(yDelta > 118) {
-			setShow(true);
-			setOverpassClassName(showClassName);
+		if(!mediumBreakpoint) {
+			if(currPos.y > -16) {
+				setShow(true);
+				setOverpassClassName('');
+			} else if(currPos.y > -118) {
+				setShow(true);
+				setOverpassClassName(showClassName);
+			} else if((currPos.y > prevPos.y) != show && yDelta <= 118) {
+				setOverpassClassName(show ? hideClassName : showClassName);
+				setShow(show => !show);
+			} else if(yDelta > 118) {
+				setShow(true);
+				setOverpassClassName(showClassName);
+			}
+
+		} else {
+			if(currPos.y > -64) {
+				setShow(true);
+				setOverpassClassName('');
+			} else if(currPos.y > -118) {
+				setShow(true);
+				setOverpassClassName(`${showClassName}`);
+			} else if((currPos.y > prevPos.y) != show && yDelta <= 118) {
+				if(!show) setOverpassClassName(showClassName);
+				setShow(show => !show);
+			} else if(yDelta > 118) {
+				setShow(true);
+				setOverpassClassName(showClassName);
+			}
 		}
+
 	}, [show]);
 
 	return {

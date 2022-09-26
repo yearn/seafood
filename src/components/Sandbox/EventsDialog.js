@@ -1,7 +1,20 @@
 import React, {useState, useEffect, createContext, useContext} from 'react';
 import {useLocation} from 'react-router-dom';
 import {Dialog} from '../controls';
-import EventList from '../EventList';
+
+function EventList({events}){	
+	return <div>
+		{events.map(e => {
+			if(e.event){
+				return <div key={e.data}> {e.event + ' ' + Object.entries(e.args).map(x => {
+					if(isNaN(x[0])){
+						return ' - ' + x[0]+ ':' +x[1];
+					}						
+				}).join('')}</div>;
+			}
+		})}
+	</div>;
+}
 
 const EventsDialogContext = createContext();
 export const useEventsDialog = () => useContext(EventsDialogContext);

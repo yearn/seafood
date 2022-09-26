@@ -60,8 +60,21 @@ export default function SimulatorProvider({children}) {
 		}
 	}, [vault, strategyResults, setVaultResults]);
 
-	const computeStrategyApr = useCallback((strategy, newStrategyState) => {
-		if(!newStrategyState) return {beforeFee: 0, afterFee: 0};
+	const computeStrategyFlow = useCallback((strategy, nextStrategyState) => {
+		const profit = nextStrategyState.totalGain - strategy.totalGain;
+		const loss = nextStrategyState.totalLoss - strategy.totalLoss;
+		return {
+			assets: profit >= 0 ? profit : -loss,
+			debt: strategy.totalDebt > 0 
+				? (nextStrategyState.totalDebt - strategy.totalDebt) / strategy.totalDebt
+				: nextStrategyState.totalDebt > 0
+					? nextStrategyState.totalDebt
+					: 0
+		};
+	}, []);
+
+	const computeStrategyApr = useCallback((strategy, nextStrategyState) => {
+		if(!nextStrategyState) return {beforeFee: 0, afterFee: 0};
 
 		if(strategy.totalDebt.eq(0)) {
 			if(strategy.estimatedTotalAssets.gt(0)) {
@@ -71,8 +84,8 @@ export default function SimulatorProvider({children}) {
 			}
 		}
 
-		const profit = newStrategyState.totalGain - strategy.totalGain;
-		const loss = newStrategyState.totalLoss - strategy.totalLoss;
+		const profit = nextStrategyState.totalGain - strategy.totalGain;
+		const loss = nextStrategyState.totalLoss - strategy.totalLoss;
 
 		const pnlToDebt = (loss > profit)
 			? -1 * loss / strategy.totalDebt
@@ -132,17 +145,18 @@ export default function SimulatorProvider({children}) {
 				status: 'error', simulationUrl: firstFailedBlock.simulationUrl, output: null
 			}}));
 		} else {
-			const newStrategyState = results.at(-1).output;
+			const nextStrategyState = results.at(-1).output;
 			setStrategyResults(current => ({...current, [strategy.address]: {
 				status: 'ok', simulationUrl: results.at(-2).simulationUrl, output: {
-					...newStrategyState,
-					apr: computeStrategyApr(strategy, newStrategyState)
+					...nextStrategyState,
+					apr: computeStrategyApr(strategy, nextStrategyState),
+					flow: computeStrategyFlow(strategy, nextStrategyState)
 				}
 			}}));
 		}
 
 		setSimulatingStrategy(current => ({...current, [strategy.address]: false}));
-	}, [vault, provider, tenderlyProvider, vaultContract, debtRatioUpdates, computeStrategyApr]);
+	}, [vault, provider, tenderlyProvider, vaultContract, debtRatioUpdates, computeStrategyApr, computeStrategyFlow]);
 
 	const harvestAll = useCallback(async () => {
 		setSimulatingAll(true);
