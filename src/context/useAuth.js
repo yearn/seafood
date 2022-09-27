@@ -1,20 +1,17 @@
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import useLocalStorage from '../utils/useLocalStorage';
 import {Octokit} from '@octokit/core';
-import {useNavigate} from 'react-router-dom';
 
 const AuthContext = createContext({});
 export const useAuth = () => useContext(AuthContext);
 export default function AuthProvider({children}) {
-	const navigate = useNavigate();
 	const [bearer, setBearer] = useLocalStorage('bearer', null);
 	const authenticated = useMemo(() => bearer || false, [bearer]);
 	const [profile, setProfile] = useState(null);
 
 	const logout = useCallback(() => {
 		setBearer(null);
-		navigate('/');
-	}, [setBearer, navigate]);
+	}, [setBearer]);
 
 	useEffect(() => {
 		if(bearer) {
@@ -26,6 +23,8 @@ export default function AuthProvider({children}) {
 					logout();
 				}
 			});
+		} else {
+			setProfile(null);
 		}
 	}, [bearer, logout]);
 

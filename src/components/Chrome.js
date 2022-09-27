@@ -4,7 +4,7 @@ import Header from './Header';
 
 const	ChromeContext = createContext();
 export const useChrome = () => useContext(ChromeContext);
-export default function Chrome({startWithHeader = true, fancy = false, children}) {
+export default function Chrome({startWithHeader = true, children}) {
 	const [header, setHeader] = useState(startWithHeader);
 	const [darkMode, setDarkMode] = useLocalStorage('darkMode', null);
 
@@ -26,11 +26,6 @@ export default function Chrome({startWithHeader = true, fancy = false, children}
 				sm:bg-gradient-radial-to-br sm:from-secondary-50 sm:via-secondary-50 sm:to-secondary-100
 				dark:bg-gradient-to-br dark:from-indigo-900 dark:to-black
 				dark:sm:bg-gradient-radial-to-br dark:sm:from-indigo-900 dark:sm:via-secondary-900 dark:sm:to-black`} />
-				{fancy && <div className={`
-					fixed z-[9] w-full h-full 
-					mix-blend-overlay
-					opacity-100 dark:opacity-20
-					bg-[url(https://thumbs.dreamstime.com/b/japanese-great-wave-pattern-print-seamless-background-illustration-japanese-great-wave-seamless-pattern-background-136072687.jpg)]`} />}
 				<div className={`
 					absolute z-10 w-full min-h-full flex flex-col`}>
 					{header && <Header></Header>}

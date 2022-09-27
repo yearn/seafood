@@ -1,15 +1,29 @@
 import React from 'react';
-import {BrowserRouter} from 'react-router-dom';
+import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import {RPCProviderContextApp} from './context/useRpcProvider';
 import AuthProvider from './context/useAuth';
-import Router from './components/Router';
+import {AppProvider} from './context/useApp';
+import Chrome from './components/Chrome';
+import GithubCallback from './components/GithubCallback';
+import Sandbox from './components/Sandbox';
+import Vaults from './components/Vaults';
+import Vault from './components/Vault';
 
 function App() {
 	return (
 		<RPCProviderContextApp>
 			<BrowserRouter>
 				<AuthProvider>
-					<Router />
+					<AppProvider>
+						<Chrome>
+							<Routes>
+								<Route path={'/'} exact={true} element={<Vaults />} />
+								<Route path={'/vault/:address'} element={<Vault />} />
+								<Route path={'/sandbox/*'} element={<Sandbox />} />
+								<Route path={'/github/callback'} exact={true} element={<GithubCallback />} />
+							</Routes>
+						</Chrome>
+					</AppProvider>
 				</AuthProvider>
 			</BrowserRouter>
 		</RPCProviderContextApp>
