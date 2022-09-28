@@ -2,6 +2,7 @@ import React, {createContext, useCallback, useContext, useEffect, useState} from
 import {GetStrategyContract, GetVaultContract} from '../../ethereum/EthHelpers';
 import {useVault} from './VaultProvider';
 import tenderly from '../../tenderly';
+import {ethers} from 'ethers';
 
 const	SimulatorContext = createContext();
 export const useSimulator = () => useContext(SimulatorContext);
@@ -60,16 +61,11 @@ export default function SimulatorProvider({children}) {
 		}
 	}, [vault, strategyResults, setVaultResults]);
 
-	const computeStrategyFlow = useCallback((strategy, nextStrategyState) => {
-		const profit = nextStrategyState.totalGain - strategy.totalGain;
-		const loss = nextStrategyState.totalLoss - strategy.totalLoss;
+	const computeStrategyFlow = useCallback((events) => {
+		const strategyReported = events.find(e => e.name === 'StrategyReported');
 		return {
-			assets: profit >= 0 ? profit : -loss,
-			debt: strategy.totalDebt > 0 
-				? (nextStrategyState.totalDebt - strategy.totalDebt) / strategy.totalDebt
-				: nextStrategyState.totalDebt > 0
-					? nextStrategyState.totalDebt
-					: 0
+			assets: -strategyReported.args.loss + strategyReported.args.gain,
+			debt: -strategyReported.args.debtPaid + strategyReported.args.debtAdded
 		};
 	}, []);
 
@@ -139,6 +135,24 @@ export default function SimulatorProvider({children}) {
 
 		const results = await tenderly.simulate(blocks, tenderlyProvider);
 
+		const eventsAbi = ['event StrategyReported(address indexed strategy, uint256 gain, uint256 loss, uint256 debtPaid, uint256 totalGain, uint256 totalLoss, uint256 totalDebt, uint256 debtAdded, uint256 debtRatio)'];
+		const eventsInterface = new ethers.utils.Interface(eventsAbi);
+
+		const rawEvents = results
+			.map(r => r.output.events ? [...r.output.events] : [])
+			.flat();
+
+		const events = [];
+		for(let i = 0; i < rawEvents.length; i++) {
+			const rawEvent = rawEvents[i];
+			try {
+				const parsed = eventsInterface.parseLog({topics: rawEvent.topics, data: rawEvent.data});
+				events.push({...rawEvent, ...parsed});
+			} catch(warning) { 
+				//warning 
+			}
+		}
+
 		const firstFailedBlock = results.find(r => r.status === 'error');
 		if(firstFailedBlock) {
 			setStrategyResults(current => ({...current, [strategy.address]: {
@@ -150,7 +164,8 @@ export default function SimulatorProvider({children}) {
 				status: 'ok', simulationUrl: results.at(-2).simulationUrl, output: {
 					...nextStrategyState,
 					apr: computeStrategyApr(strategy, nextStrategyState),
-					flow: computeStrategyFlow(strategy, nextStrategyState)
+					flow: computeStrategyFlow(events),
+					events
 				}
 			}}));
 		}

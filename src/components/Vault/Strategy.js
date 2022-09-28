@@ -139,7 +139,7 @@ export default function Strategy({strategy}) {
 					<div></div>
 					<div></div>
 					<Tokens value={simulator.strategyResults[strategy.address].output.flow.assets} token={token} simulated={true} delta={true} />
-					<Percentage value={simulator.strategyResults[strategy.address].output.flow.debt} simulated={true} delta={true} />
+					<Tokens value={simulator.strategyResults[strategy.address].output.flow.debt} token={token} simulated={true} delta={true} />
 				</div>}
 
 				{simulator.strategyResults[strategy.address]?.status === 'error' && <div>
