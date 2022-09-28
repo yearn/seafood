@@ -134,7 +134,7 @@ export default function Strategy({strategy}) {
 
 					<div></div>
 					<div></div>
-					<div className={'text-right'}>{'Assets'}</div>
+					<div className={'text-right'}>{'Profit'}</div>
 					<div className={'text-right'}>{'Debt'}</div>
 					<div></div>
 					<div></div>
