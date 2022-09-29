@@ -27,7 +27,7 @@ function HarvestHistory({history}){
 					</thead>
 					<tbody>
 						{history.map((e, i) => {
-							return <tr key={e.txn_hash} className={`${i % 2 === 0 ? 'bg-selected-400/5' : ''}`}>
+							return <tr key={e.txn_hash} className={`${i % 2 === 0 ? '' : 'bg-selected-400/5'}`}>
 								<Cell textAlign={'text-left'}>
 									<A href={getTxExplorer(e.chain_id, e.txn_hash)} target={'_blank'} rel={'noreferrer'}>
 										{dayjs(new Date(e.timestamp * 1000)).format('YYYY-MM-DD')}

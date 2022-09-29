@@ -8,7 +8,6 @@ const	SimulatorContext = createContext();
 export const useSimulator = () => useContext(SimulatorContext);
 export default function SimulatorProvider({children}) {
 	const {vault, provider} = useVault();
-	const [tenderlyProvider, setTenderlyProvider] = useState();
 	const [vaultContract, setVaultContract] = useState();
 	const [debtRatioUpdates, setDebtRatioUpdates] = useState({});
 	const [simulatingAll, setSimulatingAll] = useState(false);
@@ -16,14 +15,6 @@ export default function SimulatorProvider({children}) {
 	const [vaultResults, setVaultResults] = useState();
 	const [strategyResults, setStrategyResults] = useState([]);
 	const [codeNotifications, setCodeUpdates] = useState(false);
-
-	useEffect(() => {
-		if(provider) {
-			tenderly.createProvider(provider.network.chainId).then(tenderlyProvider => {
-				setTenderlyProvider(tenderlyProvider);
-			});
-		}
-	}, [provider]);
 
 	useEffect(() => {
 		if(vault && provider) {
@@ -104,8 +95,13 @@ export default function SimulatorProvider({children}) {
 		return {beforeFee: annualizedPnlToDebt, afterFee: annualizedPnlToDebtAfterFees};
 	}, [vault]);
 
-	const harvest = useCallback(async (strategy) => {
+	const harvest = useCallback(async (strategy, tenderlyProvider) => {
 		setSimulatingStrategy(current => ({...current, [strategy.address]: true}));
+
+		if(!tenderlyProvider) {
+			tenderlyProvider = await tenderly.createProvider(provider.network.chainId);
+		}
+
 		const strategyContract = GetStrategyContract(strategy.address, provider);
 		const debtRatioUpdate = debtRatioUpdates[strategy.address];
 		const blocks = [];
@@ -135,7 +131,11 @@ export default function SimulatorProvider({children}) {
 
 		const results = await tenderly.simulate(blocks, tenderlyProvider);
 
-		const eventsAbi = ['event StrategyReported(address indexed strategy, uint256 gain, uint256 loss, uint256 debtPaid, uint256 totalGain, uint256 totalLoss, uint256 totalDebt, uint256 debtAdded, uint256 debtRatio)'];
+		const eventsAbi = [
+			'event StrategyUpdateDebtRatio(address indexed strategy, uint256 debtRatio)',
+			'event Harvested(uint256 profit, uint256 loss, uint256 debtPayment, uint256 debtOutstanding)',
+			'event StrategyReported(address indexed strategy, uint256 gain, uint256 loss, uint256 debtPaid, uint256 totalGain, uint256 totalLoss, uint256 totalDebt, uint256 debtAdded, uint256 debtRatio)'
+		];
 		const eventsInterface = new ethers.utils.Interface(eventsAbi);
 
 		const rawEvents = results
@@ -146,10 +146,10 @@ export default function SimulatorProvider({children}) {
 		for(let i = 0; i < rawEvents.length; i++) {
 			const rawEvent = rawEvents[i];
 			try {
-				const parsed = eventsInterface.parseLog({topics: rawEvent.topics, data: rawEvent.data});
-				events.push({...rawEvent, ...parsed});
+				const log = eventsInterface.parseLog({topics: rawEvent.topics, data: rawEvent.data});
+				events.push({...rawEvent, ...log});
 			} catch(warning) { 
-				//warning 
+				// warning
 			}
 		}
 
@@ -171,15 +171,16 @@ export default function SimulatorProvider({children}) {
 		}
 
 		setSimulatingStrategy(current => ({...current, [strategy.address]: false}));
-	}, [vault, provider, tenderlyProvider, vaultContract, debtRatioUpdates, computeStrategyApr, computeStrategyFlow]);
+	}, [vault, provider, vaultContract, debtRatioUpdates, computeStrategyApr, computeStrategyFlow]);
 
 	const harvestAll = useCallback(async () => {
 		setSimulatingAll(true);
+		const tenderlyProvider = await tenderly.createProvider(provider.network.chainId);
 		for(let strategy of vault.strategies) {
-			await harvest(strategy);
+			await harvest(strategy, tenderlyProvider);
 		}
 		setSimulatingAll(false);
-	}, [vault, setSimulatingAll, harvest]);
+	}, [vault, provider, setSimulatingAll, harvest]);
 
 	const updateDebtRatio = useCallback((strategy, debtRatio) => {
 		setDebtRatioUpdates(current => {

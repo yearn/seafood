@@ -2,12 +2,13 @@ import React, {useMemo, useState} from 'react';
 import {TbHistory, TbTractor} from 'react-icons/tb';
 import TimeAgo from 'react-timeago';
 import {formatNumber, formatPercent, formatTokens, getAddressExplorer, truncateAddress} from '../../utils/utils';
-import {A, Button, Input} from '../controls';
+import {A, Button, Input, LinkButton} from '../controls';
 import InfoChart from './InfoChart';
 import CopyButton from './CopyButton';
 import {useVault} from './VaultProvider';
 import HarvestHistory from './HarvestHistory';
 import {useSimulator} from './SimulatorProvider';
+import {useLocation} from 'react-router-dom';
 
 function Field({value, simulated, delta, className, children}) {
 	return <div className={`
@@ -33,6 +34,7 @@ function Percentage({value, simulated, delta, className}) {
 }
 
 export default function Strategy({strategy}) {
+	const location = useLocation();
 	const {vault, provider, token, harvestHistory, showHarvestChart} = useVault();
 	const simulator = useSimulator();
 	const strategyHarvestHistory = harvestHistory.filter(h => h.strategy_address === strategy.address);
@@ -127,7 +129,10 @@ export default function Strategy({strategy}) {
 					<div className={'text-center'}>{'APR'}</div>
 					<div className={'text-right'}>{'Before fees'}</div>
 					<div className={'text-right'}>{'After fees'}</div>
-					<A className={'text-primary-600 dark:text-primary-400'} target={'_blank'} href={simulator.strategyResults[strategy.address].simulationUrl} rel={'noreferrer'}>{'Success'}</A>
+					<LinkButton className={'text-primary-600 dark:text-primary-400'} 
+						to={`${location.pathname}#harvest-events-${strategy.address}`}>
+						{'Success'}
+					</LinkButton>
 					<div></div>
 					<Percentage value={simulator.strategyResults[strategy.address].output.apr.beforeFee} simulated={true} />
 					<Percentage value={simulator.strategyResults[strategy.address].output.apr.afterFee} simulated={true} />
