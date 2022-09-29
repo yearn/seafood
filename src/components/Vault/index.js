@@ -7,6 +7,7 @@ import SimulatorProvider from './SimulatorProvider';
 import {useLocation} from 'react-router-dom';
 import Code from './Code';
 import Loading from '../Loading';
+import Events from './Events';
 
 function Layout() {
 	const location = useLocation();
@@ -29,6 +30,9 @@ function Layout() {
 		</>}
 		{location.hash === '#code' && <div className={'absolute inset-0 pt-16'}>
 			<Code />
+		</div>}
+		{location.hash.startsWith('#harvest-events') && <div className={'absolute inset-0 pt-16'}>
+			<Events />
 		</div>}
 	</div>;
 }

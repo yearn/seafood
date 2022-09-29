@@ -4,6 +4,7 @@ import Button from './Button';
 import Chip from './Chip';
 import Dialog from './Dialog';
 import Input from './Input';
+import LinkButton from './LinkButton';
 import Select from './Select';
 import SmallIconButton from './SmallIconButton';
 import Switch from './Switch';
@@ -16,6 +17,7 @@ export {
 	Chip,
 	Dialog,
 	Input,
+	LinkButton,
 	Select,
 	SmallIconButton,
 	Switch,
