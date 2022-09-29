@@ -61,7 +61,7 @@ export default function Events() {
 		}}
 	}, [token]);
 
-	return <div className={'px-4 sm:px-32 pt-8 pb-12 sm:pb-32 flex justify-center overflow-x-auto'}>
+	return <div className={'px-4 sm:px-32 pb-12 sm:pb-32 flex justify-center overflow-x-auto'}>
 		<CloseDialog onClick={() => setHeader(true)} />
 		<div className={`
 			w-[65ch] flex flex-col items-center justify-center gap-8`}>

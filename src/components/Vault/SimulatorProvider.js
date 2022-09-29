@@ -139,7 +139,7 @@ export default function SimulatorProvider({children}) {
 		const eventsInterface = new ethers.utils.Interface(eventsAbi);
 
 		const rawEvents = results
-			.map(r => r.output.events ? [...r.output.events] : [])
+			.map(r => r.output?.events ? [...r.output.events] : [])
 			.flat();
 
 		const events = [];
