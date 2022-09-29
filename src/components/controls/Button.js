@@ -4,8 +4,8 @@ export default function Button({icon, label, title, onClick, notify, ping, disab
 	return <button onClick={onClick} disabled={disabled} title={title} className={`
 		relative flex items-center justify-center
 		h-10 px-4 border-2 border-transparent
-		bg-primary-500 text-secondary-50 hover:bg-selected-400
-		dark:bg-primary-900/40 dark:hover:bg-selected-600
+		bg-primary-500 text-secondary-50 sm:hover:bg-selected-400
+		dark:bg-primary-900/40 sm:dark:hover:bg-selected-600
 		active:transform active:scale-95
 
 		disabled:text-secondary-400 disabled:dark:text-secondary-500

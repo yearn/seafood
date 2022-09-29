@@ -52,7 +52,7 @@ export default function VaultTile({vault, queryRe, onClick}) {
 					<div className={`
 						w-36 text-sm -mr-[10px]
 						text-secondary-900 dark:text-secondary-500
-						dark:group-hover:text-secondary-200
+						sm:dark:group-hover:text-secondary-200
 						transition duration-200`}>
 						{!vault.strategies && <div>
 							<div><Bone></Bone></div>
@@ -70,7 +70,7 @@ export default function VaultTile({vault, queryRe, onClick}) {
 					relative grow flex
 					text-secondary-900 dark:text-secondary-500
 					transition duration-200
-					dark:group-hover:text-secondary-200`}>
+					sm:dark:group-hover:text-secondary-200`}>
 					{vault.strategies && <Sparkline />}
 					{vault.strategies && <div className={`
 						absolute bottom-0 right-0 
@@ -83,7 +83,7 @@ export default function VaultTile({vault, queryRe, onClick}) {
 		<div className={`
 			flex items-center justify-between
 			text-secondary-900 dark:text-secondary-500
-			dark:group-hover:text-secondary-200`}>
+			sm:dark:group-hover:text-secondary-200`}>
 			<Panel title={favorites.vaults.includes(vault.address) ? 'Remove from favorites' : 'Add to favorites'} 
 				onClick={toggleFavorite(vault)} className={`
 				p-4 h-14 flex items-center justify-center 
