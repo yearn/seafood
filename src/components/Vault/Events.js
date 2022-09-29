@@ -15,6 +15,10 @@ export default function Events() {
 	const {vault, token} = useVault();
 
 	useEffect(() => {
+		window.scrollTo({top: 0});
+	}, []);
+
+	useEffect(() => {
 		if(strategyResults.length === 0) {
 			navigate(location.pathname);
 		} else {
