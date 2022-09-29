@@ -15,13 +15,11 @@ export default function Chips() {
 		};
 	}
 
-	return <div className={'flex flex-col items-center'}>
-		<div className={'flex flex-row gap-3'}>
-			<Chip icon={BsStarFill} onClick={toggle('favorites')} hot={chips.favorites} />
-			<Chip label={'curve'} onClick={toggle('curve')} hot={chips.curve} />
-			{config.chains.map(chain => 
-				<Chip key={chain.id} label={chain.name} onClick={toggle(chain.name)} hot={chips[chain.name]} />
-			)}
-		</div>
+	return <div className={'flex flex-row items-center gap-3'}>
+		<Chip icon={BsStarFill} onClick={toggle('favorites')} hot={chips.favorites} />
+		<Chip label={'curve'} onClick={toggle('curve')} hot={chips.curve} />
+		{config.chains.map(chain => 
+			<Chip key={chain.id} label={chain.name} onClick={toggle(chain.name)} hot={chips[chain.name]} />
+		)}
 	</div>;
 }
