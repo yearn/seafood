@@ -1,12 +1,15 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
+import {AnimatePresence} from 'framer-motion';
 import useLocalStorage from '../utils/useLocalStorage';
+import Dialog from './Dialog';
 import Header from './Header';
 
 const	ChromeContext = createContext();
 export const useChrome = () => useContext(ChromeContext);
 export default function Chrome({startWithHeader = true, children}) {
-	const [header, setHeader] = useState(startWithHeader);
 	const [darkMode, setDarkMode] = useLocalStorage('darkMode', null);
+	const [header, setHeader] = useState(startWithHeader);
+	const [dialog, setDialog] = useState();
 
 	useEffect(() => {
 		if(darkMode === null) {
@@ -16,7 +19,8 @@ export default function Chrome({startWithHeader = true, children}) {
 
 	return <ChromeContext.Provider value={{
 		darkMode, setDarkMode,
-		header, setHeader
+		header, setHeader,
+		dialog, setDialog
 	}}>
 		<div className={(darkMode ? 'dark' : '') + ' max-w-full'}>
 			<div className={'text-secondary-900 dark:text-secondary-200'}>
@@ -31,6 +35,9 @@ export default function Chrome({startWithHeader = true, children}) {
 					{header && <Header></Header>}
 					{children}
 				</div>
+				<AnimatePresence>
+					{dialog && <Dialog Component={dialog.component} args={dialog.args} />}
+				</AnimatePresence>
 			</div>
 		</div>
 	</ChromeContext.Provider>;

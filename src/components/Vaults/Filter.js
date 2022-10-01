@@ -2,6 +2,7 @@ import React, {useRef} from 'react';
 import {BsX} from 'react-icons/bs';
 import useKeypress from 'react-use-keypress';
 import {useDebouncedCallback} from 'use-debounce';
+import ScrollContainer from 'react-indiana-drag-scroll';
 import useScrollOverpass from '../../context/useScrollOverpass';
 import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import {useFilter} from './useFilter';
@@ -53,8 +54,10 @@ export default function Filter({showVaultCount = false}) {
 						{showVaultCount && `${filter.length} Vaults`}
 					</div>
 				</div>
-				<div className={'mt-4 flex items-center justify-center'}>
-					<Chips></Chips>
+				<div className={'mt-4 px-4'}>
+					<ScrollContainer className={'flex items-center w-full'}>
+						<Chips></Chips>
+					</ScrollContainer>
 				</div>
 			</div>
 		</SmallScreen>

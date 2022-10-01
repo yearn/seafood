@@ -9,7 +9,7 @@ import {useSimulator} from './SimulatorProvider';
 import SimulatorStatus from './SimulatorStatus';
 
 function Divider() {
-	return <div className={'hidden sm:block -mx-2 text-xl text-secondary-200 dark:text-secondary-900'}>{'•'}</div>;
+	return <div className={'hidden sm:block -mx-2 text-xl text-secondary-200 dark:text-secondary-900'}>{''}</div>;
 }
 
 export default function Summary() {

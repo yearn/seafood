@@ -1,30 +1,17 @@
 import React, {useCallback, useEffect, useMemo} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {formatPercent, formatTokens, truncateAddress} from '../../utils/utils';
-import {useChrome} from '../Chrome';
 import {A} from '../controls';
-import CloseDialog from '../controls/Dialog/Close';
-import {useSimulator} from './SimulatorProvider';
-import {useVault} from './VaultProvider';
 
-export default function Events() {
+export default function Events({vault, token, strategyResults}) {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const {setHeader} = useChrome();
-	const {strategyResults} = useSimulator();
-	const {vault, token} = useVault();
-
-	useEffect(() => {
-		window.scrollTo({top: 0});
-	}, []);
 
 	useEffect(() => {
 		if(strategyResults.length === 0) {
 			navigate(location.pathname);
-		} else {
-			setHeader(false);
 		}
-	}, [setHeader, strategyResults, location, navigate]);
+	}, [strategyResults, location, navigate]);
 
 	const strategy = useMemo(() => {
 		const strategy = location.hash.replace('#harvest-events-', '');
@@ -61,10 +48,11 @@ export default function Events() {
 		}}
 	}, [token]);
 
-	return <div className={'px-4 sm:px-32 pt-8 pb-12 sm:pb-32 flex justify-center overflow-x-auto'}>
-		<CloseDialog onClick={() => setHeader(true)} />
+	if(!(vault && strategy)) return <></>;
+
+	return <div className={'w-full h-full flex items-start justify-center overflow-y-auto'}>
 		<div className={`
-			w-[65ch] flex flex-col items-center justify-center gap-8`}>
+			w-full sm:w-[65ch] px-4 sm:px-0 pt-12 pb-12 sm:pb-24 flex flex-col items-center justify-center gap-8`}>
 			<div className={'w-full'}>
 				<h1>{'Harvest Events'}</h1>
 				<div className={'text-xl'}>{`${vault.name} / ${strategy.name}`}</div>

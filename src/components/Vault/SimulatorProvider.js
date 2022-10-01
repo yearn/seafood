@@ -55,8 +55,8 @@ export default function SimulatorProvider({children}) {
 	const computeStrategyFlow = useCallback((events) => {
 		const strategyReported = events.find(e => e.name === 'StrategyReported');
 		return {
-			assets: -strategyReported.args.loss + strategyReported.args.gain,
-			debt: -strategyReported.args.debtPaid + strategyReported.args.debtAdded
+			profit: strategyReported.args.loss.mul(-1).add(strategyReported.args.gain),
+			debt: strategyReported.args.debtPaid.mul(-1).add(strategyReported.args.debtAdded)
 		};
 	}, []);
 
@@ -139,7 +139,7 @@ export default function SimulatorProvider({children}) {
 		const eventsInterface = new ethers.utils.Interface(eventsAbi);
 
 		const rawEvents = results
-			.map(r => r.output.events ? [...r.output.events] : [])
+			.map(r => r.output?.events ? [...r.output.events] : [])
 			.flat();
 
 		const events = [];
