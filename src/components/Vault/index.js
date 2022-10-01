@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import VaultProvider, {useVault} from './VaultProvider';
+import {useChrome} from '../Chrome';
 import Summary from './Summary';
 import Toolbar from './Toolbar';
 import Strategy from './Strategy';
-import SimulatorProvider from './SimulatorProvider';
+import SimulatorProvider, {useSimulator} from './SimulatorProvider';
 import {useLocation} from 'react-router-dom';
 import Code from './Code';
 import Loading from '../Loading';
@@ -11,7 +12,19 @@ import Events from './Events';
 
 function Layout() {
 	const location = useLocation();
-	const {loading, vault} = useVault();
+	const {setDialog} = useChrome();
+	const {loading, vault, token} = useVault();
+	const {debtRatioUpdates, strategyResults} = useSimulator();
+
+	useEffect(() => {
+		if(location.hash === '#code') {
+			setDialog({component: Code, args: {vault, debtRatioUpdates}});
+		} else if(location.hash.startsWith('#harvest-events')) {
+			setDialog({component: Events, args: {vault, token, strategyResults}});
+		} else {
+			setDialog(null);
+		}
+	}, [location, setDialog, vault, token, debtRatioUpdates, strategyResults]);
 
 	if(loading) return <div className={`
 		absolute w-full h-screen flex items-center justify-center`}>
@@ -19,7 +32,14 @@ function Layout() {
 	</div>;
 
 	return <div>
-		{location.hash === '' && <>
+		<Summary />
+		<div className={'flex flex-col gap-2 pb-20'}>
+			{vault.strategies.map((strategy, index) => 
+				<Strategy key={index} strategy={strategy} />
+			)}
+		</div>
+		<Toolbar />
+		{/* {location.hash === '' && <>
 			<Summary />
 			<div className={'flex flex-col gap-2 pb-20'}>
 				{vault.strategies.map((strategy, index) => 
@@ -33,7 +53,7 @@ function Layout() {
 		</div>}
 		{location.hash.startsWith('#harvest-events') && <div className={'absolute inset-0 pt-16'}>
 			<Events />
-		</div>}
+		</div>} */}
 	</div>;
 }
 

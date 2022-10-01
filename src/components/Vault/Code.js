@@ -1,29 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import {TbCopy, TbCheck} from 'react-icons/tb';
 import useScrollOverpass from '../../context/useScrollOverpass';
-import {useChrome} from '../Chrome';
 import {Button} from '../controls';
-import CloseDialog from '../controls/Dialog/Close';
-import {useSimulator} from './SimulatorProvider';
-import {useVault} from './VaultProvider';
 
-export default function Code() {
-	const {setHeader} = useChrome();
-	const {vault} = useVault();
-	const {debtRatioUpdates} = useSimulator();
+export default function Code({vault, debtRatioUpdates}) {
 	const [linesOfCode, setLinesOfCode] = useState(['@sign']);
 	const [copied, setCopied] = useState(false);
 	const {showClassName} = useScrollOverpass();
 
 	useEffect(() => {
-		setHeader(false);
-	}, [setHeader]);
-
-	useEffect(() => {
 		const lines = ['@sign'];
 		const updates = [];
 
-		vault.strategies.forEach(strategy => {
+		vault?.strategies.forEach(strategy => {
 			const debtRatioUpdate = debtRatioUpdates[strategy.address];
 			if(debtRatioUpdate !== undefined) {
 				const delta =  debtRatioUpdate - strategy.debtRatio;
@@ -73,25 +62,26 @@ export default function Code() {
 		}
 	}
 
-	return <div className={'pt-8 pb-32 overflow-x-auto'}>
-		<CloseDialog onClick={() => setHeader(true)} />
-		{linesOfCode.map((line, index) => 
-			<div key={index} className={'flex items-center'}>
-				<div className={'ml-2 mr-4 w-8 min-w-[2rem] text-right dark:text-secondary-400/60'}>{''}{index + 1}</div>
-				<div className={'whitespace-nowrap'}>
-					{Array.from(line).filter(c => c === '\t').map((_, index) => <span key={index}>&emsp;</span>)}
-					{line.replace('\t', '')}
+	return <div className={'relative w-full h-full'}>
+		<div className={'max-h-full pt-12 pb-24 flex flex-col overflow-x-auto'}>
+			{linesOfCode.map((line, index) => 
+				<div key={index} className={'flex items-center'}>
+					<div className={'ml-2 mr-4 w-8 min-w-[2rem] text-right dark:text-secondary-400/60'}>{''}{index + 1}</div>
+					<div className={'whitespace-nowrap'}>
+						{Array.from(line).filter(c => c === '\t').map((_, index) => <span key={index}>&emsp;</span>)}
+						{line.replace('\t', '')}
+					</div>
 				</div>
-			</div>
-		)}
+			)}
+		</div>
 
 		<div className={`
-			fixed bottom-0 z-10
-			w-full px-4 py-4
-			flex flex-col items-center gap-4
+			absolute bottom-0 w-full px-4 py-4
+			flex items-center justify-end
 			border-t border-white dark:border-secondary-900
+			rounded-b-lg
 			${showClassName}`}>
-			<Button icon={copied ? TbCheck : TbCopy} onClick={onCopyCode} className={'w-full'} />
+			<Button icon={copied ? TbCheck : TbCopy} onClick={onCopyCode} className={'w-full sm:w-48'} />
 		</div>
 	</div>;
 }
