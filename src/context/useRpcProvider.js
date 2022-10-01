@@ -1,33 +1,17 @@
 import {ethers} from 'ethers';
 import React, {useContext, createContext, useState, useEffect, useCallback} from 'react';
-import Web3WsProvider from 'web3-providers-ws';
 import config from '../config';
-
-function createWssProvider(url, name, chainId) {
-	return new ethers.providers.Web3Provider(
-		new Web3WsProvider(url, {
-			timeout: 30_000,
-			clientConfig: {
-				keepalive: true,
-				keepaliveInterval: 55_000
-			},
-			reconnect: {
-				auto: true,
-				delay: 5000,
-				maxAttempts: 5,
-				onTimeout: false
-			}
-		}),
-		{name, chainId});
-}
 
 function createHttpsProvider(url, name, chainId) {
 	return new ethers.providers.JsonRpcProvider(url, {name, chainId});
 }
 
 function createProvider(url, name, chainId) {
-	if(url.startsWith('wss')) return createWssProvider(url, name, chainId);
-	if(url.startsWith('https')) return createHttpsProvider(url, name, chainId);
+	if(url.startsWith('https')) {
+		return createHttpsProvider(url, name, chainId);
+	} else {
+		throw `Unsupported protocol, ${url}`;
+	}
 }
 
 async function raceAll(promises) {
