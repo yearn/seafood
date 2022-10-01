@@ -143,7 +143,7 @@ export default function Strategy({strategy}) {
 					<div className={'text-right'}>{'Debt'}</div>
 					<div></div>
 					<div></div>
-					<Tokens value={simulator.strategyResults[strategy.address].output.flow.assets} token={token} simulated={true} delta={true} />
+					<Tokens value={simulator.strategyResults[strategy.address].output.flow.profit} token={token} simulated={true} delta={true} />
 					<Tokens value={simulator.strategyResults[strategy.address].output.flow.debt} token={token} simulated={true} delta={true} />
 				</div>}
 

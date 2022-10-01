@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import useKeypress from 'react-use-keypress';
 import {BsBox} from 'react-icons/bs';
@@ -10,7 +10,7 @@ import SelectVaultFunctionOrStrategy from './SelectVaultFunctionOrStrategy';
 import SelectStrategyFunction from './SelectStrategyFunction';
 import SetInputs from './SetInputs';
 import Manual from './Manual';
-import {Button, Dialog, Switch} from '../controls';
+import {Button, Switch} from '../controls';
 import useLocalStorage from 'use-local-storage';
 
 export function AddBlockButton() {
@@ -33,11 +33,12 @@ export default function AddBlockDialog({onAddBlock}) {
 	const {selectedProvider} = useSelectedProvider();
 	const {steps, setSteps, result} = useAddBlockDialog();
 	const currentStep = steps[steps.length - 1];
-	const [show, setShow] = useState(false);
 	const [manual, setManual] = useLocalStorage('addBlock.manual', false);
 
 	useEffect(() => {
-		setShow(location.hash === '#add-block');
+		if(location.hash === '#add-block') {
+			console.log('dialog that sheet!');
+		}
 	}, [location]);
 
 	useKeypress(['Escape'], close);
@@ -88,7 +89,7 @@ export default function AddBlockDialog({onAddBlock}) {
 		setSteps([stepEnum.selectVault]);
 	}
 
-	return <Dialog show={show}>
+	return <div className={'relative w-full h-full'}>
 		<div className={'grow overflow-y-auto flex flex-col'}>
 			{currentStep === stepEnum.selectVault && <>
 				{!manual && <SelectVault></SelectVault>}
@@ -109,5 +110,5 @@ export default function AddBlockDialog({onAddBlock}) {
 				<Button label={'Add block'} disabled={!result?.valid} onClick={onClickAddBlock} />
 			</div>
 		</div>
-	</Dialog>;
+	</div>;
 }
