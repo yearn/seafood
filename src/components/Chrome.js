@@ -1,4 +1,5 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
+import {AnimatePresence} from 'framer-motion';
 import useLocalStorage from '../utils/useLocalStorage';
 import Dialog from './Dialog';
 import Header from './Header';
@@ -34,7 +35,9 @@ export default function Chrome({startWithHeader = true, children}) {
 					{header && <Header></Header>}
 					{children}
 				</div>
-				{dialog && <Dialog Component={dialog.component} args={dialog.args} />}
+				<AnimatePresence>
+					{dialog && <Dialog Component={dialog.component} args={dialog.args} />}
+				</AnimatePresence>
 			</div>
 		</div>
 	</ChromeContext.Provider>;
