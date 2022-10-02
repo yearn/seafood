@@ -2,18 +2,16 @@ import React, {useState, useEffect, useCallback} from 'react';
 import {ethers} from 'ethers';
 import {useDebouncedCallback} from 'use-debounce';
 import {useApp} from '../../context/useApp';
-import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import {GetBasicStrat, GetBasicVault} from '../../ethereum/EthHelpers';
-import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
+import {stepEnum} from './useAddBlockDialog';
 import useLocalStorage from 'use-local-storage';
 import {Button, Select} from '../controls';
 import Inputs from './Inputs';
 import Input from './Input';
 
-export default function Manual() {
-	const {vaults, strats, favorites} = useApp();
-	const {selectedProvider} = useSelectedProvider();
-	const {setSteps, setResult} = useAddBlockDialog();
+export default function Manual({addBlockContext}) {
+	const {vaults, favorites} = useApp();
+	const {selectedProvider, setSteps, setResult} = addBlockContext;
 	const [address, setAddress] = useLocalStorage('addBlock.manual.address', '');
 	const [type, setType] = useState('');
 	const [valid, setValid] = useState(false);
@@ -23,20 +21,14 @@ export default function Manual() {
 	const [block, setBlock] = useState();
 
 	const locateStrategy = useCallback((address) => {
-		for(let v = 0; v < strats.length; v++) {
-			const strategy = strats[v].strategies?.find(s => s.address === address);
+		for(const vault of vaults) {
+			const strategy = vault.strategies.find(s => s.address === address);
 			if(strategy) {
-				return {
-					vault: strats[v],
-					strategy
-				};
+				return {vault, strategy};
 			}
 		}
-		return {
-			vault: undefined,
-			strategy: undefined
-		};
-	}, [strats]);
+		return {vault: undefined, strategy: undefined};
+	}, [vaults]);
 
 	useEffect(() => {
 		const refresh = [
@@ -60,7 +52,7 @@ export default function Manual() {
 		});
 
 		setFavorites(refresh);
-	}, [vaults, strats, favorites, selectedProvider, locateStrategy]);
+	}, [vaults, favorites, selectedProvider, locateStrategy]);
 
 	const debounceAddress = useDebouncedCallback(async (value) => {
 		value = value.trim();
@@ -85,7 +77,7 @@ export default function Manual() {
 				} catch (error) {
 					try {
 						const block = await GetBasicStrat(address, selectedProvider);
-						setBlock(block);
+						setBlock({...block, type: 'strategy'});
 						setType('strategy');
 						setValid(true);
 					} catch (error) {

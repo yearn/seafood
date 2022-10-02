@@ -10,6 +10,7 @@ export default function Button({icon, label, title, onClick, notify, ping, disab
 
 		disabled:text-secondary-400 disabled:dark:text-secondary-500
 		disabled:bg-gray-200 disabled:dark:bg-gray-800
+		sm:disabled:hover:bg-gray-200 sm:disabled:dark:hover:bg-gray-800
 		disabled:active:scale-100
 		disabled:cursor-default
 

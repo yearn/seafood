@@ -1,10 +1,9 @@
-import React, {useEffect} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import useKeypress from 'react-use-keypress';
 import {BsBox} from 'react-icons/bs';
 import {useAddBlockDialog, stepEnum, defaultResult} from './useAddBlockDialog';
 import {GetVaultContract} from '../../ethereum/EthHelpers';
-import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import SelectVault from './SelectVault';
 import SelectVaultFunctionOrStrategy from './SelectVaultFunctionOrStrategy';
 import SelectStrategyFunction from './SelectStrategyFunction';
@@ -12,6 +11,7 @@ import SetInputs from './SetInputs';
 import Manual from './Manual';
 import {Button, Switch} from '../controls';
 import useLocalStorage from 'use-local-storage';
+import useScrollOverpass from '../../context/useScrollOverpass';
 
 export function AddBlockButton() {
 	const location = useLocation();
@@ -27,43 +27,29 @@ export function AddBlockButton() {
 	return <Button icon={BsBox} label={'Add block'} onClick={onClick} iconClassName={'text-base'} />;
 }
 
-export default function AddBlockDialog({onAddBlock}) {
-	const location = useLocation();
+export default function AddBlockDialog({addBlockContext, onAddBlock}) {
 	const navigate = useNavigate();
-	const {selectedProvider} = useSelectedProvider();
-	const {steps, setSteps, result} = useAddBlockDialog();
-	const currentStep = steps[steps.length - 1];
+	const {showClassName} = useScrollOverpass();
+	const {selectedProvider, steps, setSteps, result} = addBlockContext;
 	const [manual, setManual] = useLocalStorage('addBlock.manual', false);
 
-	useEffect(() => {
-		if(location.hash === '#add-block') {
-			console.log('dialog that sheet!');
-		}
-	}, [location]);
+	const currentStep = useMemo(() => {
+		return steps[steps.length - 1];
+	}, [steps]);
 
-	useKeypress(['Escape'], close);
 	useKeypress(['Enter'], () => {
 		if(result.valid) {
 			onClickAddBlock();
 		}
 	});
 
-	function close() {
-		navigate(-1);
-	}
-
-	function onPreviousStep() {
-		setSteps(steps => {
-			steps.pop();
-			return [...steps];
+	const onPreviousStep = useCallback(() => {
+		setSteps(current => {
+			return [...current.slice(0, current.length - 1)];
 		});
-	}
+	}, [setSteps]);
 
-	async function onClickAddBlock() {
-		await addBlock(result);
-	}
-
-	async function addBlock(dialogResult) {
+	const addBlock = useCallback(async (dialogResult) => {
 		const contract = dialogResult.vault?.contract 
 			|| await GetVaultContract(dialogResult.vault.address, selectedProvider);
 
@@ -82,25 +68,34 @@ export default function AddBlockDialog({onAddBlock}) {
 
 		onAddBlock(block);
 		navigate(-1);
-	}
+	}, [selectedProvider, onAddBlock, navigate]);
 
-	function toggleManual() {
+	const onClickAddBlock = useCallback(async () => {
+		await addBlock(result);
+	}, [addBlock, result]);
+
+	const toggleManual = useCallback(() => {
 		setManual(current => !current);
 		setSteps([stepEnum.selectVault]);
-	}
+	}, [setManual, setSteps]);
 
-	return <div className={'relative w-full h-full'}>
-		<div className={'grow overflow-y-auto flex flex-col'}>
+	return <div className={'relative w-full h-full flex flex-col items-center'}>
+		<div className={'grow w-full px-4 pt-2 pb-0 flex flex-col overflow-y-auto'}>
 			{currentStep === stepEnum.selectVault && <>
-				{!manual && <SelectVault></SelectVault>}
-				{manual && <Manual></Manual>}
+				{!manual && <SelectVault addBlockContext={addBlockContext}></SelectVault>}
+				{manual && <Manual addBlockContext={addBlockContext}></Manual>}
 			</>}
-			{currentStep === stepEnum.selectVaultFunctionOrStrategy && <SelectVaultFunctionOrStrategy addBlock={addBlock}></SelectVaultFunctionOrStrategy>}
-			{currentStep === stepEnum.selectStrategyFunction && <SelectStrategyFunction addBlock={addBlock}></SelectStrategyFunction>}
-			{currentStep === stepEnum.setInputs && <SetInputs></SetInputs>}
+			{currentStep === stepEnum.selectVaultFunctionOrStrategy && <SelectVaultFunctionOrStrategy addBlock={addBlock} addBlockContext={addBlockContext} />}
+			{currentStep === stepEnum.selectStrategyFunction && <SelectStrategyFunction addBlock={addBlock} addBlockContext={addBlockContext} />}
+			{currentStep === stepEnum.setInputs && <SetInputs addBlockContext={addBlockContext} />}
 		</div>
 
-		<div className={'flex gap-2 items-center justify-between'}>
+		<div className={`
+			absolute bottom-0 w-full px-4 py-4
+			flex items-center justify-between
+			border-t border-white dark:border-secondary-900
+			rounded-b-lg
+			${showClassName}`}>
 			<div className={'flex items-center gap-2'}>
 				<Switch onChange={toggleManual} checked={manual} />
 				<div onClick={toggleManual} className={'text-sm cursor-default'}>{'Manual'}</div>
