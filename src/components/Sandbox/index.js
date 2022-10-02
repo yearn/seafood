@@ -1,5 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {useLocation} from 'react-router-dom';
+import {useChrome} from '../Chrome';
 import useRPCProvider from '../../context/useRpcProvider';
 import {SelectedProviderContext} from '../SelectProvider/useSelectedProvider';
 import {BlocksContext} from './useBlocks';
@@ -9,14 +10,17 @@ import Toolbar from './Toolbar';
 import Tabs from './Tabs';
 import Simulator from './Simulator';
 import Code from './Code';
-import {AddBlockDialogProvider} from '../AddBlockDialog/useAddBlockDialog';
+import {AddBlockContext, defaultResult, stepEnum} from '../AddBlockDialog/useAddBlockDialog';
 import AddBlockDialog from '../AddBlockDialog';
-import EventsDialog, {EventsDialogProvider} from './EventsDialog';
+import EventsDialog from './EventsDialog';
 
 export default function Sandbox() {
 	const location = useLocation();
 	const {providers} = useRPCProvider();
+	const {setDialog} = useChrome();
 	const [selectedProvider, setSelectedProvider] = useState();
+	const [steps, setSteps] = useState([stepEnum.selectVault]);
+	const [result, setResult] = useState(defaultResult());
 	const [blocks, setBlocks] = useState([]);
 	const [simulating, setSimulating] = useState(false);
 
@@ -26,12 +30,25 @@ export default function Sandbox() {
 		}
 	}, [selectedProvider, setSelectedProvider, providers]);
 
-	function addBlock(block) {
+	const addBlock = useCallback((block) => {
 		block.index = blocks.length > 0 
 			? blocks[blocks.length - 1].index + 1
 			: 0;
 		setBlocks(blocks => [...blocks, block]);
-	}
+	}, [blocks, setBlocks]);
+
+	useEffect(() => {
+		if(location.hash === '#add-block') {
+			setDialog({component: AddBlockDialog, args: {
+				addBlockContext: {selectedProvider, steps, setSteps, result, setResult},
+				onAddBlock: addBlock
+			}});
+		} else if(location.hash.startsWith('#events')) {
+			setDialog({component: EventsDialog, args: {blocks}});
+		} else {
+			setDialog('');
+		}
+	}, [setDialog, location, blocks, addBlock, selectedProvider, steps, setSteps, result, setResult]);
 
 	async function simulate() {
 		setSimulating(true);
@@ -53,49 +70,45 @@ export default function Sandbox() {
 	}
 
 	return <SelectedProviderContext.Provider value={{selectedProvider, setSelectedProvider}}>
-		<AddBlockDialogProvider>
-			<EventsDialogProvider>
-				<BlocksContext.Provider value={{blocks, setBlocks, addBlock, simulate, simulating, removeBlock, reset}}>
-					<AddBlockDialog onAddBlock={addBlock}></AddBlockDialog>
-					<EventsDialog />
-					<div className={'grow flex flex-col sm:z-40'}>
+		<AddBlockContext.Provider value={{steps, setSteps, result, setResult}}>
+			<BlocksContext.Provider value={{blocks, setBlocks, addBlock, simulate, simulating, removeBlock, reset}}>
+				<div className={'grow flex flex-col sm:z-40'}>
+					<BiggerThanSmallScreen>
+						<Toolbar></Toolbar>
+					</BiggerThanSmallScreen>
+
+					<div className={`
+						grow sm:mx-4 sm:mb-4 px-4 pt-24 pb-16 sm:px-8 sm:py-0 
+						flex flex-col justify-between
+						border-4 border-primary-500 dark:border-primary-900/40
+						dark:bg-black/20
+						sm:rounded-lg
+						${simulating ? 'border-selected-600 dark:border-selected-400 animate-pulse' : ''}`}>
 						<BiggerThanSmallScreen>
-							<Toolbar></Toolbar>
+							{(location.hash === '' || location.hash === '#add-block' || location.hash === '#events') &&
+								<>
+									{blocks.length === 0 && 
+										<div className={'grow flex items-center justify-center text-2xl'}>
+											<div className={'rainbow-text'}>{'><(((*> - The sandbox is empty'}</div>
+										</div>
+									}
+									{blocks.length > 0 && <Simulator />}
+								</>
+							}
+							{location.hash === '#code' && 
+								<Code />}
 						</BiggerThanSmallScreen>
 
-						<div className={`
-							grow sm:mx-4 sm:mb-4 px-4 pt-24 pb-16 sm:px-8 sm:py-0 
-							flex flex-col justify-between
-							border-4 border-primary-500 dark:border-primary-900/40
-							dark:bg-black/20
-							sm:rounded-lg
-							${simulating ? 'border-selected-600 dark:border-selected-400 animate-pulse' : ''}`}>
-							<BiggerThanSmallScreen>
-								{(location.hash === '' || location.hash === '#add-block' || location.hash === '#events') &&
-									<>
-										{blocks.length === 0 && 
-											<div className={'grow flex items-center justify-center text-2xl'}>
-												<div className={'rainbow-text'}>{'><(((*> - The sandbox is empty'}</div>
-											</div>
-										}
-										{blocks.length > 0 && <Simulator />}
-									</>
-								}
-								{location.hash === '#code' && 
-									<Code />}
-							</BiggerThanSmallScreen>
-
-							<SmallScreen>
-								<Tabs></Tabs>
-								{(location.hash === '' || location.hash === '#add-block' || location.hash === '#events') &&
-									<Simulator />}
-								{location.hash === '#code' && 
-									<Code />}
-							</SmallScreen>
-						</div>
+						<SmallScreen>
+							<Tabs></Tabs>
+							{(location.hash === '' || location.hash === '#add-block' || location.hash === '#events') &&
+								<Simulator />}
+							{location.hash === '#code' && 
+								<Code />}
+						</SmallScreen>
 					</div>
-				</BlocksContext.Provider>
-			</EventsDialogProvider>
-		</AddBlockDialogProvider>
+				</div>
+			</BlocksContext.Provider>
+		</AddBlockContext.Provider>
 	</SelectedProviderContext.Provider>;
 }

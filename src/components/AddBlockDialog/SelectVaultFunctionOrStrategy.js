@@ -1,7 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {GetVaultContract} from '../../ethereum/EthHelpers';
-import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
-import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
+import {stepEnum} from './useAddBlockDialog';
 import {FunctionTile, StrategyTile} from '../tiles';
 import useLocalStorage from '../../utils/useLocalStorage';
 import {useApp} from '../../context/useApp';
@@ -9,10 +8,9 @@ import Filter from './Filter';
 import Header from './Header';
 import List from './List';
 
-export default function SelectVaultFunctionOrStrategy({addBlock}) {
+export default function SelectVaultFunctionOrStrategy({addBlockContext, addBlock}) {
 	const {favorites, vaults} = useApp();
-	const {selectedProvider} = useSelectedProvider();
-	const {setSteps, result, setResult} = useAddBlockDialog();
+	const {selectedProvider, setSteps, result, setResult} = addBlockContext;
 	const [items, setItems] = useState([]);
 	const [filter, setFilter] = useState([]);
 	const [query, setQuery] = useLocalStorage('addBlock.selectStrategy.query', '');
@@ -100,7 +98,7 @@ export default function SelectVaultFunctionOrStrategy({addBlock}) {
 		<List>
 			{filter.map((item, index) => <div key={index}>
 				{item.type === 'strategy' && 
-					<StrategyTile strategy={item} queryRe={queryRe} onClick={() => onClickStrategy(item)}></StrategyTile>}
+					<StrategyTile selectedProvider={selectedProvider} strategy={item} queryRe={queryRe} onClick={() => onClickStrategy(item)}></StrategyTile>}
 				{item.type === 'function' && 
 					<FunctionTile func={item} queryRe={queryRe} onClick={() => onClickFunction(item)}></FunctionTile>}
 			</div>)}

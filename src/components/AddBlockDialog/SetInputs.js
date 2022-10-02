@@ -1,14 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {ethers} from 'ethers';
 import {useDebouncedCallback} from 'use-debounce';
-import {useAddBlockDialog} from './useAddBlockDialog';
 import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import Header from './Header';
 import Inputs from './Inputs';
 import Input from './Input';
 
-export default function SetInputs() {
-	const {result, setResult} = useAddBlockDialog();
+export default function SetInputs({addBlockContext}) {
+	const {result, setResult} = addBlockContext;
 	const [inputValues, setInputValues] = useState(result.function.inputs.map(input => {return {
 		input,
 		value: null,

@@ -6,7 +6,6 @@ import {useBlocks} from './useBlocks';
 import Block from './Block';
 import {AddBlockButton} from '../AddBlockDialog';
 import SelectProvider from '../SelectProvider';
-import {useEventsDialog} from './EventsDialog';
 import {SmallScreen} from '../../utils/breakpoints';
 import {Button} from '../controls';
 
@@ -14,11 +13,9 @@ export default function Simulator() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const {blocks, setBlocks, simulate, reset, removeBlock} = useBlocks();
-	const {setBlock: setEventsDialogBlock} = useEventsDialog();
 
 	function onShowBlockEvents(index) {
-		setEventsDialogBlock(blocks[index]);
-		navigate(`${location.pathname}#events`);
+		navigate(`${location.pathname}#events-block-index-${index}`);
 	}
 
 	return <>

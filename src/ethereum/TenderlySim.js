@@ -32,8 +32,6 @@ async function TenderlySim(blocks, tenderlyProvider){
 			? GetStrategyContract(block.block.address, tenderlyProvider).connect(signer)
 			: block.contract.connect(signer);
 
-		console.log(blocks);
-
 		// console.log(block.function.name + '(' + block.function.inputs.map(x => x.type) + ')');
 		let func = blockWithSigner.functions[block.function.name + '(' + block.function.inputs.map(x => x.type) + ')'];
 		//console.log(func);

@@ -1,17 +1,15 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {useAddBlockDialog, stepEnum} from './useAddBlockDialog';
+import {stepEnum} from './useAddBlockDialog';
 import {FunctionTile} from '../tiles';
 import {strategy} from '../../interfaces/interfaces';
 import {ethers} from 'ethers';
-import {useSelectedProvider} from '../SelectProvider/useSelectedProvider';
 import useLocalStorage from '../../utils/useLocalStorage';
 import Filter from './Filter';
 import List from './List';
 import Header from './Header';
 
-export default function SelectStrategyFunction({addBlock}) {
-	const {selectedProvider} = useSelectedProvider();
-	const {setSteps, result, setResult} = useAddBlockDialog();
+export default function SelectStrategyFunction({addBlockContext, addBlock}) {
+	const {selectedProvider, setSteps, result, setResult} = addBlockContext;
 	const [items, setItems] = useState([]);
 	const [filter, setFilter] = useState([]);
 	const [query, setQuery] = useLocalStorage('addBlock.selectFunction.query', '');
