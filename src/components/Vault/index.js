@@ -39,21 +39,6 @@ function Layout() {
 			)}
 		</div>
 		<Toolbar />
-		{/* {location.hash === '' && <>
-			<Summary />
-			<div className={'flex flex-col gap-2 pb-20'}>
-				{vault.strategies.map((strategy, index) => 
-					<Strategy key={index} strategy={strategy} />
-				)}
-			</div>
-			<Toolbar />
-		</>}
-		{location.hash === '#code' && <div className={'absolute inset-0 pt-16'}>
-			<Code />
-		</div>}
-		{location.hash.startsWith('#harvest-events') && <div className={'absolute inset-0 pt-16'}>
-			<Events />
-		</div>} */}
 	</div>;
 }
 

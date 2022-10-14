@@ -7,13 +7,17 @@ function chainId(name) {
 	return config.chains.find(chain => chain.name === name)?.id;
 }
 
+function getChain(chainId) {
+	return config.chains.find(chain => chain.id === chainId);
+}
+
 function getAddressExplorer(chainId, address){
-	const chain = config.chains.find(chain => chain.id === chainId);
+	const chain = getChain(chainId);
 	return `${chain.explorer}/address/${address}`;
 }
 
 function getTxExplorer(chainId, address){
-	const chain = config.chains.find(chain => chain.id === chainId);
+	const chain = getChain(chainId);
 	return `${chain.explorer}/tx/${address}`;
 }
 
@@ -96,6 +100,7 @@ function highlightString(string, highlightRe) {
 
 export {
 	chainId,
+	getChain,
 	curveRe, 
 	getAddressExplorer, 
 	getTxExplorer, 

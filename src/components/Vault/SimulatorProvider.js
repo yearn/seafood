@@ -3,6 +3,7 @@ import {GetStrategyContract, GetVaultContract} from '../../ethereum/EthHelpers';
 import {useVault} from './VaultProvider';
 import tenderly from '../../tenderly';
 import {ethers} from 'ethers';
+import {estimateBlockHeight} from '../../utils/defillama';
 
 const	SimulatorContext = createContext();
 export const useSimulator = () => useContext(SimulatorContext);
@@ -94,6 +95,49 @@ export default function SimulatorProvider({children}) {
 
 		return {beforeFee: annualizedPnlToDebt, afterFee: annualizedPnlToDebtAfterFees};
 	}, [vault]);
+
+	const getPps = useCallback(async (blocktime) => {
+		console.log('getPps', blocktime);
+		const blocks = [{
+			contract: vaultContract,
+			signer: vault.governance,
+			functionCall: vaultContract.interface.functions['pricePerShare()'],
+			functionInput: []
+		}];
+
+		if(blocktime) {
+			const height = await estimateBlockHeight(vault.chainId, blocktime);
+			const provider = await tenderly.createProvider(vault.chainId, height);
+			const results = await tenderly.simulate(blocks, provider);
+			return results[0].output[0];
+		} else {
+			const provider = await tenderly.createProvider(vault.chainId);
+			const results = await tenderly.simulate(blocks, provider);
+			return results[0].output[0];
+		}
+	}, [vault, vaultContract]);
+
+	const getApy = useCallback(async () => {
+		const day = 24 * 60 * 60;
+		const now = Date.now() / 1000;
+		console.log('lesgo..');
+		const pps = {
+			current: await getPps(),
+			[-7]: await getPps(now - 7 * day),
+			[-30]: await getPps(now - 30 * day)
+		};
+		console.log('pps', pps);
+
+		const apy = {
+			[-7]: pps.current.sub(pps[-7]).mul(10_000).div(pps[-7]).mul(Math.floor(100 * 365 / 7)).div(100),
+			[-30]: pps.current.sub(pps[-30]).mul(10_000).div(pps[-30]).mul(Math.floor(100 * 365 / 30)).div(100)
+		};
+
+		console.log('apy', apy);
+		console.log(apy[-7] / 100, '%');
+		console.log(apy[-30] / 100, '%');
+
+	}, [getPps]);
 
 	const harvest = useCallback(async (strategy, tenderlyProvider) => {
 		setSimulatingStrategy(current => ({...current, [strategy.address]: true}));
@@ -197,6 +241,7 @@ export default function SimulatorProvider({children}) {
 		vaultResults,
 		strategyResults,
 		codeNotifications, 
+		getApy,
 		harvest,
 		harvestAll,
 		updateDebtRatio,

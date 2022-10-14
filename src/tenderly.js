@@ -1,10 +1,10 @@
 import {ethers} from 'ethers';
 import config from './config';
 
-async function createProvider(chainId) {
+async function createProvider(network_id, block_number) {
 	const result = await fetch(config.tenderly.forkUrl, {
 		method: 'POST',
-		body: JSON.stringify({network_id: chainId}),
+		body: JSON.stringify({network_id, block_number}),
 	});
 
 	const data = await result.json();

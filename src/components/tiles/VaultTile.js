@@ -81,7 +81,7 @@ export default function VaultTile({vault, queryRe, onClick}) {
 			</div>
 		</Panel>
 		<div className={`
-			flex items-center justify-between
+			z-10 flex items-center justify-between
 			text-secondary-900 dark:text-secondary-500
 			sm:dark:group-hover:text-secondary-200`}>
 			<Panel title={favorites.vaults.includes(vault.address) ? 'Remove from favorites' : 'Add to favorites'} 
