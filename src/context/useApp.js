@@ -72,15 +72,13 @@ export const AppProvider = ({children}) => {
 	const [favoriteStrategies, setFavoriteStrategies] = useLocalStorage('favoriteStrategies', []);
 
 	const {
-		data: yDaemonData, 
-		error: yDaemonError, 
+		data: yDaemonData,
+		error: yDaemonError,
 		mutate: yDaemonMutate
 	} = useSWR(yDaemonRequests, multifetch);
 
 	const syncCache = useCallback(() => {
-		if(!loading) {
-			yDaemonMutate(undefined);
-		}
+		if(!loading) yDaemonMutate(undefined);
 	}, [loading, yDaemonMutate]);
 
 	useEffect(() => {

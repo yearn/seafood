@@ -9,8 +9,8 @@ export default function Button({icon, label, title, onClick, notify, ping, disab
 		active:transform active:scale-95
 
 		disabled:text-secondary-400 disabled:dark:text-secondary-500
-		disabled:bg-gray-200 disabled:dark:bg-gray-800
-		sm:disabled:hover:bg-gray-200 sm:disabled:dark:hover:bg-gray-800
+		disabled:bg-gray-200 disabled:dark:bg-gray-900/80
+		sm:disabled:hover:bg-gray-200 sm:disabled:dark:hover:bg-gray-900/80
 		disabled:active:scale-100
 		disabled:cursor-default
 
@@ -22,8 +22,10 @@ export default function Button({icon, label, title, onClick, notify, ping, disab
 
 		{icon && <>
 			{'\u00A0'}
-			{icon({className: `text-xl stroke-secondary-50 dark:stroke-secondary-300
-			disabled:stroke-gray-500 disabled:dark:stroke-gray-400 disabled:pointer-events-none
+			{icon({className: `text-xl
+			${disabled 
+		? 'stroke-gray-400 dark:stroke-gray-600 pointer-events-none' 
+		: 'stroke-secondary-50 dark:stroke-secondary-300'}
 			${label ? 'mr-2' : ''}
 			${iconClassName}`})}
 			{'\u00A0'}

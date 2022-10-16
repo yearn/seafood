@@ -17,6 +17,10 @@ export default function SimulatorProvider({children}) {
 	const [strategyResults, setStrategyResults] = useState([]);
 	const [codeNotifications, setCodeUpdates] = useState(false);
 
+	const engaged = useCallback(() => {
+		return Object.keys(simulatingStrategy).length > 0;
+	}, [simulatingStrategy]);
+
 	useEffect(() => {
 		if(vault && provider) {
 			GetVaultContract(vault.address, provider).then(contract => setVaultContract(contract));
@@ -235,6 +239,7 @@ export default function SimulatorProvider({children}) {
 	}, []);
 
 	return <SimulatorContext.Provider value={{
+		engaged,
 		debtRatioUpdates,
 		simulatingAll,
 		simulatingStrategy,

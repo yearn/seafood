@@ -46,7 +46,7 @@ export default function Strategy({strategy}) {
 	}
 
 	return <div className={`
-		px-4 pt-2 sm:pt-4 sm:px-12 flex flex-col gap-2`}>
+		px-4 pt-2 sm:pt-0 sm:pr-12 sm:pl-8 flex flex-col gap-2`}>
 
 		<div className={'flex flex-col sm:flex-row gap-2'}>
 			<div className={'sm:max-w-prose sm:w-[65ch] flex flex-col gap-2'}>
