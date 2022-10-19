@@ -21,7 +21,7 @@ export default function VaultProvider({children}) {
 
 	useEffect(() => {
 		const vault = vaults.find(v => v.address === params.address);
-		const provider = providers.find(p => p.network.chainId == vault?.chainId);
+		const provider = providers.find(p => p.network.chainId == vault?.network.chainId);
 		if(vault && provider) {
 			setVault(vault);
 			setProvider(provider);

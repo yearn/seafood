@@ -36,6 +36,7 @@
     "react-timeago": "^7.1.0",
     "react-use-keypress": "^1.3.0",
     "sortablejs": "^1.14.0",
+    "swr": "^1.3.0",
     "typescript": "^4.8.4",
     "use-debounce": "^7.0.1",
     "use-local-storage": "^2.3.6",
