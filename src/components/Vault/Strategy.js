@@ -71,7 +71,7 @@ export default function Strategy({strategy}) {
 
 				<h2 className={'font-bold text-2xl break-words'}>{strategy.name}</h2>
 
-				{strategy.lendStatuses.length > 0 && 
+				{strategy.lendStatuses?.length > 0 && 
 					<div>
 						<div className={'grid grid-cols-4'}>
 							<div className={'col-span-2'}>{'Lender'}</div>
