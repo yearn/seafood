@@ -172,8 +172,8 @@ export const AppProvider = ({children}) => {
 			const refresh = yDaemonCache?.length > 0 ? [] : [...current];
 			for(let [index, chain] of config.chains.entries()) {
 				if(yDaemonCache?.length > 0) {
-					const vaults = yDaemonCache[index].map(vault => yDaemonVaultToSeafoodVault(vault, chain));	
-					refresh.push(...vaults);
+					const vaults = yDaemonCache[index]?.map(vault => yDaemonVaultToSeafoodVault(vault, chain));	
+					if(vaults) refresh.push(...vaults);
 				}
 
 				const strategies = refresh.map(vault => vault.strategies).flat();
