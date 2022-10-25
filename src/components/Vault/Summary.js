@@ -17,7 +17,13 @@ function Cell({className, children}) {
 export default function Summary({className}) {
 	const {vault, token} = useVault();
 
+	const allocated = useMemo(() => {
+		if(vault.totalAssets.eq(0)) return 0;
+		return vault.debtRatio / 10_000;
+	}, [vault]);
+
 	const utilization = useMemo(() => {
+		if(vault.depositLimit.eq(0)) return NaN;
 		return 1 - vault.availableDepositLimit.mul(10_000).div(vault.depositLimit) / 10_000;
 	}, [vault]);
 
@@ -36,7 +42,7 @@ export default function Summary({className}) {
 			</Row>
 			<Row className={'grid-cols-2'}>
 				<Cell>{'Allocated'}</Cell>
-				<Cell className={'font-mono text-right'}>{formatPercent(vault.debtRatio/10_000, 2, '--')}</Cell>
+				<Cell className={'font-mono text-right'}>{formatPercent(allocated, 2, '--')}</Cell>
 			</Row>
 			<Row className={'grid-cols-2'}>
 				<Cell>{'Deposit Limit'}</Cell>
@@ -55,31 +61,31 @@ export default function Summary({className}) {
 			</Row>
 			<Row className={'grid-cols-4'}>
 				<Cell>{'Gross'}</Cell>
-				<Cell className={'font-mono text-right'}>{'0.00%'}</Cell>
+				<Cell className={'font-mono text-right'}>{formatPercent(vault.apy.gross, 2)}</Cell>
 				<Cell className={'font-mono text-primary-400 text-right'}>{'0.00%'}</Cell>
 				<Cell className={'font-mono text-primary-400 text-right'}>{'+0bps'}</Cell>
 			</Row>
 			<Row className={'grid-cols-4 bg-selected-400/5'}>
 				<Cell className={'font-bold text-xl'}>{'Net'}</Cell>
-				<Cell className={'font-bold font-mono text-xl text-right'}>{'0.00%'}</Cell>
+				<Cell className={'font-bold font-mono text-xl text-right'}>{formatPercent(vault.apy.net, 2)}</Cell>
 				<Cell className={'font-bold font-mono text-primary-400 text-xl text-right'}>{'0.00%'}</Cell>
 				<Cell className={'font-bold font-mono text-primary-400 text-xl text-right'}>{'+0bps'}</Cell>
 			</Row>
 			<Row className={'grid-cols-4'}>
 				<Cell>{'Weekly'}</Cell>
-				<Cell className={'font-mono text-right'}>{'0.00%'}</Cell>
+				<Cell className={'font-mono text-right'}>{formatPercent(vault.apy.weekly, 2)}</Cell>
 				<Cell className={'font-mono text-primary-400 text-right'}>{'0.00%'}</Cell>
 				<Cell className={'font-mono text-primary-400 text-right'}>{'+0bps'}</Cell>
 			</Row>
 			<Row className={'grid-cols-4 bg-selected-400/5'}>
 				<Cell>{'Monthly'}</Cell>
-				<Cell className={'font-mono text-right'}>{'0.00%'}</Cell>
+				<Cell className={'font-mono text-right'}>{formatPercent(vault.apy.monthly, 2)}</Cell>
 				<Cell className={'font-mono text-primary-400 text-right'}>{'0.00%'}</Cell>
 				<Cell className={'font-mono text-primary-400 text-right'}>{'+0bps'}</Cell>
 			</Row>
 			<Row className={'grid-cols-4'}>
 				<Cell>{'Inception'}</Cell>
-				<Cell className={'font-mono text-right'}>{'0.00%'}</Cell>
+				<Cell className={'font-mono text-right'}>{formatPercent(vault.apy.inception, 2)}</Cell>
 				<Cell className={'font-mono text-primary-400 text-right'}>{'0.00%'}</Cell>
 				<Cell className={'font-mono text-primary-400 text-right'}>{'+0bps'}</Cell>
 			</Row>

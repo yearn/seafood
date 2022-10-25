@@ -34,6 +34,13 @@ const yDaemonVaultToSeafoodVault = (vault, chain) => ({
 	managementFee: BigNumber.from(vault.details.managementFee),
 	performanceFee: BigNumber.from(vault.details.performanceFee),
 	depositLimit: BigNumber.from(vault.details.depositLimit),
+	apy: {
+		gross: vault.apy.gross_apr,
+		net: vault.apy.net_apy,
+		weekly: vault.apy.points.week_ago,
+		monthly: vault.apy.points.month_ago,
+		inception: vault.apy.points.inception
+	},
 	strategies: vault.strategies
 		.sort((a, b) => a.details.withdrawalQueuePosition - b.details.withdrawalQueuePosition)
 		.map(strategy => yDaemonStrategyToSeafoodStrategy(strategy, chain))
