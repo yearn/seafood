@@ -33,6 +33,7 @@ const yDaemonVaultToSeafoodVault = (vault, chain) => ({
 	debtRatio: undefined,
 	managementFee: BigNumber.from(vault.details.managementFee),
 	performanceFee: BigNumber.from(vault.details.performanceFee),
+	depositLimit: BigNumber.from(vault.details.depositLimit),
 	strategies: vault.strategies
 		.sort((a, b) => a.details.withdrawalQueuePosition - b.details.withdrawalQueuePosition)
 		.map(strategy => yDaemonStrategyToSeafoodStrategy(strategy, chain))
@@ -108,7 +109,8 @@ export const AppProvider = ({children}) => {
 				calls: [
 					{reference: 'totalDebt', methodName: 'totalDebt', methodParameters: []},
 					{reference: 'debtRatio', methodName: 'debtRatio', methodParameters: []},
-					{reference: 'totalAssets', methodName: 'totalAssets', methodParameters: []}
+					{reference: 'totalAssets', methodName: 'totalAssets', methodParameters: []},
+					{reference: 'availableDepositLimit', methodName: 'availableDepositLimit', methodParameters: []}
 				]
 			}));
 
@@ -123,7 +125,8 @@ export const AppProvider = ({children}) => {
 						address: vault.address,
 						totalDebt: BigNumber.from(results[0].returnValues[0]),
 						debtRatio: results[1].returnValues[0] ? BigNumber.from(results[1].returnValues[0]) : undefined,
-						totalAssets: results[2].returnValues[0] ? BigNumber.from(results[2].returnValues[0]) : undefined
+						totalAssets: results[2].returnValues[0] ? BigNumber.from(results[2].returnValues[0]) : undefined,
+						availableDepositLimit: BigNumber.from(results[2].returnValues[0])
 					});
 				});
 				return parsed;
@@ -189,6 +192,7 @@ export const AppProvider = ({children}) => {
 							vault.totalDebt = update.totalDebt;
 							vault.debtRatio = update.debtRatio;
 							vault.totalAssets = update.totalAssets;
+							vault.availableDepositLimit = update.availableDepositLimit;
 						}
 					} else if(update.type === 'strategy') {
 						const strategy = strategies.find(s => 

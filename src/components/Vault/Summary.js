@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {formatTokens, formatPercent} from '../../utils/utils';
 import {useVault} from './VaultProvider';
 
@@ -17,6 +17,10 @@ function Cell({className, children}) {
 export default function Summary({className}) {
 	const {vault, token} = useVault();
 
+	const utilization = useMemo(() => {
+		return 1 - vault.availableDepositLimit.mul(10_000).div(vault.depositLimit) / 10_000;
+	}, [vault]);
+
 	return <div className={`
 		self-start px-4 sm:pl-8 sm:pr-4 flex flex-col
 		gap-4 sm:gap-8
@@ -28,11 +32,19 @@ export default function Summary({className}) {
 			</Row>
 			<Row className={'grid-cols-2'}>
 				<Cell>{'Free Assets'}</Cell>
-				<Cell className={'font-mono text-right'}>{(formatTokens(vault.totalAssets - vault.totalDebt, token.decimals, 2, true))}</Cell>
+				<Cell className={'font-mono text-right'}>{formatTokens(vault.totalAssets - vault.totalDebt, token.decimals, 2, true)}</Cell>
 			</Row>
 			<Row className={'grid-cols-2'}>
 				<Cell>{'Allocated'}</Cell>
-				<Cell className={'font-mono text-right'}>{formatPercent(vault.debtRatio/10_000, 0, '--')}</Cell>
+				<Cell className={'font-mono text-right'}>{formatPercent(vault.debtRatio/10_000, 2, '--')}</Cell>
+			</Row>
+			<Row className={'grid-cols-2'}>
+				<Cell>{'Deposit Limit'}</Cell>
+				<Cell className={'font-mono text-right'}>{formatTokens(vault.depositLimit, token.decimals, 2, true)}</Cell>
+			</Row>
+			<Row className={'grid-cols-2'}>
+				<Cell>{'Utilization'}</Cell>
+				<Cell className={'font-mono text-right'}>{formatPercent(utilization, 2)}</Cell>
 			</Row>
 		</div>
 
