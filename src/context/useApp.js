@@ -3,13 +3,14 @@ import axios from 'axios';
 import {BigNumber} from 'ethers';
 import {Multicall} from 'ethereum-multicall';
 import useSWR from 'swr';
-import {vault043 as vault043Abi, strategy as strategyAbi} from '../interfaces/interfaces';
+import {vault043 as vault043Abi, vault035 as vault035Abi, vault030 as vault030Abi, strategy as strategyAbi} from '../abi';
+import {GetVaultAbi, LockedProfitDegradationField} from '../ethereum/EthHelpers';
 import useLocalStorage from '../utils/useLocalStorage';
 import useRpcProvider from './useRpcProvider';
 import config from '../config.json';
 
 const yDaemonRequests = config.chains.map(chain => 
-	`${config.ydaemon.url}/${chain.id}/vaults/all?strategiesCondition=inQueue&strategiesDetails=withDetails`);
+	`${config.ydaemon.url}/${chain.id}/vaults/all?strategiesCondition=debtLimit&strategiesDetails=withDetails`);
 
 const multifetch = async (...urls) => {
 	return Promise.all(urls.map(url => 
@@ -34,6 +35,7 @@ const yDaemonVaultToSeafoodVault = (vault, chain) => ({
 	managementFee: BigNumber.from(vault.details.managementFee),
 	performanceFee: BigNumber.from(vault.details.performanceFee),
 	depositLimit: BigNumber.from(vault.details.depositLimit),
+	activation: BigNumber.from(vault.inception),
 	apy: {
 		gross: vault.apy.gross_apr,
 		net: vault.apy.net_apy,
@@ -42,6 +44,9 @@ const yDaemonVaultToSeafoodVault = (vault, chain) => ({
 		inception: vault.apy.points.inception
 	},
 	strategies: vault.strategies
+		.map(strategy => yDaemonStrategyToSeafoodStrategy(strategy, chain)),
+	withdrawalQueue: vault.strategies
+		.filter(s => s.details.withdrawalQueuePosition > -1)
 		.sort((a, b) => a.details.withdrawalQueuePosition - b.details.withdrawalQueuePosition)
 		.map(strategy => yDaemonStrategyToSeafoodStrategy(strategy, chain))
 });
@@ -63,7 +68,8 @@ const yDaemonStrategyToSeafoodStrategy = (strategy, chain) => ({
 	lastReport: strategy.details.lastReport,
 	totalDebt: BigNumber.from(strategy.details.totalDebt || 0),
 	totalGain: BigNumber.from(strategy.details.totalGain || 0),
-	totalLoss: BigNumber.from(strategy.details.totalLoss || 0)
+	totalLoss: BigNumber.from(strategy.details.totalLoss || 0),
+	withdrawalQueuePosition: strategy.details.withdrawalQueuePosition
 });
 
 const	AppContext = createContext();
@@ -112,12 +118,13 @@ export const AppProvider = ({children}) => {
 			const vaultMulticalls = vaults.map(vault => ({
 				reference: vault.address,
 				contractAddress: vault.address,
-				abi: vault043Abi,
+				abi: GetVaultAbi(vault.version),
 				calls: [
 					{reference: 'totalDebt', methodName: 'totalDebt', methodParameters: []},
 					{reference: 'debtRatio', methodName: 'debtRatio', methodParameters: []},
 					{reference: 'totalAssets', methodName: 'totalAssets', methodParameters: []},
-					{reference: 'availableDepositLimit', methodName: 'availableDepositLimit', methodParameters: []}
+					{reference: 'availableDepositLimit', methodName: 'availableDepositLimit', methodParameters: []},
+					{reference: 'lockedProfitDegradation', methodName: LockedProfitDegradationField(vault.version), methodParameters: []}
 				]
 			}));
 
@@ -126,6 +133,11 @@ export const AppProvider = ({children}) => {
 				const multiresults = await multicall.call(vaultMulticalls);
 				vaults.forEach(vault => {
 					const results = multiresults.results[vault.address].callsReturnContext;
+
+					const lockedProfitDegradation = results[4].returnValues[0] && results[4].returnValues[0].type === 'BigNumber'
+						? BigNumber.from(results[4].returnValues[0])
+						: BigNumber.from(0);
+
 					parsed.push({
 						chainId: chain.id,
 						type: 'vault',
@@ -133,13 +145,14 @@ export const AppProvider = ({children}) => {
 						totalDebt: BigNumber.from(results[0].returnValues[0]),
 						debtRatio: results[1].returnValues[0] ? BigNumber.from(results[1].returnValues[0]) : undefined,
 						totalAssets: results[2].returnValues[0] ? BigNumber.from(results[2].returnValues[0]) : undefined,
-						availableDepositLimit: BigNumber.from(results[2].returnValues[0])
+						availableDepositLimit: BigNumber.from(results[3].returnValues[0]),
+						lockedProfitDegradation
 					});
 				});
 				return parsed;
 			})());
 
-			const strategies = vaults.map(vault => vault.strategies).flat();
+			const strategies = vaults.map(vault => vault.withdrawalQueue).flat();
 			const strategyMulticalls = strategies.map(strategy => ({
 				reference: strategy.address,
 				contractAddress: strategy.address,
@@ -188,7 +201,7 @@ export const AppProvider = ({children}) => {
 					if(vaults) refresh.push(...vaults);
 				}
 
-				const strategies = refresh.map(vault => vault.strategies).flat();
+				const strategies = refresh.map(vault => vault.withdrawalQueue).flat();
 				const updates = multicallCache?.filter(u => u.chainId === chain.id);
 				updates.forEach(update => {
 					if(update.type === 'vault') {
@@ -200,6 +213,7 @@ export const AppProvider = ({children}) => {
 							vault.debtRatio = update.debtRatio;
 							vault.totalAssets = update.totalAssets;
 							vault.availableDepositLimit = update.availableDepositLimit;
+							vault.lockedProfitDegradation = update.lockedProfitDegradation;
 						}
 					} else if(update.type === 'strategy') {
 						const strategy = strategies.find(s => 

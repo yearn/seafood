@@ -40,14 +40,14 @@ function Layout() {
 		<div className={'grid grid-cols-1 sm:grid-cols-2'}>
 			<Summary className={'sm:sticky sm:top-0 sm:z-0'} />
 			<div className={'flex flex-col gap-2 pb-20 sm:pt-2'}>
-				{vault.strategies.map((strategy, index) => 
+				{vault.withdrawalQueue.map((strategy, index) => 
 					<Strategy key={index} strategy={strategy} />
 				)}
 			</div>
 		</div>
 
 		<SmallScreen>
-			{engaged() && <motion.div className={`
+			{engaged && <motion.div className={`
 			fixed z-10 bottom-[4.5rem] w-full p-4 
 			backdrop-blur-md shadow`}
 			transition={{ease: 'easeOut', duration: .1}}

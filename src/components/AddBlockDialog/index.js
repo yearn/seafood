@@ -51,7 +51,7 @@ export default function AddBlockDialog({addBlockContext, onAddBlock}) {
 
 	const addBlock = useCallback(async (dialogResult) => {
 		const contract = dialogResult.vault?.contract 
-			|| await GetVaultContract(dialogResult.vault.address, selectedProvider);
+			|| await GetVaultContract(dialogResult.vault.address, selectedProvider, dialogResult.vault.version);
 
 		const block = {
 			index: 0,

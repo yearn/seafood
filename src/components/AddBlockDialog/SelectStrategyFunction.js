@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {stepEnum} from './useAddBlockDialog';
 import {FunctionTile} from '../tiles';
-import {strategy} from '../../interfaces/interfaces';
+import {strategy} from '../../abi';
 import {ethers} from 'ethers';
 import useLocalStorage from '../../utils/useLocalStorage';
 import Filter from './Filter';

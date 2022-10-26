@@ -54,13 +54,13 @@ export default function VaultTile({vault, queryRe, onClick}) {
 						text-secondary-900 dark:text-secondary-500
 						sm:dark:group-hover:text-secondary-200
 						transition duration-200`}>
-						{!vault.strategies && <div>
+						{!vault.withdrawalQueue && <div>
 							<div><Bone></Bone></div>
 							<div><Bone></Bone></div>
 							<div><Bone></Bone></div>
 						</div>}
-						{vault.strategies && <div>
-							<div>{vault.strategies.length + ' Strategies'}</div>
+						{vault.withdrawalQueue && <div>
+							<div>{vault.withdrawalQueue.length + ' Strategies'}</div>
 							<div>{(vault.debtRatio / 100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated'}</div>
 							<div>{((vault.totalAssets - vault.totalDebt) / (10 ** vault.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}{' Free'}</div>
 						</div>}
@@ -71,8 +71,8 @@ export default function VaultTile({vault, queryRe, onClick}) {
 					text-secondary-900 dark:text-secondary-500
 					transition duration-200
 					sm:dark:group-hover:text-secondary-200`}>
-					{vault.strategies && <Sparkline />}
-					{vault.strategies && <div className={`
+					{vault.withdrawalQueue && <Sparkline />}
+					{vault.withdrawalQueue && <div className={`
 						absolute bottom-0 right-0 
 						px-2 py-1 text-xs capitalize rounded
 						backdrop-blur-sm

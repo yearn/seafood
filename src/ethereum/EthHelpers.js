@@ -1,4 +1,5 @@
-import {registry, erc20, vault030, vault043, strategy,masterchef, masterchefstrat} from '../interfaces/interfaces';
+import {registry, erc20, vault030, vault035, vault043, strategy,masterchef, masterchefstrat} from '../abi';
+import {compare} from 'compare-versions';
 //import {SpookySwapRouter, SpiritSwapRouter} from './Addresses';
 
 const {ethers} = require('ethers');
@@ -170,13 +171,24 @@ async function AllVaults(vaultAddresses, defaultProvider){
 
 }
 
-async function GetVaultContract(vault, provider){
-	let s = new ethers.Contract(vault, vault043, provider);
-	let version = await s.apiVersion();
-	if( version.includes('0.3.0') || version.includes('0.3.1')){
-		s = new ethers.Contract(vault, vault030, provider);
+function LockedProfitDegradationField(version) {
+	if(compare(version, '0.3.5', '<')) return 'symbol'; // hack: these vaults will return a string. we'll interpret this as "no degradation"
+	if(compare(version, '0.3.5', '=')) return 'lockedProfitDegration';
+	return 'lockedProfitDegradation';
+}
+
+function GetVaultAbi(version) {
+	if(compare(version, '0.3.5', '<')) return vault030;
+	if(compare(version, '0.3.5', '=')) return vault035;
+	return vault043;
+}
+
+async function GetVaultContract(vault, provider, version){
+	if(version === undefined) {
+		const s = new ethers.Contract(vault, vault043, provider);
+		version = await s.apiVersion();
 	}
-	return s;
+	return new ethers.Contract(vault, GetVaultAbi(version), provider);
 }
 
 async function GetBasicVault(address, provider){
@@ -408,12 +420,14 @@ function Dai(provider){
 export {
 	AllVaults,
 	GetDexScreener,
-	GetBalances, 
-	GetCurrentBlock, 
-	GetBasicStrat, 
-	GetBasicVault, 
-	GetVaultContract, 
-	GetStrategyContract, 
+	GetBalances,
+	GetCurrentBlock,
+	GetBasicStrat,
+	GetBasicVault,
+	GetVaultAbi,
+	GetVaultContract,
+	GetStrategyContract,
+	LockedProfitDegradationField,
 	AllRegistered,
 	StratInfo, 
 	Erc20Info, 

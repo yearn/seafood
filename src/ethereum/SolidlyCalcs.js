@@ -1,4 +1,4 @@
-import {lpDepositer, solidlyPair, solidlyRouter, solidexStakingRewards, solidlygauge, solidexFeeDistributor, veNFTContract} from '../interfaces/interfaces';
+import {lpDepositer, solidlyPair, solidlyRouter, solidexStakingRewards, solidlygauge, solidexFeeDistributor, veNFTContract} from '../abi';
 import {solidexLpDepositer,  solidlyRouterAddress, sex, wftm, solid, solidsex, solidexStakingRewardsAddress, yfi, woofy, solidexFeeDistributorAddress, oxDaoStaker, veNFT} from './Addresses';
 import {GetDexScreener} from './EthHelpers';
 

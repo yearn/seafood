@@ -35,11 +35,11 @@ function Percentage({value, simulated, delta, className}) {
 
 export default function Strategy({strategy}) {
 	const location = useLocation();
-	const {vault, provider, token, harvestHistory, showHarvestChart} = useVault();
+	const {vault, provider, token, reports, showHarvestChart} = useVault();
 	const simulator = useSimulator();
-	const strategyHarvestHistory = harvestHistory.filter(h => h.strategy_address === strategy.address);
+	const strategyHarvestHistory = reports.filter(r => r.strategy_address === strategy.address);
 	const [showHarvestHistory, setShowHarvestHistory] = useState(false);
-	const lastStrategy = useMemo(() => strategy.address === vault.strategies.at(-1).address, [strategy, vault]);
+	const lastStrategy = useMemo(() => strategy.address === vault.withdrawalQueue.at(-1).address, [strategy, vault]);
 
 	function latestHarvest(strategy) {
 		return new Date(strategy.lastReport * 1000);

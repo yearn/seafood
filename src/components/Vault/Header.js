@@ -41,8 +41,8 @@ export default function Header() {
 			<div className={'relative mr-12 ml-8 flex flex-col'}>
 				<Tools />
 				<div className={'absolute left-0 top-[3.3rem] z-10 w-full'}>
-					{engaged() && <motion.div className={'w-full'}
-						transition={{ease: 'easeOut', duration: .1}}
+					{engaged && <motion.div className={'w-full'}
+						transition={{ease: 'easeOut', duration: .25}}
 						initial={{y: '0%'}}
 						animate={{y: '50%'}}>
 						<SimulatorStatus />

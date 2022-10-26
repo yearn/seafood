@@ -66,6 +66,13 @@ function formatPercent(number, decimals = 2, nonFinite = '∞') {
 		return nonFinite;
 }
 
+function formatBps(number, nonFinite = '∞') {
+	if(Number.isFinite(number))
+		return `${parseInt(number * 10_000)}bps`;
+	else
+		return nonFinite;
+}
+
 function formatCurrency(number, currency = 'USD', nonFinite = '∞') {
 	if(Number.isFinite(number))
 		return number.toLocaleString(
@@ -106,7 +113,8 @@ export {
 	getTxExplorer, 
 	truncateAddress, 
 	formatNumber, 
-	formatPercent, 
+	formatPercent,
+	formatBps,
 	formatCurrency,
 	formatTokens,
 	highlightString

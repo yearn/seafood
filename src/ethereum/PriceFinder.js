@@ -1,4 +1,4 @@
-import {univ2router, solidlyRouter,} from '../interfaces/interfaces';
+import {univ2router, solidlyRouter,} from '../abi';
 import {spookyRouterAddress, solidlyRouterAddress, sex, wftm,  daiFantom} from './Addresses';
 
 const {ethers} = require('ethers');
