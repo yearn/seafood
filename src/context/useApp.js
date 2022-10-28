@@ -53,9 +53,9 @@ const yDaemonStrategyToSeafoodStrategy = (strategy, chain) => ({
 		? BigNumber.from(strategy.details.debtRatio)
 		: undefined,
 	lastReport: strategy.details.lastReport,
-	totalDebt: BigNumber.from(strategy.details.totalDebt),
-	totalGain: BigNumber.from(strategy.details.totalGain),
-	totalLoss: BigNumber.from(strategy.details.totalLoss)
+	totalDebt: BigNumber.from(strategy.details.totalDebt || 0),
+	totalGain: BigNumber.from(strategy.details.totalGain || 0),
+	totalLoss: BigNumber.from(strategy.details.totalLoss || 0)
 });
 
 const	AppContext = createContext();
