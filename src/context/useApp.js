@@ -37,10 +37,11 @@ const yDaemonVaultToSeafoodVault = (vault, chain) => ({
 	depositLimit: BigNumber.from(vault.details.depositLimit),
 	activation: BigNumber.from(vault.inception),
 	apy: {
+		type: vault.apy.type,
 		gross: vault.apy.gross_apr,
 		net: vault.apy.net_apy,
-		weekly: vault.apy.points.week_ago,
-		monthly: vault.apy.points.month_ago,
+		[-7]: vault.apy.points.week_ago,
+		[-30]: vault.apy.points.month_ago,
 		inception: vault.apy.points.inception
 	},
 	strategies: vault.strategies

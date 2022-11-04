@@ -5,6 +5,10 @@ import {FixedNumber} from 'ethers';
 import {formatTokens, formatPercent, formatBps} from '../../utils/utils';
 import {useSimulator} from './SimulatorProvider';
 import {useVault} from './VaultProvider';
+import {Pebble} from '../controls';
+import {BsLightningChargeFill} from 'react-icons/bs';
+import {BiBadgeCheck} from 'react-icons/bi';
+import useLocalStorage from '../../utils/useLocalStorage';
 
 dayjs.extend(duration);
 
@@ -23,8 +27,8 @@ function Cell({className, children}) {
 function BpsCell({value}) {
 	return <Cell className={`
 		font-mono text-right
-		${value < 0 ? 'text-red-400' : 'text-primary-400'}`}>
-		{`${Number.isFinite(value) ? value < 0 ? '-' : '+' : ''}${formatBps(value, '--')}`}
+		${value < 0 ? 'text-red-400' : 'text-primary-600 dark:text-primary-400'}`}>
+		{`${Number.isFinite(value) ? value < 0 ? '' : '+' : ''}${formatBps(value, '--')}`}
 	</Cell>;
 }
 
@@ -32,6 +36,7 @@ export default function Summary({className}) {
 	const {vault, token} = useVault();
 	const simulator = useSimulator();
 	const [apyDelta, setApyDelta] = useState();
+	const [liveApy, setLiveApy] = useLocalStorage('vault.liveApy', false);
 
 	const degradation = useMemo(() => {
 		if(!simulator.degradationTime) return '';
@@ -41,24 +46,28 @@ export default function Summary({className}) {
 	}, [simulator]);
 
 	useEffect(() => {
-		if(simulator.currentApy && simulator.nextApy) {
+		if(simulator.nextApy) {
 			const pps = FixedNumber.from(simulator.nextApy.pps.sub(simulator.currentApy.pps))
 				.divUnsafe(FixedNumber.from(simulator.currentApy.pps))
 				.mulUnsafe(FixedNumber.from(10_000))
 				.toUnsafeFloat();
 
+			const currentApy = liveApy
+				? simulator.currentApy
+				: vault.apy;
+
 			setApyDelta({
-				[-7]: simulator.nextApy[-7] - simulator.currentApy[-7],
-				[-30]: simulator.nextApy[-30] - simulator.currentApy[-30],
-				inception: simulator.nextApy.inception - simulator.currentApy.inception,
-				net: simulator.nextApy.net - simulator.currentApy.net,
-				gross: simulator.nextApy.gross - simulator.currentApy.gross,
+				[-7]: simulator.nextApy[-7] - currentApy[-7],
+				[-30]: simulator.nextApy[-30] - currentApy[-30],
+				inception: simulator.nextApy.inception - currentApy.inception,
+				net: simulator.nextApy.net - currentApy.net,
+				gross: simulator.nextApy.gross - currentApy.gross,
 				pps
 			});
 		} else {
 			setApyDelta();
 		}
-	}, [simulator]);
+	}, [vault, simulator, liveApy]);
 
 	const allocated = useMemo(() => {
 		if(vault.totalAssets.eq(0)) return 0;
@@ -98,51 +107,57 @@ export default function Summary({className}) {
 		</div>
 
 		<div className={'mb-4'}>
-			<Row className={'grid-cols-2'}>
-				<Cell>{'Current APY'}</Cell>
-				<Cell className={'text-primary-400 text-right'}>{`Simulated APY${degradation}`}</Cell>
+			<Row className={'grid-cols-4'}>
+				<Cell>{'Current APY'}<div className={'text-xs'}>{vault.apy.type}</div></Cell>
+				<Cell className={'mr-4 flex justify-end'}>
+					<Pebble title={liveApy ? 'Switch to exporter APY' : 'Switch to live APY'} 
+						onClick={() => setLiveApy(current => !current)}>
+						{liveApy && <BsLightningChargeFill className={'stroke-secondary-600 dark:stroke-secondary-300'} />}
+						{!liveApy && <BiBadgeCheck className={'stroke-secondary-600 dark:stroke-secondary-300'} />}
+					</Pebble>
+				</Cell>
+				<Cell className={'col-span-2 text-primary-600 dark:text-primary-400 text-right'}>{`Simulated APY${degradation}`}</Cell>
 			</Row>
-			<Row className={'grid-cols-5'}>
+			<Row className={'grid-cols-4'}>
 				<Cell>{'Gross'}</Cell>
-				<Cell className={'font-mono text-right'}>{formatPercent(vault.apy.gross, 2)}</Cell>
-				<Cell className={'font-mono text-right'}>{formatPercent(simulator?.currentApy?.gross, 4, '--')}</Cell>
-				<Cell className={'font-mono text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.gross, 4, '--')}</Cell>
+				{liveApy && <Cell className={'font-mono text-right'}>{formatPercent(simulator?.currentApy?.gross, 4, '--')}</Cell>}
+				{!liveApy && <Cell className={'font-mono text-right'}>{formatPercent(vault.apy.gross, 4)}</Cell>}
+				<Cell className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.gross, 4, '--')}</Cell>
 				<BpsCell value={apyDelta?.gross} />
 			</Row>
-			<Row className={'grid-cols-5 bg-selected-400/5'}>
+			<Row className={'grid-cols-4 bg-selected-400/5'}>
 				<Cell className={'font-bold'}>{'Net'}</Cell>
-				<Cell className={'font-bold font-mono text-right'}>{formatPercent(vault.apy.net, 2)}</Cell>
-				<Cell className={'font-bold font-mono text-right'}>{formatPercent(simulator?.currentApy?.net, 4, '--')}</Cell>
-				<Cell className={'font-bold font-mono text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.net, 4, '--')}</Cell>
+				{liveApy && <Cell className={'font-bold font-mono text-right'}>{formatPercent(simulator?.currentApy?.net, 4, '--')}</Cell>}
+				{!liveApy && <Cell className={'font-bold font-mono text-right'}>{formatPercent(vault.apy.net, 4)}</Cell>}
+				<Cell className={'font-bold font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.net, 4, '--')}</Cell>
 				<BpsCell value={apyDelta?.net} />
 			</Row>
-			<Row className={'grid-cols-5'}>
+			<Row className={'grid-cols-4'}>
 				<Cell>{'Weekly'}</Cell>
-				<Cell className={'font-mono text-right'}>{formatPercent(vault.apy.weekly, 2)}</Cell>
-				<Cell className={'font-mono text-right'}>{formatPercent(simulator?.currentApy?.[-7], 4, '--')}</Cell>
-				<Cell className={'font-mono text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.[-7], 4, '--')}</Cell>
+				{liveApy && <Cell className={'font-mono text-right'}>{formatPercent(simulator?.currentApy?.[-7], 4, '--')}</Cell>}
+				{!liveApy && <Cell className={'font-mono text-right'}>{formatPercent(vault.apy[-7], 4)}</Cell>}
+				<Cell className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.[-7], 4, '--')}</Cell>
 				<BpsCell value={apyDelta?.[-7]} />
 			</Row>
-			<Row className={'grid-cols-5 bg-selected-400/5'}>
+			<Row className={'grid-cols-4 bg-selected-400/5'}>
 				<Cell>{'Monthly'}</Cell>
-				<Cell className={'font-mono text-right'}>{formatPercent(vault.apy.monthly, 2)}</Cell>
-				<Cell className={'font-mono text-right'}>{formatPercent(simulator?.currentApy?.[-30], 4, '--')}</Cell>
-				<Cell className={'font-mono text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.[-30], 4, '--')}</Cell>
+				{liveApy && <Cell className={'font-mono text-right'}>{formatPercent(simulator?.currentApy?.[-30], 4, '--')}</Cell>}
+				{!liveApy && <Cell className={'font-mono text-right'}>{formatPercent(vault.apy[-30], 4)}</Cell>}
+				<Cell className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.[-30], 4, '--')}</Cell>
 				<BpsCell value={apyDelta?.[-30]} />
 			</Row>
-			<Row className={'grid-cols-5'}>
+			<Row className={'grid-cols-4'}>
 				<Cell>{'Inception'}</Cell>
-				<Cell className={'font-mono text-right'}>{formatPercent(vault.apy.inception, 2)}</Cell>
-				<Cell className={'font-mono text-right'}>{formatPercent(simulator?.currentApy?.inception, 4, '--')}</Cell>
-				<Cell className={'font-mono text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.inception, 4, '--')}</Cell>
+				{liveApy && <Cell className={'font-mono text-right'}>{formatPercent(simulator?.currentApy?.inception, 4, '--')}</Cell>}
+				{!liveApy && <Cell className={'font-mono text-right'}>{formatPercent(vault.apy.inception, 4)}</Cell>}
+				<Cell className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.inception, 4, '--')}</Cell>
 				<BpsCell value={apyDelta?.inception} />
 			</Row>
-			<Row className={'grid-cols-5 bg-selected-400/5'}>
+			<Row className={'grid-cols-4 bg-selected-400/5'}>
 				<Cell>{'PPS (x1000)'}</Cell>
-				<Cell className={'font-mono text-right'}></Cell>
-				<Cell className={'font-mono text-primary-400 text-right'}></Cell>
-				<Cell className={'font-mono text-primary-400 text-right'}></Cell>
-				<Cell className={'font-mono text-primary-400 text-right'}>{formatPercent(apyDelta?.pps, 2, '--')}</Cell>
+				<Cell></Cell>
+				<Cell></Cell>
+				<Cell className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{apyDelta?.pps ? '+' : ''}{formatPercent(apyDelta?.pps, 2, '--')}</Cell>
 			</Row>
 		</div>
 	</div>;

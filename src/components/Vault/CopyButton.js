@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {TbCopy, TbCheck} from 'react-icons/tb';
+import {Pebble} from '../controls';
 
 export default function CopyButton({clip, className}) {
 	const [copied, setCopied] = useState(false);
@@ -15,16 +16,8 @@ export default function CopyButton({clip, className}) {
 		}
 	}
 
-	return <button onClick={copy} className={`
-		w-[26px] h-[26px] p-0
-		flex items-center justify-center 
-		bg-transparent
-		hover:bg-selected-400 hover:dark:bg-selected-600
-		active:transform active:scale-95
-		rounded-full cursor-pointer
-		transition duration-200
-		${className}`}>
+	return <Pebble onClick={copy}>
 		{!copied && <TbCopy className={'stroke-secondary-600 dark:stroke-secondary-300'}></TbCopy>}
 		{copied && <TbCheck className={'stroke-secondary-600 dark:stroke-secondary-300'}></TbCheck>}
-	</button>;
+	</Pebble>;
 }
