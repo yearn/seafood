@@ -26,7 +26,7 @@ const yDaemonVaultToSeafoodVault = (vault, chain) => ({
 	},
 	version: vault.version,
 	want: vault.token.address,
-	totalAssets: BigNumber.from(vault.tvl.total_assets),
+	totalAssets: null,
 	governance: vault.details.governance,
 	totalDebt: undefined,
 	decimals: vault.decimals,
@@ -107,7 +107,8 @@ export const AppProvider = ({children}) => {
 				abi: vault043Abi,
 				calls: [
 					{reference: 'totalDebt', methodName: 'totalDebt', methodParameters: []},
-					{reference: 'debtRatio', methodName: 'debtRatio', methodParameters: []}
+					{reference: 'debtRatio', methodName: 'debtRatio', methodParameters: []},
+					{reference: 'totalAssets', methodName: 'totalAssets', methodParameters: []}
 				]
 			}));
 
@@ -121,7 +122,8 @@ export const AppProvider = ({children}) => {
 						type: 'vault',
 						address: vault.address,
 						totalDebt: BigNumber.from(results[0].returnValues[0]),
-						debtRatio: results[1].returnValues[0] ? BigNumber.from(results[1].returnValues[0]) : undefined
+						debtRatio: results[1].returnValues[0] ? BigNumber.from(results[1].returnValues[0]) : undefined,
+						totalAssets: results[2].returnValues[0] ? BigNumber.from(results[2].returnValues[0]) : undefined
 					});
 				});
 				return parsed;
@@ -186,6 +188,7 @@ export const AppProvider = ({children}) => {
 						if(vault) {
 							vault.totalDebt = update.totalDebt;
 							vault.debtRatio = update.debtRatio;
+							vault.totalAssets = update.totalAssets;
 						}
 					} else if(update.type === 'strategy') {
 						const strategy = strategies.find(s => 
