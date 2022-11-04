@@ -192,7 +192,7 @@ export default function SimulatorProvider({children}) {
 		await jumpToTotalProfitUnlock(tenderlyProvider);
 		setNextApy(await computeVaultApy(vaultRpc));
 		setSimulatingAll(false);
-	}, [vault, provider, jumpToTotalProfitUnlock, setSimulatingAll, harvest]);
+	}, [vault, provider, jumpToTotalProfitUnlock, computeVaultApy, setSimulatingAll, harvest]);
 
 	const updateDebtRatio = useCallback((strategy, debtRatio) => {
 		setDebtRatioUpdates(current => {

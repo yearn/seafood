@@ -1,8 +1,7 @@
 import {registry, erc20, vault030, vault035, vault043, strategy,masterchef, masterchefstrat} from '../abi';
 import {compare} from 'compare-versions';
+import {ethers} from 'ethers';
 //import {SpookySwapRouter, SpiritSwapRouter} from './Addresses';
-
-const {ethers} = require('ethers');
 
 let all = [];
 
@@ -399,20 +398,6 @@ function Registry(provider){
 		return new ethers.Contract('0x727fe1759430df13655ddb0731dE0D0FDE929b04', registry, provider);
 	}
 	return new ethers.Contract('0x50c1a2eA0a861A967D9d0FFE2AE4012c2E053804', registry, provider);
-	//return new ethers.Contract('0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e', registry, provider);
-    
-}
-
-// eslint-disable-next-line no-unused-vars
-function Strategy(strat, provider){
-	console.log('registering strat');
-	return new ethers.Contract(strat, strategy, provider);
-    
-}
-// eslint-disable-next-line no-unused-vars
-function Dai(provider){
-	console.log('registering Dai');
-	return new ethers.Contract('0x6B175474E89094C44Da98b954EedeAC495271d0F', erc20, provider);
 	//return new ethers.Contract('0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e', registry, provider);
     
 }

@@ -16,7 +16,7 @@ export default function CopyButton({clip, className}) {
 		}
 	}
 
-	return <Pebble onClick={copy}>
+	return <Pebble onClick={copy} className={className}>
 		{!copied && <TbCopy className={'stroke-secondary-600 dark:stroke-secondary-300'}></TbCopy>}
 		{copied && <TbCheck className={'stroke-secondary-600 dark:stroke-secondary-300'}></TbCheck>}
 	</Pebble>;

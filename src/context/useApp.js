@@ -3,7 +3,7 @@ import axios from 'axios';
 import {BigNumber} from 'ethers';
 import {Multicall} from 'ethereum-multicall';
 import useSWR from 'swr';
-import {vault043 as vault043Abi, vault035 as vault035Abi, vault030 as vault030Abi, strategy as strategyAbi} from '../abi';
+import {strategy as strategyAbi} from '../abi';
 import {GetVaultAbi, LockedProfitDegradationField} from '../ethereum/EthHelpers';
 import useLocalStorage from '../utils/useLocalStorage';
 import useRpcProvider from './useRpcProvider';

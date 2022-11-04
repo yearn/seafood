@@ -5,7 +5,7 @@ import {FixedNumber} from 'ethers';
 import {formatTokens, formatPercent, formatBps} from '../../utils/utils';
 import {useSimulator} from './SimulatorProvider';
 import {useVault} from './VaultProvider';
-import {Pebble} from '../controls';
+import {Switch} from '../controls';
 import {BsLightningChargeFill} from 'react-icons/bs';
 import {BiBadgeCheck} from 'react-icons/bi';
 import useLocalStorage from '../../utils/useLocalStorage';
@@ -41,8 +41,8 @@ export default function Summary({className}) {
 	const degradation = useMemo(() => {
 		if(!simulator.degradationTime) return '';
 		const duration = dayjs.duration(simulator.degradationTime * 1000);
-		if(duration.asHours() >= 1) return ` (+${Math.floor(duration.asHours())}hr)`;
-		return ` (+${Math.floor(duration.asMinutes())}min)`;
+		if(duration.asHours() >= 1) return ` (+${Math.floor(duration.asHours())}hr degradation)`;
+		return ` (+${Math.floor(duration.asMinutes())}min degradation)`;
 	}, [simulator]);
 
 	useEffect(() => {
@@ -108,15 +108,23 @@ export default function Summary({className}) {
 
 		<div className={'mb-4'}>
 			<Row className={'grid-cols-4'}>
-				<Cell>{'Current APY'}<div className={'text-xs'}>{vault.apy.type}</div></Cell>
-				<Cell className={'mr-4 flex justify-end'}>
-					<Pebble title={liveApy ? 'Switch to exporter APY' : 'Switch to live APY'} 
-						onClick={() => setLiveApy(current => !current)}>
-						{liveApy && <BsLightningChargeFill className={'stroke-secondary-600 dark:stroke-secondary-300'} />}
-						{!liveApy && <BiBadgeCheck className={'stroke-secondary-600 dark:stroke-secondary-300'} />}
-					</Pebble>
+				<Cell>
+					{'Current APY'}
+					<div className={'text-xs'}>{vault.apy.type}</div>
 				</Cell>
-				<Cell className={'col-span-2 text-primary-600 dark:text-primary-400 text-right'}>{`Simulated APY${degradation}`}</Cell>
+				<Cell className={'flex justify-end'}>
+					<div title={liveApy ? 'Switch to exporter APY' : 'Switch to live APY'}>
+						<Switch
+							onChange={() => setLiveApy(current => !current)}
+							checkedIcon={<BsLightningChargeFill className={'w-full h-full p-1'} />}
+							uncheckedIcon={<BiBadgeCheck className={'w-full h-full p-1'} />}
+							checked={liveApy} />
+					</div>
+				</Cell>
+				<Cell className={'col-span-2 text-primary-600 dark:text-primary-400 text-right'}>
+					{'Simulated APY'}
+					<div className={'text-xs'}>{degradation}</div>
+				</Cell>
 			</Row>
 			<Row className={'grid-cols-4'}>
 				<Cell>{'Gross'}</Cell>
