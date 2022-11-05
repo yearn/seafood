@@ -7,7 +7,6 @@ export default function SimulatorStatus() {
 	const simulator = useSimulator();
 
 	return <div className={'flex items-center justify-center gap-1 sm:gap-2'}>
-		<div className={'sm:w-1/2 sm:mr-4'}></div>
 		{vault.withdrawalQueue.map(strategy => {
 			const results = simulator.strategyResults[strategy.address];
 			if(simulator.simulatingStrategy[strategy.address]) {

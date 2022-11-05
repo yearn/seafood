@@ -47,12 +47,15 @@ function Layout() {
 		</div>
 
 		{engaged && <motion.div className={`
-		fixed z-10 bottom-[4.5rem] sm:bottom-0 w-full p-4 
+		fixed z-10 bottom-[4.5rem] sm:bottom-0 w-full p-4
+		flex justify-end
 		backdrop-blur-md shadow`}
 		transition={{ease: 'easeIn', duration: .1}}
 		initial={{y: '50%'}}
 		animate={{y: '0%'}}>
-			<SimulatorStatus />
+			<div className={'sm:w-1/2 sm:px-8'}>
+				<SimulatorStatus />
+			</div>
 		</motion.div>}
 
 		<SmallScreen>
