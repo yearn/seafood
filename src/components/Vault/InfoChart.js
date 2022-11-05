@@ -1,4 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
+import colors from 'tailwindcss/colors';
+
 import {
 	Chart as ChartJS,
 	CategoryScale,
@@ -30,11 +32,16 @@ export default function InfoChart({name, x, y}) {
 		maintainAspectRatio: false,
 		plugins: {
 			legend: {
-				position: 'top'
+				display: false
+			},
+			title: {
+				display: true,
+				text: name,
+				color: colors.sky[800]
 			}
 		},
 		animation: {
-			duration: 500
+			duration: 250
 		},
 		scales: {
 			x: {
@@ -44,6 +51,9 @@ export default function InfoChart({name, x, y}) {
 				position: 'right',
 				grid: {
 					display: false
+				},
+				ticks: {
+					color: colors.sky[800],
 				}
 			}
 		}
@@ -51,8 +61,8 @@ export default function InfoChart({name, x, y}) {
 
 	function createGradient(ctx, area) {
 		const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);	
-		gradient.addColorStop(0, '#a855f7');
-		gradient.addColorStop(1, '#ec4899');
+		gradient.addColorStop(0, colors.purple[500]);
+		gradient.addColorStop(1, colors.pink[500]);
 		return gradient;
 	}
 

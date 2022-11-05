@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
+import colors from 'tailwindcss/colors';
 
 import {
 	Chart as ChartJS,
@@ -66,14 +67,14 @@ export default function Sarkline() {
 			enabled: false
 		},
 		animation: {
-			duration: 500
+			duration: 250
 		}
 	};
 
 	function createGradient(ctx, area) {
 		const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);	
-		gradient.addColorStop(0, '#a855f7');
-		gradient.addColorStop(1, '#ec4899');
+		gradient.addColorStop(0, colors.purple[500]);
+		gradient.addColorStop(1, colors.pink[500]);
 		return gradient;
 	}
 

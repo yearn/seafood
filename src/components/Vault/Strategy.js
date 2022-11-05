@@ -156,7 +156,7 @@ export default function Strategy({strategy}) {
 
 			{showHarvestChart && strategyHarvestHistory.length > 0 && <div className={'w-full 2xl:w-1/2 2xl:px-4'}>
 				<InfoChart
-					name={'APR (capped at 200 %)'}
+					name={'APR (capped at 200%)'}
 					x={strategyHarvestHistory.map(d => d['date_string']).reverse()}
 					y={strategyHarvestHistory.map(d => {
 						let amount = d['rough_apr_pre_fee'] * 100;
