@@ -48,8 +48,8 @@ export default function Strategy({strategy}) {
 	return <div className={`
 		px-4 pt-2 sm:pt-0 sm:pr-12 sm:pl-8 flex flex-col gap-2`}>
 
-		<div className={'flex flex-col sm:flex-row gap-2'}>
-			<div className={'sm:max-w-prose sm:w-[65ch] flex flex-col gap-2'}>
+		<div className={'flex flex-col 2xl:flex-row gap-2'}>
+			<div className={'grow flex flex-col gap-2'}>
 				<div className={'flex items-center justify-between'}>
 					<div className={'flex items-center gap-2'}>
 						<A target={'_blank'} href={getAddressExplorer(provider.network.chainId, strategy.address)} rel={'noreferrer'}>{truncateAddress(strategy.address)}</A>
@@ -153,15 +153,17 @@ export default function Strategy({strategy}) {
 				</div>}
 			</div>
 
-			{showHarvestChart && strategyHarvestHistory.length > 0 && <div className={'grow'}><InfoChart
-				name={'APR (capped at 200 %)'}
-				x={strategyHarvestHistory.map(d => d['date_string']).reverse()}
-				y={strategyHarvestHistory.map(d => {
-					let amount = d['rough_apr_pre_fee'] * 100;
-					if (amount > 200){ amount = 200; }
-					return amount;
-				}).reverse()}
-				importData={strategyHarvestHistory} /></div>}
+			{showHarvestChart && strategyHarvestHistory.length > 0 && <div className={'w-full 2xl:w-1/2 2xl:px-4'}>
+				<InfoChart
+					name={'APR (capped at 200 %)'}
+					x={strategyHarvestHistory.map(d => d['date_string']).reverse()}
+					y={strategyHarvestHistory.map(d => {
+						let amount = d['rough_apr_pre_fee'] * 100;
+						if (amount > 200){ amount = 200; }
+						return amount;
+					}).reverse()}
+					importData={strategyHarvestHistory} />
+			</div>}
 		</div>
 		
 		{showHarvestHistory && <HarvestHistory history={strategyHarvestHistory} />}

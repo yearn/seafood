@@ -35,6 +35,17 @@ export default function InfoChart({name, x, y}) {
 		},
 		animation: {
 			duration: 500
+		},
+		scales: {
+			x: {
+				display: false
+			},
+			y: {
+				position: 'right',
+				grid: {
+					display: false
+				}
+			}
 		}
 	};
 
