@@ -1,7 +1,5 @@
 import React from 'react';
-import {motion} from 'framer-motion';
 import useScrollOverpass from '../../context/useScrollOverpass';
-import {useSimulator} from './SimulatorProvider';
 import {getAddressExplorer, truncateAddress} from '../../utils/utils';
 import {A} from '../controls';
 import {useVault} from './VaultProvider';
@@ -9,12 +7,10 @@ import Chip from './Chip';
 import CopyButton from './CopyButton';
 import Tools from './Tools';
 import {BiggerThanSmallScreen} from '../../utils/breakpoints';
-import SimulatorStatus from './SimulatorStatus';
 
 export default function Header() {
 	const {vault, provider} = useVault();
 	const {overpassClassName} = useScrollOverpass();
-	const {engaged} = useSimulator();
 
 	return <div className={`
 		sticky top-0 z-10 pb-4 sm:py-2
@@ -40,14 +36,6 @@ export default function Header() {
 		<BiggerThanSmallScreen>
 			<div className={'relative mr-12 ml-8 flex flex-col'}>
 				<Tools />
-				<div className={'absolute left-0 top-[3.3rem] z-10 w-full'}>
-					{engaged && <motion.div className={'w-full'}
-						transition={{ease: 'easeOut', duration: .25}}
-						initial={{y: '0%'}}
-						animate={{y: '50%'}}>
-						<SimulatorStatus />
-					</motion.div>}
-				</div>
 			</div>
 		</BiggerThanSmallScreen>
 	</div>;

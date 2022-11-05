@@ -46,15 +46,16 @@ function Layout() {
 			</div>
 		</div>
 
+		{engaged && <motion.div className={`
+		fixed z-10 bottom-[4.5rem] sm:bottom-0 w-full p-4 
+		backdrop-blur-md shadow`}
+		transition={{ease: 'easeIn', duration: .1}}
+		initial={{y: '50%'}}
+		animate={{y: '0%'}}>
+			<SimulatorStatus />
+		</motion.div>}
+
 		<SmallScreen>
-			{engaged && <motion.div className={`
-			fixed z-10 bottom-[4.5rem] w-full p-4 
-			backdrop-blur-md shadow`}
-			transition={{ease: 'easeOut', duration: .1}}
-			initial={{y: '50%'}}
-			animate={{y: '0%'}}>
-				<SimulatorStatus />
-			</motion.div>}
 			<Toolbar />
 		</SmallScreen>
 	</div>;
