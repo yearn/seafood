@@ -1,5 +1,6 @@
 import React, {useMemo, useState} from 'react';
-import {TbHistory, TbTractor} from 'react-icons/tb';
+import {TbTractor} from 'react-icons/tb';
+import {MdHistory} from 'react-icons/md';
 import TimeAgo from 'react-timeago';
 import {formatNumber, formatPercent, formatTokens, getAddressExplorer, truncateAddress} from '../../utils/utils';
 import {A, Button, Input, LinkButton} from '../controls';
@@ -56,7 +57,7 @@ export default function Strategy({strategy}) {
 						<CopyButton clip={strategy.address}></CopyButton>
 					</div>
 					<div className={'flex items-center gap-4'}>
-						<Button icon={TbHistory} 
+						<Button icon={MdHistory} 
 							title={'Harvest history'} 
 							onClick={() => setShowHarvestHistory(current => !current)}
 							iconClassName={'text-2xl'} />
