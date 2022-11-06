@@ -37,10 +37,12 @@ export default function VaultProvider({children}) {
 			});
 
 			const strategies = vault.strategies.map(strategy => strategy.address);
-			axios.post('/api/getVaults/AllStrategyReports', strategies).then(response => {
-				setReports(response.data);
-				setReportBlocks(response.data.map(r => parseInt(r.block)).sort());
-			});
+			axios.post('/api/getVaults/AllStrategyReports', 
+				{chainId: vault.network.chainId, strategies})
+				.then(response => {
+					setReports(response.data);
+					setReportBlocks(response.data.map(r => parseInt(r.block)).sort());
+				});
 		}
 	}, [params, vaults, providers]);
 

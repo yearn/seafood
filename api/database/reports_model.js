@@ -9,15 +9,15 @@ const pool = new Pool({
 
 var format = require('pg-format');
 
-const getReports = (strategies) => {
+const getReports = (options) => {
 	return new Promise(function(resolve, reject) {
-		if(!strategies?.length) {
+		if(!options.strategies?.length) {
 			resolve([]);
 		} else {
 
 			const query = format(
-				'SELECT * FROM reports WHERE strategy_address IN (%L) ORDER BY block DESC LIMIT 100', 
-				strategies
+				'SELECT * FROM reports WHERE chain_id = %L AND strategy_address IN (%L) ORDER BY block DESC', 
+				options.chainId, options.strategies
 			);
 
 			pool.query(query, (error, results) => {
