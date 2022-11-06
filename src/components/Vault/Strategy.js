@@ -51,7 +51,7 @@ export default function Strategy({strategy}) {
 
 		<div className={'flex flex-col 2xl:flex-row gap-2'}>
 			<div className={'grow flex flex-col gap-2'}>
-				<div className={'flex items-center justify-between'}>
+				<div className={'flex items-center sm:items-start justify-between'}>
 					<div className={'flex items-center gap-2'}>
 						<A target={'_blank'} href={getAddressExplorer(provider.network.chainId, strategy.address)} rel={'noreferrer'}>{truncateAddress(strategy.address)}</A>
 						<CopyButton clip={strategy.address}></CopyButton>

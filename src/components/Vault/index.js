@@ -53,7 +53,7 @@ function Layout() {
 		transition={{ease: 'easeIn', duration: .1}}
 		initial={{y: '50%'}}
 		animate={{y: '0%'}}>
-			<div className={'sm:w-1/2 sm:px-8'}>
+			<div className={'w-full sm:w-1/2 sm:px-8'}>
 				<SimulatorStatus />
 			</div>
 		</motion.div>}

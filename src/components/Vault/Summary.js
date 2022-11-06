@@ -9,6 +9,7 @@ import {Switch} from '../controls';
 import {BsLightningChargeFill} from 'react-icons/bs';
 import {BiBadgeCheck} from 'react-icons/bi';
 import useLocalStorage from '../../utils/useLocalStorage';
+import VaultTvl from '../tiles/VaultTvl';
 
 dayjs.extend(duration);
 
@@ -83,27 +84,32 @@ export default function Summary({className}) {
 		self-start px-4 sm:pl-8 sm:pr-4 flex flex-col
 		gap-4 sm:gap-8
 		${className}`}>
-		<div>
-			<Row className={'grid-cols-2'}>
-				<Cell className={'font-bold text-2xl'}>{'Total Assets'}</Cell>
-				<Cell className={'font-bold font-mono text-3xl text-right'}>{formatTokens(vault.totalAssets, token.decimals, 2, true)}</Cell>
-			</Row>
-			<Row className={'grid-cols-2'}>
-				<Cell>{'Free Assets'}</Cell>
-				<Cell className={'font-mono text-right'}>{formatTokens(vault.totalAssets - vault.totalDebt, token.decimals, 2, true)}</Cell>
-			</Row>
-			<Row className={'grid-cols-2'}>
-				<Cell>{'Allocated'}</Cell>
-				<Cell className={'font-mono text-right'}>{formatPercent(allocated, 2, '--')}</Cell>
-			</Row>
-			<Row className={'grid-cols-2'}>
-				<Cell>{'Deposit Limit'}</Cell>
-				<Cell className={'font-mono text-right'}>{formatTokens(vault.depositLimit, token.decimals, 2, true)}</Cell>
-			</Row>
-			<Row className={'grid-cols-2'}>
-				<Cell>{'Utilization'}</Cell>
-				<Cell className={'font-mono text-right'}>{formatPercent(utilization, 2)}</Cell>
-			</Row>
+		<div className={'flex flex-col sm:flex-row sm:gap-8'}>
+			<div className={'w-full sm:w-[60%]'}>
+				<Row className={'grid-cols-2'}>
+					<Cell className={'font-bold text-2xl'}>{'Total Assets'}</Cell>
+					<Cell className={'font-bold font-mono text-3xl text-right'}>{formatTokens(vault.totalAssets, token.decimals, 2, true)}</Cell>
+				</Row>
+				<Row className={'grid-cols-2 bg-selected-400/5'}>
+					<Cell>{'Free Assets'}</Cell>
+					<Cell className={'font-mono text-right'}>{formatTokens(vault.totalAssets - vault.totalDebt, token.decimals, 2, true)}</Cell>
+				</Row>
+				<Row className={'grid-cols-2'}>
+					<Cell>{'Allocated'}</Cell>
+					<Cell className={'font-mono text-right'}>{formatPercent(allocated, 2, '--')}</Cell>
+				</Row>
+				<Row className={'grid-cols-2 bg-selected-400/5'}>
+					<Cell>{'Deposit Limit'}</Cell>
+					<Cell className={'font-mono text-right'}>{formatTokens(vault.depositLimit, token.decimals, 2, true)}</Cell>
+				</Row>
+				<Row className={'grid-cols-2'}>
+					<Cell>{'Utilization'}</Cell>
+					<Cell className={'font-mono text-right'}>{formatPercent(utilization, 2)}</Cell>
+				</Row>
+			</div>
+			<div className={'w-full h-48 sm:h-auto sm:w-[40%] my-2 sm:my-0'}>
+				<VaultTvl vault={vault} title={true} tooltips={true} />
+			</div>
 		</div>
 
 		<div className={'mb-4'}>
@@ -126,42 +132,42 @@ export default function Summary({className}) {
 					<div className={'text-xs'}>{degradation}</div>
 				</Cell>
 			</Row>
-			<Row className={'grid-cols-4'}>
+			<Row className={'grid-cols-4 bg-selected-400/5'}>
 				<Cell>{'Gross'}</Cell>
 				{liveApy && <Cell className={'font-mono text-right'}>{formatPercent(simulator?.currentApy?.gross, 4, '--')}</Cell>}
 				{!liveApy && <Cell className={'font-mono text-right'}>{formatPercent(vault.apy.gross, 4)}</Cell>}
 				<Cell className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.gross, 4, '--')}</Cell>
 				<BpsCell value={apyDelta?.gross} />
 			</Row>
-			<Row className={'grid-cols-4 bg-selected-400/5'}>
+			<Row className={'grid-cols-4'}>
 				<Cell className={'font-bold'}>{'Net'}</Cell>
 				{liveApy && <Cell className={'font-bold font-mono text-right'}>{formatPercent(simulator?.currentApy?.net, 4, '--')}</Cell>}
 				{!liveApy && <Cell className={'font-bold font-mono text-right'}>{formatPercent(vault.apy.net, 4)}</Cell>}
 				<Cell className={'font-bold font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.net, 4, '--')}</Cell>
 				<BpsCell value={apyDelta?.net} />
 			</Row>
-			<Row className={'grid-cols-4'}>
+			<Row className={'grid-cols-4 bg-selected-400/5'}>
 				<Cell>{'Weekly'}</Cell>
 				{liveApy && <Cell className={'font-mono text-right'}>{formatPercent(simulator?.currentApy?.[-7], 4, '--')}</Cell>}
 				{!liveApy && <Cell className={'font-mono text-right'}>{formatPercent(vault.apy[-7], 4)}</Cell>}
 				<Cell className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.[-7], 4, '--')}</Cell>
 				<BpsCell value={apyDelta?.[-7]} />
 			</Row>
-			<Row className={'grid-cols-4 bg-selected-400/5'}>
+			<Row className={'grid-cols-4'}>
 				<Cell>{'Monthly'}</Cell>
 				{liveApy && <Cell className={'font-mono text-right'}>{formatPercent(simulator?.currentApy?.[-30], 4, '--')}</Cell>}
 				{!liveApy && <Cell className={'font-mono text-right'}>{formatPercent(vault.apy[-30], 4)}</Cell>}
 				<Cell className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.[-30], 4, '--')}</Cell>
 				<BpsCell value={apyDelta?.[-30]} />
 			</Row>
-			<Row className={'grid-cols-4'}>
+			<Row className={'grid-cols-4 bg-selected-400/5'}>
 				<Cell>{'Inception'}</Cell>
 				{liveApy && <Cell className={'font-mono text-right'}>{formatPercent(simulator?.currentApy?.inception, 4, '--')}</Cell>}
 				{!liveApy && <Cell className={'font-mono text-right'}>{formatPercent(vault.apy.inception, 4)}</Cell>}
 				<Cell className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(simulator?.nextApy?.inception, 4, '--')}</Cell>
 				<BpsCell value={apyDelta?.inception} />
 			</Row>
-			<Row className={'grid-cols-4 bg-selected-400/5'}>
+			<Row className={'grid-cols-4'}>
 				<Cell>{'PPS (x1000)'}</Cell>
 				<Cell></Cell>
 				<Cell></Cell>

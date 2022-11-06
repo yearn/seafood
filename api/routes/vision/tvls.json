@@ -1,0 +1,93 @@
+{
+	"queries": [
+		{
+			"datasource": {
+				"uid": "PBFE396EC0B189D67",
+				"type": "prometheus"
+			},
+			"editorMode": "code",
+			"exemplar": false,
+			"expr": "yearn_vault{param=\"tvl\", experimental=\"false\", vault!~\"yvUSDC 0.2.2|yvDAI 0.2.2|yvWBTC 0.3.1|yvHEGIC 0.3.0\", network=\"ETH\"}",
+			"interval": "1w",
+			"legendFormat": "{{vault}} - {{network}}",
+			"queryType": "timeSeriesQuery",
+			"range": true,
+			"refId": "A",
+			"requestId": "32A",
+			"utcOffsetSec": -18000,
+			"datasourceId": 1,
+			"intervalMs": 604800000,
+			"maxDataPoints": 3
+		},
+		{
+			"datasource": {
+				"uid": "PBFE396EC0B189D67",
+				"type": "prometheus"
+			},
+			"editorMode": "code",
+			"exemplar": false,
+			"expr": "yearn_vault{param=\"tvl\", experimental=\"false\", network=\"FTM\"}",
+			"hide": false,
+			"interval": "1w",
+			"legendFormat": "{{vault}} - FTM",
+			"queryType": "timeSeriesQuery",
+			"range": true,
+			"refId": "B",
+			"requestId": "32B",
+			"utcOffsetSec": -18000,
+			"datasourceId": 1,
+			"intervalMs": 604800000,
+			"maxDataPoints": 3
+		},
+		{
+			"datasource": {
+				"uid": "PBFE396EC0B189D67",
+				"type": "prometheus"
+			},
+			"editorMode": "code",
+			"expr": "yearn_vault{param=\"tvl\", experimental=\"false\", network=\"OPT\"}",
+			"hide": false,
+			"interval": "1w",
+			"legendFormat": "{{vault}} - {{network}}",
+			"range": true,
+			"refId": "C",
+			"queryType": "timeSeriesQuery",
+			"exemplar": false,
+			"requestId": "32C",
+			"utcOffsetSec": -18000,
+			"datasourceId": 1,
+			"intervalMs": 604800000,
+			"maxDataPoints": 3
+		},
+		{
+			"datasource": {
+				"uid": "PBFE396EC0B189D67",
+				"type": "prometheus"
+			},
+			"editorMode": "code",
+			"expr": "yearn_vault{param=\"tvl\", experimental=\"false\", network=\"ARRB\"}",
+			"hide": false,
+			"interval": "1w",
+			"legendFormat": "{{vault}} - {{network}}",
+			"range": true,
+			"refId": "D",
+			"queryType": "timeSeriesQuery",
+			"exemplar": false,
+			"requestId": "32D",
+			"utcOffsetSec": -18000,
+			"datasourceId": 1,
+			"intervalMs": 604800000,
+			"maxDataPoints": 3
+		}
+	],
+	"range": {
+		"from": "2022-10-07T21:00:35.846Z",
+		"to": "2022-11-06T22:00:35.846Z",
+		"raw": {
+			"from": "now-3w",
+			"to": "now"
+		}
+	},
+	"from": "1665176435846",
+	"to": "1667772035846"
+}

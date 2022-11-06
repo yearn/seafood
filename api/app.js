@@ -9,6 +9,7 @@ var usersRouter = require('./routes/users');
 var testAPIRouter = require('./routes/testAPI');
 var getVaultsRouter = require('./routes/getVaults');
 var githubRouter = require('./routes/github');
+var visionRouter = require('./routes/vision');
 
 var app = express();
 
@@ -27,6 +28,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/testAPI', testAPIRouter);
 app.use('/api/getVaults', getVaultsRouter);
 app.use('/api/github', githubRouter);
+app.use('/api/vision', visionRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

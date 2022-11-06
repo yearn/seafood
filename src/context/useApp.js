@@ -12,8 +12,8 @@ import config from '../config.json';
 const yDaemonRequests = config.chains.map(chain => 
 	`${config.ydaemon.url}/${chain.id}/vaults/all?strategiesCondition=debtLimit&strategiesDetails=withDetails`);
 
-const multifetch = async (...urls) => {
-	return Promise.all(urls.map(url => 
+const multiGet = async (...urls) => {
+	return await Promise.all(urls.map(url => 
 		axios.get(url).then(response => response.data)
 	));
 };
@@ -90,7 +90,11 @@ export const AppProvider = ({children}) => {
 		data: yDaemonData,
 		error: yDaemonError,
 		mutate: yDaemonMutate
-	} = useSWR(yDaemonRequests, multifetch);
+	} = useSWR(yDaemonRequests, multiGet);
+
+	const {
+		data: tvls
+	} = useSWR('/api/vision/tvls', async url => ((await axios.get(url)).data));
 
 	const syncCache = useCallback(() => {
 		if(!loading) yDaemonMutate(undefined);
@@ -234,6 +238,7 @@ export const AppProvider = ({children}) => {
 	return <AppContext.Provider value={{
 		loading,
 		vaults,
+		tvls,
 		cacheTimestamp,
 		syncCache,
 		favorites: {

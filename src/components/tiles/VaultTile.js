@@ -7,7 +7,7 @@ import {Bone} from '../controls';
 import Tile from './Tile';
 import Panel from './Panel';
 import Chip from './Chip';
-import Sparkline from './Sparkline';
+import VaultTvl from './VaultTvl';
 
 export default function VaultTile({vault, queryRe, onClick}) {
 	const {favorites} = useApp();
@@ -68,15 +68,8 @@ export default function VaultTile({vault, queryRe, onClick}) {
 				</div>
 				<div className={`
 					relative grow flex
-					text-secondary-900 dark:text-secondary-500
-					transition duration-200
-					sm:dark:group-hover:text-secondary-200`}>
-					{vault.withdrawalQueue && <Sparkline />}
-					{vault.withdrawalQueue && <div className={`
-						absolute bottom-0 right-0 
-						px-2 py-1 text-xs capitalize rounded
-						backdrop-blur-sm
-						rounded-full`}>{'TVL ???'}</div>}
+					transition duration-200`}>
+					{vault.withdrawalQueue && <VaultTvl vault={vault} />}
 				</div>
 			</div>
 		</Panel>
