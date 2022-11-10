@@ -31,6 +31,15 @@
 			"providers": [
 				"https://rpc.ankr.com/optimism"
 			]
+		},
+		{
+			"id": 42161,
+			"name": "arbitrum",
+			"explorer": "https://arbiscan.io/",
+			"registry": "0x3199437193625DCcD6F9C9e98BDf93582200Eb1f",
+			"providers": [
+				"https://arb1.arbitrum.io/rpc"
+			]
 		}
 	]
 }

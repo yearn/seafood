@@ -12,3 +12,8 @@
   @apply bg-red-400
   dark:bg-red-600;
 }
+
+.bg-arbitrum {
+  @apply bg-[#28a1ef]
+  dark:bg-[#28a1ef];
+}

@@ -201,7 +201,7 @@ async function AllStratsFromAllVaults(vaults, defaultProvider){
 					apr: ethers.BigNumber.from(values[2]),
 					address: values[3]
 				}));
-				s.estimatedTotalAssets = ethers.BigNumber.from(x.callsReturnContext[3].returnValues[0]);
+				s.estimatedTotalAssets = ethers.BigNumber.from(x.callsReturnContext[3].returnValues[0] || 0);
 				s.isActive = s.debtRatio > 0 || s.estimatedTotalAssets > 0;
 			}
 		}
