@@ -59,8 +59,8 @@ const yDaemonStrategyToSeafoodStrategy = (strategy, chain) => ({
 		chainId: chain.id,
 		name: chain.name
 	},
-	delegatedAssets: BigNumber.from(strategy.details.delegatedAssets),
-	estimatedTotalAssets: BigNumber.from(strategy.details.estimatedTotalAssets),
+	delegatedAssets: BigNumber.from(strategy.details.delegatedAssets || 0),
+	estimatedTotalAssets: BigNumber.from(strategy.details.estimatedTotalAssets || 0),
 	performanceFee: strategy.details.performanceFee,
 	activation: strategy.details.activation,
 	debtRatio: strategy.details.debtRatio
