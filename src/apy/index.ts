@@ -1,6 +1,7 @@
 import {ethers} from 'ethers';
 import {estimateBlockHeight} from '../utils/defillama';
-import computeV2Average from './v2/average';
+import * as types from './types';
+import computeV2Averaged from './v2/averaged';
 
 export async function getSamples(provider: ethers.providers.BaseProvider, reportBlocks: number[]) {
 	const day = 24 * 60 * 60;
@@ -15,6 +16,10 @@ export async function getSamples(provider: ethers.providers.BaseProvider, report
 	return idealSamples;
 }
 
-export function getApyComputer() {
-	return computeV2Average;
+export function getApyComputer(type: string) : types.ApyComputer {
+	type; // shh.. we'll use this soon
+	return {
+		type: 'v2:averaged',
+		compute: computeV2Averaged
+	};
 }

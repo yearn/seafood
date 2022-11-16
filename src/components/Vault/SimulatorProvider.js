@@ -23,6 +23,12 @@ export default function SimulatorProvider({children}) {
 		}
 	}, [simulatingStrategy]);
 
+	const apyComputer = useMemo(() => {
+		if(vault) {
+			return getApyComputer(vault.apy.type);
+		}
+	}, [vault]);
+
 	const degradationTime = useMemo(() => {
 		if(vault) {
 			if(vault.lockedProfitDegradation.eq(0)) return 0;
@@ -38,8 +44,8 @@ export default function SimulatorProvider({children}) {
 
 	const computeVaultApy = useCallback(async (vaultRpc) => {
 		const samples = await getSamples(vaultRpc.provider, reportBlocks);
-		return await getApyComputer()(vault, vaultRpc, samples);
-	}, [vault, reportBlocks]);
+		return await apyComputer.compute(vault, vaultRpc, samples);
+	}, [vault, reportBlocks, apyComputer]);
 
 	const computeStrategyFlow = useCallback((events) => {
 		const strategyReported = events.find(e => e.name === 'StrategyReported');
@@ -203,6 +209,7 @@ export default function SimulatorProvider({children}) {
 	}, []);
 
 	return <SimulatorContext.Provider value={{
+		apyComputer,
 		engaged,
 		degradationTime,
 		debtRatioUpdates,

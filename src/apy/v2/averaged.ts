@@ -1,43 +1,8 @@
 import {BigNumber, Contract, FixedNumber} from 'ethers';
 import {compare} from 'compare-versions';
+import * as types from '../types';
 
-export interface Strategy {
-	address: string,
-	debtRatio: BigNumber | undefined,
-	performanceFee: BigNumber
-}
-
-export interface Vault {
-	address: string,
-	activation: BigNumber
-	performanceFee: BigNumber,
-	managementFee: BigNumber,
-	apiVersion: string,
-	strategies: Strategy[]
-}
-
-export interface BlockSample {
-	[0]: number,
-	[-7]: number,
-	[-30]: number,
-	inception: number
-}
-
-export interface PpsSample {
-	block: number,
-	pps: BigNumber
-}
-
-export interface Apy {
-	gross: number,
-	net: number,
-	[-7]: number,
-	[-30]: number,
-	inception: number,
-	pps: BigNumber
-}
-
-function computeApy(before: PpsSample, after: PpsSample, blocksPerDay: number) {
+function computeApy(before: types.PpsSample, after: types.PpsSample, blocksPerDay: number) {
 	const days = (after.block - before.block) / blocksPerDay;
 	const ppsDelta = FixedNumber.from(after.pps.sub(before.pps)).divUnsafe(FixedNumber.from(before.pps || 1)).toUnsafeFloat();
 	const annualizedPpsDelta = Math.pow(1 + ppsDelta, 365.2425 / days) - 1;
@@ -45,10 +10,10 @@ function computeApy(before: PpsSample, after: PpsSample, blocksPerDay: number) {
 }
 
 export default async function compute(
-	vault: Vault,
+	vault: types.Vault,
 	vaultRpc: Contract,
-	samples: BlockSample
-) {
+	samples: types.BlockSample
+) : Promise<types.Apy> {
 
 	const pps = {
 		[0]: await vaultRpc.pricePerShare({blockTag: samples[0]}),
@@ -85,7 +50,7 @@ export default async function compute(
 		net: 0,
 		gross: 0,
 		pps: pps[0]
-	} as Apy;
+	} as types.Apy;
 
 	const netApyCandidates = [];
 	if((await vaultRpc.provider.getNetwork()).chainId === 250) {
