@@ -1,11 +1,12 @@
 import React, {useEffect, useState, useMemo} from 'react';
 import dayjs from 'dayjs';
 import duration from '../../../node_modules/dayjs/plugin/duration';
+import {TiWarning} from 'react-icons/ti';
 import {FixedNumber} from 'ethers';
 import {formatTokens, formatPercent, formatBps} from '../../utils/utils';
 import {useSimulator} from './SimulatorProvider';
 import {useVault} from './VaultProvider';
-import {Switch} from '../controls';
+import {Switch, Tooltip} from '../controls';
 import {BsLightningChargeFill} from 'react-icons/bs';
 import {BiBadgeCheck} from 'react-icons/bi';
 import useLocalStorage from '../../utils/useLocalStorage';
@@ -116,7 +117,18 @@ export default function Summary({className}) {
 			<Row className={'grid-cols-4'}>
 				<Cell>
 					{'Current APY'}
-					<div className={'text-xs'}>{vault.apy.type}</div>
+					{simulator.apyComputer.type === vault.apy.type && <>
+						<div className={'text-xs'}>{vault.apy.type}</div>
+					</>}
+					{simulator.apyComputer.type !== vault.apy.type && <>
+						<div 
+							data-tip={`><(((*> - This vault should use the '${vault.apy.type}' method to calculate apy, but Seafood doesn't support that yet. Using ${simulator.apyComputer.type} for now!`}
+							className={'w-fit flex items-center gap-1 text-xs text-attention-600 dark:text-attention-400 cursor-default'}>
+							<Tooltip place={'top'} type={'dark'} effect={'solid'} />
+							<TiWarning />
+							{simulator.apyComputer.type}
+						</div>
+					</>}
 				</Cell>
 				<Cell className={'flex justify-end'}>
 					<div title={liveApy ? 'Switch to exporter APY' : 'Switch to live APY'}>
