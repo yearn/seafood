@@ -28,12 +28,13 @@ export default function Profile() {
 			+ `?deployment=${deployment}`;
 		const authorizeUrl = 'https://github.com/login/oauth/authorize'
 			+ `?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}`
+			+ '&scope=repo'
 			+ `&redirect_uri=${redirect}`;
 		window.location = encodeURI(authorizeUrl);
 	};
 
 	const browseProfile = useCallback(() => {
-		window.open(profile.html_url, '_blank', 'noreferrer');	
+		window.open(profile.html_url, '_blank', 'noreferrer');
 	}, [profile]);
 
 	if(!profile) return <div className={`
