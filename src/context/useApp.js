@@ -97,6 +97,8 @@ export const AppProvider = ({children}) => {
 
 		const multicallPromises = [];
 		for(let [index, chain] of config.chains.entries()) {
+			if(!yDaemonCache[index]) continue;
+
 			const provider = providers.find(p => p.network.chainId == chain.id);
 			const multicall = new Multicall({ethersProvider: provider, tryAggregate: true});
 
