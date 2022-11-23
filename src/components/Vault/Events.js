@@ -54,7 +54,7 @@ export default function Events({vault, token, strategyResults}) {
 		<div className={`
 			w-full sm:w-[65ch] px-4 sm:px-0 pt-12 pb-12 sm:pb-24 flex flex-col items-center justify-center gap-8`}>
 			<div className={'w-full'}>
-				<h1>{'Harvest Events'}</h1>
+				<h1>{'Simulated Harvest Events'}</h1>
 				<div className={'text-xl'}>{`${vault.name} / ${strategy.name}`}</div>
 				<div>
 					<A href={strategyResults[strategy.address]?.simulationUrl}

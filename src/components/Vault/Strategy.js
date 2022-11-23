@@ -1,5 +1,6 @@
 import React, {useMemo, useState} from 'react';
-import {TbHistory, TbTractor} from 'react-icons/tb';
+import {TbTractor} from 'react-icons/tb';
+import {MdHistory} from 'react-icons/md';
 import TimeAgo from 'react-timeago';
 import {formatNumber, formatPercent, formatTokens, getAddressExplorer, truncateAddress} from '../../utils/utils';
 import {A, Button, Input, LinkButton} from '../controls';
@@ -35,28 +36,28 @@ function Percentage({value, simulated, delta, className}) {
 
 export default function Strategy({strategy}) {
 	const location = useLocation();
-	const {vault, provider, token, harvestHistory, showHarvestChart} = useVault();
+	const {vault, provider, token, reports, showHarvestChart} = useVault();
 	const simulator = useSimulator();
-	const strategyHarvestHistory = harvestHistory.filter(h => h.strategy_address === strategy.address);
+	const strategyHarvestHistory = reports.filter(r => r.strategy_address === strategy.address);
 	const [showHarvestHistory, setShowHarvestHistory] = useState(false);
-	const lastStrategy = useMemo(() => strategy.address === vault.strategies.at(-1).address, [strategy, vault]);
+	const lastStrategy = useMemo(() => strategy.address === vault.withdrawalQueue.at(-1).address, [strategy, vault]);
 
 	function latestHarvest(strategy) {
 		return new Date(strategy.lastReport * 1000);
 	}
 
 	return <div className={`
-		px-4 pt-2 sm:pt-4 sm:px-12 flex flex-col gap-2`}>
+		px-4 pt-2 sm:pt-0 sm:pr-12 sm:pl-8 flex flex-col gap-2`}>
 
-		<div className={'flex flex-col sm:flex-row gap-2'}>
-			<div className={'sm:max-w-prose sm:w-[65ch] flex flex-col gap-2'}>
-				<div className={'flex items-center justify-between'}>
+		<div className={'flex flex-col 2xl:flex-row gap-2'}>
+			<div className={'grow flex flex-col gap-2'}>
+				<div className={'flex items-center sm:items-start justify-between'}>
 					<div className={'flex items-center gap-2'}>
 						<A target={'_blank'} href={getAddressExplorer(provider.network.chainId, strategy.address)} rel={'noreferrer'}>{truncateAddress(strategy.address)}</A>
 						<CopyButton clip={strategy.address}></CopyButton>
 					</div>
 					<div className={'flex items-center gap-4'}>
-						<Button icon={TbHistory} 
+						<Button icon={MdHistory} 
 							title={'Harvest history'} 
 							onClick={() => setShowHarvestHistory(current => !current)}
 							iconClassName={'text-2xl'} />
@@ -153,15 +154,17 @@ export default function Strategy({strategy}) {
 				</div>}
 			</div>
 
-			{showHarvestChart && strategyHarvestHistory.length > 0 && <div className={'grow'}><InfoChart
-				name={'APR (capped at 200 %)'}
-				x={strategyHarvestHistory.map(d => d['date_string']).reverse()}
-				y={strategyHarvestHistory.map(d => {
-					let amount = d['rough_apr_pre_fee'] * 100;
-					if (amount > 200){ amount = 200; }
-					return amount;
-				}).reverse()}
-				importData={strategyHarvestHistory} /></div>}
+			{showHarvestChart && strategyHarvestHistory.length > 0 && <div className={'w-full 2xl:w-1/2 2xl:px-4'}>
+				<InfoChart
+					name={'APR (capped at 200%)'}
+					x={strategyHarvestHistory.map(d => d['date_string']).reverse()}
+					y={strategyHarvestHistory.map(d => {
+						let amount = d['rough_apr_pre_fee'] * 100;
+						if (amount > 200){ amount = 200; }
+						return amount;
+					}).reverse()}
+					importData={strategyHarvestHistory} />
+			</div>}
 		</div>
 		
 		{showHarvestHistory && <HarvestHistory history={strategyHarvestHistory} />}

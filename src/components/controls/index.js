@@ -9,6 +9,8 @@ import Select from './Select';
 import SmallIconButton from './SmallIconButton';
 import Switch from './Switch';
 import TextArea from './TextArea';
+import Tooltip from './Tooltip';
+import Pebble from './Pebble';
 
 export {
 	A,
@@ -21,5 +23,7 @@ export {
 	Select,
 	SmallIconButton,
 	Switch,
-	TextArea
+	TextArea,
+	Tooltip,
+	Pebble
 };

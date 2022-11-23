@@ -23,13 +23,13 @@ export default function SelectVaultFunctionOrStrategy({addBlockContext, addBlock
 
 	useEffect(() => {
 		(async () => {
-			const strategies = vaults.find(v => v.address === result.vault.address).strategies
+			const strategies = vaults.find(v => v.address === result.vault.address).withdrawalQueue
 				.map(s => {return {
 					type: 'strategy',
 					...s
 				};});
 
-			const contract = await GetVaultContract(result.vault.address, selectedProvider);
+			const contract = await GetVaultContract(result.vault.address, selectedProvider, result.vault.version);
 			const functions = contract.interface.fragments.filter(f => {
 				return f.type === 'function' && f.stateMutability !== 'pure' && f.stateMutability !== 'view';
 			}).map(f => {return {

@@ -7,13 +7,17 @@ function chainId(name) {
 	return config.chains.find(chain => chain.name === name)?.id;
 }
 
+function getChain(chainId) {
+	return config.chains.find(chain => chain.id === chainId);
+}
+
 function getAddressExplorer(chainId, address){
-	const chain = config.chains.find(chain => chain.id === chainId);
+	const chain = getChain(chainId);
 	return `${chain.explorer}/address/${address}`;
 }
 
 function getTxExplorer(chainId, address){
-	const chain = config.chains.find(chain => chain.id === chainId);
+	const chain = getChain(chainId);
 	return `${chain.explorer}/tx/${address}`;
 }
 
@@ -62,6 +66,13 @@ function formatPercent(number, decimals = 2, nonFinite = '∞') {
 		return nonFinite;
 }
 
+function formatBps(number, nonFinite = '∞') {
+	if(Number.isFinite(number))
+		return `${parseInt(number * 10_000)}bps`;
+	else
+		return nonFinite;
+}
+
 function formatCurrency(number, currency = 'USD', nonFinite = '∞') {
 	if(Number.isFinite(number))
 		return number.toLocaleString(
@@ -96,12 +107,14 @@ function highlightString(string, highlightRe) {
 
 export {
 	chainId,
+	getChain,
 	curveRe, 
 	getAddressExplorer, 
 	getTxExplorer, 
 	truncateAddress, 
 	formatNumber, 
-	formatPercent, 
+	formatPercent,
+	formatBps,
 	formatCurrency,
 	formatTokens,
 	highlightString

@@ -1,20 +1,24 @@
 import React, {useEffect} from 'react';
+import {useLocation} from 'react-router-dom';
+import {motion} from 'framer-motion';
 import VaultProvider, {useVault} from './VaultProvider';
 import {useChrome} from '../Chrome';
+import Header from './Header';
 import Summary from './Summary';
 import Toolbar from './Toolbar';
 import Strategy from './Strategy';
 import SimulatorProvider, {useSimulator} from './SimulatorProvider';
-import {useLocation} from 'react-router-dom';
 import Code from './Code';
 import Loading from '../Loading';
 import Events from './Events';
+import SimulatorStatus from './SimulatorStatus';
+import {SmallScreen} from '../../utils/breakpoints';
 
 function Layout() {
 	const location = useLocation();
 	const {setDialog} = useChrome();
 	const {loading, vault, token} = useVault();
-	const {debtRatioUpdates, strategyResults} = useSimulator();
+	const {engaged, debtRatioUpdates, strategyResults} = useSimulator();
 
 	useEffect(() => {
 		if(location.hash === '#code') {
@@ -32,28 +36,31 @@ function Layout() {
 	</div>;
 
 	return <div>
-		<Summary />
-		<div className={'flex flex-col gap-2 pb-20'}>
-			{vault.strategies.map((strategy, index) => 
-				<Strategy key={index} strategy={strategy} />
-			)}
-		</div>
-		<Toolbar />
-		{/* {location.hash === '' && <>
-			<Summary />
-			<div className={'flex flex-col gap-2 pb-20'}>
-				{vault.strategies.map((strategy, index) => 
+		<Header />
+		<div className={'grid grid-cols-1 sm:grid-cols-2'}>
+			<Summary className={'sm:sticky sm:top-[120px] sm:z-0'} />
+			<div className={'flex flex-col gap-2 pb-20 sm:pt-2'}>
+				{vault.withdrawalQueue.map((strategy, index) => 
 					<Strategy key={index} strategy={strategy} />
 				)}
 			</div>
+		</div>
+
+		{engaged && <motion.div className={`
+		fixed z-10 bottom-[4.5rem] sm:bottom-0 w-full p-4
+		flex justify-end
+		backdrop-blur-md shadow`}
+		transition={{ease: 'easeIn', duration: .1}}
+		initial={{y: '50%'}}
+		animate={{y: '0%'}}>
+			<div className={'w-full sm:w-1/2 sm:px-8'}>
+				<SimulatorStatus />
+			</div>
+		</motion.div>}
+
+		<SmallScreen>
 			<Toolbar />
-		</>}
-		{location.hash === '#code' && <div className={'absolute inset-0 pt-16'}>
-			<Code />
-		</div>}
-		{location.hash.startsWith('#harvest-events') && <div className={'absolute inset-0 pt-16'}>
-			<Events />
-		</div>} */}
+		</SmallScreen>
 	</div>;
 }
 

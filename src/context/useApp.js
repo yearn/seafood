@@ -3,16 +3,17 @@ import axios from 'axios';
 import {BigNumber} from 'ethers';
 import {Multicall} from 'ethereum-multicall';
 import useSWR from 'swr';
-import {vault043 as vault043Abi, strategy as strategyAbi} from '../interfaces/interfaces';
+import {strategy as strategyAbi} from '../abi';
+import {GetVaultAbi, LockedProfitDegradationField} from '../ethereum/EthHelpers';
 import useLocalStorage from '../utils/useLocalStorage';
 import useRpcProvider from './useRpcProvider';
 import config from '../config.json';
 
 const yDaemonRequests = config.chains.map(chain => 
-	`${config.ydaemon.url}/${chain.id}/vaults/all?strategiesCondition=inQueue&strategiesDetails=withDetails`);
+	`${config.ydaemon.url}/${chain.id}/vaults/all?strategiesCondition=debtLimit&strategiesDetails=withDetails`);
 
-const multifetch = async (...urls) => {
-	return Promise.all(urls.map(url => 
+const multiGet = async (...urls) => {
+	return await Promise.all(urls.map(url => 
 		axios.get(url).then(response => response.data)
 	));
 };
@@ -33,7 +34,20 @@ const yDaemonVaultToSeafoodVault = (vault, chain) => ({
 	debtRatio: undefined,
 	managementFee: BigNumber.from(vault.details.managementFee),
 	performanceFee: BigNumber.from(vault.details.performanceFee),
+	depositLimit: BigNumber.from(vault.details.depositLimit),
+	activation: BigNumber.from(vault.inception),
+	apy: {
+		type: vault.apy.type,
+		gross: vault.apy.gross_apr,
+		net: vault.apy.net_apy,
+		[-7]: vault.apy.points.week_ago,
+		[-30]: vault.apy.points.month_ago,
+		inception: vault.apy.points.inception
+	},
 	strategies: vault.strategies
+		.map(strategy => yDaemonStrategyToSeafoodStrategy(strategy, chain)),
+	withdrawalQueue: vault.strategies
+		.filter(s => s.details.withdrawalQueuePosition > -1)
 		.sort((a, b) => a.details.withdrawalQueuePosition - b.details.withdrawalQueuePosition)
 		.map(strategy => yDaemonStrategyToSeafoodStrategy(strategy, chain))
 });
@@ -45,8 +59,8 @@ const yDaemonStrategyToSeafoodStrategy = (strategy, chain) => ({
 		chainId: chain.id,
 		name: chain.name
 	},
-	delegatedAssets: BigNumber.from(strategy.details.delegatedAssets),
-	estimatedTotalAssets: BigNumber.from(strategy.details.estimatedTotalAssets),
+	delegatedAssets: BigNumber.from(strategy.details.delegatedAssets || 0),
+	estimatedTotalAssets: BigNumber.from(strategy.details.estimatedTotalAssets || 0),
 	performanceFee: strategy.details.performanceFee,
 	activation: strategy.details.activation,
 	debtRatio: strategy.details.debtRatio
@@ -55,7 +69,8 @@ const yDaemonStrategyToSeafoodStrategy = (strategy, chain) => ({
 	lastReport: strategy.details.lastReport,
 	totalDebt: BigNumber.from(strategy.details.totalDebt || 0),
 	totalGain: BigNumber.from(strategy.details.totalGain || 0),
-	totalLoss: BigNumber.from(strategy.details.totalLoss || 0)
+	totalLoss: BigNumber.from(strategy.details.totalLoss || 0),
+	withdrawalQueuePosition: strategy.details.withdrawalQueuePosition
 });
 
 const	AppContext = createContext();
@@ -72,15 +87,17 @@ export const AppProvider = ({children}) => {
 	const [favoriteStrategies, setFavoriteStrategies] = useLocalStorage('favoriteStrategies', []);
 
 	const {
-		data: yDaemonData, 
-		error: yDaemonError, 
+		data: yDaemonData,
+		error: yDaemonError,
 		mutate: yDaemonMutate
-	} = useSWR(yDaemonRequests, multifetch);
+	} = useSWR(yDaemonRequests, multiGet);
+
+	const {
+		data: tvls
+	} = useSWR('/api/vision/tvls', async url => ((await axios.get(url)).data));
 
 	const syncCache = useCallback(() => {
-		if(!loading) {
-			yDaemonMutate(undefined);
-		}
+		if(!loading) yDaemonMutate(undefined);
 	}, [loading, yDaemonMutate]);
 
 	useEffect(() => {
@@ -106,11 +123,13 @@ export const AppProvider = ({children}) => {
 			const vaultMulticalls = vaults.map(vault => ({
 				reference: vault.address,
 				contractAddress: vault.address,
-				abi: vault043Abi,
+				abi: GetVaultAbi(vault.version),
 				calls: [
 					{reference: 'totalDebt', methodName: 'totalDebt', methodParameters: []},
 					{reference: 'debtRatio', methodName: 'debtRatio', methodParameters: []},
-					{reference: 'totalAssets', methodName: 'totalAssets', methodParameters: []}
+					{reference: 'totalAssets', methodName: 'totalAssets', methodParameters: []},
+					{reference: 'availableDepositLimit', methodName: 'availableDepositLimit', methodParameters: []},
+					{reference: 'lockedProfitDegradation', methodName: LockedProfitDegradationField(vault.version), methodParameters: []}
 				]
 			}));
 
@@ -119,19 +138,26 @@ export const AppProvider = ({children}) => {
 				const multiresults = await multicall.call(vaultMulticalls);
 				vaults.forEach(vault => {
 					const results = multiresults.results[vault.address].callsReturnContext;
+
+					const lockedProfitDegradation = results[4].returnValues[0] && results[4].returnValues[0].type === 'BigNumber'
+						? BigNumber.from(results[4].returnValues[0])
+						: BigNumber.from(0);
+
 					parsed.push({
 						chainId: chain.id,
 						type: 'vault',
 						address: vault.address,
 						totalDebt: BigNumber.from(results[0].returnValues[0]),
 						debtRatio: results[1].returnValues[0] ? BigNumber.from(results[1].returnValues[0]) : undefined,
-						totalAssets: results[2].returnValues[0] ? BigNumber.from(results[2].returnValues[0]) : undefined
+						totalAssets: results[2].returnValues[0] ? BigNumber.from(results[2].returnValues[0]) : undefined,
+						availableDepositLimit: BigNumber.from(results[3].returnValues[0]),
+						lockedProfitDegradation
 					});
 				});
 				return parsed;
 			})());
 
-			const strategies = vaults.map(vault => vault.strategies).flat();
+			const strategies = vaults.map(vault => vault.withdrawalQueue).flat();
 			const strategyMulticalls = strategies.map(strategy => ({
 				reference: strategy.address,
 				contractAddress: strategy.address,
@@ -180,7 +206,7 @@ export const AppProvider = ({children}) => {
 					if(vaults) refresh.push(...vaults);
 				}
 
-				const strategies = refresh.map(vault => vault.strategies).flat();
+				const strategies = refresh.map(vault => vault.withdrawalQueue).flat();
 				const updates = multicallCache?.filter(u => u.chainId === chain.id);
 				updates.forEach(update => {
 					if(update.type === 'vault') {
@@ -191,6 +217,8 @@ export const AppProvider = ({children}) => {
 							vault.totalDebt = update.totalDebt;
 							vault.debtRatio = update.debtRatio;
 							vault.totalAssets = update.totalAssets;
+							vault.availableDepositLimit = update.availableDepositLimit;
+							vault.lockedProfitDegradation = update.lockedProfitDegradation;
 						}
 					} else if(update.type === 'strategy') {
 						const strategy = strategies.find(s => 
@@ -210,6 +238,7 @@ export const AppProvider = ({children}) => {
 	return <AppContext.Provider value={{
 		loading,
 		vaults,
+		tvls,
 		cacheTimestamp,
 		syncCache,
 		favorites: {

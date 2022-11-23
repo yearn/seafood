@@ -7,14 +7,16 @@ module.exports = {
 	'extends': [
 		'eslint:recommended',
 		'plugin:react/recommended',
-		'plugin:react-hooks/recommended'
+		'plugin:react-hooks/recommended',
+		'plugin:@typescript-eslint/recommended'
 	],
 	'parserOptions': {
 		'ecmaFeatures': {
 			'jsx': true
 		},
 		'ecmaVersion': 12,
-		'sourceType': 'module'
+		'sourceType': 'module',
+		'project': ['./tsconfig.json']
 	},
 	'plugins': [
 		'react'

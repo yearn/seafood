@@ -1,56 +1,51 @@
-import React, {createContext, useCallback, useContext, useEffect, useState} from 'react';
+import React, {createContext, useCallback, useContext, useMemo, useState} from 'react';
 import {GetStrategyContract, GetVaultContract} from '../../ethereum/EthHelpers';
 import {useVault} from './VaultProvider';
 import tenderly from '../../tenderly';
-import {ethers} from 'ethers';
+import {BigNumber, ethers} from 'ethers';
+import {getApyComputer, getSamples} from '../../apy';
 
 const	SimulatorContext = createContext();
 export const useSimulator = () => useContext(SimulatorContext);
 export default function SimulatorProvider({children}) {
-	const {vault, provider} = useVault();
-	const [vaultContract, setVaultContract] = useState();
+	const {vault, provider, reportBlocks} = useVault();
 	const [debtRatioUpdates, setDebtRatioUpdates] = useState({});
 	const [simulatingAll, setSimulatingAll] = useState(false);
 	const [simulatingStrategy, setSimulatingStrategy] = useState({});
-	const [vaultResults, setVaultResults] = useState();
 	const [strategyResults, setStrategyResults] = useState([]);
+	const [currentApy, setCurrentApy] = useState();
+	const [nextApy, setNextApy] = useState();
 	const [codeNotifications, setCodeUpdates] = useState(false);
 
-	useEffect(() => {
-		if(vault && provider) {
-			GetVaultContract(vault.address, provider).then(contract => setVaultContract(contract));
+	const engaged = useMemo(() => {
+		if(simulatingStrategy) {
+			return Object.keys(simulatingStrategy).length > 0;
 		}
-	}, [vault, provider]);
+	}, [simulatingStrategy]);
 
-	useEffect(() => {
-		if(!vault) return;
-
-		let any = false;
-		let aprBeforeFees = 0;
-		let aprAfterFees = 0;
-
-		for(const strategy of vault.strategies) {
-			const results = strategyResults[strategy.address];
-			if(results?.status === 'ok') {
-				any = true;
-				if(isFinite(results.output.apr.beforeFee) && isFinite(results.output.apr.afterFee)) {
-					aprBeforeFees += results.output.apr.beforeFee * strategy.totalDebt;
-					aprAfterFees += results.output.apr.afterFee * strategy.totalDebt;
-				}
-			}
+	const apyComputer = useMemo(() => {
+		if(vault) {
+			return getApyComputer(vault.apy.type);
 		}
+	}, [vault]);
 
-		if(any) {
-			setVaultResults({
-				apr: {
-					beforeFee: aprBeforeFees / vault.totalAssets,
-					afterFee: aprAfterFees / vault.totalAssets
-				}
-			});
-		} else {
-			setVaultResults(null);
+	const degradationTime = useMemo(() => {
+		if(vault) {
+			if(vault.lockedProfitDegradation.eq(0)) return 0;
+			const degradationCoefficient = BigNumber.from('1000000000000000000');
+			return degradationCoefficient.div(vault.lockedProfitDegradation);
 		}
-	}, [vault, strategyResults, setVaultResults]);
+	}, [vault]);
+
+	const jumpToTotalProfitUnlock = useCallback(async (provider) => {
+		await provider.send('evm_increaseTime', [ethers.utils.hexValue(degradationTime)]);
+		await provider.send('evm_mine');		
+	}, [degradationTime]);
+
+	const computeVaultApy = useCallback(async (vaultRpc) => {
+		const samples = await getSamples(vaultRpc.provider, reportBlocks);
+		return await apyComputer.compute(vault, vaultRpc, samples);
+	}, [vault, reportBlocks, apyComputer]);
 
 	const computeStrategyFlow = useCallback((events) => {
 		const strategyReported = events.find(e => e.name === 'StrategyReported');
@@ -59,6 +54,12 @@ export default function SimulatorProvider({children}) {
 			debt: strategyReported.args.debtPaid.mul(-1).add(strategyReported.args.debtAdded)
 		};
 	}, []);
+
+	function reset() {
+		setStrategyResults([]);
+		setCurrentApy();
+		setNextApy();
+	}
 
 	const computeStrategyApr = useCallback((strategy, nextStrategyState) => {
 		if(!nextStrategyState) return {beforeFee: 0, afterFee: 0};
@@ -98,9 +99,14 @@ export default function SimulatorProvider({children}) {
 	const harvest = useCallback(async (strategy, tenderlyProvider) => {
 		setSimulatingStrategy(current => ({...current, [strategy.address]: true}));
 
+		const updateApy = !tenderlyProvider;
 		if(!tenderlyProvider) {
+			reset();
 			tenderlyProvider = await tenderly.createProvider(provider.network.chainId);
 		}
+
+		const vaultRpc = await GetVaultContract(vault.address, tenderlyProvider, vault.version);
+		if(updateApy) setCurrentApy(await computeVaultApy(vaultRpc));
 
 		const strategyContract = GetStrategyContract(strategy.address, provider);
 		const debtRatioUpdate = debtRatioUpdates[strategy.address];
@@ -108,9 +114,9 @@ export default function SimulatorProvider({children}) {
 
 		if(debtRatioUpdate !== undefined) {
 			blocks.push({
-				contract: vaultContract,
+				contract: vaultRpc,
 				signer: vault.governance,
-				functionCall: vaultContract.interface.functions['updateStrategyDebtRatio(address,uint256)'],
+				functionCall: vaultRpc.interface.functions['updateStrategyDebtRatio(address,uint256)'],
 				functionInput: [strategy.address, debtRatioUpdate]
 			});
 		}
@@ -123,9 +129,9 @@ export default function SimulatorProvider({children}) {
 		});
 
 		blocks.push({
-			contract: vaultContract,
+			contract: vaultRpc,
 			signer: vault.governance,
-			functionCall: vaultContract.interface.functions['strategies(address)'],
+			functionCall: vaultRpc.interface.functions['strategies(address)'],
 			functionInput: [strategy.address]
 		});
 
@@ -170,17 +176,29 @@ export default function SimulatorProvider({children}) {
 			}}));
 		}
 
+		if(updateApy) {
+			await jumpToTotalProfitUnlock(tenderlyProvider);
+			setNextApy(await computeVaultApy(vaultRpc));
+		}
+
 		setSimulatingStrategy(current => ({...current, [strategy.address]: false}));
-	}, [vault, provider, vaultContract, debtRatioUpdates, computeStrategyApr, computeStrategyFlow]);
+	}, [vault, provider, debtRatioUpdates, jumpToTotalProfitUnlock, computeVaultApy, computeStrategyApr, computeStrategyFlow]);
 
 	const harvestAll = useCallback(async () => {
+		reset();
 		setSimulatingAll(true);
 		const tenderlyProvider = await tenderly.createProvider(provider.network.chainId);
-		for(let strategy of vault.strategies) {
+		const vaultRpc = await GetVaultContract(vault.address, tenderlyProvider, vault.version);
+		setCurrentApy(await computeVaultApy(vaultRpc));
+
+		for(let strategy of vault.withdrawalQueue) {
 			await harvest(strategy, tenderlyProvider);
 		}
+
+		await jumpToTotalProfitUnlock(tenderlyProvider);
+		setNextApy(await computeVaultApy(vaultRpc));
 		setSimulatingAll(false);
-	}, [vault, provider, setSimulatingAll, harvest]);
+	}, [vault, provider, jumpToTotalProfitUnlock, computeVaultApy, setSimulatingAll, harvest]);
 
 	const updateDebtRatio = useCallback((strategy, debtRatio) => {
 		setDebtRatioUpdates(current => {
@@ -191,12 +209,16 @@ export default function SimulatorProvider({children}) {
 	}, []);
 
 	return <SimulatorContext.Provider value={{
+		apyComputer,
+		engaged,
+		degradationTime,
 		debtRatioUpdates,
 		simulatingAll,
 		simulatingStrategy,
-		vaultResults,
+		currentApy,
+		nextApy,
 		strategyResults,
-		codeNotifications, 
+		codeNotifications,
 		harvest,
 		harvestAll,
 		updateDebtRatio,

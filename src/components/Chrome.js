@@ -6,9 +6,8 @@ import Header from './Header';
 
 const	ChromeContext = createContext();
 export const useChrome = () => useContext(ChromeContext);
-export default function Chrome({startWithHeader = true, children}) {
+export default function Chrome({children}) {
 	const [darkMode, setDarkMode] = useLocalStorage('darkMode', null);
-	const [header, setHeader] = useState(startWithHeader);
 	const [dialog, setDialog] = useState();
 
 	useEffect(() => {
@@ -19,7 +18,6 @@ export default function Chrome({startWithHeader = true, children}) {
 
 	return <ChromeContext.Provider value={{
 		darkMode, setDarkMode,
-		header, setHeader,
 		dialog, setDialog
 	}}>
 		<div className={(darkMode ? 'dark' : '') + ' max-w-full'}>
@@ -32,7 +30,7 @@ export default function Chrome({startWithHeader = true, children}) {
 				dark:sm:bg-gradient-radial-to-br dark:sm:from-indigo-900 dark:sm:via-secondary-900 dark:sm:to-black`} />
 				<div className={`
 					absolute z-10 w-full min-h-full flex flex-col`}>
-					{header && <Header></Header>}
+					<Header></Header>
 					{children}
 				</div>
 				<AnimatePresence>
