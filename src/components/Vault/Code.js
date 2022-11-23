@@ -48,8 +48,6 @@ export default function Code({vault, debtRatioUpdates}) {
 			lines.push('');
 			lines.push('\tharvest_n_check_many(safe, strategies)');
 			lines.push('');
-			lines.push('');
-			lines.push('/robowoofy fn=auto_debt_adjust send=true');
 			lines.push('\n');
 		}
 		return lines;
