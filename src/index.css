@@ -10,6 +10,6 @@ body {
 
 .rainbow-text {
   @apply bg-clip-text text-transparent 
-  bg-gradient-to-r 
+  bg-gradient-to-tl
   from-purple-500 to-pink-500;
 }

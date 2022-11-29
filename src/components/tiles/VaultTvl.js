@@ -39,7 +39,7 @@ export default function VaultTvl({vault, title = false, tooltips = false}) {
 			if(!series || !series[0].length) {
 				return null;
 			} else {
-				return series;
+				return [series[0].slice(-3), series[1].slice(-3)];
 			}
 		}
 	}, [vault, tvls]);
