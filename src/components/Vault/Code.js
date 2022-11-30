@@ -85,7 +85,7 @@ export default function Code({vault, debtRatioUpdates}) {
 	const commitMessage = useMemo(() => ({headline, body}), [headline, body]);
 
 	const nextBranchName = useCallback(async () => {
-		const today = dayjs(new Date()).format('MMM-DD');
+		const today = dayjs(new Date()).format('MMM-DD').toLowerCase();
 		const prefix = `refs/heads/seafood/${profile.name}/${today}/`;
 		const refs = await gh.getRefs(config.sms.owner, config.sms.repo, prefix);
 		const nonce = Math.max(0, ...refs.map(ref => parseInt(ref.name))) + 1;
