@@ -8,9 +8,9 @@
 		"rpcUrl": "https://rpc.tenderly.co/fork/"
 	},
 	"sms": {
-		"owner": "murderteeth",
-		"repo": "fishtank",
-		"main": "main",
+		"owner": "yearn",
+		"repo": "strategist-ms",
+		"main": "master",
 		"script": "scripts/main.py"
 	},
 	"chains": [
