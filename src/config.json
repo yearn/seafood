@@ -7,6 +7,12 @@
 		"dashboardUrl": "https://dashboard.tenderly.co/yearn/yearn-web/fork",
 		"rpcUrl": "https://rpc.tenderly.co/fork/"
 	},
+	"sms": {
+		"owner": "murderteeth",
+		"repo": "fishtank",
+		"main": "main",
+		"script": "scripts/main.py"
+	},
 	"chains": [
 		{
 			"id": 1,
