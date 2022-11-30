@@ -105,7 +105,9 @@ export default function Code({vault, debtRatioUpdates}) {
 			main => setSmsMain(main.split('\n')));
 	}, [gh, smsScriptExpression]);
 
+	const [onPrRunning, setOnPrRunning] = useState(false);
 	const onPr = useCallback(async () => {
+		setOnPrRunning(true);
 		const main = await gh.getRef(config.sms.owner, config.sms.repo, `refs/heads/${config.sms.main}`);
 		const branch = await gh.createRef(main, await nextBranchName());
 		const newSmsMain = `${smsMain.join('\n')}${linesOfCode.join('\n')}\n`;
@@ -117,6 +119,7 @@ export default function Code({vault, debtRatioUpdates}) {
 		});
 		const compareUrl = gh.makeCompareUrl(branch);
 		window.open(compareUrl, '_blank', 'noreferrer');
+		setOnPrRunning(false);
 	}, [linesOfCode, smsMain, commitMessage, gh, nextBranchName]);
 
 	return <div className={'relative w-full h-full'}>
@@ -190,7 +193,7 @@ export default function Code({vault, debtRatioUpdates}) {
 			border-t border-white dark:border-secondary-900
 			rounded-b-lg`}>
 			<Button disabled={updates?.length === 0} icon={copied ? TbCheck : TbCopy} onClick={onCopy} className={'w-48'} />
-			<Button disabled={updates?.length === 0 || !bearer} icon={BiGitPullRequest} onClick={onPr} className={'w-48'} />
+			<Button busy={onPrRunning} disabled={updates?.length === 0 || !bearer} icon={BiGitPullRequest} onClick={onPr} className={'w-48'} />
 		</div>
 	</div>;
 }

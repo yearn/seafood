@@ -31,6 +31,7 @@
     "react-dom": "^17.0.2",
     "react-icons": "^4.4.0",
     "react-indiana-drag-scroll": "^2.2.0",
+    "react-loader-spinner": "^5.3.4",
     "react-responsive": "^9.0.0-beta.6",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
