@@ -46,6 +46,8 @@ export class GithubClient {
 	}
 
 	private async octoql<T>(gql: string, parameters: object) : Promise<T> {
+		if(!this.bearer) throw 'Bearer token not set';
+
 		return await octoql<T>(gql, {
 			...parameters,
 			headers: {

@@ -3,6 +3,7 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import {RPCProviderContextApp} from './context/useRpcProvider';
 import AuthProvider from './context/useAuth';
 import {AppProvider} from './context/useApp';
+import SmsProvider from './context/useSms';
 import Chrome from './components/Chrome';
 import GithubCallback from './components/GithubCallback';
 import Sandbox from './components/Sandbox';
@@ -15,14 +16,16 @@ function App() {
 			<BrowserRouter>
 				<AuthProvider>
 					<AppProvider>
-						<Chrome>
-							<Routes>
-								<Route path={'/'} exact={true} element={<Vaults />} />
-								<Route path={'/vault/:address'} element={<Vault />} />
-								<Route path={'/sandbox/*'} element={<Sandbox />} />
-								<Route path={'/github/callback'} exact={true} element={<GithubCallback />} />
-							</Routes>
-						</Chrome>
+						<SmsProvider>
+							<Chrome>
+								<Routes>
+									<Route path={'/'} exact={true} element={<Vaults />} />
+									<Route path={'/vault/:address'} element={<Vault />} />
+									<Route path={'/sandbox/*'} element={<Sandbox />} />
+									<Route path={'/github/callback'} exact={true} element={<GithubCallback />} />
+								</Routes>
+							</Chrome>
+						</SmsProvider>
 					</AppProvider>
 				</AuthProvider>
 			</BrowserRouter>
