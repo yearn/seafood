@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link, useMatch, useResolvedPath} from 'react-router-dom';
+import {Link, matchRoutes, useLocation} from 'react-router-dom';
 import {SmallScreen, useMediumBreakpoint} from '../utils/breakpoints';
 import CloseDialog from './controls/Dialog/Close';
 import Sync from './Sync';
@@ -14,10 +14,13 @@ function MenuItem({className, children}) {
 		${className}`}>{children}</li>;
 }
 
-function MenuLink({to, label}) {
-	const resolved = useResolvedPath(to);
+function MenuLink({to, label, altPathPatterns = []}) {
 	const mediumBreakpoint = useMediumBreakpoint();
-	const match = useMatch({path: resolved.pathname, end: true});
+	const location = useLocation();
+	const match = matchRoutes(
+		[to, ...altPathPatterns].map(pattern => ({path: pattern})),
+		location.pathname);
+
 	return <Link to={to} replace={!mediumBreakpoint} className={`
 		no-underline px-4 py-2 rounded-lg
 		hover:bg-selected-300 hover:text-selected-900
@@ -61,7 +64,7 @@ export default function Menu({action}) {
 			</MenuItem>
 			<MenuItem />
 			<MenuItem>
-				<MenuLink to={'/'} label={'Vaults'}></MenuLink>
+				<MenuLink to={'/'} label={'Vaults'} altPathPatterns={['/vault/:address']}></MenuLink>
 			</MenuItem>
 			<MenuItem>
 				<MenuLink to={'/sandbox'} label={'Sandbox'}></MenuLink>
