@@ -30,8 +30,8 @@ export default function SimulatorProvider({children}) {
 	}, [vault]);
 
 	const degradationTime = useMemo(() => {
-		if(vault) {
-			if(vault.lockedProfitDegradation.eq(0)) return 0;
+		if(vault && vault.lockedProfitDegradation) {
+			if(vault.lockedProfitDegradation?.eq(0)) return 0;
 			const degradationCoefficient = BigNumber.from('1000000000000000000');
 			return degradationCoefficient.div(vault.lockedProfitDegradation);
 		}

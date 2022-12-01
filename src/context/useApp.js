@@ -13,8 +13,8 @@ const yDaemonRequests = config.chains.map(chain =>
 	`${config.ydaemon.url}/${chain.id}/vaults/all?strategiesCondition=all&strategiesDetails=withDetails`);
 
 const multiGet = async (...urls) => {
-	return await Promise.all(urls.map(url => 
-		axios.get(url).then(response => response.data)
+	return Promise.all(urls.map(url => 
+		fetch(url).then(response => response.json())
 	));
 };
 
