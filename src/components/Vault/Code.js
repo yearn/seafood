@@ -7,11 +7,13 @@ import {GithubClient} from '../../utils/github';
 import {useDebouncedCallback} from 'use-debounce';
 import dayjs from 'dayjs';
 import config from '../../config.json';
+import {useSms} from '../../context/useSms';
 
 export default function Code({vault, debtRatioUpdates}) {
 	const [copied, setCopied] = useState(false);
 	const {bearer, profile} = useAuth();
 	const gh = useMemo(() => new GithubClient(bearer), [bearer]);
+	const sms = useSms();
 
 	const updates = useMemo(() => {
 		const result = [];
@@ -85,11 +87,13 @@ export default function Code({vault, debtRatioUpdates}) {
 	const commitMessage = useMemo(() => ({headline, body}), [headline, body]);
 
 	const nextBranchName = useCallback(async () => {
-		const today = dayjs(new Date()).format('MMM-DD').toLowerCase();
-		const prefix = `refs/heads/seafood/${profile.name}/${today}/`;
-		const refs = await gh.getRefs(config.sms.owner, config.sms.repo, prefix);
-		const nonce = Math.max(0, ...refs.map(ref => parseInt(ref.name))) + 1;
-		return `seafood/${profile.name}/${today}/${nonce}`;
+		if(profile) {
+			const today = dayjs(new Date()).format('MMM-DD').toLowerCase();
+			const prefix = `refs/heads/seafood/${profile.name}/${today}/`;
+			const refs = await gh.getRefs(config.sms.owner, config.sms.repo, prefix);
+			const nonce = Math.max(0, ...refs.map(ref => parseInt(ref.name))) + 1;
+			return `seafood/${profile.name}/${today}/${nonce}`;
+		}
 	}, [gh, profile]);
 
 	const [defaultBranchName, setDefaultBranchName] = useState(`${config.sms.repo}/refs/heads/seafood/`);
@@ -98,19 +102,12 @@ export default function Code({vault, debtRatioUpdates}) {
 			setDefaultBranchName(`${config.sms.repo}/refs/heads/${branch}`));
 	}, [nextBranchName]);
 
-	const smsScriptExpression = `${config.sms.main}:${config.sms.script}`;
-	const [smsMain, setSmsMain] = useState();
-	useEffect(() => {
-		gh.getObjectText(config.sms.owner, config.sms.repo, smsScriptExpression).then(
-			main => setSmsMain(main.split('\n')));
-	}, [gh, smsScriptExpression]);
-
 	const [onPrRunning, setOnPrRunning] = useState(false);
 	const onPr = useCallback(async () => {
 		setOnPrRunning(true);
 		const main = await gh.getRef(config.sms.owner, config.sms.repo, `refs/heads/${config.sms.main}`);
 		const branch = await gh.createRef(main, await nextBranchName());
-		const newSmsMain = `${smsMain.join('\n')}${linesOfCode.join('\n')}\n`;
+		const newSmsMain = `${sms.mainpy.join('\n')}${linesOfCode.join('\n')}\n`;
 		await gh.createCommitOnBranch(branch, commitMessage, {
 			additions: [{
 				path: config.sms.script,
@@ -120,49 +117,51 @@ export default function Code({vault, debtRatioUpdates}) {
 		const compareUrl = gh.makeCompareUrl(branch);
 		window.open(compareUrl, '_blank', 'noreferrer');
 		setOnPrRunning(false);
-	}, [linesOfCode, smsMain, commitMessage, gh, nextBranchName]);
+	}, [linesOfCode, sms, commitMessage, gh, nextBranchName]);
 
 	return <div className={'relative w-full h-full'}>
 		<div className={'max-h-full px-4 sm:px-8 pt-12 pb-20 flex flex-col overflow-x-auto'}>
-			<div className={'flex items-center text-xs gap-1 text-primary-600'}>
-				<BiGitBranch />
-				<div>{defaultBranchName}</div>
-			</div>
-			<div className={'pt-2 flex flex-col gap-4'}>
-				<Input
-					placeholder={'Pull Request Title'}
-					defaultValue={defaultCommitMessage.headline}
-					onChange={(e) => debounceHeadline(e.target.value)}
-					className={`
-					py-2 px-2 inline border-transparent leading-tight
-					text-xl bg-gray-300 dark:bg-gray-800
-					focus-visible:outline focus-visible:outline-1
-					focus-visible:outline-primary-400 focus-visible:dark:outline-selected-600
-					focus:ring-0 focus:border-primary-400 focus:bg-gray-200
-					focus:dark:border-selected-600
-					rounded-md shadow-inner`} />
-				<TextArea 
-					defaultValue={defaultCommitMessage.body}
-					onChange={(e) => debounceBody(e.target.value)}
-					spellCheck={false}
-					className={`
-					h-32 p-4 inline border-transparent leading-tight text-sm
-					bg-gray-300 dark:bg-gray-800
-					focus:ring-0 focus:border-primary-400 focus:bg-gray-200
-					focus:dark:border-selected-600
-					rounded-md shadow-inner resize-none`} />
-			</div>
-			<div className={'py-2 text-xs text-primary-600'}>{config.sms.script}</div>
+			{sms.access && <>
+				<div className={'flex items-center text-xs gap-1 text-primary-600'}>
+					<BiGitBranch />
+					<div>{defaultBranchName}</div>
+				</div>
+				<div className={'pt-2 flex flex-col gap-4'}>
+					<Input
+						placeholder={'Pull Request Title'}
+						defaultValue={defaultCommitMessage.headline}
+						onChange={(e) => debounceHeadline(e.target.value)}
+						className={`
+						py-2 px-2 inline border-transparent leading-tight
+						text-xl bg-gray-300 dark:bg-gray-800
+						focus-visible:outline focus-visible:outline-1
+						focus-visible:outline-primary-400 focus-visible:dark:outline-selected-600
+						focus:ring-0 focus:border-primary-400 focus:bg-gray-200
+						focus:dark:border-selected-600
+						rounded-md shadow-inner`} />
+					<TextArea 
+						defaultValue={defaultCommitMessage.body}
+						onChange={(e) => debounceBody(e.target.value)}
+						spellCheck={false}
+						className={`
+						h-32 p-4 inline border-transparent leading-tight text-sm
+						bg-gray-300 dark:bg-gray-800
+						focus:ring-0 focus:border-primary-400 focus:bg-gray-200
+						focus:dark:border-selected-600
+						rounded-md shadow-inner resize-none`} />
+				</div>
+				<div className={'py-2 text-xs text-primary-600'}>{config.sms.script}</div>			
+			</>}
 			<div className={`
 				py-4 border border-gray-300 dark:border-gray-800
 				overflow-x-scroll rounded-md`}>
-				{(smsMain || ['', '', '', '']).slice(-4, -1).map((line, index) => 
+				{sms.access && (sms.mainpy || ['', '', '', '']).slice(-4, -1).map((line, index) => 
 					<div key={index} className={'flex items-center'}>
 						<div className={`
-							ml-2 mr-4
+							ml-2 mr-4 w-16
 							font-mono text-right opacity-30 dark:text-secondary-400
 							whitespace-nowrap`}>
-							{smsMain?.length + index + 1 - 4}&nbsp;&nbsp;
+							{sms.mainpy?.length + index + 1 - 4}&nbsp;&nbsp;
 						</div>
 						<div className={'whitespace-nowrap opacity-40'}>
 							{Array.from(line).filter(c => c === '\t').map((_, index) => <span key={index}>&emsp;</span>)}
@@ -173,10 +172,10 @@ export default function Code({vault, debtRatioUpdates}) {
 				{linesOfCode.map((line, index) => 
 					<div key={index} className={'flex items-center'}>
 						<div className={`
-							ml-2 mr-4
+							ml-2 mr-4 w-16
 							font-mono text-right dark:text-secondary-400/60
 							whitespace-nowrap`}>
-							{smsMain?.length + index + 1 - 1}{' + '}
+							{sms.access ? sms.mainpy?.length + index + 1 - 1 : index + 1}{' + '}
 						</div>
 						<div className={'whitespace-nowrap'}>
 							{Array.from(line).filter(c => c === '\t').map((_, index) => <span key={index}>&emsp;</span>)}
@@ -192,8 +191,15 @@ export default function Code({vault, debtRatioUpdates}) {
 			flex items-center justify-end gap-4
 			border-t border-white dark:border-secondary-900
 			rounded-b-lg`}>
-			<Button disabled={updates?.length === 0} icon={copied ? TbCheck : TbCopy} onClick={onCopy} className={'w-48'} />
-			<Button busy={onPrRunning} disabled={updates?.length === 0 || !bearer} icon={BiGitPullRequest} onClick={onPr} className={'w-48'} />
+			<Button onClick={onCopy}
+				disabled={updates?.length === 0} 
+				icon={copied ? TbCheck : TbCopy} 
+				className={'w-48'} />
+			{sms.access && <Button onClick={onPr}
+				busy={onPrRunning} 
+				disabled={updates?.length === 0 || !bearer} 
+				icon={BiGitPullRequest}
+				className={'w-48'} />}
 		</div>
 	</div>;
 }

@@ -4,6 +4,7 @@ import {RPCProviderContextApp} from './context/useRpcProvider';
 import AuthProvider from './context/useAuth';
 import VaultsProvider from './context/useVaults';
 import FavoritesProvider from './context/useFavorites';
+import SmsProvider from './context/useSms';
 import Chrome from './components/Chrome';
 import GithubCallback from './components/GithubCallback';
 import Sandbox from './components/Sandbox';
@@ -17,14 +18,16 @@ function App() {
 				<AuthProvider>
 					<VaultsProvider>
 						<FavoritesProvider>
-							<Chrome>
-								<Routes>
-									<Route path={'/'} exact={true} element={<Vaults />} />
-									<Route path={'/vault/:address'} element={<Vault />} />
-									<Route path={'/sandbox/*'} element={<Sandbox />} />
-									<Route path={'/github/callback'} exact={true} element={<GithubCallback />} />
-								</Routes>
-							</Chrome>
+							<SmsProvider>
+								<Chrome>
+									<Routes>
+										<Route path={'/'} exact={true} element={<Vaults />} />
+										<Route path={'/vault/:address'} element={<Vault />} />
+										<Route path={'/sandbox/*'} element={<Sandbox />} />
+										<Route path={'/github/callback'} exact={true} element={<GithubCallback />} />
+									</Routes>
+								</Chrome>
+							</SmsProvider>
 						</FavoritesProvider>
 					</VaultsProvider>
 				</AuthProvider>
