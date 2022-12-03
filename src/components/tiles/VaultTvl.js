@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import colors from 'tailwindcss/colors';
 import dayjs from 'dayjs';
-import {useApp} from '../../context/useApp';
 import {Bar} from 'react-chartjs-2';
 import {formatNumber} from '../../utils/utils';
 import {useChrome} from '../Chrome';
@@ -31,18 +30,16 @@ export default function VaultTvl({vault, title = false, tooltips = false}) {
 	const chart = useRef();
 	const [data, setData] = useState({datasets: []});
 	const {darkMode} = useChrome();
-	const {tvls} = useApp();
 
 	const tvlSeries = useMemo(() => {
-		if(vault && tvls) {
-			const series = tvls[vault.network.chainId][vault.address];
-			if(!series || !series[0].length) {
+		if(vault) {
+			if(!vault.tvls || !vault.tvls[0].length) {
 				return null;
 			} else {
-				return [series[0].slice(-3), series[1].slice(-3)];
+				return [vault.tvls[0].slice(-3), vault.tvls[1].slice(-3)];
 			}
 		}
-	}, [vault, tvls]);
+	}, [vault]);
 
 	const latestTvl = useMemo(() => {
 		if(tvlSeries) return tvlSeries[1][tvlSeries[1].length - 1];
@@ -128,6 +125,6 @@ export default function VaultTvl({vault, title = false, tooltips = false}) {
 				<div>{'TVL (USD)'}</div>
 			</div>
 		</>}
-		{!tvlSeries && tvls && <div className={'text-error-600'}>{'No TVL'}</div>}
+		{!tvlSeries && <div className={'text-error-600'}>{'No TVL'}</div>}
 	</div>;
 }

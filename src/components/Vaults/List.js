@@ -1,5 +1,5 @@
 import React from 'react';
-import {useApp} from '../../context/useApp';
+import {useVaults} from '../../context/useVaults';
 import {useFilter} from './useFilter';
 import {useNavigate} from 'react-router-dom';
 import {VaultTile} from '../tiles';
@@ -7,7 +7,7 @@ import Loading from '../Loading';
 
 export default function List() {
 	const navigate = useNavigate();
-	const {loading} = useApp();
+	const {loading} = useVaults();
 	const {filter, queryRe} = useFilter();
 
 	return <>

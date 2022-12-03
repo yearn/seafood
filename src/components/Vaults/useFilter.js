@@ -1,4 +1,5 @@
 import React, {createContext, useContext, useEffect, useMemo, useState} from 'react';
+import {useVaults} from '../../context/useVaults';
 import {useApp} from '../../context/useApp';
 import {curveRe} from '../../utils/utils';
 import config from '../../config';
@@ -8,7 +9,8 @@ const	FilterContext = createContext();
 export const useFilter = () => useContext(FilterContext);
 
 export function FilterProvider({query, setQuery, chips, setChips, children}) {
-	const {vaults, favorites} = useApp();
+	const {vaults} = useVaults();
+	const {favorites} = useApp();
 	const [filter, setFilter] = useState([]);
 	const queryRe = useMemo(() => { return new RegExp(query, 'i'); }, [query]);
 

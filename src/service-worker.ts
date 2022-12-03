@@ -13,6 +13,7 @@ import {ExpirationPlugin} from 'workbox-expiration';
 import {precacheAndRoute, createHandlerBoundToURL} from 'workbox-precaching';
 import {registerRoute} from 'workbox-routing';
 import {StaleWhileRevalidate} from 'workbox-strategies';
+import config from './config.json';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -60,7 +61,7 @@ registerRoute(
 	({url}) => url.origin === self.location.origin && url.pathname.endsWith('.png'),
 	// Customize this strategy as needed, e.g., by changing to CacheFirst.
 	new StaleWhileRevalidate({
-		cacheName: 'images',
+		cacheName: 'seafood',
 		plugins: [
 			// Ensure that once this runtime cache reaches a maximum size the
 			// least-recently used images are removed.

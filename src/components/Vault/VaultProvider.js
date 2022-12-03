@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, {createContext, useContext, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import useLocalStorage from '../../utils/useLocalStorage';
-import {useApp} from '../../context/useApp';
+import {useVaults} from '../../context/useVaults';
 import useRpcProvider from '../../context/useRpcProvider';
 import {Erc20Info, GetVaultContract} from '../../ethereum/EthHelpers';
 
@@ -11,7 +11,7 @@ export const useVault = () => useContext(VaultContext);
 export default function VaultProvider({children}) {
 	const params = useParams();
 	const {providers} = useRpcProvider();
-	const {vaults} = useApp();
+	const {vaults} = useVaults();
 	const [vault, setVault] = useState();
 	const [vaultRpc, setVaultRpc] = useState();
 	const [provider, setProvider] = useState();

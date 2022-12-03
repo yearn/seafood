@@ -1,22 +1,5 @@
-import {ethers} from 'ethers';
 import _useLocalStorage from 'use-local-storage';
-
-function hydrateBigNumbersRecursively(object, depth = 1) {
-	if(Array.isArray(object)) {
-		object.forEach(o => hydrateBigNumbersRecursively(o, depth + 1));
-	} else {
-		Object.keys(object).forEach(key => {
-			const value = object[key];
-			if(typeof value === 'object') {
-				if(value.type === 'BigNumber') {
-					object[key] = ethers.BigNumber.from(object[key].hex);
-				} else {
-					hydrateBigNumbersRecursively(value, depth + 1);
-				}
-			}
-		});
-	}
-}
+import {hydrateBigNumbersRecursively} from './utils';
 
 export default function useLocalStorage(key, defaultValue, options) {
 	if(options && options.defaultKeysOnly) {
