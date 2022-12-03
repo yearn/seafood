@@ -1,5 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {stepEnum} from './useAddBlockDialog';
+import {useVaults} from '../../context/useVaults';
 import {useApp} from '../../context/useApp';
 import {curveRe} from '../../utils/utils';
 import useLocalStorage from '../../utils/useLocalStorage';
@@ -9,7 +10,8 @@ import List from './List';
 import {VaultTile} from '../tiles';
 
 export default function SelectVault({addBlockContext}) {
-	const {vaults, favorites} = useApp();
+	const {vaults} = useVaults();
+	const {favorites} = useApp();
 	const [filter, setFilter] = useState([]);
 	const {selectedProvider, setSteps, setResult} = addBlockContext;
 	const [query, setQuery] = useLocalStorage('addBlock.selectVault.query', '');
