@@ -163,7 +163,8 @@ export const AppProvider = ({children}) => {
 				contractAddress: strategy.address,
 				abi: strategyAbi,
 				calls: [
-					{reference: 'lendStatuses', methodName: 'lendStatuses', methodParameters: []}
+					{reference: 'lendStatuses', methodName: 'lendStatuses', methodParameters: []},
+					{reference: 'name', methodName: 'name', methodParameters: []}
 				]
 			}));
 
@@ -182,7 +183,15 @@ export const AppProvider = ({children}) => {
 								deposits: BigNumber.from(tuple[1]),
 								apr: BigNumber.from(tuple[2]),
 								address: tuple[3]
-							}))
+							})),
+							name: results[1].returnValues[0] || strategy.name
+						});
+					} else {
+						parsed.push({
+							chainId: chain.id,
+							type: 'strategy',
+							address: strategy.address,
+							name: results[1].returnValues[0] || strategy.name
 						});
 					}
 				});
@@ -226,6 +235,7 @@ export const AppProvider = ({children}) => {
 							&& s.address === update.address);
 						if(strategy) {
 							strategy.lendStatuses = update.lendStatuses;
+							strategy.name = update.name;
 						}
 					}
 				});
