@@ -20,6 +20,7 @@ self.onconnect = (event: MessageEvent): void => {
 	Comlink.expose(api, port);
 };
 
+
 interface IStartOptions {
 	refreshInterval: number
 }
