@@ -37,7 +37,12 @@ export interface Vault {
 		[-30]: number,
 		inception: number
 	},
-	tvls: [number[], number[]]
+	tvls: ITVLHistory
+}
+
+export interface ITVLHistory {
+	dates: number[],
+	tvls: number[]
 }
 
 export interface Strategy {
@@ -67,7 +72,7 @@ export interface LendStatus {
 	apr: BigNumber
 }
 
-export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: [number[], number[]]) : Vault {
+export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: ITVLHistory) : Vault {
 	return {
 		address: vault.address,
 		name: vault.name,

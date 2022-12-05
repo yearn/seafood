@@ -26,17 +26,17 @@ ChartJS.register(
 	Legend
 );
 
-export default function VaultTvl({vault, title = false, tooltips = false}) {
+export default function VaultTvl({vault, title = false, tooltips = false, animate = false}) {
 	const chart = useRef();
 	const [data, setData] = useState({datasets: []});
 	const {darkMode} = useChrome();
 
 	const tvlSeries = useMemo(() => {
 		if(vault) {
-			if(!vault.tvls || !vault.tvls[0].length) {
+			if(!vault.tvls?.tvls?.length) {
 				return null;
 			} else {
-				return [vault.tvls[0].slice(-3), vault.tvls[1].slice(-3)];
+				return [vault.tvls.dates.slice(-3), vault.tvls.tvls.slice(-3)];
 			}
 		}
 	}, [vault]);
@@ -84,7 +84,7 @@ export default function VaultTvl({vault, title = false, tooltips = false}) {
 			}
 		},
 		animation: {
-			duration: 250
+			duration: animate ? 200 : 0
 		}
 	};
 

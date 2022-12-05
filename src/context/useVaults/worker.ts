@@ -20,19 +20,22 @@ self.onconnect = (event: MessageEvent): void => {
 	Comlink.expose(api, port);
 };
 
+interface IStartOptions {
+	refreshInterval: number
+}
 
 interface ICallbacks {
 	startRefresh?: () => void,
 	cacheReady?: (date: Date, vaults: ySeafood.Vault[]) => void
 }
 
-async function start(callbacks?: ICallbacks) {
+async function start(options: IStartOptions, callbacks?: ICallbacks) {
 	const vaults = await getCache();
 	if(vaults.length > 0 && callbacks?.cacheReady) callbacks.cacheReady(new Date(), vaults);
 	refresh(callbacks);
 	setInterval(() => {
 		refresh(callbacks);
-	}, 5 * 60 * 1000);
+	}, options.refreshInterval);
 }
 
 async function refresh(callbacks?: ICallbacks) {
@@ -43,11 +46,15 @@ async function refresh(callbacks?: ICallbacks) {
 	const vaults = merge(vaultverse, multicallUpdates, tvlverse);
 	const db = await openDb();
 	const vaultStore = db.transaction('vaults', 'readwrite').objectStore('vaults');
-	vaults.forEach(vault => vaultStore.add(vault));
-	if(callbacks?.cacheReady) {
-		sort(vaults);
-		callbacks.cacheReady(new Date(), vaults);
-	}
+	const clearRequest = vaultStore.clear();
+	clearRequest.onerror = (e: Event) => { throw e; };
+	clearRequest.onsuccess = () => {
+		vaults.forEach(vault => vaultStore.add(vault));
+		if(callbacks?.cacheReady) {
+			sort(vaults);
+			callbacks.cacheReady(new Date(), vaults);
+		}
+	};
 }
 
 async function getCache() : Promise<ySeafood.Vault[]> {
@@ -70,8 +77,8 @@ async function getCache() : Promise<ySeafood.Vault[]> {
 
 async function sort(vaults: ySeafood.Vault[]) {
 	vaults.sort((a, b) => {
-		const aTvl = a.tvls ? a.tvls[1].slice(-1)[0] : 0;
-		const bTvl = b.tvls ? b.tvls[1].slice(-1)[0] : 0;
+		const aTvl = a.tvls ? a.tvls.tvls.slice(-1)[0] : 0;
+		const bTvl = b.tvls ? b.tvls.tvls.slice(-1)[0] : 0;
 		return bTvl - aTvl;
 	});
 }
@@ -254,7 +261,7 @@ async function createStrategyMulticalls(vaults: yDaemon.Vault[], chain: ySeafood
 
 interface TVLVerse {
 	[chainId: number]: {
-		[vaultAddress: string] : [number[], number[]]
+		[vaultAddress: string] : ySeafood.ITVLHistory
 	}
 }
 
