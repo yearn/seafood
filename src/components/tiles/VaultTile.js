@@ -69,7 +69,7 @@ export default function VaultTile({vault, queryRe, onClick}) {
 				<div className={`
 					relative grow flex
 					transition duration-200`}>
-					{vault.withdrawalQueue && <VaultTvl vault={vault} />}
+					{vault.withdrawalQueue && <VaultTvl vault={vault} animate={true} />}
 				</div>
 			</div>
 		</Panel>

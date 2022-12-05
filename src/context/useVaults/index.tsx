@@ -50,7 +50,7 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 		if(process.env.NODE_ENV === 'development') {
 			worker.ahoy().then(result => console.log(result));
 		}
-		worker.start(Comlink.proxy(callbacks));
+		worker.start({refreshInterval: 5 * 60 * 1000}, Comlink.proxy(callbacks));
 	}, [worker, callbacks]);
 
 	const refresh = useCallback(() => {
