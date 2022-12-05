@@ -4,14 +4,14 @@ import {stepEnum} from './useAddBlockDialog';
 import {FunctionTile, StrategyTile} from '../tiles';
 import useLocalStorage from '../../utils/useLocalStorage';
 import {useVaults} from '../../context/useVaults';
-import {useApp} from '../../context/useApp';
+import {useFavorites} from '../../context/useFavorites';
 import Filter from './Filter';
 import Header from './Header';
 import List from './List';
 
 export default function SelectVaultFunctionOrStrategy({addBlockContext, addBlock}) {
 	const {vaults} = useVaults();
-	const {favorites} = useApp();
+	const favorites = useFavorites();
 	const {selectedProvider, setSteps, result, setResult} = addBlockContext;
 	const [items, setItems] = useState([]);
 	const [filter, setFilter] = useState([]);

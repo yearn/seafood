@@ -2,8 +2,8 @@ import React from 'react';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import {RPCProviderContextApp} from './context/useRpcProvider';
 import AuthProvider from './context/useAuth';
-import {AppProvider} from './context/useApp';
 import VaultsProvider from './context/useVaults';
+import FavoritesProvider from './context/useFavorites';
 import SmsProvider from './context/useSms';
 import Chrome from './components/Chrome';
 import GithubCallback from './components/GithubCallback';
@@ -17,7 +17,7 @@ function App() {
 			<BrowserRouter>
 				<AuthProvider>
 					<VaultsProvider>
-						<AppProvider>
+						<FavoritesProvider>
 							<SmsProvider>
 								<Chrome>
 									<Routes>
@@ -28,7 +28,7 @@ function App() {
 									</Routes>
 								</Chrome>
 							</SmsProvider>
-						</AppProvider>
+						</FavoritesProvider>
 					</VaultsProvider>
 				</AuthProvider>
 			</BrowserRouter>
