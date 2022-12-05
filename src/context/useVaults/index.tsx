@@ -54,7 +54,7 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 	}, [worker, callbacks]);
 
 	const refresh = useCallback(() => {
-		worker.refresh(callbacks);
+		worker.refresh(Comlink.proxy(callbacks));
 	}, [worker, callbacks]);
 
 	return <VaultsContext.Provider value={{
