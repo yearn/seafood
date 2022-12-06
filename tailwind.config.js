@@ -10,7 +10,10 @@ module.exports = {
     'sm:h-14',
     'bg-stripes',
     'bg-stripes-black',
-    'bg-secondary-900'
+    'bg-secondary-900',
+    'font-[Goldman]',
+    'text-8xl',
+    'my-12'
   ],
   darkMode: 'class',
   theme: {

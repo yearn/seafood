@@ -1,6 +1,6 @@
 import React from 'react';
 import {BsBrightnessHigh, BsMoonFill} from 'react-icons/bs';
-import {useChrome} from './Chrome';
+import {useChrome} from '../Chrome';
 
 export default function Lux({className}) {
 	const {darkMode, setDarkMode} = useChrome();

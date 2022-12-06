@@ -122,7 +122,7 @@ export default function Summary({className}) {
 					</>}
 					{simulator.apyComputer.type !== vault.apy.type && <>
 						<div 
-							data-tip={`><(((*> - This vault should use the '${vault.apy.type}' method to calculate apy, but Seafood doesn't support that yet. Using ${simulator.apyComputer.type} for now!`}
+							data-tip={`This vault should use the '${vault.apy.type}' method to calculate apy, but Seafood doesn't support that yet. Using ${simulator.apyComputer.type} for now..`}
 							className={'w-fit flex items-center gap-1 text-xs text-attention-600 dark:text-attention-400 cursor-default'}>
 							<Tooltip place={'top'} type={'dark'} effect={'solid'} />
 							<TiWarning />

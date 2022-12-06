@@ -52,7 +52,7 @@ export default function Code() {
 		}
 	}
 
-	return <div className={'pt-8 pb-32 overflow-x-auto grow'}>
+	return <div className={'relative pt-8 pb-32 overflow-x-auto grow'}>
 		{linesOfCode.map((line, index) => 
 			<div key={index} className={'flex items-center'}>
 				<div className={'ml-2 mr-4 w-8 min-w-[2rem] text-right dark:text-secondary-400/60'}>{''}{index + 1}</div>
@@ -72,7 +72,11 @@ export default function Code() {
 			</div>
 		</SmallScreen>
 		<BiggerThanSmallScreen>
-			<Button icon={copied ? TbCheck : TbCopy} onClick={onCopyCode} className={'absolute top-36 right-14'} />
+			<div className={'absolute top-10 right-10'}>
+				<Button 
+					icon={copied ? TbCheck : TbCopy} 
+					onClick={onCopyCode} />
+			</div>
 		</BiggerThanSmallScreen>
 	</div>;
 }

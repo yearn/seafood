@@ -7,7 +7,7 @@ import useScrollOverpass from '../../context/useScrollOverpass';
 import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import {useFilter} from './useFilter';
 import Chips from './Chips';
-import {Input, SmallIconButton} from '../controls';
+import {Input, LabeledNumber, SmallIconButton} from '../controls';
 
 const SearchBox = React.forwardRef(
 	function SearchBox(props, ref) {
@@ -51,7 +51,7 @@ export default function Filter({showVaultCount = false}) {
 						{query && <SmallIconButton icon={BsX} onClick={clearQuery} className={'absolute right-2'} />}
 					</div>
 					<div className={'w-1/5 text-center text-xs'}>
-						{showVaultCount && `${filter.length} Vaults`}
+						{showVaultCount && <LabeledNumber number={filter.length} label={'Vaults'} />}
 					</div>
 				</div>
 				<div className={'mt-4 px-4'}>
@@ -69,8 +69,8 @@ export default function Filter({showVaultCount = false}) {
 				</div>
 				<div className={'w-full flex items-center justify-between'}>
 					<Chips></Chips>
-					<div className={'text-2xl'}>
-						{showVaultCount && `${filter.length} Vaults`}
+					<div className={'text-2xl flex items-center gap-2'}>
+						{showVaultCount && <LabeledNumber number={filter.length} label={'Vaults'} />}
 					</div>
 				</div>
 			</div>

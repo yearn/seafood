@@ -30,7 +30,7 @@ export default function Chrome({children}) {
 				dark:bg-gradient-to-br dark:from-indigo-900 dark:to-black
 				dark:sm:bg-gradient-radial-to-br dark:sm:from-indigo-900 dark:sm:via-secondary-900 dark:sm:to-black`} />
 				<div className={`
-					absolute z-10 w-full min-h-full flex flex-col`}>
+					absolute z-10 w-full min-h-full pl-14 flex flex-col`}>
 					<Header />
 					<CheckForUpdates />
 					{children}

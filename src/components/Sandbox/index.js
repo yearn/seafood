@@ -90,7 +90,7 @@ export default function Sandbox() {
 								<>
 									{blocks.length === 0 && 
 										<div className={'grow flex items-center justify-center text-2xl'}>
-											<Icon strokeWidth={24} className={'pt-2 mr-2 w-12 h-12'} />
+											<Icon strokeWidth={24} className={'pt-2 w-12 h-12 mr-2'} />
 											<div className={'rainbow-text'}>{'- The sandbox is empty'}</div>
 										</div>
 									}

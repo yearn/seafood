@@ -6,7 +6,7 @@ export default function useScrollOverpass() {
 	const mediumBreakpoint = useMediumBreakpoint();
 	const [show, setShow] = useState(false);
 	const [overpassClassName, setOverpassClassName] = useState('');
-	const showClassName = 'bg-secondary-100/60 dark:bg-black/60 backdrop-blur-md shadow';
+	const showClassName = 'bg-secondary-100/60 dark:bg-black/60 backdrop-blur-md';
 	const hideClassName = 'opacity-0 transition duration-200 pointer-events-none';
 
 	useScrollPosition(({prevPos, currPos}) => {

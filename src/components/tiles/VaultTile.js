@@ -2,8 +2,8 @@ import React, {useState} from 'react';
 import {BsStar, BsStarFill} from 'react-icons/bs';
 import {TbCopy, TbCheck} from 'react-icons/tb';
 import {useFavorites} from '../../context/useFavorites';
-import {getAddressExplorer, highlightString, truncateAddress} from '../../utils/utils';
-import {Bone} from '../controls';
+import {formatNumber, formatPercent, getAddressExplorer, highlightString, truncateAddress} from '../../utils/utils';
+import {Bone, LabeledNumber} from '../controls';
 import Tile from './Tile';
 import Panel from './Panel';
 import Chip from './Chip';
@@ -60,9 +60,9 @@ export default function VaultTile({vault, queryRe, onClick}) {
 							<div><Bone></Bone></div>
 						</div>}
 						{vault.withdrawalQueue && <div>
-							<div>{vault.withdrawalQueue.length + ' Strategies'}</div>
-							<div>{(vault.debtRatio / 100).toLocaleString(undefined, {maximumFractionDigits:2})}{'% Allocated'}</div>
-							<div>{((vault.totalAssets - vault.totalDebt) / (10 ** vault.decimals)).toLocaleString(undefined, {maximumFractionDigits:2})}{' Free'}</div>
+							<LabeledNumber number={vault.withdrawalQueue.length} label={'Strategies'} />
+							<LabeledNumber number={formatPercent(vault.debtRatio / 10_000, 0)} label={'Allocated'} />
+							<LabeledNumber number={formatNumber((vault.totalAssets - vault.totalDebt) / (10 ** vault.decimals), 0, '--', true)} label={'Free'} />
 						</div>}
 					</div>
 				</div>
