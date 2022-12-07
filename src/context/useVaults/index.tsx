@@ -28,8 +28,8 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 	const [vaults, setVaults] = useState<ySeafood.Vault[]>([]);
 
 	const worker = useMemo(() => {
-		const worker = new SharedWorker(new URL('./worker.ts', import.meta.url));
-		return Comlink.wrap<typeof api>(worker.port);
+		const worker = new Worker(new URL('./worker.ts', import.meta.url));
+		return Comlink.wrap<typeof api>(worker);
 	}, []);
 
 	const callbacks = useMemo(() => {
