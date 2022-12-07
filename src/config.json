@@ -37,8 +37,8 @@
 		{
 			"id": 10,
 			"name": "optimism",
-			"explorer": "https://optimistic.etherscan.io/",
-			"explorerApi": "https://api-optimistic.etherscan.io/",
+			"explorer": "https://optimistic.etherscan.io",
+			"explorerApi": "https://api-optimistic.etherscan.io",
 			"registry": "0x1ba4eB0F44AB82541E56669e18972b0d6037dfE0",
 			"providers": [
 				"https://rpc.ankr.com/optimism"
@@ -47,8 +47,8 @@
 		{
 			"id": 42161,
 			"name": "arbitrum",
-			"explorer": "https://arbiscan.io/",
-			"explorerApi": "https://api.arbiscan.io/",
+			"explorer": "https://arbiscan.io",
+			"explorerApi": "https://api.arbiscan.io",
 			"registry": "0x3199437193625DCcD6F9C9e98BDf93582200Eb1f",
 			"providers": [
 				"https://arb1.arbitrum.io/rpc"
