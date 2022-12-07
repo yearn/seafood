@@ -9,50 +9,87 @@ import dayjs from 'dayjs';
 import config from '../../config.json';
 import {useSms} from '../../context/useSms';
 
+function useUpdates(vault, debtRatioUpdates) {
+	const [updates, setUpdates] = useState([]);
+
+	const getAbi = useCallback(async strategy => {
+		const url = `/api/abi?chainId=${strategy.network.chainId}&contract=${strategy.address}`;
+		return await(await fetch(url)).json();
+	}, []);
+
+	const updatesPromise = useMemo(async () => {
+		const result = [];
+		if(!vault) return result;
+		for(const strategy of vault.withdrawalQueue) {
+			const debtRatioUpdate = debtRatioUpdates[strategy.address];
+			if(debtRatioUpdate !== undefined) {
+				const delta =  debtRatioUpdate - strategy.debtRatio;
+				const abi = await getAbi(strategy);
+				const autoHarvest = abi.some(f => f.name === 'setForceHarvestTriggerOnce');
+				result.push({
+					address: strategy.address,
+					name: strategy.name,
+					debtRatio: debtRatioUpdate,
+					delta,
+					autoHarvest
+				});
+			}
+		}
+		result.sort((a, b) => {b.autoHarvest - a.autoHarvest;});
+		return result;
+	}, [vault, debtRatioUpdates, getAbi]);
+
+	useEffect(() => {
+		updatesPromise.then(result => setUpdates(result));
+	}, [updatesPromise]);
+
+	return updates;
+}
+
 export default function Code({vault, debtRatioUpdates}) {
 	const [copied, setCopied] = useState(false);
 	const {bearer, profile} = useAuth();
 	const gh = useMemo(() => new GithubClient(bearer), [bearer]);
 	const sms = useSms();
-
-	const updates = useMemo(() => {
-		const result = [];
-		vault?.withdrawalQueue.forEach(strategy => {
-			const debtRatioUpdate = debtRatioUpdates[strategy.address];
-			if(debtRatioUpdate !== undefined) {
-				const delta =  debtRatioUpdate - strategy.debtRatio;
-				result.push({
-					address: strategy.address,
-					name: strategy.name,
-					debtRatio: debtRatioUpdate,
-					delta
-				});
-			}
-		});
-		return result;
-	}, [vault, debtRatioUpdates]);
+	const updates = useUpdates(vault, debtRatioUpdates);
 
 	const linesOfCode = useMemo(() => {
 		const lines = ['', '@sign'];
-		if(updates.length) {
-			updates.sort((a, b) => a.delta > b.delta ? 1 : -1);
-			lines.push('def go_seafood():');
+		if(!updates.length) return lines;
+
+		const autoStrategies = updates.filter(u => u.autoHarvest);
+		const manualStrategies = updates.filter(u => !u.autoHarvest);
+
+		lines.push('def go_seafood():');
+		lines.push('');
+		lines.push(`\t# ${vault.name}`);
+		lines.push(`\tvault = safe.contract("${vault.address}")`);
+		lines.push('');
+
+		autoStrategies.forEach(update => {
+			lines.push(`\t# ${update.name}`);
+			lines.push(`\t# Change debt ratio by ${update.delta > 0 ? '+' : ''}${update.delta} bps`);
+			lines.push(`\tstrategy = safe.contract("${update.address}")`);
+			lines.push(`\tvault.updateStrategyDebtRatio(strategy, ${update.debtRatio})`);
+			lines.push('\tstrategy.setForceHarvestTriggerOnce(True)');
+			lines.push('');
+		});
+
+		if(manualStrategies.length > 0) {
 			lines.push('\tstrategies=[]');
 			lines.push('');
-			lines.push(`\t# ${vault.name}`);
-			lines.push(`\tvault = safe.contract("${vault.address}")`);
-			updates.forEach(update => {
-				lines.push('');
+			manualStrategies.forEach(update => {
 				lines.push(`\t# ${update.name}`);
 				lines.push(`\t# Change debt ratio by ${update.delta > 0 ? '+' : ''}${update.delta} bps`);
 				lines.push(`\tstrategy = safe.contract("${update.address}")`);
 				lines.push(`\tvault.updateStrategyDebtRatio(strategy, ${update.debtRatio})`);
 				lines.push('\tstrategies.append(strategy)');
+				lines.push('');
 			});
-			lines.push('');
 			lines.push('\tharvest_n_check_many(safe, strategies)');
-			lines.push('');
 		}
+
+		lines.push('');
 		return lines;
 	}, [vault, updates]);
 
@@ -87,13 +124,12 @@ export default function Code({vault, debtRatioUpdates}) {
 	const commitMessage = useMemo(() => ({headline, body}), [headline, body]);
 
 	const nextBranchName = useCallback(async () => {
-		if(profile) {
-			const today = dayjs(new Date()).format('MMM-DD').toLowerCase();
-			const prefix = `refs/heads/seafood/${profile.name}/${today}/`;
-			const refs = await gh.getRefs(config.sms.owner, config.sms.repo, prefix);
-			const nonce = Math.max(0, ...refs.map(ref => parseInt(ref.name))) + 1;
-			return `seafood/${profile.name}/${today}/${nonce}`;
-		}
+		if(!profile) return;
+		const today = dayjs(new Date()).format('MMM-DD').toLowerCase();
+		const prefix = `refs/heads/seafood/${profile.name}/${today}/`;
+		const refs = await gh.getRefs(config.sms.owner, config.sms.repo, prefix);
+		const nonce = Math.max(0, ...refs.map(ref => parseInt(ref.name))) + 1;
+		return `seafood/${profile.name}/${today}/${nonce}`;
 	}, [gh, profile]);
 
 	const [defaultBranchName, setDefaultBranchName] = useState(`${config.sms.repo}/refs/heads/seafood/`);

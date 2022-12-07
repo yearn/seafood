@@ -11,6 +11,7 @@ var getVaultsRouter = require('./routes/getVaults');
 var githubRouter = require('./routes/github');
 var visionRouter = require('./routes/vision');
 var tenderlyRouter = require('./routes/tenderly');
+var abiRouter = require('./routes/abi');
 
 var app = express();
 
@@ -31,6 +32,7 @@ app.use('/api/getVaults', getVaultsRouter);
 app.use('/api/github', githubRouter);
 app.use('/api/vision', visionRouter);
 app.use('/api/tenderly', tenderlyRouter);
+app.use('/api/abi', abiRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
