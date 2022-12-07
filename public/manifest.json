@@ -2,32 +2,46 @@
   "name": "Yearn Seafood",
   "short_name": "ySeafood",
   "description": "Yearn's internal dashboard for vault management and reporting",
-	"iconPath": "./favicon.ico",
-	"locale": "en-US",
-	"uri": "https://seafood.yearn.watch/",
-	"twitter": "@iearnfinance",
-	"github": "https://github.com/yearn/dashboard_ui",
+  "iconPath": "./favicon.ico",
+  "locale": "en-US",
+  "uri": "https://seafood.yearn.watch/",
+  "twitter": "@iearnfinance",
+  "github": "https://github.com/yearn/dashboard_ui",
   "icons": [
     {
-      "src": "/favicon.ico",
+      "src": "icon/manifest-icon-192.maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon/manifest-icon-192.maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon/manifest-icon-512.maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon/manifest-icon-512.maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/favicon.svg",
       "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-        "src": "/android-chrome-192x192.png",
-        "sizes": "192x192",
-        "type": "image/png"
-    },
-    {
-        "src": "/android-chrome-512x512.png",
-        "sizes": "512x512",
-        "type": "image/png"
+      "type": "image/svg"
     }
   ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#0c4a6e",
   "background_color": "#0f172a",
-	"title_color": "#38bdf8",
-	"orientation": "portrait"
+  "title_color": "#38bdf8",
+  "orientation": "portrait"
 }
