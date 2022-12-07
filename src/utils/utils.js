@@ -105,6 +105,11 @@ function highlightString(string, highlightRe) {
 	return string;
 }
 
+async function getAbi(chainId, contract) {
+	const url = `/api/abi?chainId=${chainId}&contract=${contract}`;
+	return await(await fetch(url)).json();
+}
+
 export {
 	chainId,
 	getChain,
@@ -117,5 +122,6 @@ export {
 	formatBps,
 	formatCurrency,
 	formatTokens,
-	highlightString
+	highlightString,
+	getAbi
 };

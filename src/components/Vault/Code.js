@@ -8,14 +8,10 @@ import {useDebouncedCallback} from 'use-debounce';
 import dayjs from 'dayjs';
 import config from '../../config.json';
 import {useSms} from '../../context/useSms';
+import {getAbi} from '../../utils/utils';
 
 function useUpdates(vault, debtRatioUpdates) {
 	const [updates, setUpdates] = useState([]);
-
-	const getAbi = useCallback(async strategy => {
-		const url = `/api/abi?chainId=${strategy.network.chainId}&contract=${strategy.address}`;
-		return await(await fetch(url)).json();
-	}, []);
 
 	const updatesPromise = useMemo(async () => {
 		const result = [];
@@ -24,7 +20,7 @@ function useUpdates(vault, debtRatioUpdates) {
 			const debtRatioUpdate = debtRatioUpdates[strategy.address];
 			if(debtRatioUpdate !== undefined) {
 				const delta =  debtRatioUpdate - strategy.debtRatio;
-				const abi = await getAbi(strategy);
+				const abi = await getAbi(strategy.network.chainId, strategy.address);
 				const autoHarvest = abi.some(f => f.name === 'setForceHarvestTriggerOnce');
 				result.push({
 					address: strategy.address,
@@ -37,7 +33,7 @@ function useUpdates(vault, debtRatioUpdates) {
 		}
 		result.sort((a, b) => {b.autoHarvest - a.autoHarvest;});
 		return result;
-	}, [vault, debtRatioUpdates, getAbi]);
+	}, [vault, debtRatioUpdates]);
 
 	useEffect(() => {
 		updatesPromise.then(result => setUpdates(result));
