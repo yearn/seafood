@@ -18,8 +18,7 @@ router.get('/', function(req, res, next) {
       params: {
         module: 'contract',
         action: 'getabi',
-        address: req.query.contract,
-        apikey: process.env[`EXPLORER_API_KEY_FOR_${req.query.chainId}`]
+        address: req.query.contract
       }
     }).then(response => {
       if(response.data.error) {
