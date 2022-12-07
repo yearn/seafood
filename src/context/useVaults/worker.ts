@@ -15,10 +15,7 @@ export const api = {
 	refresh
 };
 
-self.onconnect = (event: MessageEvent): void => {
-	const port = event.ports[0];
-	Comlink.expose(api, port);
-};
+Comlink.expose(api);
 
 
 interface IStartOptions {
