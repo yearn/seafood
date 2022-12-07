@@ -54,6 +54,7 @@ const yDaemonVaultToSeafoodVault = (vault, chain) => ({
 
 const yDaemonStrategyToSeafoodStrategy = (strategy, chain) => ({
 	address: strategy.address,
+	apiVersion: strategy.details.version,
 	name: strategy.name,
 	network: {
 		chainId: chain.id,
