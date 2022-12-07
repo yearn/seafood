@@ -22,6 +22,9 @@ export default function Code() {
 					if(x.type === 'address' | x.type === 'string'){
 						ins = '"' + ins + '"';
 					}
+					if(x.type === 'bool') {
+						ins = ins.replace(/^\w/, c => c.toUpperCase());
+					}
 					return ins; 
 				}
 				will_fail = true;
