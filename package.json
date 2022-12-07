@@ -72,7 +72,8 @@
     "now-build": "react-scripts build && mv build dist",
     "sw": "run-p sw:**",
     "sw:api": "cd api && npm start",
-    "sw:app": "npx http-server ./build -p 3000 -P http://localhost:9000/"
+    "sw:app": "npx http-server ./build -p 3000 -P http://localhost:9000/",
+    "pag": "npx pwa-asset-generator public/icon.png public/icon -o false -p \"0%\" -m public/manifest.json -i public/index.html -t png -c true -w true -d true -n"
   },
   "eslintConfig": {
     "extends": [
