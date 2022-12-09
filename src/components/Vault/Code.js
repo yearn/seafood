@@ -44,10 +44,14 @@ function useUpdates(vault, debtRatioUpdates) {
 
 export default function Code({vault, debtRatioUpdates}) {
 	const [copied, setCopied] = useState(false);
-	const {bearer, profile} = useAuth();
-	const gh = useMemo(() => new GithubClient(bearer), [bearer]);
+	const {authenticated, token, profile} = useAuth();
 	const sms = useSms();
 	const updates = useUpdates(vault, debtRatioUpdates);
+
+	const gh = useMemo(() => {
+		if(!authenticated) return;
+		return new GithubClient(token.access_token);
+	}, [authenticated, token]);
 
 	const linesOfCode = useMemo(() => {
 		const lines = ['', '@sign'];
@@ -120,13 +124,13 @@ export default function Code({vault, debtRatioUpdates}) {
 	const commitMessage = useMemo(() => ({headline, body}), [headline, body]);
 
 	const nextBranchName = useCallback(async () => {
-		if(!profile) return;
+		if(!authenticated) return;
 		const today = dayjs(new Date()).format('MMM-DD').toLowerCase();
 		const prefix = `refs/heads/seafood/${profile.name}/${today}/`;
 		const refs = await gh.getRefs(config.sms.owner, config.sms.repo, prefix);
 		const nonce = Math.max(0, ...refs.map(ref => parseInt(ref.name))) + 1;
 		return `seafood/${profile.name}/${today}/${nonce}`;
-	}, [gh, profile]);
+	}, [authenticated, gh, profile]);
 
 	const [defaultBranchName, setDefaultBranchName] = useState(`${config.sms.repo}/refs/heads/seafood/`);
 	useEffect(() => {
@@ -136,6 +140,7 @@ export default function Code({vault, debtRatioUpdates}) {
 
 	const [onPrRunning, setOnPrRunning] = useState(false);
 	const onPr = useCallback(async () => {
+		if(!authenticated) return;
 		setOnPrRunning(true);
 		const main = await gh.getRef(config.sms.owner, config.sms.repo, `refs/heads/${config.sms.main}`);
 		const branch = await gh.createRef(main, await nextBranchName());
@@ -149,7 +154,7 @@ export default function Code({vault, debtRatioUpdates}) {
 		const compareUrl = gh.makeCompareUrl(branch);
 		window.open(compareUrl, '_blank', 'noreferrer');
 		setOnPrRunning(false);
-	}, [linesOfCode, sms, commitMessage, gh, nextBranchName]);
+	}, [authenticated, linesOfCode, sms, commitMessage, gh, nextBranchName]);
 
 	return <div className={'relative w-full h-full'}>
 		<div className={'max-h-full px-4 sm:px-8 pt-12 pb-20 flex flex-col overflow-x-auto'}>
@@ -229,7 +234,7 @@ export default function Code({vault, debtRatioUpdates}) {
 				className={'w-48'} />
 			{sms.access && <Button onClick={onPr}
 				busy={onPrRunning} 
-				disabled={updates?.length === 0 || !bearer} 
+				disabled={updates?.length === 0 || !token} 
 				icon={BiGitPullRequest}
 				className={'w-48'} />}
 		</div>
