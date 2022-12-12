@@ -1,11 +1,7 @@
 import React from 'react';
-import {Oval} from 'react-loader-spinner';
-import colors from 'tailwindcss/colors';
-import {useChrome} from '../Chrome';
+import Spinner from './Spinner';
 
 export default function Button({icon, label, title, onClick, notify, ping, disabled, className, iconClassName, busy}) {
-	const {darkMode} = useChrome();
-
 	return <button onClick={onClick} disabled={disabled} title={title} className={`
 		relative flex items-center justify-center
 		h-10 px-4 border-2 border-transparent
@@ -38,12 +34,9 @@ export default function Button({icon, label, title, onClick, notify, ping, disab
 
 		{!busy && label}
 
-		{busy && <Oval 
+		{busy && <Spinner 
 			width={'1.5rem'}
-			height={'1.5rem'}
-			color={darkMode ? colors.pink[400] : colors.pink[100]}
-			secondaryColor={colors.sky[900]}
-		/>}
+			height={'1.5rem'} />}
 
 		{notify && <div className={'absolute -top-1 -right-1 flex h-3 w-3'}>
 			<div className={`

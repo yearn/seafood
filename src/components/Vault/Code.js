@@ -1,16 +1,16 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {TbCopy, TbCheck} from 'react-icons/tb';
 import {BiGitBranch, BiGitPullRequest} from 'react-icons/bi';
-import {Button, Input, TextArea} from '../controls';
+import {Button, Input, Spinner, TextArea} from '../controls';
 import {useAuth} from '../../context/useAuth';
 import {GithubClient} from '../../utils/github';
-import {useDebouncedCallback} from 'use-debounce';
 import dayjs from 'dayjs';
 import config from '../../config.json';
 import {useSms} from '../../context/useSms';
 import {getAbi} from '../../utils/utils';
 
 function useUpdates(vault, debtRatioUpdates) {
+	const [busy, setBusy] = useState(false);
 	const [updates, setUpdates] = useState([]);
 
 	const updatesPromise = useMemo(async () => {
@@ -36,17 +36,25 @@ function useUpdates(vault, debtRatioUpdates) {
 	}, [vault, debtRatioUpdates]);
 
 	useEffect(() => {
-		updatesPromise.then(result => setUpdates(result));
+		setBusy(true);
+		updatesPromise.then(result => {
+			setUpdates(result);
+			setBusy(false);
+		});
 	}, [updatesPromise]);
 
-	return updates;
+	return {busy, updates};
 }
 
 export default function Code({vault, debtRatioUpdates}) {
 	const [copied, setCopied] = useState(false);
 	const {authenticated, token, profile} = useAuth();
 	const sms = useSms();
-	const updates = useUpdates(vault, debtRatioUpdates);
+	const {busy, updates} = useUpdates(vault, debtRatioUpdates);
+	const [defaultBranchName, setDefaultBranchName] = useState(`${config.sms.repo}/refs/heads/seafood/`);
+	const [onPrRunning, setOnPrRunning] = useState(false);
+	const headlineRef = useRef();
+	const bodyRef = useRef();
 
 	const gh = useMemo(() => {
 		if(!authenticated) return;
@@ -117,12 +125,6 @@ export default function Code({vault, debtRatioUpdates}) {
 		};
 	}, [vault, updates]);
 
-	const [headline, setHeadline] = useState(defaultCommitMessage.headline);
-	const debounceHeadline = useDebouncedCallback(value => {setHeadline(value);}, 250);
-	const [body, setBody] = useState(defaultCommitMessage.body);
-	const debounceBody = useDebouncedCallback(value => {setBody(value);}, 250);
-	const commitMessage = useMemo(() => ({headline, body}), [headline, body]);
-
 	const nextBranchName = useCallback(async () => {
 		if(!authenticated) return;
 		const today = dayjs(new Date()).format('MMM-DD').toLowerCase();
@@ -132,29 +134,36 @@ export default function Code({vault, debtRatioUpdates}) {
 		return `seafood/${profile.name}/${today}/${nonce}`;
 	}, [authenticated, gh, profile]);
 
-	const [defaultBranchName, setDefaultBranchName] = useState(`${config.sms.repo}/refs/heads/seafood/`);
 	useEffect(() => {
 		nextBranchName().then(branch => 
 			setDefaultBranchName(`${config.sms.repo}/refs/heads/${branch}`));
 	}, [nextBranchName]);
 
-	const [onPrRunning, setOnPrRunning] = useState(false);
+	const commitMessage = useCallback(() => ({
+		headline: headlineRef.current.value,
+		body: bodyRef.current.value
+	}), []);
+
 	const onPr = useCallback(async () => {
 		if(!authenticated) return;
 		setOnPrRunning(true);
 		const main = await gh.getRef(config.sms.owner, config.sms.repo, `refs/heads/${config.sms.main}`);
 		const branch = await gh.createRef(main, await nextBranchName());
-		const newSmsMain = `${sms.mainpy.join('\n')}${linesOfCode.join('\n')}\n`;
-		await gh.createCommitOnBranch(branch, commitMessage, {
+		const newSmsMainPy = `${sms.mainpy.join('\n')}${linesOfCode.join('\n')}\n`;
+		await gh.createCommitOnBranch(branch, commitMessage(), {
 			additions: [{
 				path: config.sms.script,
-				contents: window.btoa(unescape(encodeURIComponent(newSmsMain)))
+				contents: window.btoa(unescape(encodeURIComponent(newSmsMainPy)))
 			}]
 		});
 		const compareUrl = gh.makeCompareUrl(branch);
 		window.open(compareUrl, '_blank', 'noreferrer');
 		setOnPrRunning(false);
-	}, [authenticated, linesOfCode, sms, commitMessage, gh, nextBranchName]);
+	}, [authenticated, linesOfCode, sms, gh, nextBranchName, commitMessage]);
+
+	if(busy) return <div className={'w-full h-full flex items-center justify-center'}>
+		<Spinner width={'3rem'} height={'3rem'}></Spinner>
+	</div>;
 
 	return <div className={'relative w-full h-full'}>
 		<div className={'max-h-full px-4 sm:px-8 pt-12 pb-20 flex flex-col overflow-x-auto'}>
@@ -164,10 +173,9 @@ export default function Code({vault, debtRatioUpdates}) {
 					<div>{defaultBranchName}</div>
 				</div>
 				<div className={'pt-2 flex flex-col gap-4'}>
-					<Input
+					<Input _ref={headlineRef}
 						placeholder={'Pull Request Title'}
 						defaultValue={defaultCommitMessage.headline}
-						onChange={(e) => debounceHeadline(e.target.value)}
 						className={`
 						py-2 px-2 inline border-transparent leading-tight
 						text-xl bg-gray-300 dark:bg-gray-800
@@ -176,9 +184,8 @@ export default function Code({vault, debtRatioUpdates}) {
 						focus:ring-0 focus:border-primary-400 focus:bg-gray-200
 						focus:dark:border-selected-600
 						rounded-md shadow-inner`} />
-					<TextArea 
+					<TextArea _ref={bodyRef}
 						defaultValue={defaultCommitMessage.body}
-						onChange={(e) => debounceBody(e.target.value)}
 						spellCheck={false}
 						className={`
 						h-32 p-4 inline border-transparent leading-tight text-sm

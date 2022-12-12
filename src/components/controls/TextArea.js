@@ -1,6 +1,7 @@
 import React from 'react';
 
 export default function TextArea({
+	_ref,
 	defaultValue, 
 	onChange, 
 	disabled, 
@@ -9,6 +10,7 @@ export default function TextArea({
 	children
 }) {
 	return <textarea 
+		ref={_ref}
 		defaultValue={defaultValue} 
 		onChange={onChange} 
 		disabled={disabled} 
