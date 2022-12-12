@@ -30,13 +30,19 @@ cp env.example .env
   REACT_APP_DB_USER=
   REACT_APP_DB_PASS=
   ```
-  If you don't have these credentials, ask someone at yearn.. nicely.
+  If you don't have these credentials, ask someone at yearn.
 
-  - To run vault and strategy simulations, set a token for tenderly:
+  - To run vault and strategy simulations, set a token for tenderly and explorer urls for each supported chain:
   ```
   TENDERLY_ACCESS_TOKEN=
+  EXPLORER_API_FOR_1=
+  EXPLORER_API_FOR_250=
+  EXPLORER_API_FOR_10=
+  EXPLORER_API_FOR_42161=
   ```
-  To get a token, first create an account on https://tenderly.co. Then from your tenderly dashboard go to Settings, Authorization, Generate Access Token. Your tenderly account also needs access to yearn's tenderly organization account. To get access, ask someone at yearn to invite you.. nicely.
+  To get a token, first create an account on https://tenderly.co. Then from your tenderly dashboard go to Settings, Authorization, Generate Access Token. Your tenderly account also needs access to yearn's tenderly organization account. To get access, ask someone at yearn to invite you.
+
+  You can use your own explorer urls, but without premium access you'll likely get rate limit errors in seafood. Better, yearn also hosts its own internal block explorers that work great with seafood. To get these, ask someone at yearn.
 
 
 4 - Run the app:
