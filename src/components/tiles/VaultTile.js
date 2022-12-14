@@ -41,60 +41,66 @@ export default function VaultTile({vault, queryRe, onClick}) {
 	}
 
 	return <Tile>
-		<Panel onClick={onClick} className={'px-4 pt-4 pb-4 flex flex-col rounded-tl-lg rounded-tr-lg'}>
-			<div className={'text-lg font-bold'}>{highlightString(vault.name, queryRe)}</div>
-			<div className={'flex'}>
-				<div className={'mt-3 flex flex-col gap-2 items-start'}>
-					<div className={'flex gap-2 items-center'}>
-						<Chip label={vault.version} className={'bg-primary-400 dark:bg-primary-900'} />
-						<Chip label={vault.network.name} className={`bg-${vault.network.name}`} />
+		<div className={'grid grid-cols-4 gap-1 p-1'}>
+			<Panel onClick={onClick} className={'col-span-4 px-4 pt-4 pb-4 flex flex-col rounded-lg'}>
+				<div className={'text-lg font-bold truncate'}>{highlightString(vault.name, queryRe)}</div>
+				<div className={'flex'}>
+					<div className={'mt-3 flex flex-col gap-2 items-start'}>
+						<div className={'flex gap-2 items-center'}>
+							<Chip label={vault.version} className={'bg-primary-400 dark:bg-primary-900'} />
+							<Chip label={vault.network.name} className={`bg-${vault.network.name}`} />
+						</div>
+						<div className={`
+							w-36 text-sm -mr-[10px]
+							text-secondary-900 dark:text-secondary-500
+							sm:dark:group-hover:text-secondary-200
+							transition duration-200`}>
+							{!vault.withdrawalQueue && <div>
+								<div><Bone></Bone></div>
+								<div><Bone></Bone></div>
+								<div><Bone></Bone></div>
+							</div>}
+							{vault.withdrawalQueue && <div>
+								<LabeledNumber number={vault.withdrawalQueue.length} label={'Strategies'} />
+								<LabeledNumber number={formatPercent(vault.debtRatio / 10_000, 0)} label={'Allocated'} />
+								<LabeledNumber number={formatNumber((vault.totalAssets - vault.totalDebt) / (10 ** vault.decimals), 0, '--', true)} label={'Free'} />
+							</div>}
+						</div>
 					</div>
 					<div className={`
-						w-36 text-sm -mr-[10px]
-						text-secondary-900 dark:text-secondary-500
-						sm:dark:group-hover:text-secondary-200
+						relative grow flex
 						transition duration-200`}>
-						{!vault.withdrawalQueue && <div>
-							<div><Bone></Bone></div>
-							<div><Bone></Bone></div>
-							<div><Bone></Bone></div>
-						</div>}
-						{vault.withdrawalQueue && <div>
-							<LabeledNumber number={vault.withdrawalQueue.length} label={'Strategies'} />
-							<LabeledNumber number={formatPercent(vault.debtRatio / 10_000, 0)} label={'Allocated'} />
-							<LabeledNumber number={formatNumber((vault.totalAssets - vault.totalDebt) / (10 ** vault.decimals), 0, '--', true)} label={'Free'} />
-						</div>}
+						{vault.withdrawalQueue && <VaultTvl vault={vault} animate={true} />}
 					</div>
 				</div>
-				<div className={`
-					relative grow flex
-					transition duration-200`}>
-					{vault.withdrawalQueue && <VaultTvl vault={vault} animate={true} />}
-				</div>
-			</div>
-		</Panel>
-		<div className={`
-			z-10 flex items-center justify-between
-			text-secondary-900 dark:text-secondary-500
-			sm:dark:group-hover:text-secondary-200`}>
+			</Panel>
 			<Panel title={favorites.vaults.includes(vault.address) ? 'Remove from favorites' : 'Add to favorites'} 
 				onClick={toggleFavorite(vault)} className={`
 				p-4 h-14 flex items-center justify-center 
-				text-sm basis-1/4 rounded-bl-lg`} >
-				{!favorites.vaults.includes(vault.address) && <>&nbsp;<BsStar />&nbsp;</>}
-				{favorites.vaults.includes(vault.address) && <>&nbsp;<BsStarFill className={'fill-attention-400 glow-attention-md'} />&nbsp;</>}
+				text-sm rounded-lg`}>
+				{!favorites.vaults.includes(vault.address) && <>&nbsp;<BsStar className={`
+					dark:fill-secondary-500 sm:dark:group-hover:fill-secondary-200 
+					transition duration-200`} />&nbsp;</>}
+				{favorites.vaults.includes(vault.address) && <>&nbsp;<BsStarFill className={`
+					fill-attention-400 glow-attention-md`} />&nbsp;</>}
 			</Panel>
 			<Panel title={`Explore ${vault.address}`} 
 				onClick={() => window.open(getAddressExplorer(vault.network.chainId, vault.address), '_blank', 'noreferrer')} className={`
-				p-4 h-14 flex items-center justify-center 
-				text-sm basis-1/2`} >
+				col-span-2 shrink p-4 h-14 flex items-center justify-center 
+				text-secondary-900 dark:text-secondary-500
+				sm:dark:group-hover:text-secondary-200
+				transition duration-200
+				text-sm rounded-lg`} >
 				{truncateAddress(vault.address)}
 			</Panel>
 			<Panel title={`Copy ${vault.address} to your clipboard`}
 				onClick={copyAddress(vault)}
 				className={`
-				p-4 h-14 flex items-center justify-center 
-				text-sm basis-1/4 rounded-br-lg`}>
+				p-4 h-14 flex items-center justify-center
+				text-secondary-900 dark:text-secondary-500
+				sm:dark:group-hover:text-secondary-200
+				transition duration-200
+				text-sm rounded-lg`}>
 				{!copied && <TbCopy className={'text-lg'}></TbCopy>}
 				{copied && <TbCheck className={'text-lg'}></TbCheck>}
 			</Panel>

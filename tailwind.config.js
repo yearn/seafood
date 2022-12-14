@@ -13,7 +13,8 @@ module.exports = {
     'bg-secondary-900',
     'font-[Goldman]',
     'text-8xl',
-    'my-12'
+    'my-12',
+    'sm:w-48', 'sm:h-48'
   ],
   darkMode: 'class',
   theme: {

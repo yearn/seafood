@@ -44,7 +44,7 @@ export default function Header() {
 			<BiggerThanSmallScreen>
 				<div className={`fixed top-0 left-0 w-14 h-full
 					flex flex-col items-center justify-between sm:justify-start
-					bg-secondary-100/60 dark:bg-black/60`}>
+					bg-primary-800 dark:bg-black/60`}>
 					<Menu></Menu>
 				</div>
 			</BiggerThanSmallScreen>

@@ -1,9 +1,16 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {TbBrandGithub} from 'react-icons/tb';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {useAuth} from '../../context/useAuth';
 
 export default function Profile({className}) {
-	const {profile, logout} = useAuth();
+	const navigate = useNavigate();
+	const location = useLocation();
+	const {profile} = useAuth();
+
+	const match = useMemo(() => {
+		return location.pathname === '/profile';
+	}, [location]);
 
 	const login = () => {
 		const subdomain = window.location.hostname.split('.')[0];
@@ -25,19 +32,20 @@ export default function Profile({className}) {
 		transition duration-200
 		cursor-pointer
 		${className}`}>
-		<TbBrandGithub />
+		<TbBrandGithub className={'w-5 h-5'} />
 	</div>;
 
 	return <div 
-		onClick={logout}
-		title={'Sign out from Github'}
-		className={`relative ${className}`}>
+		onClick={() => navigate('/profile')}
+		title={'Profile'}
+		className={`relative 
+			${className} 
+			${match ? 'bg-primary-600 dark:bg-primary-600/20' : ''}`}>
 		<img
 			src={profile.avatar_url} 
 			alt={'avatar'}
 			className={`
 			absolute w-28 h-28 sm:w-9 sm:h-9
 			rounded-full`} />
-		<div className={'absolute w-28 h-28 sm:w-9 sm:h-9 rounded-full shadow-inner'}></div>
 	</div>;
 }

@@ -13,7 +13,7 @@ import Lux from './Lux';
 const buttonClassName = `
 w-10 h-10 flex items-center justify-center
 no-underline rounded-md
-text-primary-900 dark:text-primary-50
+text-primary-50
 hover:bg-selected-300 hover:dark:bg-selected-600 hover:dark:text-primary-50
 active:transform active:scale-95
 transition duration-200
@@ -35,7 +35,7 @@ function MenuLink({to, label, icon, expand, altPathPatterns = []}) {
 
 	return <Link title={label} to={to} replace={!mediumBreakpoint} className={`
 		${buttonClassName}
-		${match ? 'bg-selected-100 dark:bg-primary-600/20' : ''}`}>
+		${match ? 'bg-primary-600 dark:bg-primary-600/20' : ''}`}>
 		{icon && icon({className: 'text-4xl sm:text-xl'})}
 		{expand && label}
 	</Link>;

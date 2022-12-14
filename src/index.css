@@ -11,3 +11,23 @@ body {
   bg-gradient-to-r 
   from-purple-500 to-pink-500;
 }
+
+.rainbow-border {
+  @apply inline relative z-[0]
+  before:absolute before:inset-0 before:z-[-1]
+  before:p-1 before:rounded-lg 
+  before:bg-gradient-to-tl before:from-purple-500 before:to-pink-500
+  before:opacity-0 before:hover:opacity-60
+  before:transition before:duration-200;
+}
+
+.rainbow-border:before {
+  -webkit-mask-composite: xor;
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+}

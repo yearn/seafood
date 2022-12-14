@@ -39,36 +39,39 @@ export default function StrategyTile({selectedProvider, strategy, queryRe, onCli
 	}
 
 	return <Tile>
-		<Panel onClick={onClick} className={'px-4 pt-4 pb-4 flex flex-col rounded-tl-lg rounded-tr-lg'}>
-			<div className={'text-lg font-bold'}>{highlightString(strategy.name, queryRe)}</div>
-			<div className={'flex'}>
-				<div className={'mt-3 flex flex-col gap-2 items-start'}>
-					<Chip label={'strategy'} className={'bg-pink-400 dark:bg-pink-800'} />
+		<div className={'grid grid-cols-4 gap-1 p-1'}>
+			<Panel onClick={onClick} className={'col-span-4 px-4 pt-4 pb-4 flex flex-col rounded-lg'}>
+				<div className={'text-lg font-bold truncate'}>{highlightString(strategy.name, queryRe)}</div>
+				<div className={'flex'}>
+					<div className={'mt-3 flex flex-col gap-2 items-start'}>
+						<Chip label={'strategy'} className={'bg-pink-400 dark:bg-pink-800'} />
+					</div>
 				</div>
-			</div>
-		</Panel>
-		<div className={`
-			flex items-center justify-between
-			text-secondary-900 dark:text-secondary-500
-			dark:group-hover:text-secondary-200`}>
+			</Panel>
 			<Panel title={favorites.strategies.includes(strategy.address) ? 'Remove from favorites' : 'Add to favorites'} 
 				onClick={toggleFavorite()} className={`
 				p-4 h-14 flex items-center justify-center 
-				text-sm basis-1/4 rounded-bl-lg`} >
+				text-sm rounded-lg`} >
 				{!favorites.strategies.includes(strategy.address) && <>&nbsp;<BsStar />&nbsp;</>}
 				{favorites.strategies.includes(strategy.address) && <>&nbsp;<BsStarFill className={'fill-attention-400 glow-attention-md'} />&nbsp;</>}
 			</Panel>
 			<Panel title={`Explore ${strategy.address}`}
 				onClick={() => window.open(getAddressExplorer(selectedProvider.network.chainId, strategy.address), '_blank', 'noreferrer')} className={`
-				p-4 h-14 flex items-center justify-center 
-				text-sm basis-1/2`} >
+				col-span-2 shrink p-4 h-14 flex items-center justify-center 
+				text-secondary-900 dark:text-secondary-500
+				sm:dark:group-hover:text-secondary-200
+				transition duration-200
+				text-sm rounded-lg`} >
 				{truncateAddress(strategy.address)}
 			</Panel>
 			<Panel title={`Copy ${strategy.address} to your clipboard`}
 				onClick={copyAddress(strategy)}
 				className={`
-				p-4 h-14 flex items-center justify-center 
-				text-sm basis-1/4 rounded-br-lg`}>
+				p-4 h-14 flex items-center justify-center
+				text-secondary-900 dark:text-secondary-500
+				sm:dark:group-hover:text-secondary-200
+				transition duration-200
+				text-sm rounded-lg`}>
 				{!copied && <TbCopy className={'text-lg'}></TbCopy>}
 				{copied && <TbCheck className={'text-lg'}></TbCheck>}
 			</Panel>

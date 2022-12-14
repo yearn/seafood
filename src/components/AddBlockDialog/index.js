@@ -91,11 +91,11 @@ export default function AddBlockDialog({addBlockContext, onAddBlock}) {
 		</div>
 
 		<div className={`
-			absolute bottom-0 w-full px-4 py-4
+			absolute bottom-0 w-full p-4
 			flex items-center justify-between
 			border-t border-white dark:border-secondary-900
 			rounded-b-lg
-			${showClassName}`}>
+			bg-secondary-50 dark:bg-secondary-900`}>
 			<div className={'flex items-center gap-2'}>
 				<Switch onChange={toggleManual} checked={manual} />
 				<div onClick={toggleManual} className={'text-sm cursor-default'}>{'Manual'}</div>

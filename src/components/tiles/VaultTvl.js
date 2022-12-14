@@ -26,10 +26,23 @@ ChartJS.register(
 	Legend
 );
 
-export default function VaultTvl({vault, title = false, tooltips = false, animate = false}) {
+export default function VaultTvl({
+	vault, 
+	title = false, 
+	tooltips = false, 
+	animate = false,
+}) {
 	const chart = useRef();
 	const [data, setData] = useState({datasets: []});
 	const {darkMode} = useChrome();
+
+	const textClassName = useMemo(() => {
+		return animate
+			? `text-secondary-900 dark:text-secondary-500
+			sm:dark:group-hover:text-secondary-200
+			transition duration-200`
+			: '';
+	}, [animate]);
 
 	const tvlSeries = useMemo(() => {
 		if(vault) {
@@ -91,7 +104,7 @@ export default function VaultTvl({vault, title = false, tooltips = false, animat
 	const createGradient = useCallback((ctx, area) => {
 		const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);	
 		gradient.addColorStop(0, 'transparent');
-		gradient.addColorStop(1, darkMode ? colors.pink[600] : colors.pink[200]);
+		gradient.addColorStop(1, darkMode ? colors.sky[600] : colors.sky[200]);
 		return gradient;
 	}, [darkMode]);
 
@@ -121,8 +134,14 @@ export default function VaultTvl({vault, title = false, tooltips = false, animat
 				absolute bottom-0 right-0
 				flex flex-col items-end
 				drop-shadow-lg`}>
-				<div className={'font-mono font-bold text-2xl'}>{formatNumber(latestTvl, 2, '--', true)}</div>
-				<div>{'TVL (USD)'}</div>
+				<div className={`
+					font-mono font-bold text-2xl
+					${textClassName}`}>
+					{formatNumber(latestTvl, 2, '--', true)}
+				</div>
+				<div className={textClassName}>
+					{'TVL (USD)'}
+				</div>
 			</div>
 		</>}
 		{!tvlSeries && <div className={'text-error-600'}>{'No TVL'}</div>}

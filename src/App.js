@@ -11,6 +11,7 @@ import Sandbox from './components/Sandbox';
 import Vaults from './components/Vaults';
 import Vault from './components/Vault';
 import About from './components/About';
+import Profile from './components/Profile';
 
 function App() {
 	return (
@@ -26,6 +27,7 @@ function App() {
 										<Route path={'/vault/:address'} element={<Vault />} />
 										<Route path={'/sandbox/*'} element={<Sandbox />} />
 										<Route path={'/about'} element={<About />} />
+										<Route path={'/profile'} element={<Profile />} />
 										<Route path={'/github/callback'} exact={true} element={<GithubCallback />} />
 									</Routes>
 								</Chrome>

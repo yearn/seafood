@@ -8,6 +8,7 @@ import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import {useFilter} from './useFilter';
 import Chips from './Chips';
 import {Input, LabeledNumber, SmallIconButton} from '../controls';
+import QuadNW from '../QuadNW';
 
 const SearchBox = React.forwardRef(
 	function SearchBox(props, ref) {
@@ -73,6 +74,9 @@ export default function Filter({showVaultCount = false}) {
 						{showVaultCount && <LabeledNumber number={filter.length} label={'Vaults'} />}
 					</div>
 				</div>
+				<QuadNW className={`
+					absolute -bottom-2 left-0 w-2 h-2 
+					${overpassClassName ? 'fill-primary-800 dark:fill-black/60' : 'fill-transparent'}`} />
 			</div>
 		</BiggerThanSmallScreen>
 	</>;
