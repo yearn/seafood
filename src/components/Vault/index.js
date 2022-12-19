@@ -38,8 +38,8 @@ function Layout() {
 	return <div>
 		<Header />
 		<div className={'grid grid-cols-1 sm:grid-cols-2'}>
-			<Summary className={'sm:sticky sm:top-[120px] sm:z-0'} />
-			<div className={'flex flex-col gap-2 pb-20 sm:pt-2'}>
+			<Summary className={'sm:sticky sm:top-20 sm:z-0'} />
+			<div className={'flex flex-col gap-2 pb-20 sm:pt-6'}>
 				{vault.withdrawalQueue.map((strategy, index) => 
 					<Strategy key={index} strategy={strategy} />
 				)}

@@ -6,10 +6,13 @@ import {FixedNumber} from 'ethers';
 import {formatTokens, formatPercent, formatBps} from '../../utils/utils';
 import {useSimulator} from './SimulatorProvider';
 import {useVault} from './VaultProvider';
-import {Switch, Tooltip} from '../controls';
+import {A, Switch, Tooltip} from '../controls';
 import {BsLightningChargeFill} from 'react-icons/bs';
 import {BiBadgeCheck} from 'react-icons/bi';
 import useLocalStorage from '../../utils/useLocalStorage';
+import {getAddressExplorer, truncateAddress} from '../../utils/utils';
+import Chip from './Chip';
+import CopyButton from './CopyButton';
 import VaultTvl from '../tiles/VaultTvl';
 
 dayjs.extend(duration);
@@ -35,7 +38,7 @@ function BpsCell({value}) {
 }
 
 export default function Summary({className}) {
-	const {vault, token} = useVault();
+	const {vault, token, provider} = useVault();
 	const simulator = useSimulator();
 	const [apyDelta, setApyDelta] = useState();
 	const [liveApy, setLiveApy] = useLocalStorage('vault.liveApy', false);
@@ -85,6 +88,28 @@ export default function Summary({className}) {
 		self-start px-4 sm:pl-8 sm:pr-4 flex flex-col
 		gap-4 sm:gap-8
 		${className}`}>
+
+		<div className={'flex flex-col sm:flex-col-reverse'}>
+			<div className={`
+				w-full sm:w-fit 
+				py-5 pr-4 sm:py-2 sm:pr-0 
+				flex items-center justify-between gap-4`}>
+				<Chip className={`bg-${provider.network.name}`}>{provider.network.name}</Chip>
+				<Chip className={'bg-primary-400 dark:bg-primary-900'}>{vault.version}</Chip>
+				<A target={'_blank'} href={getAddressExplorer(provider.network.chainId, vault.address)} rel={'noreferrer'}>
+					{truncateAddress(vault.address)}
+				</A>
+				<CopyButton clip={vault.address}></CopyButton>
+			</div>
+
+			<div className={`
+				sm:w-fit flex flex-col sm:flex-row sm:items-center sm:gap-8`}>
+				<h1 onClick={() => {
+					window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
+				}} className={'font-bold text-5xl cursor-pointer'}>{vault.name}</h1>
+			</div>
+		</div>
+
 		<div className={'flex flex-col sm:flex-row sm:gap-8'}>
 			<div className={'w-full sm:w-[60%]'}>
 				<Row className={'grid-cols-2'}>
