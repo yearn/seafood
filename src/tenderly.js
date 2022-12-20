@@ -2,14 +2,18 @@ import {ethers} from 'ethers';
 import config from './config';
 
 async function createProvider(network_id, block_number) {
-	const result = await fetch(config.tenderly.forkUrl, {
+	const result = await fetch('/api/tenderly/fork', {
 		method: 'POST',
-		body: JSON.stringify({network_id, block_number}),
+		headers: {
+			'Content-Type': 'application/json',
+			'Accept': 'application/json'
+		},
+		body: JSON.stringify({network_id, block_number})
 	});
 
 	const data = await result.json();
 	return new ethers.providers.JsonRpcProvider(
-		`${config.tenderly.rpcUrl}/${data['simulation_fork']['id']}`
+		`${config.tenderly.rpcUrl}/${data.id}`
 	);
 }
 
