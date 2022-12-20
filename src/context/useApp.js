@@ -10,7 +10,7 @@ import useRpcProvider from './useRpcProvider';
 import config from '../config.json';
 
 const yDaemonRequests = config.chains.map(chain => 
-	`${config.ydaemon.url}/${chain.id}/vaults/all?strategiesCondition=debtLimit&strategiesDetails=withDetails`);
+	`${config.ydaemon.url}/${chain.id}/vaults/all?strategiesCondition=all&strategiesDetails=withDetails`);
 
 const multiGet = async (...urls) => {
 	return await Promise.all(urls.map(url => 
