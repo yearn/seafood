@@ -14,7 +14,7 @@
 			"explorer": "https://etherscan.io",
 			"registry": "0x50c1a2eA0a861A967D9d0FFE2AE4012c2E053804",
 			"providers": [
-				"https://mainnet.infura.io/v3/4dd01300adc44701aa7e57578f99b81b"
+				"https://rpc.ankr.com/eth"
 			]
 		},
 		{

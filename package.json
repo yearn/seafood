@@ -59,7 +59,7 @@
   },
   "scripts": {
     "start": "run-p start:**",
-    "start:server": "cd api && npm start",
+    "start:server": "cd api && yarn start",
     "start:app": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

@@ -8,7 +8,7 @@ router.post('/callback', async function(req, res, next) {
 			method: 'post',
 			headers: {accept: 'application/json'},
 			url: 'https://github.com/login/oauth/access_token'
-				+ `?client_id=${process.env.GITHUB_CLIENT_ID}`
+				+ `?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}`
 				+ `&client_secret=${process.env.GITHUB_CLIENT_SECRET}`
 				+ `&code=${req.body.code}`
 		});
