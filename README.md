@@ -3,8 +3,8 @@ Yearn dashboard for vault management and reporting
 
 ![favicon-256](https://user-images.githubusercontent.com/89237203/209074891-16c56321-774e-411c-9ca0-ffa1a7068ed5.png)
 
-## Devenv
-In production seafood currently runs on nodejs version 16. For an easy way to install a particular node version, or multiple node versions on the same system, try Node Version Manager (NVM). See https://github.com/nvm-sh/nvm#install--update-script for install instructions.
+## Dev Environment Setup
+In production seafood currently runs on nodejs version 16. For an easy way to install a particular node version in your dev environment, or multiple node versions on the same system, try Node Version Manager (NVM). See https://github.com/nvm-sh/nvm#install--update-script for install instructions.
 
 1 - With NVM installed, install node 16 and yarn:
 ```console
