@@ -30,11 +30,9 @@ export default function SimulatorProvider({children}) {
 	}, [vault]);
 
 	const degradationTime = useMemo(() => {
-		if(vault && vault.lockedProfitDegradation) {
-			if(vault.lockedProfitDegradation?.eq(0)) return 0;
-			const degradationCoefficient = BigNumber.from('1000000000000000000');
-			return degradationCoefficient.div(vault.lockedProfitDegradation);
-		}
+		if((vault?.lockedProfitDegradation || ethers.constants.Zero).eq(0)) return 0;
+		const degradationCoefficient = BigNumber.from('1000000000000000000');
+		return degradationCoefficient.div(vault.lockedProfitDegradation);
 	}, [vault]);
 
 	const jumpToTotalProfitUnlock = useCallback(async (provider) => {

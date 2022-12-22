@@ -2,7 +2,7 @@ import React, {useEffect, useState, useMemo} from 'react';
 import dayjs from 'dayjs';
 import duration from '../../../node_modules/dayjs/plugin/duration';
 import {TiWarning} from 'react-icons/ti';
-import {FixedNumber} from 'ethers';
+import {ethers, FixedNumber} from 'ethers';
 import {formatTokens, formatPercent, formatBps} from '../../utils/utils';
 import {useSimulator} from './SimulatorProvider';
 import {useVault} from './VaultProvider';
@@ -72,12 +72,12 @@ export default function Summary({className}) {
 	}, [vault, simulator, liveApy]);
 
 	const allocated = useMemo(() => {
-		if(vault.totalAssets.eq(0)) return 0;
+		if((vault?.totalAssets || ethers.constants.Zero).eq(0)) return 0;
 		return vault.debtRatio / 10_000;
 	}, [vault]);
 
 	const utilization = useMemo(() => {
-		if(vault.depositLimit.eq(0)) return NaN;
+		if((vault?.depositLimit || ethers.constants.Zero).eq(0)) return NaN;
 		return 1 - vault.availableDepositLimit?.mul(10_000).div(vault.depositLimit) / 10_000;
 	}, [vault]);
 
