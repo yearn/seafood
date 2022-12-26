@@ -1,6 +1,16 @@
 import React from 'react';
 
-export default function Button({icon, label, title, onClick, notify, ping, disabled, className, iconClassName}) {
+export default function Button({
+	icon = null, 
+	label, 
+	title = null, 
+	onClick, 
+	notify = false, 
+	ping = false, 
+	disabled = false, 
+	className = '', 
+	iconClassName = '', 
+	busy = false}) {
 	return <button onClick={onClick} disabled={disabled} title={title} className={`
 		relative flex items-center justify-center
 		h-10 px-4 border-2 border-transparent

@@ -1,6 +1,6 @@
 {
-  "name": "Yearn Seafood",
-  "short_name": "ySeafood",
+  "name": "Seafood",
+  "short_name": "Seafood",
   "description": "Yearn's dashboard for vault management and reporting",
   "iconPath": "./favicon.svg",
   "locale": "en-US",
@@ -39,9 +39,8 @@
     }
   ],
   "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#0c4a6e",
-  "background_color": "#0f172a",
-  "title_color": "#38bdf8",
+  "display": "minimal-ui",
+  "theme_color": "#000000",
+  "background_color": "#000000",
   "orientation": "portrait"
 }
