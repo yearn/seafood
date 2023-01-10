@@ -24,7 +24,9 @@ export const useVaults = () => useContext(VaultsContext);
 
 export default function VaultsProvider({children}: {children: ReactNode}) {
 	const [loading, setLoading] = useState(false);
-	const [cachetime, setCachetime] = useLocalStorage<Date>('context/usevaults/cachetime', new Date(0));
+	const [cachetime, setCachetime] = useLocalStorage<Date>('context/usevaults/cachetime', new Date(0), {
+		parser: str => new Date(JSON.parse(str))
+	});
 	const [vaults, setVaults] = useState<ySeafood.Vault[]>([]);
 
 	const worker = useMemo(() => {
