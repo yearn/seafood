@@ -1,4 +1,5 @@
 import React from 'react';
+import {ethers} from 'ethers';
 import config from '../config';
 
 const curveRe = /curve|crv/i;
@@ -105,6 +106,30 @@ function highlightString(string, highlightRe) {
 	return string;
 }
 
+async function getAbi(chainId, contract) {
+	const url = `/api/abi?chainId=${chainId}&contract=${contract}`;
+	return await(await fetch(url)).json();
+}
+
+function hydrateBigNumbersRecursively(object, depth = 1) {
+	if(Array.isArray(object)) {
+		object.forEach(o => hydrateBigNumbersRecursively(o, depth + 1));
+	} else {
+		Object.keys(object).forEach(key => {
+			const value = object[key];
+			if(typeof value === 'object') {
+				if(value.type === 'BigNumber') {
+					object[key] = ethers.BigNumber.from(value.hex);
+				} else if (value._isBigNumber) {
+					object[key] = ethers.BigNumber.from(value._hex);
+				} else {
+					hydrateBigNumbersRecursively(value, depth + 1);
+				}
+			}
+		});
+	}
+}
+
 export {
 	chainId,
 	getChain,
@@ -117,5 +142,7 @@ export {
 	formatBps,
 	formatCurrency,
 	formatTokens,
-	highlightString
+	highlightString,
+	getAbi,
+	hydrateBigNumbersRecursively
 };

@@ -1,7 +1,8 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {ethers} from 'ethers';
 import {useDebouncedCallback} from 'use-debounce';
-import {useApp} from '../../context/useApp';
+import {useVaults} from '../../context/useVaults';
+import {useFavorites} from '../../context/useFavorites';
 import {GetBasicStrat, GetBasicVault} from '../../ethereum/EthHelpers';
 import {stepEnum} from './useAddBlockDialog';
 import useLocalStorage from 'use-local-storage';
@@ -10,7 +11,8 @@ import Inputs from './Inputs';
 import Input from './Input';
 
 export default function Manual({addBlockContext}) {
-	const {vaults, favorites} = useApp();
+	const {vaults} = useVaults();
+	const favorites = useFavorites();
 	const {selectedProvider, setSteps, setResult} = addBlockContext;
 	const [address, setAddress] = useLocalStorage('addBlock.manual.address', '');
 	const [type, setType] = useState('');

@@ -3,13 +3,15 @@ import {GetVaultContract} from '../../ethereum/EthHelpers';
 import {stepEnum} from './useAddBlockDialog';
 import {FunctionTile, StrategyTile} from '../tiles';
 import useLocalStorage from '../../utils/useLocalStorage';
-import {useApp} from '../../context/useApp';
+import {useVaults} from '../../context/useVaults';
+import {useFavorites} from '../../context/useFavorites';
 import Filter from './Filter';
 import Header from './Header';
 import List from './List';
 
 export default function SelectVaultFunctionOrStrategy({addBlockContext, addBlock}) {
-	const {favorites, vaults} = useApp();
+	const {vaults} = useVaults();
+	const favorites = useFavorites();
 	const {selectedProvider, setSteps, result, setResult} = addBlockContext;
 	const [items, setItems] = useState([]);
 	const [filter, setFilter] = useState([]);

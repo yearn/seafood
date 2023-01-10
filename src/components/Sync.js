@@ -1,9 +1,9 @@
 import React from 'react';
-import {useApp} from '../context/useApp';
+import {useVaults} from '../context/useVaults';
 import TimeAgo from 'react-timeago';
 
 export default function Sync() {
-	const {loading, cacheTimestamp, syncCache} = useApp();
+	const {loading, cachetime, refresh} = useVaults();
 
 	function timeAgoFormatter(value, unit, suffix, epochMilliseconds, nextFormatter) {
 		if(unit === 'second') {
@@ -13,15 +13,15 @@ export default function Sync() {
 		}
 	}
 
-	return <div onClick={syncCache} className={`
+	return <div onClick={refresh} className={`
 		flex items-center gap-3
 		${loading ? '' : 'cursor-pointer'}`}>
 		<div className={`
 			text-[0.62rem]
 			${loading ? 'text-selected-500' : 'text-primary-600 dark:text-primary-400'}`}>
 			{loading && 'Syncing'}
-			{!loading && cacheTimestamp > 0 && <div>
-				{'Synced '}<TimeAgo date={cacheTimestamp} minPeriod={60} formatter={timeAgoFormatter}></TimeAgo>
+			{!loading && cachetime > 0 && <div>
+				{'Synced '}<TimeAgo date={cachetime} minPeriod={60} formatter={timeAgoFormatter}></TimeAgo>
 			</div>}
 		</div>
 		<div className={'relative flex items-center justify-center h-3 w-3'}>

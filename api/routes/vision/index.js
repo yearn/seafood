@@ -50,7 +50,10 @@ router.get('/tvls', function(req, res, next) {
 				for(const frame of response.data.results[r].frames) {
 					if(frame.schema.fields[1].labels.address !== 'n/a') {
 						const chainId = networkLabels[frame.schema.fields[1].labels.network];
-						result[chainId][frame.schema.fields[1].labels.address] = frame.data.values;
+						result[chainId][frame.schema.fields[1].labels.address] = {
+							dates: frame.data.values[0],
+							tvls: frame.data.values[1]
+						};
 					}
 				}
 			}

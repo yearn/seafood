@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {BsStar, BsStarFill} from 'react-icons/bs';
 import {TbCopy, TbCheck} from 'react-icons/tb';
-import {useApp} from '../../context/useApp';
+import {useFavorites} from '../../context/useFavorites';
 import {getAddressExplorer, highlightString, truncateAddress} from '../../utils/utils';
 import {Bone} from '../controls';
 import Tile from './Tile';
@@ -10,7 +10,7 @@ import Chip from './Chip';
 import VaultTvl from './VaultTvl';
 
 export default function VaultTile({vault, queryRe, onClick}) {
-	const {favorites} = useApp();
+	const favorites = useFavorites();
 	const [copied, setCopied] = useState(false);
 
 	function toggleFavorite(vault) {
@@ -69,7 +69,7 @@ export default function VaultTile({vault, queryRe, onClick}) {
 				<div className={`
 					relative grow flex
 					transition duration-200`}>
-					{vault.withdrawalQueue && <VaultTvl vault={vault} />}
+					{vault.withdrawalQueue && <VaultTvl vault={vault} animate={true} />}
 				</div>
 			</div>
 		</Panel>

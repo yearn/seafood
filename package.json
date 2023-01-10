@@ -1,5 +1,5 @@
 {
-  "name": "dashboard_ui",
+  "name": "yseafood",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -12,6 +12,7 @@
     "@types/react-dom": "^18.0.6",
     "axios": "^0.26.0",
     "chart.js": "^3.7.1",
+    "comlink": "^4.3.1",
     "compare-versions": "^5.0.1",
     "cookie-parser": "^1.4.6",
     "dayjs": "^1.11.5",
@@ -38,11 +39,15 @@
     "react-tooltip": "^4.5.0",
     "react-use-keypress": "^1.3.0",
     "sortablejs": "^1.14.0",
-    "swr": "^1.3.0",
     "typescript": "^4.8.4",
     "use-debounce": "^7.0.1",
     "use-local-storage": "^2.3.6",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "workbox-core": "^6.5.4",
+    "workbox-expiration": "^6.5.4",
+    "workbox-precaching": "^6.5.4",
+    "workbox-routing": "^6.5.4",
+    "workbox-strategies": "^6.5.4"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.1",
@@ -64,7 +69,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "now-build": "react-scripts build && mv build dist"
+    "now-build": "react-scripts build && mv build dist",
+    "sw": "run-p sw:**",
+    "sw:api": "cd api && npm start",
+    "sw:app": "npx http-server ./build -p 3000 -P http://localhost:9000/",
+    "pag": "npx pwa-asset-generator public/icon.png public/icon -o false -p \"0%\" -m public/manifest.json -i public/index.html -t png -c true -w true -d true -n"
   },
   "eslintConfig": {
     "extends": [

@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
 import {BsStar, BsStarFill} from 'react-icons/bs';
 import {TbCopy, TbCheck} from 'react-icons/tb';
-import {useApp} from '../../context/useApp';
+import {useFavorites} from '../../context/useFavorites';
 import {getAddressExplorer, highlightString, truncateAddress} from '../../utils/utils';
 import Tile from './Tile';
 import Panel from './Panel';
 import Chip from './Chip';
 
 export default function StrategyTile({selectedProvider, strategy, queryRe, onClick}) {
-	const {favorites} = useApp();
+	const favorites = useFavorites();
 	const [copied, setCopied] = useState(false);
 
 	function toggleFavorite() {
