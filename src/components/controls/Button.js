@@ -9,8 +9,7 @@ export default function Button({
 	ping = false, 
 	disabled = false, 
 	className = '', 
-	iconClassName = '', 
-	busy = false}) {
+	iconClassName = ''}) {
 	return <button onClick={onClick} disabled={disabled} title={title} className={`
 		relative flex items-center justify-center
 		h-10 px-4 border-2 border-transparent
