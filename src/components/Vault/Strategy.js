@@ -92,19 +92,17 @@ export default function Strategy({strategy}) {
 						<div>{'Last harvest'}</div>
 						<TimeAgo date={latestHarvest(strategy)}></TimeAgo>
 					</div>
-					{strategy.totalDebt > 0 && <>
-						<div>
-							<div className={'text-right'}>{'Assets'}</div>
-							<Tokens value={strategy.estimatedTotalAssets} token={token} />
-						</div>
-						<div>
-							<div className={'text-right'}>{'Real ratio'}</div>
-							<Percentage value={strategy.totalDebt / vault.totalAssets} />
-						</div>
-					</>}
+					<div>
+						<div className={'text-right'}>{'Assets'}</div>
+						<Tokens value={strategy.estimatedTotalAssets} token={token} />
+					</div>
+					<div>
+						<div className={'text-right'}>{'Real ratio'}</div>
+						<Percentage value={strategy.totalDebt / vault.totalAssets} />
+					</div>
 				</div>
 
-				{strategy.totalDebt > 0 && <div className={'py-2 flex items-center justify-between'}>
+				<div className={'py-2 flex items-center justify-between'}>
 					<div className={'text-lg font-bold whitespace-nowrap'}>{'Target debt ratio'}</div>
 					<div className={'flex items-center gap-4 font-mono text-xl'}>
 						{'%'}
@@ -122,7 +120,7 @@ export default function Strategy({strategy}) {
 						onChange={value => simulator.updateDebtRatio(strategy, Math.floor(parseFloat(value.target.value || 0) * 100))}
 						min={0} max={100} step={0.01} />
 					</div>
-				</div>}
+				</div>
 
 				{simulator.strategyResults[strategy.address]?.status === 'ok' && <div className={`
 					grid grid-cols-4`}>
