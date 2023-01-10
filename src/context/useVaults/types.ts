@@ -123,9 +123,7 @@ export function parseStrategy(strategy: yDaemon.Strategy, chain: Chain) : Strate
 		estimatedTotalAssets: BigNumber.from(strategy.details.estimatedTotalAssets || 0),
 		performanceFee: strategy.details.performanceFee,
 		activation: strategy.details.activation,
-		debtRatio: strategy.details.debtRatio
-			? BigNumber.from(strategy.details.debtRatio)
-			: undefined,
+		debtRatio: BigNumber.from(strategy.details.debtRatio || 0),
 		lastReport: strategy.details.lastReport,
 		totalDebt: BigNumber.from(strategy.details.totalDebt || 0),
 		totalGain: BigNumber.from(strategy.details.totalGain || 0),
