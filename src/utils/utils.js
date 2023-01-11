@@ -3,6 +3,7 @@ import {ethers} from 'ethers';
 import config from '../config';
 
 const curveRe = /curve|crv/i;
+const factoryRe = /factory/i;
 
 function chainId(name) {
 	return config.chains.find(chain => chain.name === name)?.id;
@@ -133,7 +134,8 @@ function hydrateBigNumbersRecursively(object, depth = 1) {
 export {
 	chainId,
 	getChain,
-	curveRe, 
+	curveRe,
+	factoryRe,
 	getAddressExplorer, 
 	getTxExplorer, 
 	truncateAddress, 
