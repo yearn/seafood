@@ -18,11 +18,11 @@ export const api = {
 Comlink.expose(api);
 
 
-interface IStartOptions {
+export interface IStartOptions {
 	refreshInterval: number
 }
 
-interface ICallbacks {
+export interface ICallbacks {
 	startRefresh?: () => void,
 	cacheReady?: (date: Date, vaults: ySeafood.Vault[]) => void
 }

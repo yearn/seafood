@@ -1,7 +1,7 @@
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import * as Comlink from 'comlink';
 import * as ySeafood from './types';
-import {api} from './worker';
+import {api, ICallbacks} from './worker';
 import {hydrateBigNumbersRecursively} from '../../utils/utils';
 import useLocalStorage from 'use-local-storage';
 
@@ -21,6 +21,15 @@ const	VaultsContext = createContext<IVaultsContext>({
 });
 
 export const useVaults = () => useContext(VaultsContext);
+
+function useStart(worker: Comlink.Remote<typeof api>, callbacks: ICallbacks) {
+	useEffect(() => {
+		if(process.env.NODE_ENV === 'development') {
+			worker.ahoy().then(result => console.log(result));
+		}
+		worker.start({refreshInterval: 5 * 60 * 1000}, Comlink.proxy(callbacks));
+	}, [worker, callbacks]);
+}
 
 export default function VaultsProvider({children}: {children: ReactNode}) {
 	const [loading, setLoading] = useState(false);
@@ -48,16 +57,11 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 		};
 	}, [setCachetime]);
 
-	useEffect(() => {
-		if(process.env.NODE_ENV === 'development') {
-			worker.ahoy().then(result => console.log(result));
-		}
-		worker.start({refreshInterval: 5 * 60 * 1000}, Comlink.proxy(callbacks));
-	}, [worker, callbacks]);
-
 	const refresh = useCallback(() => {
 		worker.refresh(Comlink.proxy(callbacks));
 	}, [worker, callbacks]);
+
+	useStart(worker, callbacks);
 
 	return <VaultsContext.Provider value={{
 		loading,
