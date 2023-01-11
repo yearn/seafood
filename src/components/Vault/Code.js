@@ -128,10 +128,10 @@ export default function Code({vault, debtRatioUpdates}) {
 	const nextBranchName = useCallback(async () => {
 		if(!authenticated) return;
 		const today = dayjs(new Date()).format('MMM-DD').toLowerCase();
-		const prefix = `refs/heads/seafood/${profile.name}/${today}/`;
+		const prefix = `refs/heads/seafood/${profile.login}/${today}/`;
 		const refs = await gh.getRefs(config.sms.owner, config.sms.repo, prefix);
 		const nonce = Math.max(0, ...refs.map(ref => parseInt(ref.name))) + 1;
-		return `seafood/${profile.name}/${today}/${nonce}`;
+		return `seafood/${profile.login}/${today}/${nonce}`;
 	}, [authenticated, gh, profile]);
 
 	useEffect(() => {
