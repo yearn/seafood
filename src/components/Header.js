@@ -5,6 +5,7 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {BiggerThanSmallScreen, SmallScreen, useMediumBreakpoint} from '../utils/breakpoints';
 import useScrollOverpass from '../context/useScrollOverpass';
 import Menu from './Menu';
+import Strip from './Strip';
 
 export default function Header() {
 	const navigate = useNavigate();
@@ -42,10 +43,10 @@ export default function Header() {
 				</button>
 			</SmallScreen>
 			<BiggerThanSmallScreen>
-				<div className={`fixed top-0 left-0 w-14 h-full
+				<div className={`fixed top-0 left-0 w-4 h-full
 					flex flex-col items-center justify-between sm:justify-start
 					bg-primary-800 dark:bg-black/60`}>
-					<Menu></Menu>
+					<Strip />
 				</div>
 			</BiggerThanSmallScreen>
 		</header>

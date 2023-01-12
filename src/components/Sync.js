@@ -24,13 +24,13 @@ export default function Sync({expand}) {
 				{'Synced '}<TimeAgo date={cachetime} minPeriod={60} formatter={timeAgoFormatter}></TimeAgo>
 			</div>}
 		</div>}
-		<div className={'relative flex items-center justify-center h-3 w-3'}>
+		<div className={'relative flex items-center justify-center'}>
 			{loading && <div className={`
-				absolute h-full w-full rounded-full 
+				absolute h-3 w-3 rounded-full 
 				bg-selected-400 
 				opacity-75 animate-ping`} />}
 			<div className={`
-				rounded-full h-2 w-2
+				rounded-full h-1 w-1
 				${loading ? 'bg-selected-500' : 'bg-primary-400'}`} />
 		</div>
 	</div>;

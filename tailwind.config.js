@@ -14,7 +14,9 @@ module.exports = {
     'font-[Goldman]',
     'text-8xl',
     'my-12',
-    'sm:w-48', 'sm:h-48'
+    'pt-5',
+    'sm:w-48', 'sm:h-48',
+    'w-1', 'h-1'
   ],
   darkMode: 'class',
   theme: {

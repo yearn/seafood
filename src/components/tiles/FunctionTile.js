@@ -7,7 +7,7 @@ import LittleChip from './LittleChip';
 
 export default function FunctionTile({func, queryRe, onClick}) {
 	return <Tile>
-		<Panel onClick={onClick} className={'px-4 pt-4 pb-6 flex flex-col rounded-lg'}>
+		<Panel onClick={onClick} innserClassName={'pb-6 flex flex-col'}>
 			<div className={'text-lg font-bold'}>{highlightString(func.name, queryRe)}</div>
 			<div className={'w-full mt-3 flex flex-wrap items-center gap-2'}>
 				<Chip label={'function'} className={'bg-amber-300 dark:bg-amber-700'} />

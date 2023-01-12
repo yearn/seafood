@@ -1,12 +1,18 @@
 import React from 'react';
 
-export default function Panel({title, onClick, className, children}) {
-	return <div title={title} onClick={onClick} className={`
-		sm:hover:bg-selected-300 sm:dark:hover:bg-selected-600
-		active:transform active:scale-[98%]
-		transition duration-200
-		cursor-pointer
-		${className}`}>
-		{children}
+export default function Panel({title, onClick, className, innserClassName, children}) {
+	return <div className={`
+	p-0.5
+	bg-none
+	sm:dark:hover:bg-gradient-to-tl
+  from-primary-500 to-pink-500
+	cursor-pointer rounded-lg
+	${className}`}>
+		<div title={title} onClick={onClick} className={`
+			w-full h-full p-4 flex
+			bg-black rounded-lg
+			${innserClassName}`}>
+			{children}
+		</div>
 	</div>;
 }

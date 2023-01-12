@@ -53,7 +53,7 @@ export default function Menu({action}) {
 		pointer-events-none
 
 		sm:static sm:p-0 sm:pt-1 sm:justify-between
-		sm:bg-transparent sm:dark:bg-transparent
+		sm:dark:bg-indigo-900/5
 		sm:opacity-100 sm:pointer-events-auto
 		${!mediumBreakpoint 
 		? action && action === 'show'

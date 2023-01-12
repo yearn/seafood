@@ -11,7 +11,6 @@ import SetInputs from './SetInputs';
 import Manual from './Manual';
 import {Button, Switch} from '../controls';
 import useLocalStorage from 'use-local-storage';
-import useScrollOverpass from '../../context/useScrollOverpass';
 
 export function AddBlockButton() {
 	const location = useLocation();
@@ -29,7 +28,6 @@ export function AddBlockButton() {
 
 export default function AddBlockDialog({addBlockContext, onAddBlock}) {
 	const navigate = useNavigate();
-	const {showClassName} = useScrollOverpass();
 	const {selectedProvider, steps, setSteps, result} = addBlockContext;
 	const [manual, setManual] = useLocalStorage('addBlock.manual', false);
 

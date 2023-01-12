@@ -1,5 +1,4 @@
 import A from './A';
-import Bone from './Bone';
 import Button from './Button';
 import Chip from './Chip';
 import Dialog from './Dialog';
@@ -17,7 +16,6 @@ import Pebble from './Pebble';
 
 export {
 	A,
-	Bone,
 	Button,
 	Chip,
 	Dialog,
