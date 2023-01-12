@@ -2,33 +2,63 @@ import React, {createContext, useCallback, useContext, useEffect, useMemo, useSt
 import useLocalStorage from '../utils/useLocalStorage';
 import {Octokit} from '@octokit/core';
 
+async function fetchProfile(token) {
+	const octokit = new Octokit({auth: token.access_token});
+	return (await octokit.request('GET /user')).data;
+}
+
+export async function refreshToken(token) {
+	return await (await fetch('/api/github/refreshToken', {
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(token)
+	})).json();
+}
+
 const AuthContext = createContext({});
 export const useAuth = () => useContext(AuthContext);
 export default function AuthProvider({children}) {
-	const [bearer, setBearer] = useLocalStorage('bearer', null);
-	const authenticated = useMemo(() => bearer || false, [bearer]);
+	const [token, setToken] = useLocalStorage('token', null);
 	const [profile, setProfile] = useState(null);
+	const authenticated = useMemo(() => (profile || false), [profile]);
 
 	const logout = useCallback(() => {
-		setBearer(null);
-	}, [setBearer]);
+		setToken(null);
+		setProfile(null);
+	}, [setToken, setProfile]);
 
 	useEffect(() => {
-		if(bearer) {
-			const octokit = new Octokit({auth: bearer});
-			octokit.request('GET /user').then(result => {
-				setProfile(result.data);
-			}).catch(error => {
+		if(!token) {setProfile(null); return;}
+		(async () => {
+			try {
+				setProfile(await fetchProfile(token));
+			} catch(error) {
 				if(error.message === 'Bad credentials') {
-					logout();
+					try {
+						console.warn('token may have expired. attempt refresh..');
+						const freshToken = await refreshToken(token);
+						setToken(freshToken);
+						console.warn('token has been refreshed');
+					} catch(error) {
+						console.warn('failed to refresh token');
+						console.warn(error);
+						logout();
+					}
 				}
-			});
-		} else {
-			setProfile(null);
-		}
-	}, [bearer, logout]);
+			}
+		})();
+	}, [token, setToken, logout]);
 
-	return <AuthContext.Provider value={{bearer, setBearer, authenticated, profile, logout}}>
+	return <AuthContext.Provider value={{
+		authenticated,
+		token, 
+		setToken,
+		profile,
+		logout
+	}}>
 		{children}
 	</AuthContext.Provider>;
 }

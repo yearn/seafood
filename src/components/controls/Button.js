@@ -1,4 +1,5 @@
 import React from 'react';
+import Spinner from './Spinner';
 
 export default function Button({
 	icon = null, 
@@ -9,7 +10,9 @@ export default function Button({
 	ping = false, 
 	disabled = false, 
 	className = '', 
-	iconClassName = ''}) {
+	iconClassName = '',
+	busy = false}) {
+
 	return <button onClick={onClick} disabled={disabled} title={title} className={`
 		relative flex items-center justify-center
 		h-10 px-4 border-2 border-transparent
@@ -29,7 +32,7 @@ export default function Button({
 		${!label ? 'px-3' : ''}
 		${className}`}>
 
-		{icon && <>
+		{!busy && icon && <>
 			{'\u00A0'}
 			{icon({className: `text-xl
 			${disabled 
@@ -40,7 +43,11 @@ export default function Button({
 			{'\u00A0'}
 		</>}
 
-		{label}
+		{!busy && label}
+
+		{busy && <Spinner 
+			width={'1.5rem'}
+			height={'1.5rem'} />}
 
 		{notify && <div className={'absolute -top-1 -right-1 flex h-3 w-3'}>
 			<div className={`

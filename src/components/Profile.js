@@ -28,12 +28,13 @@ export default function Profile() {
 			+ `?deployment=${deployment}`;
 		const authorizeUrl = 'https://github.com/login/oauth/authorize'
 			+ `?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}`
+			+ '&scope=repo'
 			+ `&redirect_uri=${redirect}`;
 		window.location = encodeURI(authorizeUrl);
 	};
 
 	const browseProfile = useCallback(() => {
-		window.open(profile.html_url, '_blank', 'noreferrer');	
+		window.open(profile.html_url, '_blank', 'noreferrer');
 	}, [profile]);
 
 	if(!profile) return <div className={`
@@ -89,7 +90,7 @@ export default function Profile() {
 			transition duration-200`}>
 			<div className={'sm:absolute sm:-right-4 w-fit h-fit flex flex-col sm:shadow-md'}>
 				<Button onClick={browseProfile} className={'sm:rounded-t-lg sm:border-b sm:border-b-black/10'}>
-					{profile.name}
+					{profile.login}
 				</Button>
 				<Button onClick={logout} className={'sm:border-b sm:border-b-black/10'}>
 					{'Logout'}

@@ -7,11 +7,18 @@
 		"dashboardUrl": "https://dashboard.tenderly.co/yearn/yearn-web/fork",
 		"rpcUrl": "https://rpc.tenderly.co/fork/"
 	},
+	"sms": {
+		"owner": "yearn",
+		"repo": "strategist-ms",
+		"main": "master",
+		"script": "scripts/main.py"
+	},
 	"chains": [
 		{
 			"id": 1,
 			"name": "ethereum",
 			"explorer": "https://etherscan.io",
+			"explorerApi": "https://api.etherscan.io",
 			"registry": "0x50c1a2eA0a861A967D9d0FFE2AE4012c2E053804",
 			"providers": [
 				"https://rpc.ankr.com/eth"
@@ -21,6 +28,7 @@
 			"id": 250,
 			"name": "fantom",
 			"explorer": "https://ftmscan.com",
+			"explorerApi": "https://api.ftmscan.com",
 			"registry": "0x727fe1759430df13655ddb0731dE0D0FDE929b04",
 			"providers": [
 				"https://rpc.ankr.com/fantom"
@@ -29,7 +37,8 @@
 		{
 			"id": 10,
 			"name": "optimism",
-			"explorer": "https://optimistic.etherscan.io/",
+			"explorer": "https://optimistic.etherscan.io",
+			"explorerApi": "https://api-optimistic.etherscan.io",
 			"registry": "0x1ba4eB0F44AB82541E56669e18972b0d6037dfE0",
 			"providers": [
 				"https://rpc.ankr.com/optimism"
@@ -38,7 +47,8 @@
 		{
 			"id": 42161,
 			"name": "arbitrum",
-			"explorer": "https://arbiscan.io/",
+			"explorer": "https://arbiscan.io",
+			"explorerApi": "https://api.arbiscan.io",
 			"registry": "0x3199437193625DCcD6F9C9e98BDf93582200Eb1f",
 			"providers": [
 				"https://arb1.arbitrum.io/rpc"

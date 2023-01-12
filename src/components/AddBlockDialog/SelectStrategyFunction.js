@@ -1,12 +1,12 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {stepEnum} from './useAddBlockDialog';
 import {FunctionTile} from '../tiles';
-import {strategy} from '../../abi';
 import {ethers} from 'ethers';
 import useLocalStorage from '../../utils/useLocalStorage';
 import Filter from './Filter';
 import List from './List';
 import Header from './Header';
+import {getAbi} from '../../utils/utils';
 
 export default function SelectStrategyFunction({addBlockContext, addBlock}) {
 	const {selectedProvider, setSteps, result, setResult} = addBlockContext;
@@ -18,7 +18,8 @@ export default function SelectStrategyFunction({addBlockContext, addBlock}) {
 
 	useEffect(() => {
 		(async () => {
-			const contract = new ethers.Contract(result.strategy.address, strategy, selectedProvider);
+			const abi = await getAbi(selectedProvider.network.chainId, result.strategy.address);
+			const contract = new ethers.Contract(result.strategy.address, abi, selectedProvider);
 			const functions = contract.interface.fragments.filter(f => {
 				return f.type === 'function' && f.stateMutability !== 'pure' && f.stateMutability !== 'view';
 			}).map(f => {return {

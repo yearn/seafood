@@ -8,7 +8,7 @@ export default function GithubCallback() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const query = useMemo(() => new URLSearchParams(location.search), [location]);
-	const {setBearer} = useAuth();
+	const {setToken} = useAuth();
 
 	useEffect(() => {
 		const deployment = query.get('deployment');
@@ -20,11 +20,11 @@ export default function GithubCallback() {
 				+ `/github/callback?code=${code}`;
 		} else {
 			axios.post('/api/github/callback', {code}).then(result => {
-				setBearer(result.data.bearer);
+				setToken(result.data);
 				navigate('/');
 			});
 		}
-	}, [query, navigate, setBearer]);
+	}, [query, navigate, setToken]);
 
 	return <div className={'w-full h-screen flex items-center justify-center'}>
 		<Loading />

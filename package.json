@@ -5,6 +5,7 @@
   "dependencies": {
     "@n8tb1t/use-scroll-position": "^2.0.3",
     "@octokit/core": "^4.0.5",
+    "@octokit/graphql": "^5.0.4",
     "@tailwindcss/forms": "^0.4.0",
     "@types/jest": "^29.1.2",
     "@types/node": "^18.11.0",
@@ -30,6 +31,7 @@
     "react-dom": "^17.0.2",
     "react-icons": "^4.4.0",
     "react-indiana-drag-scroll": "^2.2.0",
+    "react-loader-spinner": "^5.3.4",
     "react-responsive": "^9.0.0-beta.6",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
