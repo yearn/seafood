@@ -121,7 +121,7 @@ export default function VaultTvl({vault, title = false, tooltips = false, animat
 				absolute bottom-0 right-0
 				flex flex-col items-end
 				drop-shadow-lg`}>
-				<div className={'font-mono font-bold text-2xl'}>{formatNumber(latestTvl, 0, '--', true)}</div>
+				<div className={'font-mono font-bold text-2xl'}>{formatNumber(latestTvl, 2, '--', true)}</div>
 				<div>{'TVL (USD)'}</div>
 			</div>
 		</>}
