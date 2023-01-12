@@ -32,19 +32,22 @@ function formatNumber(number, decimals = 2, nonFinite = '∞', compact = false) 
 		let magnitude = '';
 		if(compact) {
 			if(number > 1_000_000_000) {
-				magnitude = 'm';
-				number = number / 1000;
+				magnitude = 'b';
+				number = number / 1_000_000_000;
 			} else if(number > 1_000_000) {
+				magnitude = 'm';
+				number = number / 1_000_000;
+			} else if(number > 1_000) {
 				magnitude = 'k';
-				number = number / 1000;
+				number = number / 1_000;
 			}
 		}
 
 		const formatted =  number.toLocaleString(
 			navigator?.language, 
 			{
-				minimumFractionDigits: magnitude ? 0 : decimals, 
-				maximumFractionDigits: magnitude ? 0 : decimals
+				minimumFractionDigits: decimals, 
+				maximumFractionDigits: decimals
 			}
 		);
 
