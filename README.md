@@ -5,8 +5,9 @@ Yearn dashboard for vault management and reporting
 
 
 - [Dev environment setup](#dev-environment-setup)
-- [Tests](#tests)
 - [Project structure](#project-structure)
+- [Data access strategy](#data-access-strategy)
+- [Tests](#tests)
 - [Contributing](#contributing)
 
 
@@ -59,13 +60,6 @@ yarn start
 Open a browser at http://localhost:3000
 
 
-## Tests
-Seafood uses Jest for testing. Run tests like this:
-```console
-yarn test
-```
-
-
 ## Project structure
 ### backend
 `/api` - Resources for serving Seafood's backend api.\
@@ -88,6 +82,31 @@ yarn test
 `/src/pages` - Maybe this was a Nextjs project once? (obsoleting)\
 `/src/utils` - Various utilities that seemed happiest in a folder called `utils` 😁\
 `/src/config.json` - This was a more convenient way to configure previous versions of Seafood. It moves to envars eventually.
+
+
+## Data access strategy
+Seafood sources data from these providers:
+- [yDaemon](https://github.com/yearn/ydaemon), the primary source
+- Public blockchain RPC gateways, to fill in data yDaemon doesn't have yet
+- Block explorer apis, to get contract abis
+- Tenderly, for simulated contract states
+- An internal Yearn database for strategy harvest histories
+
+To give a unified, cross-chain view of Yearn's products, Seafood's primary data structure is aggregated from all networks into one view like this:
+- Query yDaemon's vaults endpoint for each network
+- Execute multicalls on each network for any data yDaemon doesn't have yet
+- Merge results into one data structure
+
+This process requires network and cpu bandwidth large enough that it caused jank in the UI. To de-jank, Seafood moved this aggregation logic into a [web worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers). The worker decouples the aggregation logic from the UI's thread. It also provides an execution environment outside of React, enhancing code readability.
+
+The aggregated data structure is stored in the browser's IndexDB and made available to the app through a hook called [useVaults](/src/context/useVaults). 
+
+
+## Tests
+Seafood uses Jest for testing. Run tests like this:
+```console
+yarn test
+```
 
 
 ## Contributing
