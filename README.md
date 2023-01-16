@@ -68,25 +68,25 @@ yarn test
 
 ## Project structure
 ### backend
-`/api` - Resources for serving Seafood's backend api.
-`/api/routes/vision` - Facades over Yearn's vision api.
-`/api/routes/abi` - Smart contract abis with a twist of cache.
-`/api/routes/getVaults` - Vault and strategy related data. (obsoleting)
-`/api/routes/github` - Generate GitHub bearer tokens for Seafood users.
+`/api` - Resources for serving Seafood's backend api.\
+`/api/routes/vision` - Facades over Yearn's vision api.\
+`/api/routes/abi` - Smart contract abis with a twist of cache.\
+`/api/routes/getVaults` - Vault and strategy related data. (obsoleting)\
+`/api/routes/github` - Generate GitHub bearer tokens for Seafood users.\
 `/api/routes/tenderly` - Generate Tenderly simulation forks.
 
 ### frontend
-`/public` - Static files.
-`/scripts` - Various helper scripts used during dev. (obsoleting)
-`/src` - Resources for building Seafood's frontend.
-`/src/abi` - Some static abis that are needed by Seafood and some that..aren't 👀
-`/src/apy` - Logic for computing APY on demand.
-`/src/components` - Most of Seafood's React components go here
-`/src/components/controls` - Specifically, common UI controls live here.
-`/src/context` - Seafood's React hooks live here. So why call it `context`?
-`/src/ethereum` - Various utilities for querying RPCs. (obsoleting)
-`/src/pages` - Maybe this was a Nextjs project once? (obsoleting)
-`/src/utils` - Various utilities that seemed happiest in a folder called `utils` 😁
+`/public` - Static files.\
+`/scripts` - Various helper scripts used during dev. (obsoleting)\
+`/src` - Resources for building Seafood's frontend.\
+`/src/abi` - Some static abis that are needed by Seafood and some that..aren't 👀\
+`/src/apy` - Logic for computing APY on demand.\
+`/src/components` - Most of Seafood's React components go here\
+`/src/components/controls` - Specifically, common UI controls live here.\
+`/src/context` - Seafood's React hooks live here. So why call it `context`?\
+`/src/ethereum` - Various utilities for querying RPCs. (obsoleting)\
+`/src/pages` - Maybe this was a Nextjs project once? (obsoleting)\
+`/src/utils` - Various utilities that seemed happiest in a folder called `utils` 😁\
 `/src/config.json` - This was a more convenient way to configure previous versions of Seafood. It moves to envars eventually.
 
 
