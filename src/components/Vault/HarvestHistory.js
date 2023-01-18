@@ -33,7 +33,7 @@ function HarvestHistory({history}){
 										{dayjs(new Date(e.timestamp * 1000)).format('YYYY-MM-DD')}
 									</A>
 								</Cell>
-								<Cell>{formatNumber(parseFloat(e.total_gain), 5)}</Cell>
+								<Cell>{formatNumber(parseFloat(e.gain), 5)}</Cell>
 								<Cell>{formatCurrency(parseFloat(e.want_gain_usd))}</Cell>
 								<Cell>{formatPercent(parseFloat(e.rough_apr_pre_fee))}</Cell>
 							</tr>;
