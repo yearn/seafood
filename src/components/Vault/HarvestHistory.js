@@ -13,6 +13,7 @@ function Cell({textAlign = 'text-right', children}) {
 }
 
 function HarvestHistory({history}){
+	console.log(history)
 	return <>
 		<SmallScreen>
 			<div className={'w-full overflow-x-auto'}>
@@ -58,7 +59,7 @@ function HarvestHistory({history}){
 						const time = new Date(e.timestamp * 1000);
 						return <tr key={e.txn_hash} className={i % 2 === 0 ? 'bg-selected-400/5' : ''}>
 							<Cell textAlign={'text-left'}><A href={getTxExplorer(e.chain_id, e.txn_hash)} target={'_blank'} rel={'noreferrer'}>{time.toGMTString()}</A></Cell>
-							<Cell>{formatNumber(parseFloat(e.total_gain), 5)}</Cell>
+							<Cell>{formatNumber(parseFloat(e.gain), 5)}</Cell>
 							<Cell>{formatCurrency(parseFloat(e.want_gain_usd))}</Cell>
 							<Cell>{formatPercent(parseFloat(e.rough_apr_pre_fee))}</Cell>
 						</tr>;
