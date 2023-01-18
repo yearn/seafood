@@ -13,7 +13,6 @@ function Cell({textAlign = 'text-right', children}) {
 }
 
 function HarvestHistory({history}){
-	console.log(history)
 	return <>
 		<SmallScreen>
 			<div className={'w-full overflow-x-auto'}>
