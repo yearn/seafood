@@ -3,7 +3,7 @@ import {useVaults} from '../../context/useVaults';
 import {useFilter} from './useFilter';
 import {useNavigate} from 'react-router-dom';
 import {VaultTile} from '../tiles';
-import Loading from '../Loading';
+import Spinner from '../controls/Spinner';
 
 export default function List() {
 	const navigate = useNavigate();
@@ -13,7 +13,7 @@ export default function List() {
 	return <>
 		{loading && filter.length === 0 && <div className={`
 			absolute w-full h-screen flex items-center justify-center`}>
-			<Loading />
+			<Spinner />
 		</div>}
 
 		{filter.length > 0 && <div className={`

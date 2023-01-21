@@ -2,7 +2,7 @@ import React, {useEffect, useMemo} from 'react';
 import axios from 'axios';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {useAuth} from '../context/useAuth';
-import Loading from './Loading';
+import Spinner from '../components/controls/Spinner';
 
 export default function GithubCallback() {
 	const location = useLocation();
@@ -27,6 +27,6 @@ export default function GithubCallback() {
 	}, [query, navigate, setToken]);
 
 	return <div className={'w-full h-screen flex items-center justify-center'}>
-		<Loading />
+		<Spinner />
 	</div>;
 }

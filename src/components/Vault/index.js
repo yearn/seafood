@@ -9,7 +9,7 @@ import Toolbar from './Toolbar';
 import Strategy from './Strategy';
 import SimulatorProvider, {useSimulator} from './SimulatorProvider';
 import Code from './Code';
-import Loading from '../Loading';
+import Spinner from '../controls/Spinner';
 import Events from './Events';
 import SimulatorStatus from './SimulatorStatus';
 import {SmallScreen} from '../../utils/breakpoints';
@@ -32,7 +32,7 @@ function Layout() {
 
 	if(loading) return <div className={`
 		absolute w-full h-screen flex items-center justify-center`}>
-		<Loading />
+		<Spinner />
 	</div>;
 
 	return <div>
