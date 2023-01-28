@@ -35,8 +35,8 @@ cp env.example .env
 
   - For minimum functionality, set these envars:
   ```
-  REACT_APP_DB_USER=
-  REACT_APP_DB_PASS=
+  DB_USER=
+  DB_PASS=
   ```
   If you don't have these credentials, ask someone at yearn.
 
