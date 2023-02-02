@@ -13,7 +13,7 @@ import Code from './Code';
 import {AddBlockContext, defaultResult, stepEnum} from '../AddBlockDialog/useAddBlockDialog';
 import AddBlockDialog from '../AddBlockDialog';
 import EventsDialog from './EventsDialog';
-import Icon from '../Icon';
+import SpeechBubble from '../SpeechBubble';
 
 export default function Sandbox() {
 	const location = useLocation();
@@ -89,10 +89,7 @@ export default function Sandbox() {
 							{(location.hash === '' || location.hash === '#add-block' || location.hash === '#events') &&
 								<>
 									{blocks.length === 0 && 
-										<div className={'grow flex items-center justify-center text-2xl'}>
-											<Icon strokeWidth={24} className={'pt-2 mr-2 w-12 h-12'} />
-											<div className={'rainbow-text'}>{'- The sandbox is empty'}</div>
-										</div>
+										<SpeechBubble text={'The sandbox is empty'} className={'grow justify-center'} />
 									}
 									{blocks.length > 0 && <Simulator />}
 								</>
