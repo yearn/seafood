@@ -31,7 +31,7 @@ function useUpdates(vault, debtRatioUpdates) {
 				});
 			}
 		}
-		result.sort((a, b) => {b.autoHarvest - a.autoHarvest;});
+		result.sort((a, b) => a.delta - b.delta);
 		return result;
 	}, [vault, debtRatioUpdates]);
 
@@ -65,39 +65,33 @@ export default function Code({vault, debtRatioUpdates}) {
 		const lines = ['', '@sign'];
 		if(!updates.length) return lines;
 
-		const autoStrategies = updates.filter(u => u.autoHarvest);
-		const manualStrategies = updates.filter(u => !u.autoHarvest);
+		const hasManualHarvests = updates.some(update => !updates.autoHarvest);
 
 		lines.push('def go_seafood():');
 		lines.push('');
 		lines.push(`\t# ${vault.name}`);
 		lines.push(`\tvault = safe.contract("${vault.address}")`);
 		lines.push('');
+		if(hasManualHarvests) {
+			lines.push('\tmanual_harvest_strategies = []');
+			lines.push('');
+		}
 
-		autoStrategies.forEach(update => {
+		updates.forEach(update => {
 			lines.push(`\t# ${update.name}`);
 			lines.push(`\t# Change debt ratio by ${update.delta > 0 ? '+' : ''}${update.delta} bps`);
 			lines.push(`\tstrategy = safe.contract("${update.address}")`);
 			lines.push(`\tvault.updateStrategyDebtRatio(strategy, ${update.debtRatio})`);
-			lines.push('\tstrategy.setForceHarvestTriggerOnce(True)');
+			lines.push(update.autoHarvest 
+				? '\tstrategy.setForceHarvestTriggerOnce(True)' 
+				: '\tmanual_harvest_strategies.append(strategy)');
 			lines.push('');
 		});
 
-		if(manualStrategies.length > 0) {
-			lines.push('\tstrategies=[]');
+		if(hasManualHarvests) {
+			lines.push('\tharvest_n_check_many(safe, manual_harvest_strategies)');
 			lines.push('');
-			manualStrategies.forEach(update => {
-				lines.push(`\t# ${update.name}`);
-				lines.push(`\t# Change debt ratio by ${update.delta > 0 ? '+' : ''}${update.delta} bps`);
-				lines.push(`\tstrategy = safe.contract("${update.address}")`);
-				lines.push(`\tvault.updateStrategyDebtRatio(strategy, ${update.debtRatio})`);
-				lines.push('\tstrategies.append(strategy)');
-				lines.push('');
-			});
-			lines.push('\tharvest_n_check_many(safe, strategies)');
 		}
-
-		lines.push('');
 		return lines;
 	}, [vault, updates]);
 
