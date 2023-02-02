@@ -65,7 +65,7 @@ export default function Code({vault, debtRatioUpdates}) {
 		const lines = ['', '@sign'];
 		if(!updates.length) return lines;
 
-		const hasManualHarvests = updates.some(update => !updates.autoHarvest);
+		const hasManualHarvests = updates.some(update => !update.autoHarvest);
 
 		lines.push('def go_seafood():');
 		lines.push('');
