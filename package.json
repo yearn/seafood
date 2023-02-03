@@ -6,6 +6,8 @@
     "@n8tb1t/use-scroll-position": "^2.0.3",
     "@octokit/core": "^4.0.5",
     "@octokit/graphql": "^5.0.4",
+    "@sentry/react": "^7.35.0",
+    "@sentry/tracing": "^7.35.0",
     "@tailwindcss/forms": "^0.4.0",
     "axios": "^0.26.0",
     "chart.js": "^3.7.1",
