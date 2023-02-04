@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Input({_ref, type, defaultValue, placeholder, onChange, disabled, className, min, max, step, children}) {
+export default function Input({_ref, type, defaultValue, placeholder, onChange, disabled=false, className, min=0, max=100, step=1, children=undefined}) {
 	return <input ref={_ref}
 		type={type}
 		defaultValue={defaultValue}

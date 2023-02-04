@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {stepEnum} from './useAddBlockDialog';
 import {useVaults} from '../../context/useVaults';
 import {useFavorites} from '../../context/useFavorites';
-import {curveRe} from '../../utils/utils';
+import {curveRe, escapeRegex} from '../../utils/utils';
 import useLocalStorage from '../../utils/useLocalStorage';
 import Filter from './Filter';
 import Header from './Header';
@@ -15,7 +15,7 @@ export default function SelectVault({addBlockContext}) {
 	const [filter, setFilter] = useState([]);
 	const {selectedProvider, setSteps, setResult} = addBlockContext;
 	const [query, setQuery] = useLocalStorage('addBlock.selectVault.query', '');
-	const queryRe = useMemo(() => { return new RegExp(query, 'i'); }, [query]);
+	const queryRe = useMemo(() => { return new RegExp(escapeRegex(query), 'i'); }, [query]);
 	const [chips, setChips] = useLocalStorage(
 		'addBlock.selectVault.chips', 
 		{favorites: false, curve: false}, 

@@ -10,6 +10,7 @@ export interface Chain {
 export interface Vault {
 	address: string,
 	name: string,
+	price: number,
 	network: {
 		chainId: number,
 		name: string
@@ -48,6 +49,7 @@ export interface ITVLHistory {
 export interface Strategy {
 	address: string,
 	name: string,
+	risk: RiskReport,
 	network: {
 		chainId: number,
 		name: string
@@ -72,10 +74,42 @@ export interface LendStatus {
 	apr: BigNumber
 }
 
+export interface RiskCategories {
+	TVLImpact: number,
+	auditScore: number,
+	codeReviewScore: number,
+	complexityScore: number,
+	longevityImpact: number,
+	protocolSafetyScore: number,
+	teamKnowledgeScore: number,
+	testingScore: number
+}
+
+export function defaultRiskCategories() : RiskCategories {
+	return {
+		TVLImpact: 0, auditScore: 0, codeReviewScore: 0, 
+		complexityScore: 0, longevityImpact: 0, protocolSafetyScore: 0,
+		teamKnowledgeScore: 0, testingScore: 0
+	};
+}
+
+export interface RiskReport {
+	riskGroup: string,
+	riskScore: number,
+	allocation: {
+		availableAmount: string,
+		availableTVL: string,
+		currentAmount: string,
+		currentTVL: string,
+	},
+	riskDetails: RiskCategories
+}
+
 export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: ITVLHistory) : Vault {
 	return {
 		address: vault.address,
 		name: vault.name,
+		price: vault.tvl.price,
 		network: {
 			chainId: chain.id,
 			name: chain.name
@@ -115,6 +149,7 @@ export function parseStrategy(strategy: yDaemon.Strategy, chain: Chain) : Strate
 	return {
 		address: strategy.address,
 		name: strategy.name,
+		risk: {...strategy.risk},
 		network: {
 			chainId: chain.id,
 			name: chain.name

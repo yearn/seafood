@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Chip({label, icon, onClick, hot = true}) {
+export default function Chip({label, icon = undefined, onClick, hot = true}) {
 	return <div onClick={onClick} className={`
 		flex items-center
 

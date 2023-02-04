@@ -8,6 +8,7 @@ import {useFavorites} from '../../context/useFavorites';
 import Filter from './Filter';
 import Header from './Header';
 import List from './List';
+import {escapeRegex} from '../../utils/utils';
 
 export default function SelectVaultFunctionOrStrategy({addBlockContext, addBlock}) {
 	const {vaults} = useVaults();
@@ -16,7 +17,7 @@ export default function SelectVaultFunctionOrStrategy({addBlockContext, addBlock
 	const [items, setItems] = useState([]);
 	const [filter, setFilter] = useState([]);
 	const [query, setQuery] = useLocalStorage('addBlock.selectStrategy.query', '');
-	const queryRe = useMemo(() => { return new RegExp(query, 'i'); }, [query]);
+	const queryRe = useMemo(() => { return new RegExp(escapeRegex(query), 'i'); }, [query]);
 	const [chips, setChips] = useLocalStorage(
 		'addBlock.selectStrategy.chips', 
 		{favorites: false},

@@ -121,7 +121,7 @@ function hydrateBigNumbersRecursively(object, depth = 1) {
 	} else {
 		Object.keys(object).forEach(key => {
 			const value = object[key];
-			if(typeof value === 'object') {
+			if(value && typeof value === 'object') {
 				if(value.type === 'BigNumber') {
 					object[key] = ethers.BigNumber.from(value.hex);
 				} else if (value._isBigNumber) {
@@ -132,6 +132,17 @@ function hydrateBigNumbersRecursively(object, depth = 1) {
 			}
 		});
 	}
+}
+
+function escapeRegex(string) {
+	return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+
+function humanizeRiskCategory(category) {
+	if(category === 'TVLImpact') return 'TVL Impact';
+	if(category === 'longevityImpact') return 'Longevity';
+	const reg = /([a-z0-9])([A-Z])/g;
+	return category.replace(reg, '$1 $2').replace(' Score', '');
 }
 
 export {
@@ -149,5 +160,7 @@ export {
 	formatTokens,
 	highlightString,
 	getAbi,
-	hydrateBigNumbersRecursively
+	hydrateBigNumbersRecursively,
+	escapeRegex,
+	humanizeRiskCategory
 };

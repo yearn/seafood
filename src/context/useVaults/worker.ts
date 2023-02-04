@@ -133,7 +133,7 @@ function merge(
 
 async function fetchVaultverse() : Promise<yDaemon.Vault[][]> {
 	const requests = config.chains.map(({id}) => 
-		`${config.ydaemon.url}/${id}/vaults/all?strategiesCondition=all&strategiesDetails=withDetails`
+		`${config.ydaemon.url}/${id}/vaults/all?strategiesCondition=all&strategiesDetails=withDetails&strategiesRisk=withRisk`
 	);
 	const result = [];
 	for(const request of requests) result.push(await ((await fetch(request)).json()));
