@@ -196,15 +196,23 @@ export default function FilterProvider({children}: {children: ReactNode}) {
 				} else {
 					report.strategies++;
 					report.tvlUsd += debtUsd;
-					totalStrategies++;
 				}
+
+				totalStrategies++;
 			}));
 
 		risk.forEach(report => {
 			report.riskDetails.TVLImpact = scoreTvlImpact(report.tvlUsd);
 		});
 
-		risk = risk.filter(report => inRange(report.riskDetails.TVLImpact || 1, scores.TVLImpact));
+		risk = risk.filter(report => {
+			const result = inRange(report.riskDetails.TVLImpact || 1, scores.TVLImpact);
+			if(!result) {
+				totalTvlUsd -= report.tvlUsd;
+				totalStrategies -= report.strategies;
+			}
+			return result;
+		});
 
 		risk.sort((a, b) => {
 			if(sort.key !== 'TVLImpact') {
