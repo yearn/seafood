@@ -99,6 +99,7 @@ export function defaultSort() {
 }
 
 interface Filter {
+	available: boolean,
 	risk: SummarizedRiskReport[],
 	totalTvlUsd: number,
 	totalStrategies: number,
@@ -117,6 +118,7 @@ interface Filter {
 }
 
 const FilterContext = createContext<Filter>({
+	available: false,
 	risk: [],
 	totalTvlUsd: 0,
 	totalStrategies: 0,
@@ -148,6 +150,7 @@ export default function FilterProvider({children}: {children: ReactNode}) {
 	const [strategies, setStrategies] = useState<StrategyFilter>(defaultStrategyFilter());
 	const [scores, setScores] = useState<ScoresFilter>(defaultScoresFilter());
 	const [sort, setSort] = useState(defaultSort());
+	const available = useMemo(() => vaults.length > 0, [vaults]);
 
 	function inRange(score: number, range: ScoreRange) {
 		if(range.min === 1 && score === 0) return true;
@@ -255,6 +258,7 @@ export default function FilterProvider({children}: {children: ReactNode}) {
 	}, [vaults, query, queryRe, networks, strategies, scores, sort]);
 
 	return <FilterContext.Provider value={{
+		available,
 		risk,
 		totalTvlUsd,
 		totalStrategies,

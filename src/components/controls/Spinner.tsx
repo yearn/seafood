@@ -3,7 +3,7 @@ import {Oval} from 'react-loader-spinner';
 import colors from 'tailwindcss/colors';
 import {useChrome} from '../Chrome';
 
-export default function Spinner({width, height}: {width: string, height: string}) {
+export default function Spinner({width, height}: {width?: string, height?: string}) {
 	const {darkMode} = useChrome();
 	return <Oval 
 		width={width}

@@ -4,10 +4,16 @@ import useScrollOverpass from '../../../context/useScrollOverpass';
 import Cell from './Cell';
 import Header from './Header';
 import {useFilter} from '../Filter/Provider';
+import Spinner from '../../controls/Spinner';
 
 export default function Heatamp() {
-	const {risk, totalTvlUsd, totalStrategies, totalMedianRisks, queryRe} = useFilter();
+	const {available, risk, totalTvlUsd, totalStrategies, totalMedianRisks, queryRe} = useFilter();
 	const {showClassName} = useScrollOverpass();
+
+	if(!available) return <div className={`
+		absolute w-full h-screen flex items-center justify-center`}>
+		<Spinner />
+	</div>;
 
 	return <>
 		{risk.map(report => <div key={report.riskGroup} className={'pr-4 grid grid-cols-10 gap-1'}>
