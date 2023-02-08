@@ -56,7 +56,8 @@ export default function FilterChip({
 			dark:text-secondary-200 dark:bg-primary-900/40`}
 
 		text-sm capitalize rounded-lg
-		transition duration-200`}>
+		transition duration-200
+		focus-visible:outline-none`}>
 		{label}
 		{open && <FloatingFocusManager context={context} modal={false}>
 			<div ref={refs.setFloating} {...getFloatingProps()} className={`
@@ -64,6 +65,7 @@ export default function FilterChip({
 				bg-secondary-100 dark:bg-secondary-900
 				shadow-md rounded-lg
 				transition duration-200
+				focus-visible:outline-none
         ${className}`}
 			style={{
 				...styles,

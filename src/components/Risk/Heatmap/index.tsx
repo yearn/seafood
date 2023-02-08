@@ -16,8 +16,8 @@ export default function Heatamp() {
 				<div className={'text-xs'}>{`${report.strategies} strategies`}</div>
 			</div>
 			<Cell group={report.riskGroup} category={'TVLImpact'} score={report.riskDetails.TVLImpact} className={'flex flex-col'}>
-				<div className={'font-bold text-xl'}>{formatNumber(report.tvlUsd, 2, '', true)}</div>
-				<div className={'text-xs'}>{formatPercent(report.tvlUsd / totalTvlUsd)}</div>
+				<div className={'font-mono font-bold text-xl'}>{formatNumber(report.tvlUsd, 2, '', true)}</div>
+				<div className={'font-mono text-xs'}>{formatPercent(report.tvlUsd / totalTvlUsd)}</div>
 			</Cell>
 			<Cell group={report.riskGroup} category={'auditScore'} score={report.riskDetails.auditScore} />
 			<Cell group={report.riskGroup} category={'codeReviewScore'} score={report.riskDetails.codeReviewScore} />
@@ -34,7 +34,7 @@ export default function Heatamp() {
 				<div>{`${risk.length} groups`}</div>
 				<div className={'text-xs'}>{`${totalStrategies} strategies`}</div>
 			</Header>
-			<Header className={'font-bold text-xl'}>
+			<Header className={'font-mono font-bold text-xl'}>
 				{formatNumber(totalTvlUsd, 2, '', true)}
 			</Header>
 			<Cell group={'Total'} category={'auditScore'} score={totalMedianRisks.auditScore} />

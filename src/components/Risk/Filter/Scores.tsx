@@ -46,7 +46,7 @@ export default function Scores() {
 				onChange={onChange(key)}
 				className={'relative w-full h-[20px]'}
 				trackClassName={'top-[8px] h-[2px] bg-secondary-800 cursor-pointer'}
-				thumbClassName={'w-4 h-4 top-[1px] rounded shadow cursor-pointer'}
+				thumbClassName={'w-4 h-4 top-[1px] rounded shadow cursor-pointer focus-visible:outline-none'}
 				value={[scores[key as keyof ScoresFilter].min, scores[key as keyof ScoresFilter].max]}
 				ariaLabel={['Lower thumb', 'Upper thumb']}
 				ariaValuetext={state => `Thumb value ${state.valueNow}`}

@@ -101,9 +101,9 @@ const breakdowns = {
 
 const riskScoreTranslations = [
 	'safest',
-	'safer',
 	'safe',
 	'risky',
+	'riskier',
 	'riskiest'
 ];
 
@@ -132,14 +132,16 @@ export default function Cell({
 		placement: 'left',
 		onOpenChange: setOpen,
 		middleware: [
-			offset(2),
+			offset(16),
 			flip({fallbackAxisSideDirection: 'end'}),
 			shift()
 		],
 		whileElementsMounted: autoUpdate
 	});
 
-	const hover = useHover(context);
+	const hover = useHover(context, {
+		restMs: 150
+	});
 
 	const {getReferenceProps, getFloatingProps} = useInteractions([
 		hover
@@ -155,11 +157,13 @@ export default function Cell({
 		{children}
 		{open && <FloatingFocusManager context={context} modal={false}>
 			<div ref={refs.setFloating} {...getFloatingProps()} className={`
-				z-[100] w-96 p-4
+				z-[100] p-4
 				flex flex-col
 				bg-secondary-100 dark:bg-secondary-900
 				shadow-md rounded-lg
 				transition duration-200
+				focus-visible:outline-none
+				${category === 'median' ? 'w-64' : 'w-96'}
         ${className}`}
 			style={{
 				...styles,
@@ -168,14 +172,18 @@ export default function Cell({
 				left: x ?? 0
 			}}>
 				<div className={'pl-4 text-sm'}>{group}</div>
-				<div className={'pl-4 font-bold text-lg capitalize'}>{`${humanizeRiskCategory(category)} Score`}</div>
+				<div className={'pl-4 font-bold text-lg capitalize'}>
+					{`${humanizeRiskCategory(category)}${category !== 'TVLImpact' ? ' Score' : ''}`}
+				</div>
+				{category === 'median' && <div className={'pl-4 text-xs'}>{'Excluding TVL impact'}</div>}
 				{Object.keys(breakdown).map(key => <div key={key} className={`
-					py-1 px-4 text-xs flex items-center gap-4 rounded-lg
+					min-h-[52px] py-1 px-4 text-xs flex items-center gap-4 rounded-lg
+					${category === 'median' ? 'justify-center' : ''}
 					${Math.ceil(score) === parseInt(key) ? 'border-2 ' + scoreToBorderColor(score) : ''}`}>
-					<div className={'min-w-[64px] flex flex-col items-center justify-center'}>
-						<div className={`font-bold text-xl ${scoreToTextColor(parseInt(key))}`}>{key}</div>
+					{category !== 'TVLImpact' && <div className={'min-w-[64px] flex flex-col items-center justify-center'}>
+						<div className={`font-bold font-mono text-xl ${scoreToTextColor(parseInt(key))}`}>{key}</div>
 						<div className={`text-base ${scoreToTextColor(parseInt(key))}`}>{translateRiskScore(parseInt(key) as 1 | 2 | 3 | 4 | 5)}</div>
-					</div>
+					</div>}
 					{breakdown[parseInt(key) as 1 | 2 | 3 | 4 | 5]}
 				</div>)}
 			</div>
