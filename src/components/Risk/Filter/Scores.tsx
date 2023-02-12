@@ -45,14 +45,15 @@ export default function Scores() {
 				min={1} max={5}
 				onChange={onChange(key)}
 				className={'relative w-full h-[20px]'}
-				trackClassName={'top-[8px] h-[2px] bg-secondary-800 cursor-pointer'}
-				thumbClassName={'w-4 h-4 top-[1px] rounded shadow cursor-pointer focus-visible:outline-none'}
 				value={[scores[key as keyof ScoresFilter].min, scores[key as keyof ScoresFilter].max]}
 				ariaLabel={['Lower thumb', 'Upper thumb']}
 				ariaValuetext={state => `Thumb value ${state.valueNow}`}
-				renderThumb={(props, state) => <div   {...props} className={`
-					w-4 h-4 top-[1px] rounded shadow cursor-pointer
+				renderThumb={(props, state) => <div {...props} className={`
+					w-4 h-4 top-[1px] rounded cursor-pointer outline-none
 					${scoreToBgColor(state.valueNow)}`}></div>}
+				renderTrack={() => <div  className={`
+					absolute top-[8px] w-full h-[2px] cursor-pointer
+					bg-gradient-to-r from-green-900 via-yellow-500 to-red-600`}></div>}
 				minDistance={1} />
 			<div onClick={reset(key)} className={'text-xs cursor-pointer'}>{humanizeRiskCategory(key)}</div>
 		</div>)}

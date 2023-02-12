@@ -21,8 +21,8 @@ export default function Search() {
 		placeholder={'/ Filter by group'}
 		defaultValue={query}
 		onChange={(e: Event) => {debounceQuery((e.target as HTMLInputElement)?.value);}} 
-		className={`w-44
-		py-2 px-3 rounded-lg leading-tight border
+		className={`
+		w-44 py-2 px-3 rounded-lg leading-tight border outline-none
 		bg-secondary-300 border-transparent text-primary-900
 		dark:bg-secondary-900/80 dark:border-secondary-800 dark:text-primary-200
 		focus:border-selected-400 focus:dark:border-selected-600 focus:ring-0`} />;

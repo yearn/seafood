@@ -161,8 +161,7 @@ export default function Cell({
 				flex flex-col
 				bg-secondary-100 dark:bg-secondary-900
 				shadow-md rounded-lg
-				transition duration-200
-				focus-visible:outline-none
+				outline-none transition duration-200
 				${category === 'median' ? 'w-64' : 'w-96'}
         ${className}`}
 			style={{
