@@ -1,4 +1,5 @@
-import React, {ReactNode, useState} from 'react';
+import React, {ReactNode, useCallback, useEffect, useState} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {
 	useFloating,
 	autoUpdate,
@@ -11,17 +12,40 @@ import {
 	safePolygon,
 	useTransitionStyles
 } from '@floating-ui/react';
+import {useChrome} from '../../Chrome';
+import {useMediumBreakpoint} from '../../../utils/breakpoints';
 
 export default function FilterChip({
-	label, 
+	hash,
+	label,
 	className, 
 	children
 }: {
+	hash: string,
 	label: string, 
 	className?: string, 
 	children?: ReactNode
 }) {
+	const location = useLocation();
+	const navigate = useNavigate();
+	const mediumBreakpoint = useMediumBreakpoint();
+	const {setDialog} = useChrome();
 	const [open, setOpen] = useState(false);
+
+	const onClick = useCallback(() => {
+		if(mediumBreakpoint) return;
+		navigate(`${location.pathname}#${hash}`);
+	}, [mediumBreakpoint, location, hash, navigate]);
+
+	useEffect(() => {
+		if(location.hash === `#${hash}`) {
+			setDialog({
+				component: () => children
+			});
+		} else if(location.hash.length === 0) {
+			setDialog(null);
+		}
+	}, [location, setDialog, hash, children]);
 
 	const {x, y, refs, strategy, context} = useFloating({
 		open,
@@ -47,18 +71,22 @@ export default function FilterChip({
 		duration: 200
 	});
 
-	return <button ref={refs.setReference} {...getReferenceProps()} className={`
+	return <button ref={refs.setReference}
+		{...getReferenceProps()} 
+		onClick={onClick}
+		className={`
 		flex items-center px-4 py-1 cursor-default
 
 		${open 
-		? 'sm:bg-selected-300 sm:dark:bg-selected-600' 
+		? `bg-secondary-200 dark:bg-primary-900/40 
+			sm:bg-selected-300 sm:dark:bg-selected-600` 
 		: `text-secondary-600 bg-secondary-200
 			dark:text-secondary-200 dark:bg-primary-900/40`}
 
 		text-sm capitalize rounded-lg outline-none
-		transition duration-200`}>
+		whitespace-nowrap transition duration-200`}>
 		{label}
-		{open && <FloatingFocusManager context={context} modal={false}>
+		{open && mediumBreakpoint && <FloatingFocusManager context={context} modal={false}>
 			<div ref={refs.setFloating} {...getFloatingProps()} className={`
 				z-[100] w-max p-8 -ml-[32px]
 				bg-secondary-100 dark:bg-secondary-900

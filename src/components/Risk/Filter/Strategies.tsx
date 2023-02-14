@@ -25,10 +25,14 @@ export default function Strategies() {
 		};
 	}, [setStrategies]);
 
-	return <FilterChip label={label} className={`
-		flex items-center gap-3`}>
-		<Chip onClick={toggle('gtZeroDebt')} label={'Debt > 0'} hot={strategies.gtZeroDebt} />
-		<Chip onClick={toggle('hideInactive')} label={'Hide inactive group'} hot={strategies.hideInactive} />
-		<Chip onClick={toggle('hideCurve')} label={'Hide curve'} hot={strategies.hideCurve} />
+	return <FilterChip hash={'strategies'} label={label}>
+		<div className={'w-full h-full flex flex-col'}>
+			<div className={'sm:hidden pl-6 pt-5 font-bold text-lg'}>{'Strategy filters'}</div>
+			<div className={'grow flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-3'}>
+				<Chip onClick={toggle('gtZeroDebt')} label={'Debt > 0'} hot={strategies.gtZeroDebt} />
+				<Chip onClick={toggle('hideInactive')} label={'Hide inactive group'} hot={strategies.hideInactive} />
+				<Chip onClick={toggle('hideCurve')} label={'Hide curve'} hot={strategies.hideCurve} />
+			</div>
+		</div>
 	</FilterChip>;
 }

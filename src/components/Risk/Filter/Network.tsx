@@ -28,10 +28,18 @@ export default function Network() {
 		};
 	}, [setNetworks]);
 
-	return <FilterChip label={label} className={`
-		flex items-center gap-3`}>
-		{config.chains.map(chain => 
-			<Chip key={chain.id} label={chain.name} onClick={toggle(chain.id)} hot={networks.includes(chain.id)} />
-		)}
+	return <FilterChip hash={'network'} label={label}>
+		<div className={'w-full h-full flex flex-col'}>
+			<div className={'sm:hidden pl-6 pt-5 font-bold text-lg'}>{'Network filters'}</div>
+			<div className={'grow flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-3'}>
+				{config.chains.map(chain => 
+					<Chip key={chain.id} 
+						label={chain.name} 
+						onClick={toggle(chain.id)} 
+						hot={networks.includes(chain.id)} 
+						className={'text-xl sm:text-sm'} />
+				)}
+			</div>
+		</div>
 	</FilterChip>;
 }

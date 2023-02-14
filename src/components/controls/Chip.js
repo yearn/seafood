@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Chip({label, icon = undefined, onClick, hot = true}) {
+export default function Chip({label, icon = undefined, onClick, hot = true, className = ''}) {
 	return <div onClick={onClick} className={`
 		flex items-center
 
@@ -18,7 +18,8 @@ export default function Chip({label, icon = undefined, onClick, hot = true}) {
 		text-sm capitalize rounded-lg
 		active:transform active:scale-95
 		transition duration-200
-		${onClick ? 'cursor-pointer' : ''}`}>
+		${onClick ? 'cursor-pointer' : ''}
+		${className}`}>
 		{label || icon({className: hot 
 			? 'fill-attention-200 dark:fill-attention-400 glow-attention-md' 
 			: 'fill-secondary-400 dark:fill-secondary-200/80'})}

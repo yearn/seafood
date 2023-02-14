@@ -1,4 +1,4 @@
-import React, {ReactNode, useState} from 'react';
+import React, {ReactNode, useCallback, useEffect, useMemo, useState} from 'react';
 import {scoreToBgColor, scoreToBorderColor, scoreToTextColor} from '../colors';
 import {
 	useFloating,
@@ -12,6 +12,9 @@ import {
 	useTransitionStyles
 } from '@floating-ui/react';
 import {humanizeRiskCategory} from '../../../utils/utils';
+import {useMediumBreakpoint} from '../../../utils/breakpoints';
+import {useLocation, useNavigate} from 'react-router-dom';
+import {useChrome} from '../../Chrome';
 
 interface CategoryBreakdown {
 	[1]: string,
@@ -111,6 +114,38 @@ function translateRiskScore(score: 1 | 2 | 3 | 4 | 5) {
 	return riskScoreTranslations[score - 1];
 }
 
+function Score({
+	group, 
+	category,
+	score,
+	breakdown,
+}: {
+	group: string, 
+	category: string,
+	score: number,
+	breakdown: CategoryBreakdown
+}) {
+	return <div className={'px-4 pt-5 sm:p-0'}>
+		<div className={'pl-4 text-sm'}>{group}</div>
+		<div className={'pl-4 font-bold text-lg capitalize'}>
+			{`${humanizeRiskCategory(category)}${category !== 'TVLImpact' ? ' Score' : ''}`}
+		</div>
+		{category === 'median' && <div className={'pl-4 text-xs'}>{'Excluding TVL impact'}</div>}
+		<div className={'pt-8 sm:pt-4 flex flex-col gap-4 sm:gap-2'}>
+			{Object.keys(breakdown).map(key => <div key={key} className={`
+				min-h-[52px] py-1 px-4 text-xs flex items-center gap-4 rounded-lg
+				${category === 'median' ? 'justify-center' : ''}
+				${Math.ceil(score) === parseInt(key) ? 'border-2 ' + scoreToBorderColor(score) : ''}`}>
+				{category !== 'TVLImpact' && <div className={'min-w-[64px] flex flex-col items-center justify-center'}>
+					<div className={`font-bold font-mono text-xl ${scoreToTextColor(parseInt(key))}`}>{key}</div>
+					<div className={`text-base ${scoreToTextColor(parseInt(key))}`}>{translateRiskScore(parseInt(key) as 1 | 2 | 3 | 4 | 5)}</div>
+				</div>}
+				{breakdown[parseInt(key) as 1 | 2 | 3 | 4 | 5]}
+			</div>)}
+		</div>
+	</div>;
+}
+
 export default function Cell({
 	group,
 	category,
@@ -124,8 +159,32 @@ export default function Cell({
 	className?: string, 
 	children?: ReactNode
 }) {
+	const location = useLocation();
+	const navigate = useNavigate();
+	const mediumBreakpoint = useMediumBreakpoint();
+	const {setDialog} = useChrome();
 	const [open, setOpen] = useState(false);
 	const breakdown = breakdowns[category as keyof CategoryBreakdowns];
+
+	const hash = useMemo(() => {
+		return `${group.replace(/ /g, '')}-${category}`.toLowerCase();
+	}, [group, category]);
+
+	const onClick = useCallback(() => {
+		if(mediumBreakpoint) return;
+		navigate(`${location.pathname}#${hash}`);
+	}, [mediumBreakpoint, location, navigate, hash]);
+
+	useEffect(() => {
+		if(location.hash === `#${hash}`) {
+			setDialog({
+				component: Score,
+				args: {group, category, score, breakdown}
+			});
+		} else if(location.hash.length === 0) {
+			setDialog(null);
+		}
+	}, [location, setDialog, group, category, score, breakdown, hash]);
 
 	const {x, y, refs, strategy, context} = useFloating({
 		open,
@@ -151,11 +210,15 @@ export default function Cell({
 		duration: 200
 	});
 
-	return <div ref={refs.setReference} {...getReferenceProps()} className={`
-		h-16 flex items-center justify-center rounded-sm cursor-default
-		${scoreToBgColor(score)} ${className}`}>
+	return <div 
+		ref={refs.setReference} 
+		{...getReferenceProps()} 
+		onClick={onClick}
+		className={`
+			min-w-[138px] h-16 flex items-center justify-center rounded-sm cursor-default
+			${scoreToBgColor(score)} ${className}`}>
 		{children}
-		{open && <FloatingFocusManager context={context} modal={false}>
+		{open && mediumBreakpoint && <FloatingFocusManager context={context} modal={false}>
 			<div ref={refs.setFloating} {...getFloatingProps()} className={`
 				z-[100] p-4
 				flex flex-col
@@ -170,21 +233,7 @@ export default function Cell({
 				top: y ?? 0,
 				left: x ?? 0
 			}}>
-				<div className={'pl-4 text-sm'}>{group}</div>
-				<div className={'pl-4 font-bold text-lg capitalize'}>
-					{`${humanizeRiskCategory(category)}${category !== 'TVLImpact' ? ' Score' : ''}`}
-				</div>
-				{category === 'median' && <div className={'pl-4 text-xs'}>{'Excluding TVL impact'}</div>}
-				{Object.keys(breakdown).map(key => <div key={key} className={`
-					min-h-[52px] py-1 px-4 text-xs flex items-center gap-4 rounded-lg
-					${category === 'median' ? 'justify-center' : ''}
-					${Math.ceil(score) === parseInt(key) ? 'border-2 ' + scoreToBorderColor(score) : ''}`}>
-					{category !== 'TVLImpact' && <div className={'min-w-[64px] flex flex-col items-center justify-center'}>
-						<div className={`font-bold font-mono text-xl ${scoreToTextColor(parseInt(key))}`}>{key}</div>
-						<div className={`text-base ${scoreToTextColor(parseInt(key))}`}>{translateRiskScore(parseInt(key) as 1 | 2 | 3 | 4 | 5)}</div>
-					</div>}
-					{breakdown[parseInt(key) as 1 | 2 | 3 | 4 | 5]}
-				</div>)}
+				<Score group={group} category={category} score={score} breakdown={breakdown} />
 			</div>
 		</FloatingFocusManager>}
 	</div>;

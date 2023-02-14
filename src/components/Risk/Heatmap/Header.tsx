@@ -1,30 +1,30 @@
-import React, {ReactNode} from 'react';
-import {CgChevronDown, CgChevronUp} from 'react-icons/cg';
+import React, {useCallback} from 'react';
+import {defaultRiskCategories} from '../../../context/useVaults/types';
+import {humanizeRiskCategory} from '../../../utils/utils';
+import {useFilter} from '../Filter/Provider';
+import ColumnHeader from './ColumnHeader';
 
-export default function Header({
-	sortable,
-	sort, 
-	className,
-	onClick,
-	children
-} : {
-	sortable?: boolean,
-	sort?: 'asc' | 'desc',
-	className?: string, 
-	onClick?: () => void,
-	children: ReactNode
-}) {
-	return <div onClick={onClick} className={`
-		px-3 py-2 rounded-lg
-		relative flex items-center justify-center text-sm 2xl:text-base
-		capitalize transition duration-200 active:transform
-		${sort ? 'bg-secondary-200 dark:bg-primary-900/40' : ''}
-		${sortable ? 'hover:bg-selected-300 dark:hover:bg-selected-600 cursor-pointer active:scale-95' : ''}
-		${className}`}>
-		{children}
-		{sort && <div className={'absolute top-0 left-1 h-full flex items-center justify-center'}>
-			{sort === 'desc' && <CgChevronDown />}
-			{sort === 'asc' && <CgChevronUp />}
-		</div>}
-	</div>;
+export default function Header() {
+	const {sort, setSort} = useFilter();
+	const categories = [...Object.keys(defaultRiskCategories()), 'median'];
+
+	const onClick = useCallback((key: string) => {
+		return () => {
+			setSort(current => {
+				if(current.key === key) return {key, direction: current.direction === 'asc' ? 'desc' : 'asc'};
+				return {key, direction: 'desc'};
+			});
+		};
+	}, [setSort]);
+
+	return <>
+		<ColumnHeader>{'Strategy Group'}</ColumnHeader>
+		{categories.map(category => <ColumnHeader 
+			key={category} 
+			onClick={onClick(category)}
+			sortable={true} 
+			sort={sort.key === category ? sort.direction : undefined}>
+			{humanizeRiskCategory(category)}
+		</ColumnHeader>)}
+	</>;
 }

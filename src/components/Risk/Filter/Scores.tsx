@@ -37,25 +37,29 @@ export default function Scores() {
 		};
 	}, [setScores]);
 
-	return <FilterChip label={label} className={`
-		grid grid-rows-4 grid-flow-col gap-6`}>
-		{Object.keys(scores).map(key => <div key={key} className={`
-			w-48 flex flex-col items-start justify-start`}>
-			<ReactSlider
-				min={1} max={5}
-				onChange={onChange(key)}
-				className={'relative w-full h-[20px]'}
-				value={[scores[key as keyof ScoresFilter].min, scores[key as keyof ScoresFilter].max]}
-				ariaLabel={['Lower thumb', 'Upper thumb']}
-				ariaValuetext={state => `Thumb value ${state.valueNow}`}
-				renderThumb={(props, state) => <div {...props} className={`
-					w-4 h-4 top-[1px] rounded cursor-pointer outline-none
-					${scoreToBgColor(state.valueNow)}`}></div>}
-				renderTrack={() => <div  className={`
-					absolute top-[8px] w-full h-[2px] cursor-pointer
-					bg-gradient-to-r from-green-900 via-yellow-500 to-red-600`}></div>}
-				minDistance={1} />
-			<div onClick={reset(key)} className={'text-xs cursor-pointer'}>{humanizeRiskCategory(key)}</div>
-		</div>)}
+	return <FilterChip hash={'scores'} label={label}>
+		<div className={'w-full h-full flex flex-col'}>
+			<div className={'sm:hidden pl-6 pt-5 font-bold text-lg'}>{'Risk score filters'}</div>
+			<div className={'grow flex flex-col gap-6 items-center justify-center sm:grid-flow-col sm:grid-rows-4 sm:gap-3'}>
+				{Object.keys(scores).map(key => <div key={key} className={`
+					w-[80%] sm:w-48 flex flex-col items-start justify-start`}>
+					<ReactSlider
+						min={1} max={5}
+						onChange={onChange(key)}
+						className={'relative w-full h-[20px]'}
+						value={[scores[key as keyof ScoresFilter].min, scores[key as keyof ScoresFilter].max]}
+						ariaLabel={['Lower thumb', 'Upper thumb']}
+						ariaValuetext={state => `Thumb value ${state.valueNow}`}
+						renderThumb={(props, state) => <div {...props} className={`
+							w-4 h-4 top-[1px] rounded cursor-pointer outline-none
+							${scoreToBgColor(state.valueNow)}`}></div>}
+						renderTrack={(props) => <div key={props.key} className={`
+							absolute top-[8px] w-full h-[2px] cursor-pointer
+							bg-gradient-to-r from-green-900 via-yellow-500 to-red-600`}></div>}
+						minDistance={1} />
+					<div onClick={reset(key)} className={'text-lg sm:text-xs capitalize cursor-pointer'}>{humanizeRiskCategory(key)}</div>
+				</div>)}
+			</div>
+		</div>
 	</FilterChip>;
 }
