@@ -5,7 +5,7 @@ const {toRgba} = require('tailwindcss/lib/util/withAlphaVariable');
 
 
 module.exports = {
-  content: ['./src/**/*.{html,js}'],
+  content: ['./src/**/*.{html,js,ts,tsx}'],
   safelist: [
     'sm:h-14',
     'bg-stripes',
