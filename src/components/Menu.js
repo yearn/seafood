@@ -67,7 +67,7 @@ export default function Menu({action}) {
 				<MenuLink to={'/'} label={'Vaults'} altPathPatterns={['/vault/:address']}></MenuLink>
 			</MenuItem>
 			<MenuItem>
-				<MenuLink to={'/risk'} label={'Risk'}></MenuLink>
+				<MenuLink to={'/risk'} label={'Risk'} altPathPatterns={['/risk/:group']}></MenuLink>
 			</MenuItem>
 			<MenuItem>
 				<MenuLink to={'/sandbox'} label={'Sandbox'}></MenuLink>

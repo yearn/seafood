@@ -94,6 +94,7 @@ export function defaultRiskCategories() : RiskCategories {
 }
 
 export interface RiskReport {
+	riskGroupId: string,
 	riskGroup: string,
 	riskScore: number,
 	allocation: {
@@ -145,11 +146,15 @@ export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: ITVLHistory
 	};
 }
 
+function riskGroupNameToId(name: string) {
+	return name.replace(/ /g, '-').toLowerCase();
+}
+
 export function parseStrategy(strategy: yDaemon.Strategy, chain: Chain) : Strategy {
 	return {
 		address: strategy.address,
 		name: strategy.name,
-		risk: {...strategy.risk},
+		risk: {...strategy.risk, riskGroupId: riskGroupNameToId(strategy.risk.riskGroup)},
 		network: {
 			chainId: chain.id,
 			name: chain.name

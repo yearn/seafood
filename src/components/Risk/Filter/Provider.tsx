@@ -20,7 +20,7 @@ function median(numbers: number[]) {
 	return sorted[middle];
 }
 
-function medianExlcudingTvlImpact(scores: RiskCategories) {
+export function medianExlcudingTvlImpact(scores: RiskCategories) {
 	const keys = Object.keys(scores);
 	keys.splice(keys.indexOf('TVLImpact'), 1);
 	const values = keys.map(key => scores[key as keyof RiskCategories]);

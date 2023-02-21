@@ -9,16 +9,11 @@ interface IVaultsContext {
 	loading: boolean,
 	cachetime: Date,
 	vaults: ySeafood.Vault[],
+	ytvl: number,
 	refresh: () => void
 }
 
-/* eslint-disable @typescript-eslint/no-empty-function */
-const	VaultsContext = createContext<IVaultsContext>({
-	loading: false,
-	cachetime: new Date(0),
-	vaults: [],
-	refresh: () => {}
-});
+const	VaultsContext = createContext<IVaultsContext>({} as IVaultsContext);
 
 export const useVaults = () => useContext(VaultsContext);
 
@@ -59,10 +54,17 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 		worker.refresh(Comlink.proxy(callbacks));
 	}, [worker, callbacks]);
 
+	const ytvl = useMemo(() => {
+		return vaults
+			.map(v => v.tvls ? v.tvls.tvls.slice(-1)[0] : 0)
+			.reduce((a, b) => a + b, 0);
+	}, [vaults]);
+
 	return <VaultsContext.Provider value={{
 		loading,
 		cachetime,
 		vaults,
+		ytvl,
 		refresh
 	}}>{children}</VaultsContext.Provider>;
 }

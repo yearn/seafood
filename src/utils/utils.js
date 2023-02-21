@@ -142,7 +142,11 @@ function humanizeRiskCategory(category) {
 	if(category === 'TVLImpact') return 'TVL Impact';
 	if(category === 'longevityImpact') return 'Longevity';
 	const reg = /([a-z0-9])([A-Z])/g;
-	return category.replace(reg, '$1 $2').replace(' Score', '');
+	const raw = category.replace(reg, '$1 $2').replace(' Score', '');
+	const capitalized = raw.toLowerCase().split(' ')
+		.map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+		.join(' ');
+	return capitalized;
 }
 
 export {
