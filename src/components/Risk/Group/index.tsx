@@ -3,7 +3,7 @@ import React, {useCallback, useMemo} from 'react';
 import {useParams} from 'react-router-dom';
 import {useVaults} from '../../../context/useVaults';
 import {RiskCategories, RiskReport, Strategy, Vault} from '../../../context/useVaults/types';
-import {formatNumber, humanizeRiskCategory} from '../../../utils/utils';
+import {formatNumber} from '../../../utils/utils';
 import {Spinner} from '../../controls';
 import {medianExlcudingTvlImpact} from '../Filter/Provider';
 import Header from './Header';
@@ -52,6 +52,14 @@ function useRiskGroup() {
 export default function RiskGroup() {
 	const group = useRiskGroup();
 
+	const report = useMemo(() => {
+		if(!group.riskDetails) return {};
+		return {
+			...group.riskDetails,
+			median: medianExlcudingTvlImpact(group.riskDetails)
+		};
+	}, [group]);
+
 	const getSliderDetails = useCallback((category: string) => {
 		if(category !== 'TVLImpact') return '';
 		return `${formatNumber(group.tvl, 2, '', true)}`;
@@ -65,13 +73,14 @@ export default function RiskGroup() {
 	return <div className={'pb-4 flex flex-col gap-2'}>
 		<Header group={group} />
 		<div className={'w-full flex flex-col sm:flex-row gap-2'}>
-			<div className={'sm:h-min sm:sticky sm:top-[110px] sm:z-0 sm:w-1/2 px-10 sm:px-6'}>
-				{Object.keys(group.riskDetails).map(key => <Slider key={key} 
-					label={humanizeRiskCategory(key)}
+			<div className={'sm:h-min sm:sticky sm:top-[110px] sm:z-0 sm:w-1/2 px-8 sm:px-4'}>
+				{Object.keys(report).map(key => <Slider key={key}
+					group={group.riskGroup} 
+					category={key}
+					score={report[key as keyof (RiskCategories | 'median')]} 
 					details={getSliderDetails(key)}
-					score={group.riskDetails[key as keyof RiskCategories]} 
 				/>)}
-				<Slider label={'Median'} score={medianExlcudingTvlImpact(group.riskDetails)} />
+				{/* <Slider label={'Median'} score={medianExlcudingTvlImpact(group.riskDetails)} /> */}
 			</div>
 			<div className={'sm:w-1/2 mt-6 sm:-mt-16 px-2 sm:pr-8 flex flex-col gap-3'}>
 				{group.vaults.map((v, index) => <VaultSummary key={index} 
