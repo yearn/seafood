@@ -1,44 +1,12 @@
 import React, {createContext, ReactNode, useContext, useMemo, useState} from 'react';
-import {BigNumber} from 'ethers';
 import config from '../../../config.json';
 import {useVaults} from '../../../context/useVaults';
 import {curveRe, escapeRegex} from '../../../utils/utils';
 import {defaultRiskCategories, RiskCategories, RiskReport} from '../../../context/useVaults/types';
+import {median} from '../../../context/useVaults/risk';
 
 interface SummarizedRiskReport extends RiskReport {
-	strategies: number,
-	median: number,
-	tvlUsd: number
-}
-
-function median(numbers: number[]) {
-	const sorted = Array.from(numbers).sort((a, b) => a - b);
-	const middle = Math.floor(sorted.length / 2);
-	if (sorted.length % 2 === 0) {
-		return (sorted[middle - 1] + sorted[middle]) / 2;
-	}
-	return sorted[middle];
-}
-
-export function medianExlcudingTvlImpact(scores: RiskCategories) {
-	const keys = Object.keys(scores);
-	keys.splice(keys.indexOf('TVLImpact'), 1);
-	const values = keys.map(key => scores[key as keyof RiskCategories]);
-	return median(values);
-}
-
-function scoreTvlImpact(tvl: number): number {
-	if (tvl === 0)
-		return 0;
-	if (tvl < 1_000_000)
-		return 1;
-	if (tvl < 10_000_000)
-		return 2;
-	if (tvl < 50_000_000)
-		return 3;
-	if (tvl < 100_000_000)
-		return 4;
-	return 5;
+	strategies: number
 }
 
 export interface StrategyFilter {
@@ -160,7 +128,7 @@ export default function FilterProvider({children}: {children: ReactNode}) {
 	React.useEffect(() => {
 		let totalTvlUsd = 0;
 		let totalStrategies = 0;
-		let risk = [] as SummarizedRiskReport[];
+		const risk = [] as SummarizedRiskReport[];
 
 		vaults
 			.filter(vault => networks.includes(vault.network.chainId))
@@ -170,59 +138,34 @@ export default function FilterProvider({children}: {children: ReactNode}) {
 				if(strategies.hideInactive && strategy.risk.riskGroup === 'Inactive') return;
 				if(strategies.hideCurve && curveRe.test(vault.name)) return;
 
-				const debt = strategy.totalDebt.div(BigNumber.from('10').pow(vault.decimals)).toNumber();
-				if(strategies.gtZeroDebt && debt <= 0) return;
+				if(strategies.gtZeroDebt && strategy.totalDebtUSD <= 0) return;
 
-				const medianScore = medianExlcudingTvlImpact(strategy.risk.riskDetails);
 				for(const key of Object.keys(scores)) {
 					const range = scores[key as keyof ScoresFilter];
-					if(key === 'median') {
-						if(!inRange(medianScore, range)) return;
-					} else if (key !== 'TVLImpact') {
-						const score = strategy.risk.riskDetails[key as keyof RiskCategories];
-						if(!inRange(score, range)) return;
-					}
+					const score = strategy.risk.riskDetails[key as keyof RiskCategories];
+					if(!inRange(score, range)) return;
 				}
 
-				const debtUsd = debt * vault.price;
-				totalTvlUsd += debtUsd;
+				totalTvlUsd += strategy.totalDebtUSD;
 
 				let report = risk.find(r => r.riskGroup === strategy.risk.riskGroup);
 				if(!report) {
 					report = {
 						...strategy.risk,
-						strategies: 1,
-						median: medianScore,
-						tvlUsd: debtUsd
+						strategies: 1
 					};
 					risk.push(report);
 				} else {
 					report.strategies++;
-					report.tvlUsd += debtUsd;
 				}
 
 				totalStrategies++;
 			}));
 
-		risk.forEach(report => {
-			report.riskDetails.TVLImpact = scoreTvlImpact(report.tvlUsd);
-		});
-
-		risk = risk.filter(report => {
-			const result = inRange(report.riskDetails.TVLImpact || 1, scores.TVLImpact);
-			if(!result) {
-				totalTvlUsd -= report.tvlUsd;
-				totalStrategies -= report.strategies;
-			}
-			return result;
-		});
-
 		risk.sort((a, b) => {
 			if(sort.key !== 'TVLImpact') {
-				const aValue = sort.key === 'median' ? a.median
-					: a.riskDetails[sort.key as keyof RiskCategories];
-				const bValue = sort.key === 'median' ? b.median
-					: b.riskDetails[sort.key as keyof RiskCategories];
+				const aValue = a.riskDetails[sort.key as keyof RiskCategories];
+				const bValue = b.riskDetails[sort.key as keyof RiskCategories];
 				if(aValue !== bValue) {
 					return sort.direction === 'asc'
 						? aValue - bValue
@@ -230,13 +173,13 @@ export default function FilterProvider({children}: {children: ReactNode}) {
 				}
 			}
 
-			if(b.tvlUsd !== a.tvlUsd) {
+			if(b.tvl !== a.tvl) {
 				if(sort.key === 'TVLImpact') {
 					return sort.direction === 'asc'
-						? a.tvlUsd - b.tvlUsd
-						: b.tvlUsd - a.tvlUsd;
+						? a.tvl - b.tvl
+						: b.tvl - a.tvl;
 				}
-				return b.tvlUsd - a.tvlUsd;
+				return b.tvl - a.tvl;
 			} else {
 				return a.riskGroup.localeCompare(b.riskGroup);
 			}

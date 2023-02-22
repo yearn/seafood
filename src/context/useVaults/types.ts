@@ -1,4 +1,5 @@
 import {BigNumber} from 'ethers';
+import {medianExlcudingTvlImpact, riskGroupNameToId} from './risk';
 import * as yDaemon from './types.ydaemon';
 
 export interface Chain {
@@ -61,6 +62,7 @@ export interface Strategy {
 	delegatedAssets: BigNumber,
 	lastReport: BigNumber,
 	totalDebt: BigNumber,
+	totalDebtUSD: number,
 	totalGain: BigNumber,
 	totalLoss: BigNumber,
 	withdrawalQueuePosition: number,
@@ -82,14 +84,15 @@ export interface RiskCategories {
 	longevityImpact: number,
 	protocolSafetyScore: number,
 	teamKnowledgeScore: number,
-	testingScore: number
+	testingScore: number,
+	median: number
 }
 
 export function defaultRiskCategories() : RiskCategories {
 	return {
 		TVLImpact: 0, auditScore: 0, codeReviewScore: 0, 
 		complexityScore: 0, longevityImpact: 0, protocolSafetyScore: 0,
-		teamKnowledgeScore: 0, testingScore: 0
+		teamKnowledgeScore: 0, testingScore: 0, median: 0
 	};
 }
 
@@ -103,7 +106,8 @@ export interface RiskReport {
 		currentAmount: string,
 		currentTVL: string,
 	},
-	riskDetails: RiskCategories
+	riskDetails: RiskCategories,
+	tvl: number
 }
 
 export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: ITVLHistory) : Vault {
@@ -129,11 +133,11 @@ export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: ITVLHistory
 		depositLimit: BigNumber.from(vault.details.depositLimit),
 		activation: BigNumber.from(vault.inception),
 		strategies: vault.strategies
-			.map(strategy => parseStrategy(strategy, chain)),
+			.map(strategy => parseStrategy(vault, strategy, chain)),
 		withdrawalQueue: vault.strategies
 			.filter(s => s.details.withdrawalQueuePosition > -1)
 			.sort((a, b) => a.details.withdrawalQueuePosition - b.details.withdrawalQueuePosition)
-			.map(strategy => parseStrategy(strategy, chain)),
+			.map(strategy => parseStrategy(vault, strategy, chain)),
 		apy: {
 			type: vault.apy.type,
 			gross: vault.apy.gross_apr,
@@ -146,18 +150,19 @@ export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: ITVLHistory
 	};
 }
 
-function riskGroupNameToId(name: string) {
-	return name
-		.replace(/[^a-zA-Z0-9 ]/g, '')
-		.replace(/ /g, '-')
-		.toLowerCase();
-}
-
-export function parseStrategy(strategy: yDaemon.Strategy, chain: Chain) : Strategy {
+export function parseStrategy(vault: yDaemon.Vault, strategy: yDaemon.Strategy, chain: Chain) : Strategy {
 	return {
 		address: strategy.address,
 		name: strategy.name,
-		risk: {...strategy.risk, riskGroupId: riskGroupNameToId(strategy.risk.riskGroup)},
+		risk: {
+			...strategy.risk, 
+			riskGroupId: riskGroupNameToId(strategy.risk.riskGroup),
+			tvl: 0,
+			riskDetails: {
+				...strategy.risk.riskDetails,
+				median: medianExlcudingTvlImpact({...strategy.risk.riskDetails, median: 0})
+			}
+		},
 		network: {
 			chainId: chain.id,
 			name: chain.name
@@ -169,9 +174,16 @@ export function parseStrategy(strategy: yDaemon.Strategy, chain: Chain) : Strate
 		debtRatio: BigNumber.from(strategy.details.debtRatio || 0),
 		lastReport: strategy.details.lastReport,
 		totalDebt: BigNumber.from(strategy.details.totalDebt || 0),
+		totalDebtUSD: totalDebtUSD(vault, strategy),
 		totalGain: BigNumber.from(strategy.details.totalGain || 0),
 		totalLoss: BigNumber.from(strategy.details.totalLoss || 0),
 		withdrawalQueuePosition: strategy.details.withdrawalQueuePosition,
 		lendStatuses: undefined
 	};
+}
+
+function totalDebtUSD(vault: yDaemon.Vault, strategy: yDaemon.Strategy) {
+	if(!strategy.details.totalDebt) return 0;
+	const debt = BigNumber.from(strategy.details.totalDebt || 0);
+	return vault.tvl.price * debt.div(BigNumber.from('10').pow(vault.decimals)).toNumber();
 }

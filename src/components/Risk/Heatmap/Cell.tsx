@@ -35,7 +35,8 @@ export default function Cell({
 				z-[100] p-4
 				flex flex-col
 				bg-secondary-100 dark:bg-secondary-900
-				shadow-md rounded-lg
+				border dark:border-secondary-800 
+				shadow-lg shadow-secondary-900/40 dark:shadow-secondary-900/60 rounded-lg
 				outline-none transition duration-200
 				${category === 'median' ? 'w-64' : 'w-96'}
         ${className}`}

@@ -10,7 +10,6 @@ import {useVault} from './VaultProvider';
 import HarvestHistory from './HarvestHistory';
 import {useSimulator} from './SimulatorProvider';
 import {useLocation} from 'react-router-dom';
-import {medianExlcudingTvlImpact} from '../Risk/Filter/Provider';
 import {translateRiskScore, translateTvlImpact} from '../Risk/Score';
 import {scoreToBgColor} from '../Risk/colors';
 
@@ -95,10 +94,9 @@ export default function Strategy({strategy}) {
 					</div>
 					<div className={'text-right flex items-center justify-end'}>
 						<div className={`
-							px-2 flex items-center justify-center
-							text-sm rounded-lg
-							${scoreToBgColor(medianExlcudingTvlImpact(strategy.risk.riskDetails))}`}>
-							{translateRiskScore(medianExlcudingTvlImpact(strategy.risk.riskDetails))}
+							px-2 flex items-center justify-center text-sm rounded-lg
+							${scoreToBgColor(strategy.risk.riskDetails.median)}`}>
+							{translateRiskScore(strategy.risk.riskDetails.median)}
 						</div>
 					</div>
 				</div>

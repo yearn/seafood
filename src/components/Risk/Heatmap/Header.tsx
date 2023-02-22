@@ -6,7 +6,7 @@ import ColumnHeader from './ColumnHeader';
 
 export default function Header() {
 	const {sort, setSort} = useFilter();
-	const categories = [...Object.keys(defaultRiskCategories()), 'median'];
+	const categories = [...Object.keys(defaultRiskCategories())];
 
 	const onClick = useCallback((key: string) => {
 		return () => {

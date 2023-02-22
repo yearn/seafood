@@ -25,8 +25,8 @@ export default function Heatamp() {
 				<div className={'text-xs'}>{`${report.strategies} strategies`}</div>
 			</div>
 			<Cell group={report.riskGroup} category={'TVLImpact'} score={report.riskDetails.TVLImpact} className={'flex flex-col'}>
-				<div className={'font-mono font-bold text-xl'}>{formatNumber(report.tvlUsd, 2, '', true)}</div>
-				<div className={'font-mono text-xs'}>{formatPercent(report.tvlUsd / totalTvlUsd)}</div>
+				<div className={'font-mono font-bold text-xl'}>{formatNumber(report.tvl, 2, '', true)}</div>
+				<div className={'font-mono text-xs'}>{formatPercent(report.tvl / totalTvlUsd)}</div>
 			</Cell>
 			<Cell group={report.riskGroup} category={'auditScore'} score={report.riskDetails.auditScore} />
 			<Cell group={report.riskGroup} category={'codeReviewScore'} score={report.riskDetails.codeReviewScore} />
@@ -35,7 +35,7 @@ export default function Heatamp() {
 			<Cell group={report.riskGroup} category={'protocolSafetyScore'} score={report.riskDetails.protocolSafetyScore} />
 			<Cell group={report.riskGroup} category={'teamKnowledgeScore'} score={report.riskDetails.teamKnowledgeScore} />
 			<Cell group={report.riskGroup} category={'testingScore'} score={report.riskDetails.testingScore} />
-			<Cell group={report.riskGroup} category={'median'} score={report.median} />
+			<Cell group={report.riskGroup} category={'median'} score={report.riskDetails.median} />
 		</div>)}
 	</>;
 }

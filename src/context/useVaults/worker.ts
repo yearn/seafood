@@ -3,6 +3,7 @@ import * as Comlink from 'comlink';
 import {BigNumber, ethers} from 'ethers';
 import {Multicall} from 'ethereum-multicall';
 import {GetVaultAbi, LockedProfitDegradationField} from '../../ethereum/EthHelpers';
+import {aggregateRiskGroupTvls} from './risk';
 import config from '../../config.json';
 import * as abi from '../../abi';
 import * as yDaemon from './types.ydaemon';
@@ -126,6 +127,8 @@ function merge(
 
 			}
 		});
+
+		aggregateRiskGroupTvls(vaults);
 		result.push(...vaults);
 	}
 	return result;

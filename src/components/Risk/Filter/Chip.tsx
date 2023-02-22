@@ -90,6 +90,7 @@ export default function FilterChip({
 			<div ref={refs.setFloating} {...getFloatingProps()} className={`
 				z-[100] w-max p-8 -ml-[32px]
 				bg-secondary-100 dark:bg-secondary-900
+				shadow-lg shadow-secondary-900/40 dark:shadow-secondary-900/60
 				outline-none shadow-md rounded-lg
 				transition duration-200
         ${className}`}

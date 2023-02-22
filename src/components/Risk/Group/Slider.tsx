@@ -25,7 +25,7 @@ export default function Slider({
 		onClick={floatie.openModal}
 		className={`
 		px-2 py-3 sm:py-2 flex flex-col gap-2 sm:gap-1
-		hover:bg-selected-100 dark:hover:bg-secondary-900
+		hover:bg-selected-100 dark:hover:bg-primary-600/20
 		transition duration-200 rounded-lg`}>
 		<div className={'flex items-center justify-between'}>
 			<div>{humanizeRiskCategory(category)}</div>
@@ -50,7 +50,8 @@ export default function Slider({
 				z-[100] p-4
 				flex flex-col
 				bg-secondary-100 dark:bg-secondary-900
-				shadow-md rounded-lg
+				border dark:border-secondary-800
+				shadow-lg shadow-secondary-900/40 dark:shadow-secondary-900 rounded-lg
 				outline-none transition duration-200
 				${category === 'median' ? 'w-64' : 'w-96'}`}
 			style={floatie.style}>
