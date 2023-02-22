@@ -147,7 +147,10 @@ export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: ITVLHistory
 }
 
 function riskGroupNameToId(name: string) {
-	return name.replace(/ /g, '-').toLowerCase();
+	return name
+		.replace(/[^a-zA-Z0-9 ]/g, '')
+		.replace(/ /g, '-')
+		.toLowerCase();
 }
 
 export function parseStrategy(strategy: yDaemon.Strategy, chain: Chain) : Strategy {

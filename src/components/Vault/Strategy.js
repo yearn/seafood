@@ -10,6 +10,9 @@ import {useVault} from './VaultProvider';
 import HarvestHistory from './HarvestHistory';
 import {useSimulator} from './SimulatorProvider';
 import {useLocation} from 'react-router-dom';
+import {medianExlcudingTvlImpact} from '../Risk/Filter/Provider';
+import {translateRiskScore, translateTvlImpact} from '../Risk/Score';
+import {scoreToBgColor} from '../Risk/colors';
 
 function Field({value, simulated, delta, className, children}) {
 	return <div className={`
@@ -54,7 +57,7 @@ export default function Strategy({strategy}) {
 		px-4 pt-2 sm:pt-0 sm:pr-12 sm:pl-8 flex flex-col gap-2`}>
 
 		<div className={'flex flex-col 2xl:flex-row gap-2'}>
-			<div className={'grow flex flex-col gap-2'}>
+			<div className={'2xl:w-1/2 flex flex-col gap-2'}>
 				<div className={'flex items-center sm:items-start justify-between'}>
 					<div className={'flex items-center gap-2'}>
 						<A target={'_blank'} href={getAddressExplorer(provider.network.chainId, strategy.address)} rel={'noreferrer'}>{truncateAddress(strategy.address)}</A>
@@ -74,14 +77,37 @@ export default function Strategy({strategy}) {
 					</div>
 				</div>
 
-				<h2 className={'font-bold text-2xl break-words'}>{strategy.name}</h2>
+				<h2 className={'font-bold text-2xl break-words truncate'}>{strategy.name}</h2>
+
+				<div className={'grid grid-cols-4'}>
+					<div className={'col-span-2 text-sm'}>{'Risk Group'}</div>
+					<div className={'text-sm text-right'}>{'TVL Impact'}</div>
+					<div className={'text-sm text-right'}>{'Median Risk'}</div>
+					<div className={'col-span-2 break-words truncate'}><LinkButton to={`/risk/${strategy.risk.riskGroupId}`}>{strategy.risk.riskGroup}</LinkButton></div>
+					<div className={'text-right flex items-center justify-end'}>
+						<div className={`
+							px-2 flex items-center justify-center
+							text-sm rounded-lg
+							${scoreToBgColor(strategy.risk.riskDetails.TVLImpact)}`}>
+							{translateTvlImpact(strategy.risk.riskDetails.TVLImpact)}
+						</div>
+					</div>
+					<div className={'text-right flex items-center justify-end'}>
+						<div className={`
+							px-2 flex items-center justify-center
+							text-sm rounded-lg
+							${scoreToBgColor(medianExlcudingTvlImpact(strategy.risk.riskDetails))}`}>
+							{translateRiskScore(medianExlcudingTvlImpact(strategy.risk.riskDetails))}
+						</div>
+					</div>
+				</div>
 
 				{strategy.lendStatuses?.length > 0 && 
 					<div>
 						<div className={'grid grid-cols-4'}>
-							<div className={'col-span-2'}>{'Lender'}</div>
-							<div className={'text-right'}>{'Deposits'}</div>
-							<div className={'text-right'}>{'APR'}</div>
+							<div className={'col-span-2 text-sm'}>{'Lender'}</div>
+							<div className={'text-sm text-right'}>{'Deposits'}</div>
+							<div className={'text-sm text-right'}>{'APR'}</div>
 						</div>
 						{strategy.lendStatuses.map((lender, index) => 
 							<div key={index} className={'grid grid-cols-4'}>
@@ -93,15 +119,15 @@ export default function Strategy({strategy}) {
 
 				<div className={'grid grid-cols-4'}>
 					<div className={'col-span-2'}>
-						<div>{'Last harvest'}</div>
+						<div className={'text-sm'}>{'Last harvest'}</div>
 						<TimeAgo date={latestHarvest(strategy)}></TimeAgo>
 					</div>
 					<div>
-						<div className={'text-right'}>{'Assets'}</div>
+						<div className={'text-sm text-right'}>{'Assets'}</div>
 						<Tokens value={strategy.estimatedTotalAssets} token={token} />
 					</div>
 					<div>
-						<div className={'text-right'}>{'Real ratio'}</div>
+						<div className={'text-sm text-right'}>{'Real ratio'}</div>
 						<Percentage value={strategy.totalDebt / vault.totalAssets} />
 					</div>
 				</div>

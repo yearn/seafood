@@ -32,7 +32,6 @@ function useRiskGroup() {
 		vaults.forEach(vault => {
 			const strategies = vault.strategies.filter(strategy => 
 				strategy.risk.riskGroupId === params.group
-				&& strategy.totalDebt.div(BigNumber.from('10').pow(vault.decimals)).toNumber() > 0
 			);
 			if(strategies.length) vaultsInGroup.push({vault, strategies});
 		});
@@ -42,7 +41,7 @@ function useRiskGroup() {
 			.flat().reduce((a, b) => a + b, 0);
 
 		return {
-			...vaultsInGroup[0].strategies[0].risk,
+			...vaultsInGroup[0]?.strategies[0].risk,
 			vaults: vaultsInGroup,
 			tvl
 		};

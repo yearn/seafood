@@ -18,7 +18,7 @@ export default function Header({group}: {group: RiskReportWithVaults}) {
 				sm:w-fit flex flex-col sm:flex-row sm:items-center sm:gap-8
 				indent-12 sm:indent-0 font-bold text-4xl sm:text-5xl`}>{group.riskGroup}</h1>
 			<div className={'text-sm sm:indent-1'}>
-				{`risk group with ${strategyCount} active strategies`}
+				{`risk group with ${strategyCount} strategies`}
 			</div>
 		</div>
 	</div>;

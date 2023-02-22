@@ -109,8 +109,21 @@ const riskScoreTranslations = [
 	'riskiest'
 ];
 
-function translateRiskScore(score: 1 | 2 | 3 | 4 | 5) {
+export function translateRiskScore(score: 1 | 2 | 3 | 4 | 5) {
 	return riskScoreTranslations[score - 1];
+}
+
+const tvlImpactTranslations = [
+	'low',
+	'medium',
+	'high',
+	'very high',
+	'extreme'
+];
+
+export function translateTvlImpact(score: 0 | 1 | 2 | 3 | 4 | 5) {
+	if(score === 0) return 'none';
+	return tvlImpactTranslations[score - 1];
 }
 
 export function useFloatie(

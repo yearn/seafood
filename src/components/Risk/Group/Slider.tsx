@@ -24,8 +24,8 @@ export default function Slider({
 		{...floatie.getReferenceProps()} 
 		onClick={floatie.openModal}
 		className={`
-		px-2 pt-6 sm:pt-4 pb-2 sm:pb-1 flex flex-col gap-2 sm:gap-1
-		border-2 border-transparent hover:border-selected-400/20
+		px-2 py-3 sm:py-2 flex flex-col gap-2 sm:gap-1
+		hover:bg-selected-100 dark:hover:bg-secondary-900
 		transition duration-200 rounded-lg`}>
 		<div className={'flex items-center justify-between'}>
 			<div>{humanizeRiskCategory(category)}</div>
