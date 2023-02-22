@@ -57,7 +57,8 @@ export default function Strategy({strategy}) {
 		px-4 pt-2 sm:pt-0 sm:pr-12 sm:pl-8 flex flex-col gap-2`}>
 
 		<div className={'flex flex-col 2xl:flex-row gap-2'}>
-			<div className={'2xl:w-1/2 flex flex-col gap-2'}>
+			<div className={`flex flex-col gap-2
+				${showHarvestChart && strategyHarvestHistory.length > 0 ? '2xl:w-1/2' : 'w-full'}`}>
 				<div className={'flex items-center sm:items-start justify-between'}>
 					<div className={'flex items-center gap-2'}>
 						<A target={'_blank'} href={getAddressExplorer(provider.network.chainId, strategy.address)} rel={'noreferrer'}>{truncateAddress(strategy.address)}</A>
