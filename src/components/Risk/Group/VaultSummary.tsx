@@ -17,7 +17,7 @@ export default function VaultSummary({vault, strategies}: {vault: Vault, strateg
 	}, [vault]);
 
 	return <div onClick={() => navigate(`/vault/${vault.address}`)} className={`
-		p-3 flex flex-col
+		p-3 sm:px-6 sm:py-3 flex flex-col
 		bg-selected-100 dark:bg-primary-600/20
 		hover:bg-selected-300 hover:dark:bg-selected-600
 		active:transform active:scale-[99%]

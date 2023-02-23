@@ -17,13 +17,13 @@ export default function Footer({innerRef} : {innerRef: RefObject<HTMLDivElement>
 		<ColumnHeader className={'font-mono font-bold text-xl'}>
 			{formatNumber(totalTvlUsd, 2, '', true)}
 		</ColumnHeader>
-		<Cell group={'Total'} category={'auditScore'} score={totalMedianRisks.auditScore} />
-		<Cell group={'Total'} category={'codeReviewScore'} score={totalMedianRisks.codeReviewScore} />
-		<Cell group={'Total'} category={'complexityScore'} score={totalMedianRisks.complexityScore} />
-		<Cell group={'Total'} category={'longevityImpact'} score={totalMedianRisks.longevityImpact} />
-		<Cell group={'Total'} category={'protocolSafetyScore'} score={totalMedianRisks.protocolSafetyScore} />
-		<Cell group={'Total'} category={'teamKnowledgeScore'} score={totalMedianRisks.teamKnowledgeScore} />
-		<Cell group={'Total'} category={'testingScore'} score={totalMedianRisks.testingScore} />
+		<Cell group={'Total Median'} category={'auditScore'} score={totalMedianRisks.auditScore} />
+		<Cell group={'Total Median'} category={'codeReviewScore'} score={totalMedianRisks.codeReviewScore} />
+		<Cell group={'Total Median'} category={'complexityScore'} score={totalMedianRisks.complexityScore} />
+		<Cell group={'Total Median'} category={'longevityImpact'} score={totalMedianRisks.longevityImpact} />
+		<Cell group={'Total Median'} category={'protocolSafetyScore'} score={totalMedianRisks.protocolSafetyScore} />
+		<Cell group={'Total Median'} category={'teamKnowledgeScore'} score={totalMedianRisks.teamKnowledgeScore} />
+		<Cell group={'Total Median'} category={'testingScore'} score={totalMedianRisks.testingScore} />
 		<ColumnHeader>{'Median'}</ColumnHeader>
 	</div>;
 }

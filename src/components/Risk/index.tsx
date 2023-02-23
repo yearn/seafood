@@ -29,7 +29,7 @@ export default function Risk() {
 						<Filter />
 					</div>
 					<div ref={headerContainer} className={`
-						w-full flex items-center gap-1 overflow-x-hidden
+						w-full sm:px-24 2xl:px-32 flex items-center gap-1 overflow-x-hidden
 						sm:flex-none sm:grid sm:grid-cols-10`}>
 						<Header />
 					</div>
@@ -38,11 +38,11 @@ export default function Risk() {
 					onStartScroll={onScrollHeatmap} 
 					onScroll={onScrollHeatmap} 
 					onEndScroll={onScrollHeatmap} 
-					className={'w-full flex flex-col gap-1'}>
+					className={'w-full sm:px-24 2xl:px-32 flex flex-col gap-1'}>
 					<Heatamp />
 				</ScrollContainer>
 			</div>
-			<div className={`fixed bottom-0 left-0 w-full ${showClassName}`}>
+			<div className={`fixed bottom-0 left-0 w-full sm:px-24 2xl:px-32 ${showClassName}`}>
 				<Footer innerRef={footerContainer} />
 			</div>
 		</div>

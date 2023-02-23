@@ -24,7 +24,7 @@ export default function Slider({
 		{...floatie.getReferenceProps()} 
 		onClick={floatie.openModal}
 		className={`
-		px-2 py-3 sm:py-2 flex flex-col gap-2 sm:gap-1
+		px-2 sm:px-6 py-3 sm:py-2 flex flex-col gap-2 sm:gap-1
 		hover:bg-selected-100 dark:hover:bg-primary-600/20
 		transition duration-200 rounded-lg`}>
 		<div className={'flex items-center justify-between'}>

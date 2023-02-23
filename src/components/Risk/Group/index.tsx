@@ -61,7 +61,7 @@ export default function RiskGroup() {
 	return <div className={'pb-4 flex flex-col gap-2'}>
 		<Header group={group} />
 		<div className={'w-full flex flex-col sm:flex-row gap-2'}>
-			<div className={'sm:h-min sm:sticky sm:top-[110px] sm:z-0 sm:w-1/2 px-8 sm:px-4'}>
+			<div className={'sm:h-min sm:sticky sm:top-[110px] sm:z-0 sm:w-1/2 px-8 sm:px-12'}>
 				{Object.keys(report).map(key => <Slider key={key}
 					group={group.riskGroup} 
 					category={key}
@@ -69,7 +69,7 @@ export default function RiskGroup() {
 					details={getSliderDetails(key)}
 				/>)}
 			</div>
-			<div className={'sm:w-1/2 mt-6 sm:-mt-16 px-2 sm:pr-8 flex flex-col gap-3'}>
+			<div className={'sm:w-1/2 mt-6 sm:-mt-16 px-2 sm:pr-16 flex flex-col gap-3'}>
 				{group.vaults.map((v, index) => <VaultSummary key={index} 
 					vault={v.vault} 
 					strategies={v.strategies} 

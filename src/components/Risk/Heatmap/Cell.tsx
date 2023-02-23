@@ -25,7 +25,7 @@ export default function Cell({
 		{...floatie.getReferenceProps()} 
 		onClick={floatie.openModal}
 		className={`
-			min-w-[138px] h-16 flex items-center justify-center
+			min-w-[138px] sm:min-w-0 h-16 flex items-center justify-center
 			border-2 border-transparent hover:border-secondary-100 dark:hover:border-secondary-900
 			rounded-sm cursor-default
 			${scoreToBgColor(score)} ${className}`}>

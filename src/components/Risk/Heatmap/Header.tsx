@@ -18,7 +18,7 @@ export default function Header() {
 	}, [setSort]);
 
 	return <>
-		<ColumnHeader>{'Strategy Group'}</ColumnHeader>
+		<ColumnHeader>{'Group'}</ColumnHeader>
 		{categories.map(category => <ColumnHeader 
 			key={category} 
 			onClick={onClick(category)}
