@@ -61,7 +61,6 @@ export default function Strategy({strategy}) {
 	}, [simulator, strategy]);
 
 	const maxDebtRatio = useMemo(() => {
-		console.log('maxDebtRatio', debtRatio + 10_000 - simulator.vaultDebtRatio, debtRatio, simulator.vaultDebtRatio);
 		return debtRatio + 10_000 - simulator.vaultDebtRatio;
 	}, [simulator, debtRatio]);
 
