@@ -206,11 +206,34 @@ export default function SimulatorProvider({children}) {
 		});
 	}, []);
 
+	const hasDebtRatioUpdates = useMemo(() => {
+		if(!vault) return false;
+		return vault.withdrawalQueue.some(strategy => {
+			if(debtRatioUpdates[strategy.address] === undefined) false;
+			else return strategy.debtRatio && !strategy.debtRatio?.eq(debtRatioUpdates[strategy.address]);
+		});
+	}, [vault, debtRatioUpdates]);
+
+	const vaultDebtRatio = useMemo(() => {
+		if(!vault) return 0;
+		return vault.withdrawalQueue.map(s => {
+			if(debtRatioUpdates[s.address] !== undefined) {
+				return debtRatioUpdates[s.address];
+			} else if(s.debtRatio) {
+				return s.debtRatio.toNumber();
+			} else {
+				return 0;
+			}
+		}).reduce((a, b) => a + b, 0);
+	}, [vault, debtRatioUpdates]);
+
 	return <SimulatorContext.Provider value={{
 		apyComputer,
 		engaged,
 		degradationTime,
 		debtRatioUpdates,
+		hasDebtRatioUpdates,
+		vaultDebtRatio,
 		simulatingAll,
 		simulatingStrategy,
 		currentApy,

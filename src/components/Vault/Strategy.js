@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {TbTractor} from 'react-icons/tb';
 import {MdHistory} from 'react-icons/md';
 import TimeAgo from 'react-timeago';
@@ -48,9 +48,22 @@ export default function Strategy({strategy}) {
 		return strategy.address === last;
 	}, [strategy, vault]);
 
-	function latestHarvest(strategy) {
+	const latestHarvest = useMemo(() => {
 		return new Date(strategy.lastReport * 1000);
-	}
+	}, [strategy]);
+
+	const debtRatio = useMemo(() => {
+		return simulator.debtRatioUpdates[strategy.address] || strategy.debtRatio?.toNumber() || 0;
+	}, [simulator, strategy]);
+
+	const onChangeDebtRatio = useCallback((event) => {
+		simulator.updateDebtRatio(strategy, Math.floor(parseFloat(event.target.value || 0) * 100));
+	}, [simulator, strategy]);
+
+	const maxDebtRatio = useMemo(() => {
+		console.log('maxDebtRatio', debtRatio + 10_000 - simulator.vaultDebtRatio, debtRatio, simulator.vaultDebtRatio);
+		return debtRatio + 10_000 - simulator.vaultDebtRatio;
+	}, [simulator, debtRatio]);
 
 	return <div className={`
 		px-4 pt-2 sm:pt-0 sm:pr-12 sm:pl-8 flex flex-col gap-2`}>
@@ -119,7 +132,7 @@ export default function Strategy({strategy}) {
 				<div className={'grid grid-cols-4'}>
 					<div className={'col-span-2'}>
 						<div className={'text-sm'}>{'Last harvest'}</div>
-						<TimeAgo date={latestHarvest(strategy)}></TimeAgo>
+						<TimeAgo date={latestHarvest}></TimeAgo>
 					</div>
 					<div>
 						<div className={'text-sm text-right'}>{'Assets'}</div>
@@ -145,9 +158,9 @@ export default function Strategy({strategy}) {
 						focus:border-primary-400 focus:bg-gray-200 focus:ring-0
 						focus:dark:border-selected-600 focus:ring-0
 						rounded-md shadow-inner`}
-						defaultValue={formatNumber(100 * (simulator.debtRatioUpdates[strategy.address] || strategy.debtRatio) / 10_000)}
-						onChange={value => simulator.updateDebtRatio(strategy, Math.floor(parseFloat(value.target.value || 0) * 100))}
-						min={0} max={100} step={0.01} />
+						defaultValue={formatNumber(100 * debtRatio / 10_000)}
+						onChange={onChangeDebtRatio}
+						min={0} max={100 * maxDebtRatio / 10_000} step={0.01} />
 					</div>
 				</div>
 

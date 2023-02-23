@@ -73,8 +73,8 @@ export default function Summary({className}) {
 
 	const allocated = useMemo(() => {
 		if((vault?.totalAssets || ethers.constants.Zero).eq(0)) return 0;
-		return vault.debtRatio / 10_000;
-	}, [vault]);
+		return simulator.vaultDebtRatio / 10_000;
+	}, [vault, simulator]);
 
 	const utilization = useMemo(() => {
 		if((vault?.depositLimit || ethers.constants.Zero).eq(0)) return NaN;
@@ -97,7 +97,11 @@ export default function Summary({className}) {
 				</Row>
 				<Row className={'grid-cols-2'}>
 					<Cell>{'Allocated'}</Cell>
-					<Cell className={'font-mono text-right'}>{formatPercent(allocated, 2, '--')}</Cell>
+					<Cell className={
+						`font-mono text-right 
+						${simulator.hasDebtRatioUpdates ? 'text-primary-600 dark:text-primary-400' : ''}`}>
+						{formatPercent(allocated, 2, '--')}
+					</Cell>
 				</Row>
 				<Row className={'grid-cols-2 bg-selected-400/5'}>
 					<Cell>{'Deposit Limit'}</Cell>
