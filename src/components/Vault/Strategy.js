@@ -189,7 +189,7 @@ export default function Strategy({strategy}) {
 
 				{simulator.strategyResults[strategy.address]?.status === 'error' && <div>
 					<div>{'Harvest'}</div>
-					<A className={'text-error-600 dark:text-error-400'} target={'_blank'} href={simulator.strategyResults[strategy.address].simulationUrl} rel={'noreferrer'}>{'Failed'}</A>
+					<A className={'text-error-600 dark:text-error-400'} target={'_blank'} href={simulator.strategyResults[strategy.address].explorerUrl} rel={'noreferrer'}>{'Failed'}</A>
 				</div>}
 			</div>
 

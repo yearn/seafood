@@ -133,7 +133,7 @@ export default function SimulatorProvider({children}) {
 			functionInput: [strategy.address]
 		});
 
-		const results = await tenderly.simulate(blocks, tenderlyProvider);
+		const results = await tenderly.simulateAll(blocks, tenderlyProvider);
 
 		const eventsAbi = [
 			'event StrategyUpdateDebtRatio(address indexed strategy, uint256 debtRatio)',
@@ -160,12 +160,12 @@ export default function SimulatorProvider({children}) {
 		const firstFailedBlock = results.find(r => r.status === 'error');
 		if(firstFailedBlock) {
 			setStrategyResults(current => ({...current, [strategy.address]: {
-				status: 'error', simulationUrl: firstFailedBlock.simulationUrl, output: null
+				status: 'error', simulationUrl: firstFailedBlock.explorerUrl, output: null
 			}}));
 		} else {
 			const nextStrategyState = results.at(-1).output;
 			setStrategyResults(current => ({...current, [strategy.address]: {
-				status: 'ok', simulationUrl: results.at(-2).simulationUrl, output: {
+				status: 'ok', simulationUrl: results.at(-2).explorerUrl, output: {
 					...nextStrategyState,
 					apr: computeStrategyApr(strategy, nextStrategyState),
 					flow: computeStrategyFlow(events),

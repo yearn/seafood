@@ -57,7 +57,7 @@ export default function Events({vault, token, strategyResults}) {
 				<h1>{'Simulated Harvest Events'}</h1>
 				<div className={'text-xl'}>{`${vault.name} / ${strategy.name}`}</div>
 				<div>
-					<A href={strategyResults[strategy.address]?.simulationUrl}
+					<A href={strategyResults[strategy.address]?.explorerUrl}
 						target={'_blank'} 
 						rel={'noreferrer'}>
 						{'Explore on Tenderly'}

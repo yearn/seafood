@@ -25,8 +25,8 @@ describe('APY', () => {
 			[-30]: 15649186,
 			inception: 15243268
 		};
-		
-		const provider = new providers.JsonRpcProvider(getChain(1).providers[0]);
+
+		const provider = new providers.JsonRpcProvider(process.env.TEST_RPC);
 		const vaultRpc = new Contract(yvUSDT.address, abis.vault043, provider);
 		const apy = await compute(yvUSDT, vaultRpc, samples);
 

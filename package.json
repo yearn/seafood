@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.1",
-    "@testing-library/react": "^12.1.2",
+    "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.13.0",
@@ -73,7 +73,7 @@
     "start:server": "cd api && yarn start",
     "start:app": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "DOTENV_CONFIG_PATH=.env react-scripts test",
     "eject": "react-scripts eject",
     "now-build": "react-scripts build && mv build dist",
     "sw": "run-p sw:**",
