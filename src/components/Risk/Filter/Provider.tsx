@@ -1,7 +1,7 @@
 import React, {createContext, ReactNode, useContext, useMemo, useState} from 'react';
 import config from '../../../config.json';
 import {useVaults} from '../../../context/useVaults';
-import {curveRe, escapeRegex} from '../../../utils/utils';
+import {curveRe, escapeRegex, isEthAddress} from '../../../utils/utils';
 import {defaultRiskCategories, RiskCategories, RiskReport} from '../../../context/useVaults/types';
 import {median} from '../../../context/useVaults/risk';
 
@@ -134,7 +134,11 @@ export default function FilterProvider({children}: {children: ReactNode}) {
 			.filter(vault => networks.includes(vault.network.chainId))
 			.forEach(vault => vault.strategies.forEach(strategy => {
 				if(!strategy.risk) return;
-				if(query && !queryRe.test(strategy.risk.riskGroup)) return;
+				if(query) {
+					if(isEthAddress(query)) {
+						if(vault.address !== query) return;
+					} else if(!queryRe.test(strategy.risk.riskGroup)) return;
+				}
 				if(strategies.hideInactive && strategy.risk.riskGroup === 'Inactive') return;
 				if(strategies.hideCurve && curveRe.test(vault.name)) return;
 

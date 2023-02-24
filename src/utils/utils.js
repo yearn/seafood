@@ -149,6 +149,10 @@ function humanizeRiskCategory(category) {
 	return capitalized;
 }
 
+function isEthAddress(string) {
+	return /0x[a-fA-F0-9]{40}/.test(string);
+}
+
 export {
 	chainId,
 	getChain,
@@ -166,5 +170,6 @@ export {
 	getAbi,
 	hydrateBigNumbersRecursively,
 	escapeRegex,
-	humanizeRiskCategory
+	humanizeRiskCategory,
+	isEthAddress
 };

@@ -18,7 +18,7 @@ export default function Search({className}: {className: string}) {
 	return <Input
 		_ref={queryElement}
 		type={'text'}
-		placeholder={'/ Filter by group'}
+		placeholder={'/ Group or vault address'}
 		defaultValue={query}
 		onChange={(e: Event) => {debounceQuery((e.target as HTMLInputElement)?.value);}} 
 		className={`
