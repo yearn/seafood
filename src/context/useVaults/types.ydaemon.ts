@@ -14,6 +14,26 @@ export interface Strategy {
     totalGain: BigNumber,
     totalLoss: BigNumber,
     withdrawalQueuePosition: number    
+  },
+  risk: {
+    riskGroup: string,
+    riskScore: number,
+    allocation: {
+      availableAmount: string,
+      availableTVL: string,
+      currentAmount: string,
+      currentTVL: string,
+    }
+    riskDetails: {
+      TVLImpact: number,
+      auditScore: number,
+      codeReviewScore: number,
+      complexityScore: number,
+      longevityImpact: number,
+      protocolSafetyScore: number,
+      teamKnowledgeScore: number,
+      testingScore: number,
+    }
   }
 }
 
@@ -39,6 +59,8 @@ export interface Vault {
       month_ago: number,
       inception: number
     }
-  }
+  }, tvl: {
+    price: number
+  },
 	strategies: Strategy[]
 }

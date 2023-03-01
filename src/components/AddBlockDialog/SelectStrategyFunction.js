@@ -6,14 +6,14 @@ import useLocalStorage from '../../utils/useLocalStorage';
 import Filter from './Filter';
 import List from './List';
 import Header from './Header';
-import {getAbi} from '../../utils/utils';
+import {escapeRegex, getAbi} from '../../utils/utils';
 
 export default function SelectStrategyFunction({addBlockContext, addBlock}) {
 	const {selectedProvider, setSteps, result, setResult} = addBlockContext;
 	const [items, setItems] = useState([]);
 	const [filter, setFilter] = useState([]);
 	const [query, setQuery] = useLocalStorage('addBlock.selectFunction.query', '');
-	const queryRe = useMemo(() => { return new RegExp(query, 'i'); }, [query]);
+	const queryRe = useMemo(() => { return new RegExp(escapeRegex(query), 'i'); }, [query]);
 	const [chips, setChips] = useLocalStorage('addBlock.selectFunction.chips', {});
 
 	useEffect(() => {

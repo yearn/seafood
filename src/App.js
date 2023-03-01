@@ -10,6 +10,8 @@ import GithubCallback from './components/GithubCallback';
 import Sandbox from './components/Sandbox';
 import Vaults from './components/Vaults';
 import Vault from './components/Vault';
+import Risk from './components/Risk';
+import RiskGroup from './components/Risk/Group';
 
 function App() {
 	return (
@@ -23,6 +25,8 @@ function App() {
 									<Routes>
 										<Route path={'/'} exact={true} element={<Vaults />} />
 										<Route path={'/vault/:address'} element={<Vault />} />
+										<Route path={'/risk/*'} element={<Risk />} />
+										<Route path={'/risk/:group'} element={<RiskGroup />} />
 										<Route path={'/sandbox/*'} element={<Sandbox />} />
 										<Route path={'/github/callback'} exact={true} element={<GithubCallback />} />
 									</Routes>
