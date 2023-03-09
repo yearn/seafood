@@ -1,7 +1,7 @@
 declare const self: SharedWorkerGlobalScope; // chrome://inspect/#workers
 import * as Comlink from 'comlink';
 import {BigNumber, ethers} from 'ethers';
-import {Multicall} from 'ethereum-multicall';
+import {ContractCallContext, ContractCallReturnContext, Multicall} from 'ethereum-multicall';
 import {GetVaultAbi, LockedProfitDegradationField} from '../../ethereum/EthHelpers';
 import {aggregateRiskGroupTvls} from './risk';
 import config from '../../config.json';
@@ -25,12 +25,20 @@ interface IStartOptions {
 
 interface ICallbacks {
 	startRefresh?: () => void,
-	cacheReady?: (date: Date, vaults: ySeafood.Vault[]) => void
+	cacheReady?: (date: Date, vaults: ySeafood.Vault[], status: SyncStatus[]) => void
+}
+
+export interface SyncStatus {
+	status: 'ok' | 'error'
+	stage: 'ydaemon' | 'multicall' | 'tvls',
+	chain: number | 'all',
+	error?: unknown,
+	timestamp: number
 }
 
 async function start(options: IStartOptions, callbacks?: ICallbacks) {
-	const vaults = await getCache();
-	if(vaults.length > 0 && callbacks?.cacheReady) callbacks.cacheReady(new Date(), vaults);
+	const {vaults, status} = await getCache();
+	if(vaults.length > 0 && callbacks?.cacheReady) callbacks.cacheReady(new Date(), vaults, status);
 	refresh(callbacks);
 	setInterval(() => {
 		refresh(callbacks);
@@ -39,39 +47,53 @@ async function start(options: IStartOptions, callbacks?: ICallbacks) {
 
 async function refresh(callbacks?: ICallbacks) {
 	if(callbacks?.startRefresh) callbacks.startRefresh();
-	const vaultverse = await fetchVaultverse();
-	const multicallUpdates = await fetchMulticallUpdates(vaultverse);
-	const tvlverse = await fetchTvlVerse();
+	const {result: vaultverse, status: vaultStatus} = await fetchVaultverse();
+	const {result: multicallUpdates, status: multicallStatus} = await fetchMulticallUpdates(vaultverse);
+	const {result: tvlverse, status: tvlStatus} = await fetchTvlVerse();
+
 	const vaults = merge(vaultverse, multicallUpdates, tvlverse);
+	const status = [...vaultStatus, ...multicallStatus, tvlStatus];
+
 	const db = await openDb();
-	const vaultStore = db.transaction('vaults', 'readwrite').objectStore('vaults');
-	const clearRequest = vaultStore.clear();
-	clearRequest.onerror = (e: Event) => { throw e; };
-	clearRequest.onsuccess = () => {
-		vaults.forEach(vault => vaultStore.add(vault));
-		if(callbacks?.cacheReady) {
-			sort(vaults);
-			callbacks.cacheReady(new Date(), vaults);
-		}
-	};
+	await refreshStore(db, 'vaults', vaults);
+	await refreshStore(db, 'status', status);
+
+	if(callbacks?.cacheReady) {
+		sort(vaults);
+		callbacks.cacheReady(new Date(), vaults, status);
+	}
 }
 
-async function getCache() : Promise<ySeafood.Vault[]> {
-	return new Promise<ySeafood.Vault[]>(async (resolve, reject) => {
+async function getCache() {
+	const db = await openDb();
+	const vaults = await getStore<ySeafood.Vault[]>(db, 'vaults');
+	const status = await getStore<SyncStatus[]>(db, 'status');
+	sort(vaults);
+	return {vaults, status};
+}
+
+async function refreshStore(db: IDBDatabase, storeName: string, objects: unknown[]) {
+	return new Promise<void>((resolve, reject) => {
+		const store = db.transaction(storeName, 'readwrite').objectStore(storeName);
+		const clearRequest = store.clear();
+		clearRequest.onerror = (e: Event) => reject(e);
+		clearRequest.onsuccess = () => {
+			objects.forEach(o => store.add(o));
+			resolve();
+		};
+	});
+}
+
+async function getStore<T>(db: IDBDatabase, storeName: string) {
+	return new Promise<T>(async (resolve, reject) => {
 		const db = await openDb();
-		const vaultStore = db.transaction('vaults', 'readonly').objectStore('vaults');
-		const request = vaultStore.getAll();
+		const store = db.transaction(storeName, 'readonly').objectStore(storeName);
+		const request = store.getAll();
 		request.onerror = (e: Event) => reject(e);
 		request.onsuccess = async () => {
-			if(request.result.length > 0) {
-				const cache = request.result as ySeafood.Vault[];
-				sort(cache);
-				resolve(cache);
-			} else {
-				resolve([]);
-			}
+			resolve(request.result as T);
 		};
-	});	
+	});
 }
 
 async function sort(vaults: ySeafood.Vault[]) {
@@ -82,12 +104,19 @@ async function sort(vaults: ySeafood.Vault[]) {
 	});
 }
 
+const DB_VERSION = 2;
 async function openDb() {
 	return new Promise<IDBDatabase>((resolve, reject) => {
-		const dbRequest = self.indexedDB.open('seafood');
+		const dbRequest = self.indexedDB.open('seafood', DB_VERSION);
 		dbRequest.onerror = (e: Event) => reject(e);
-		dbRequest.onupgradeneeded = () => {
-			dbRequest.result.createObjectStore('vaults', {keyPath: ['network.chainId', 'address']});
+		dbRequest.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+			if(!event.newVersion) return;
+			if(event.oldVersion === 0) {
+				dbRequest.result.createObjectStore('vaults', {keyPath: ['network.chainId', 'address']});
+				dbRequest.result.createObjectStore('status', {keyPath: ['stage', 'chain']});
+			} else if(event.oldVersion === 1 && event.newVersion == 2) {
+				dbRequest.result.createObjectStore('status', {keyPath: ['stage', 'chain']});
+			}
 		};
 		dbRequest.onsuccess = () => resolve(dbRequest.result);
 	});
@@ -134,13 +163,18 @@ function merge(
 	return result;
 }
 
-async function fetchVaultverse() : Promise<yDaemon.Vault[][]> {
-	const requests = config.chains.map(({id}) => 
-		`${config.ydaemon.url}/${id}/vaults/all?strategiesCondition=all&strategiesDetails=withDetails&strategiesRisk=withRisk`
-	);
-	const result = [];
-	for(const request of requests) result.push(await ((await fetch(request)).json()));
-	return result;
+async function fetchVaultverse() : Promise<{result: yDaemon.Vault[][], status: SyncStatus[]}> {
+	const result = [], status = [];
+	for(const chain of config.chains) {
+		const request = `${config.ydaemon.url}/${chain.id}/vaults/all?strategiesCondition=all&strategiesDetails=withDetails&strategiesRisk=withRisk`;
+		try {
+			result.push(await (await fetch(request)).json());
+			status.push({status: 'ok', stage: 'ydaemon', chain: chain.id, timestamp: Date.now()} as SyncStatus);
+		} catch(error) {
+			status.push({status: 'error', stage: 'ydaemon', chain: chain.id, error, timestamp: Date.now()} as SyncStatus);
+		}
+	}
+	return {result, status};
 }
 
 interface VaultMulticallUpdate {
@@ -163,23 +197,40 @@ interface StrategyMulticallUpdate {
 }
 
 async function fetchMulticallUpdates(vaultverse: yDaemon.Vault[][]) {
-	const multicallPromises = [] as Promise<VaultMulticallUpdate[] | StrategyMulticallUpdate[]>[];
+	const result = [], status = [];
 	for(const [index, chain] of config.chains.entries()) {
 		const vaults = vaultverse[index];
 		const multicall = new Multicall({ethersProvider: providerFor(chain), tryAggregate: true});
-		multicallPromises.push(...await createVaultMulticalls(vaults, chain, multicall));
-		multicallPromises.push(...await createStrategyMulticalls(vaults, chain, multicall));
+		const promises = [] as Promise<VaultMulticallUpdate[] | StrategyMulticallUpdate[]>[];
+		promises.push(...await createVaultMulticalls(vaults, chain, multicall));
+		promises.push(...await createStrategyMulticalls(vaults, chain, multicall));
+		try {
+			result.push(...(await Promise.all(promises)).flat());
+			status.push({status: 'ok', stage: 'multicall', chain: chain.id, timestamp: Date.now()} as SyncStatus);
+		} catch(error) {
+			status.push({status: 'error', stage: 'multicall', chain: chain.id, error, timestamp: Date.now()} as SyncStatus);
+		}
 	}
-	return (await Promise.all(multicallPromises)).flat();
+	return {result, status};
 }
 
 function providerFor(chain: ySeafood.Chain) {
 	return new ethers.providers.JsonRpcProvider(chain.providers[0], {name: chain.name, chainId: chain.id});
 }
 
+async function batchMulticalls(multicall: Multicall, calls: ContractCallContext[]) {
+	const size = 100;
+	let result = {} as { [key: string]: ContractCallReturnContext };
+	for(let start = 0; start < calls.length; start = start + size) {
+		const end = calls.length > start + size ? start + size : undefined;
+		const results = (await multicall.call(calls.slice(start, end))).results;
+		result = {...result, ...results};
+	}
+	return result;
+}
+
 async function createVaultMulticalls(vaults: yDaemon.Vault[], chain: ySeafood.Chain, multicall: Multicall) {
 	const result = [];
-
 	const vaultMulticalls = vaults.map(vault => ({
 		reference: vault.address,
 		contractAddress: vault.address,
@@ -195,9 +246,9 @@ async function createVaultMulticalls(vaults: yDaemon.Vault[], chain: ySeafood.Ch
 
 	result.push((async () : Promise<VaultMulticallUpdate[]> => {
 		const parsed = [] as VaultMulticallUpdate[];
-		const multiresults = await multicall.call(vaultMulticalls);
+		const multiresults = await batchMulticalls(multicall, vaultMulticalls);
 		vaults.forEach(vault => {
-			const results = multiresults.results[vault.address].callsReturnContext;
+			const results = multiresults[vault.address].callsReturnContext;
 			const lockedProfitDegradation = results[4].returnValues[0] && results[4].returnValues[0].type === 'BigNumber'
 				? BigNumber.from(results[4].returnValues[0])
 				: BigNumber.from(0);
@@ -234,9 +285,9 @@ async function createStrategyMulticalls(vaults: yDaemon.Vault[], chain: ySeafood
 
 	result.push((async () => {
 		const parsed = [] as StrategyMulticallUpdate[];
-		const multiresults = await multicall.call(strategyMulticalls);
+		const multiresults = await batchMulticalls(multicall, strategyMulticalls);
 		strategies.forEach(strategy => {
-			const results = multiresults.results[strategy.address].callsReturnContext;
+			const results = multiresults[strategy.address].callsReturnContext;
 
 			const lendStatuses = results[0].returnValues?.length > 0 
 				? results[0].returnValues.map(tuple => ({
@@ -266,8 +317,18 @@ interface TVLVerse {
 	}
 }
 
-async function fetchTvlVerse() : Promise<TVLVerse> {
-	return await (await fetch('/api/vision/tvls')).json();
+async function fetchTvlVerse() : Promise<{result: TVLVerse, status: SyncStatus}> {
+	try {
+		return  {
+			result: await (await fetch('/api/vision/tvls')).json(),
+			status: {status: 'ok', stage: 'tvls', chain: 'all', timestamp: Date.now()}
+		};
+	} catch(error) {
+		return  {
+			result: [],
+			status: {status: 'error', stage: 'tvls', chain: 'all', error, timestamp: Date.now()}
+		};
+	}
 }
 
 export default {} as typeof Worker & { new (): Worker };
