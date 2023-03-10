@@ -1,7 +1,7 @@
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import * as Comlink from 'comlink';
 import * as ySeafood from './types';
-import {api} from './worker';
+import {api, SyncStatus} from './worker';
 import {hydrateBigNumbersRecursively} from '../../utils/utils';
 import useLocalStorage from 'use-local-storage';
 
@@ -9,6 +9,7 @@ interface IVaultsContext {
 	loading: boolean,
 	cachetime: Date,
 	vaults: ySeafood.Vault[],
+	status: SyncStatus[],
 	ytvl: number,
 	refresh: () => void
 }
@@ -23,6 +24,7 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 		parser: str => new Date(JSON.parse(str))
 	});
 	const [vaults, setVaults] = useState<ySeafood.Vault[]>([]);
+	const [status, setStatus] = useState<SyncStatus[]>([]);
 
 	const worker = useMemo(() => {
 		const worker = new Worker(new URL('./worker.ts', import.meta.url));
@@ -34,11 +36,12 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 			startRefresh: () => {
 				setLoading(true);
 			},
-			cacheReady: (date: Date, vaults: ySeafood.Vault[]) => {
+			cacheReady: (date: Date, vaults: ySeafood.Vault[], status: SyncStatus[]) => {
 				hydrateBigNumbersRecursively(vaults);
 				setCachetime(date);
 				setLoading(false);
 				setVaults(vaults);
+				setStatus(status);
 			}
 		};
 	}, [setCachetime]);
@@ -64,6 +67,7 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 		loading,
 		cachetime,
 		vaults,
+		status,
 		ytvl,
 		refresh
 	}}>{children}</VaultsContext.Provider>;

@@ -12,6 +12,7 @@ import Vaults from './components/Vaults';
 import Vault from './components/Vault';
 import Risk from './components/Risk';
 import RiskGroup from './components/Risk/Group';
+import Status from './components/Status';
 
 function App() {
 	return (
@@ -28,6 +29,7 @@ function App() {
 										<Route path={'/risk/*'} element={<Risk />} />
 										<Route path={'/risk/:group'} element={<RiskGroup />} />
 										<Route path={'/sandbox/*'} element={<Sandbox />} />
+										<Route path={'/status/*'} element={<Status />} />
 										<Route path={'/github/callback'} exact={true} element={<GithubCallback />} />
 									</Routes>
 								</Chrome>
