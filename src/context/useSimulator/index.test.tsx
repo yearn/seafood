@@ -5,7 +5,9 @@ import {BigNumber, ethers, providers} from 'ethers';
 import {Strategy, Vault} from '../useVaults/types';
 import SimulatorProvider, {Simulator, useSimulator} from '.';
 import config from '../../config.json';
-import { Block, makeDebtRatioUpdateBlock, makeHarvestBlock } from './Blocks';
+import {Block, makeDebtRatioUpdateBlock, makeHarvestBlock} from './Blocks';
+import {ReactNode} from 'react';
+import {ProbesContext} from './ProbesProvider/useProbes';
 
 const mocks = {
 	vault: {
@@ -28,6 +30,17 @@ const mocks = {
 	}
 };
 
+const mockProbe = {
+	start: jest.fn(async (blocks: Block[], provider: providers.JsonRpcProvider) => ({})),
+	stop: jest.fn(async (blocks: Block[], provider: providers.JsonRpcProvider) => ({}))
+}
+
+export default function MockProbesProvider({children}: {children: ReactNode}) {
+	return <ProbesContext.Provider value={{probes: [mockProbe]}}>
+		{children}
+	</ProbesContext.Provider>;
+}
+
 describe('<SimulatorProvider />', () => {
 
 	let provider: ethers.providers.JsonRpcProvider;
@@ -47,15 +60,14 @@ describe('<SimulatorProvider />', () => {
     provider = new ethers.providers.JsonRpcProvider(simulatorUrl);
 	});
 
-	const probe = {
-		start: jest.fn(async (blocks: Block[], provider: providers.JsonRpcProvider) => {}),
-		end: jest.fn(async (blocks: Block[], provider: providers.JsonRpcProvider) => {})
-	}
+
 
 	let renderSimulator: RenderHookResult<Simulator, unknown>;
 	beforeEach(() => {
     renderSimulator = renderHook(() => useSimulator(), {
-			wrapper: ({children}) => <SimulatorProvider probes={[probe]}>{children}</SimulatorProvider>
+			wrapper: ({children}) => <MockProbesProvider>
+					<SimulatorProvider>{children}</SimulatorProvider>
+				</MockProbesProvider>
 		});
 	});
 
@@ -67,8 +79,8 @@ describe('<SimulatorProvider />', () => {
 		expect(simulator().simulating).toBeFalsy();
 		expect(simulator().blockPointer).toBeNull();
 		expect(simulator().results.length).toBe(0);
-		expect(probe.start).toBeCalledTimes(0);
-		expect(probe.end).toBeCalledTimes(0);
+		expect(mockProbe.start).toBeCalledTimes(0);
+		expect(mockProbe.stop).toBeCalledTimes(0);
 	});
 
 	it('Simulates nothing', async () => {
@@ -79,8 +91,8 @@ describe('<SimulatorProvider />', () => {
 		expect(simulator().simulating).toBeFalsy();
 		expect(simulator().blockPointer).toBeNull();
 		expect(simulator().results.length).toBe(0);
-		expect(probe.start).toBeCalledTimes(1);
-		expect(probe.end).toBeCalledTimes(1);		
+		expect(mockProbe.start).toBeCalledTimes(1);
+		expect(mockProbe.stop).toBeCalledTimes(1);		
 	});
 
 	it('Simulates blocks and gives results', async () => {
@@ -95,8 +107,8 @@ describe('<SimulatorProvider />', () => {
 		expect(simulator().results[0].output).toBeDefined();
 		expect(simulator().results[0].explorerUrl).toBeDefined();
 		expect(simulator().results[0].error).toBeUndefined();
-		expect(probe.start).toBeCalledTimes(1);
-		expect(probe.end).toBeCalledTimes(1);
+		expect(mockProbe.start).toBeCalledTimes(1);
+		expect(mockProbe.stop).toBeCalledTimes(1);
 	});
 
 	it('Simulates blocks failing', async () => {
@@ -111,7 +123,7 @@ describe('<SimulatorProvider />', () => {
 		expect(simulator().results[0].output).toBeUndefined();
 		expect(simulator().results[0].explorerUrl).toBeDefined();
 		expect(simulator().results[0].error).toBeDefined();
-		expect(probe.start).toBeCalledTimes(1);
-		expect(probe.end).toBeCalledTimes(1);
+		expect(mockProbe.start).toBeCalledTimes(1);
+		expect(mockProbe.stop).toBeCalledTimes(1);
 	});
 });

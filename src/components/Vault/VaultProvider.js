@@ -1,10 +1,10 @@
-import axios from 'axios';
 import React, {createContext, useContext, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import useLocalStorage from '../../utils/useLocalStorage';
 import {useVaults} from '../../context/useVaults';
 import useRpcProvider from '../../context/useRpcProvider';
 import {Erc20Info, GetVaultContract} from '../../ethereum/EthHelpers';
+import {fetchHarvestReports} from '../../utils/harvestReports';
 
 const	VaultContext = createContext();
 export const useVault = () => useContext(VaultContext);
@@ -36,13 +36,10 @@ export default function VaultProvider({children}) {
 				setToken(token);
 			});
 
-			const strategies = vault.strategies.map(strategy => strategy.address);
-			axios.post('/api/getVaults/AllStrategyReports', 
-				{chainId: vault.network.chainId, strategies})
-				.then(response => {
-					setReports(response.data);
-					setReportBlocks(response.data.map(r => parseInt(r.block)).sort());
-				});
+			fetchHarvestReports(vault).then(reports => {
+				setReports(reports);
+				setReportBlocks(reports.map(r => parseInt(r.block)).sort());
+			});
 		}
 	}, [params, vaults, providers]);
 

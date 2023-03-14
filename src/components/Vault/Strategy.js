@@ -12,6 +12,7 @@ import {useSimulator} from './SimulatorProvider';
 import {useLocation} from 'react-router-dom';
 import {translateRiskScore, translateTvlImpact} from '../Risk/Score';
 import {scoreToBgColor} from '../Risk/colors';
+import {useBlockManager, findDebtRatioUpdate} from '../../context/useSimulator/BlocksProvider';
 
 function Field({value, simulated, delta, className, children}) {
 	return <div className={`
@@ -43,6 +44,8 @@ export default function Strategy({strategy}) {
 	const strategyHarvestHistory = reports.filter(r => r.strategy_address === strategy.address);
 	const [showHarvestHistory, setShowHarvestHistory] = useState(false);
 
+	const {blocks, addDebtRatioUpdate, removeDebtRatioUpdate} = useBlockManager();
+
 	const lastStrategy = useMemo(() => {
 		const last = (vault?.withdrawalQueue || [])?.at(-1)?.address || '';
 		return strategy.address === last;
@@ -53,12 +56,22 @@ export default function Strategy({strategy}) {
 	}, [strategy]);
 
 	const debtRatio = useMemo(() => {
-		return simulator.debtRatioUpdates[strategy.address] || strategy.debtRatio?.toNumber() || 0;
-	}, [simulator, strategy]);
+		return findDebtRatioUpdate(blocks, vault, strategy)?.functionInput[1] || strategy.debtRatio?.toNumber() || 0;
+	}, [blocks, vault, strategy]);
+
+	React.useEffect(() => {
+		console.log('blocks', blocks);
+	}, [blocks]);
 
 	const onChangeDebtRatio = useCallback((event) => {
-		simulator.updateDebtRatio(strategy, Math.floor(parseFloat(event.target.value || 0) * 100));
-	}, [simulator, strategy]);
+		const currentDebtRatio = strategy.debtRatio?.toNumber() || 0;
+		const newDebtRatio = Math.floor(parseFloat(event.target.value || 0) * 100);
+		if(newDebtRatio !== currentDebtRatio) {
+			addDebtRatioUpdate(vault, strategy, newDebtRatio);
+		} else {
+			removeDebtRatioUpdate(vault, strategy);
+		}
+	}, [addDebtRatioUpdate, removeDebtRatioUpdate, vault, strategy]);
 
 	const maxDebtRatio = useMemo(() => {
 		return debtRatio + 10_000 - simulator.vaultDebtRatio;

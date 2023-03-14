@@ -2,11 +2,7 @@ import {providers} from 'ethers';
 import React, {createContext, ReactNode, useCallback, useContext, useMemo, useState} from 'react';
 import tenderly, {SimulationResult} from '../../tenderly';
 import {Block} from './Blocks';
-
-export interface Probe {
-	start: (blocks: Block[], provider: providers.JsonRpcProvider) => Promise<void>,
-	end: (blocks: Block[], provider: providers.JsonRpcProvider) => Promise<void>
-}
+import {useProbes} from './ProbesProvider/useProbes';
 
 export interface Simulator {
 	simulate: (blocks: Block[], provider: providers.JsonRpcProvider) => void,
@@ -20,9 +16,10 @@ export const	SimulatorContext = createContext<Simulator>({} as Simulator);
 
 export const useSimulator = () => useContext(SimulatorContext);
 
-export default function SimulatorProvider({probes, children}: {probes: Probe[], children: ReactNode}) {
+export default function SimulatorProvider({children}: {children: ReactNode}) {
 	const [blockPointer, setBlockPointer] = useState<Block|null>(null);
 	const [results, setResults] = useState([] as SimulationResult[]);
+	const {probes} = useProbes();
 
 	const simulating = useMemo(() => Boolean(blockPointer), [blockPointer]);
 
@@ -39,7 +36,7 @@ export default function SimulatorProvider({probes, children}: {probes: Probe[], 
 		}
 
 		setBlockPointer(null);
-		for(const probe of probes) await probe.end(blocks, provider);
+		for(const probe of probes) await probe.stop(blocks, provider);
 	}, [setBlockPointer, setResults, probes]);
 
 	const reset = useCallback(() => {
