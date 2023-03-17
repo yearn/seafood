@@ -110,7 +110,7 @@ function highlightString(string, highlightRe) {
 	return string;
 }
 
-async function getAbi(chainId, contract) {
+async function fetchAbi(chainId, contract) {
 	const url = `/api/abi?chainId=${chainId}&contract=${contract}`;
 	return await(await fetch(url)).json();
 }
@@ -167,7 +167,7 @@ export {
 	formatCurrency,
 	formatTokens,
 	highlightString,
-	getAbi,
+	fetchAbi,
 	hydrateBigNumbersRecursively,
 	escapeRegex,
 	humanizeRiskCategory,

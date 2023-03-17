@@ -13,7 +13,7 @@ export default function Header() {
 	const {overpassClassName} = useScrollOverpass();
 
 	return <div className={`
-		sticky top-0 z-10 pb-4 sm:py-2
+		sticky top-0 z-10 pb-4 sm:py-2 2xl:pr-32 2xl:pl-6
 		sm:grid sm:grid-cols-2 sm:items-center
 		${overpassClassName}`}>
 		<div className={'flex flex-col sm:flex-col-reverse'}>

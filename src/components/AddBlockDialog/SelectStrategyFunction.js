@@ -6,7 +6,7 @@ import useLocalStorage from '../../utils/useLocalStorage';
 import Filter from './Filter';
 import List from './List';
 import Header from './Header';
-import {escapeRegex, getAbi} from '../../utils/utils';
+import {escapeRegex, fetchAbi} from '../../utils/utils';
 
 export default function SelectStrategyFunction({addBlockContext, addBlock}) {
 	const {selectedProvider, setSteps, result, setResult} = addBlockContext;
@@ -18,7 +18,7 @@ export default function SelectStrategyFunction({addBlockContext, addBlock}) {
 
 	useEffect(() => {
 		(async () => {
-			const abi = await getAbi(selectedProvider.network.chainId, result.strategy.address);
+			const abi = await fetchAbi(selectedProvider.network.chainId, result.strategy.address);
 			const contract = new ethers.Contract(result.strategy.address, abi, selectedProvider);
 			const functions = contract.interface.fragments.filter(f => {
 				return f.type === 'function' && f.stateMutability !== 'pure' && f.stateMutability !== 'view';

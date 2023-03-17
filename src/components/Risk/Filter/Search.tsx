@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {ChangeEvent, useRef} from 'react';
 import useKeypress from 'react-use-keypress';
 import {useDebouncedCallback} from 'use-debounce';
 import {Input} from '../../controls';
@@ -6,7 +6,7 @@ import {useFilter} from './Provider';
 
 export default function Search({className}: {className: string}) {
 	const {query, setQuery} = useFilter();
-	const queryElement = useRef<HTMLInputElement>();
+	const queryElement = useRef<HTMLInputElement>({} as HTMLInputElement);
 	const debounceQuery = useDebouncedCallback(value => {setQuery(value);}, 250);
 
 	useKeypress(['/'], () => {
@@ -20,7 +20,7 @@ export default function Search({className}: {className: string}) {
 		type={'text'}
 		placeholder={'/ Group or vault address'}
 		defaultValue={query}
-		onChange={(e: Event) => {debounceQuery((e.target as HTMLInputElement)?.value);}} 
+		onChange={(e: ChangeEvent) => {debounceQuery((e.target as HTMLInputElement)?.value);}} 
 		className={`
 		py-2 px-3 rounded-lg leading-tight border outline-none
 		bg-secondary-300 border-transparent text-primary-900

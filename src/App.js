@@ -14,8 +14,6 @@ import Vault from './components/Vault';
 import Risk from './components/Risk';
 import RiskGroup from './components/Risk/Group';
 import Status from './components/Status';
-import BlocksProvider from './context/useSimulator/BlocksProvider';
-import SimulatorProvider from './context/useSimulator';
 
 const Providers = NestProviders([
 	[RPCProviderContextApp],
@@ -23,8 +21,6 @@ const Providers = NestProviders([
 	[AuthProvider],
 	[VaultsProvider],
 	[FavoritesProvider],
-	[BlocksProvider],
-	[SimulatorProvider],
 	[SmsProvider],
 	[Chrome]
 ]);

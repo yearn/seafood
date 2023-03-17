@@ -11,7 +11,7 @@ export default function Switch({checked, onChange, checkedIcon, uncheckedIcon}) 
 	}, [darkMode]);
 
 	const onColor = useMemo(() => {
-		return darkMode ? colors.pink[500] : colors.pink[400];
+		return darkMode ? colors.sky[500] : colors.sky[200];
 	}, [darkMode]);
 
 	return <ReactSwitch

@@ -1,6 +1,7 @@
 import {ethers} from 'ethers';
 import {Block, BlockOutput} from './context/useSimulator/Blocks';
 import config from './config.json';
+import {GetStrategyContract, GetVaultContract} from './ethereum/EthHelpers';
 
 export interface SimulationResult {
 	block: Block,
@@ -10,7 +11,7 @@ export interface SimulationResult {
 	error?: unknown
 }
 
-async function createProvider(network_id: number, block_number: number) {
+async function createProvider(network_id: number, block_number?: number) {
 	const result = await fetch('/api/tenderly/fork', {
 		method: 'POST',
 		headers: {
@@ -33,12 +34,14 @@ async function latestSimulationUrl(tenderly: ethers.providers.JsonRpcProvider) {
 
 async function simulate(block: Block, tenderly: ethers.providers.JsonRpcProvider) {
 	const result = {block} as SimulationResult;
-	const contractSimulator = block.contract.connect(tenderly.getSigner(block.signer));
-	const functionName = `${block.functionCall.name}(${block.functionCall.inputs.map(input => input.type)})`;
-	const functionCall = contractSimulator.functions[functionName];
+	const contract = block.primitive === 'vault'
+		? await GetVaultContract(block.contract, tenderly.getSigner(block.signer))
+		: await GetStrategyContract(block.contract, tenderly.getSigner(block.signer));
+
+	const call = contract.functions[block.call.signature];
 
 	try {
-		const output = await functionCall(...block.functionInput, {gasLimit: 8_000_000, gasPrice: 0});
+		const output = await call(...block.call.input, {gasLimit: 8_000_000, gasPrice: 0});
 		result.output = output.wait ? await output.wait() : output;
 		result.status = 'ok';
 	} catch(error) {

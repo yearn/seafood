@@ -1,23 +1,41 @@
 import React from 'react';
+import {IconType} from 'react-icons';
 import Spinner from './Spinner';
 
 export default function Button({
-	icon = null, 
+	icon,
 	label, 
-	title = null, 
-	onClick, 
-	notify = false, 
-	ping = false, 
-	disabled = false, 
-	className = '', 
-	iconClassName = '',
-	busy = false}) {
+	title,
+	badge,
+	onClick,
+	notify,
+	ping,
+	disabled,
+	hot,
+	className, 
+	iconClassName,
+	busy
+}: {
+	icon?: IconType, 
+	label?: string,
+	title?: string,
+	badge?: string,
+	onClick: () => void, 
+	notify?: boolean, 
+	ping?: boolean,
+	disabled?: boolean, 
+	hot?: boolean,
+	className?: string, 
+	iconClassName?: string,
+	busy?: boolean
+}) {
 
 	return <button onClick={onClick} disabled={disabled} title={title} className={`
 		relative flex items-center justify-center
 		h-10 px-4 border-2 border-transparent
-		bg-primary-500 text-secondary-50 sm:hover:bg-selected-400
-		dark:bg-primary-900/40 sm:dark:hover:bg-selected-600
+		${hot ? 'bg-primary-300 dark:bg-primary-800' : 'bg-primary-500 dark:bg-primary-900/40'}
+		text-secondary-50 sm:hover:bg-selected-400
+		sm:dark:hover:bg-selected-600
 		active:transform active:scale-95
 
 		disabled:text-secondary-400 disabled:dark:text-secondary-500
@@ -36,8 +54,8 @@ export default function Button({
 			{'\u00A0'}
 			{icon({className: `text-xl
 			${disabled 
-		? 'stroke-gray-400 dark:stroke-gray-600 pointer-events-none' 
-		: 'stroke-secondary-50 dark:stroke-secondary-300'}
+		? 'text-gray-400 dark:text-gray-600 pointer-events-none' 
+		: 'text-secondary-900 dark:text-secondary-300'}
 			${label ? 'mr-2' : ''}
 			${iconClassName}`})}
 			{'\u00A0'}
@@ -48,6 +66,14 @@ export default function Button({
 		{busy && <Spinner 
 			width={'1.5rem'}
 			height={'1.5rem'} />}
+
+		{badge && <div className={'absolute -top-2 -right-2 flex w-5 h-5'}>
+			<div className={`
+				relative w-5 h-5 flex items-center justify-center
+				bg-primary-300 dark:bg-primary-800
+				font-mono text-xs
+				rounded-full shadow`}>{badge}</div>
+		</div>}
 
 		{notify && <div className={'absolute -top-1 -right-1 flex h-3 w-3'}>
 			<div className={`

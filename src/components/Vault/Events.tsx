@@ -1,36 +1,55 @@
 import React, {useCallback, useEffect, useMemo} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
+import {functions, parseEvents, RawEvent} from '../../context/useSimulator/Blocks';
+import {Vault} from '../../context/useVaults/types';
+import {SimulationResult} from '../../tenderly';
 import {formatPercent, formatTokens, truncateAddress} from '../../utils/utils';
 import {A} from '../controls';
+import {Erc20} from './VaultProvider';
 
-export default function Events({vault, token, strategyResults}) {
+export default function Events({
+	vault,
+	token,
+	simulatorResults
+} : {
+	vault: Vault | undefined,
+	token: Erc20 | undefined,
+	simulatorResults: SimulationResult[] | undefined
+}) {
 	const location = useLocation();
 	const navigate = useNavigate();
 
-	useEffect(() => {
-		if(strategyResults.length === 0) {
-			navigate(location.pathname);
-		}
-	}, [strategyResults, location, navigate]);
-
 	const strategy = useMemo(() => {
+		if(!vault) return null;
 		const strategy = location.hash.replace('#harvest-events-', '');
 		return vault.strategies.find(s => s.address === strategy);
 	}, [location, vault]);
 
-	const events = useMemo(() => {
-		if(strategy && strategyResults[strategy.address]) {
-			return strategyResults[strategy.address].output.events;
-		} else {
-			return [];
-		}
-	}, [strategy, strategyResults]);
+	const harvestResult = useMemo(() => {
+		if(!(strategy && simulatorResults)) return null;
+		return simulatorResults.find(r => 
+			r.block.primitive === 'strategy'
+			&& r.block.contract === strategy.address
+			&& r.block.call.signature === functions.strategies.harvest.signature);
+	}, [simulatorResults, strategy]);
 
-	function keys(args) {
-		return Object.keys(args).filter(k => isNaN(k));
+	useEffect(() => {
+		if(!harvestResult) navigate(location.pathname);
+	}, [harvestResult, location, navigate]);
+
+	const events = useMemo(() => {
+		if(!(harvestResult && harvestResult.output)) return [];
+		return parseEvents(functions.strategies.harvest.events, harvestResult.output.events as RawEvent[]);
+	}, [harvestResult]);
+
+	function keys(args: object) {
+		/* eslint-disable @typescript-eslint/no-explicit-any */
+		return Object.keys(args).filter((k: any) => isNaN(k));
 	}
 
-	const formatArg = useCallback((key, arg) => {
+	/* eslint-disable @typescript-eslint/no-explicit-any */
+	const formatArg = useCallback((key: string, arg: any) => {
+		if(!token) return '';
 		const addressRe = /^(0x[a-fA-F0-9]{40})$/;
 		const tokenAmountRe = /^\d{9,}$/;
 
@@ -57,7 +76,7 @@ export default function Events({vault, token, strategyResults}) {
 				<h1>{'Simulated Harvest Events'}</h1>
 				<div className={'text-xl'}>{`${vault.name} / ${strategy.name}`}</div>
 				<div>
-					<A href={strategyResults[strategy.address]?.explorerUrl}
+					<A href={harvestResult?.explorerUrl}
 						target={'_blank'} 
 						rel={'noreferrer'}>
 						{'Explore on Tenderly'}

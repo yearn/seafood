@@ -1,10 +1,16 @@
 import {providers} from 'ethers';
 import {createContext, useContext} from 'react';
-import {Block} from '../Blocks';
+import {SimulationResult} from '../../../tenderly';
+
+export interface ProbeResults {
+	name: 'harvest' | 'apy',
+	output: object | null
+}
 
 export interface Probe {
-	start: (blocks: Block[], provider: providers.JsonRpcProvider) => Promise<object>,
-	stop: (blocks: Block[], provider: providers.JsonRpcProvider) => Promise<object>
+	name: 'harvest' | 'apy' | 'mock',
+	start?: (provider: providers.JsonRpcProvider) => Promise<ProbeResults | void>,
+	stop: (results: SimulationResult[], provider: providers.JsonRpcProvider) => Promise<ProbeResults | void>
 }
 
 export interface Probes {

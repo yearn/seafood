@@ -7,93 +7,133 @@ import {GithubClient} from '../../utils/github';
 import dayjs from 'dayjs';
 import config from '../../config.json';
 import {useSms} from '../../context/useSms';
-import {getAbi} from '../../utils/utils';
+import {fetchAbi} from '../../utils/utils';
+import {Block, functions} from '../../context/useSimulator/Blocks';
+import {useVaults} from '../../context/useVaults';
+import {Strategy, Vault} from '../../context/useVaults/types';
 
-function useUpdates(vault, debtRatioUpdates) {
-	const [busy, setBusy] = useState(false);
-	const [updates, setUpdates] = useState([]);
-
-	const updatesPromise = useMemo(async () => {
-		const result = [];
-		if(!vault) return result;
-		for(const strategy of vault.withdrawalQueue) {
-			const debtRatioUpdate = debtRatioUpdates[strategy.address];
-			if(debtRatioUpdate !== undefined) {
-				const delta =  debtRatioUpdate - strategy.debtRatio;
-				const abi = await getAbi(strategy.network.chainId, strategy.address);
-				const autoHarvest = abi.some(f => f.name === 'setForceHarvestTriggerOnce');
-				result.push({
-					address: strategy.address,
-					name: strategy.name,
-					debtRatio: debtRatioUpdate,
-					delta,
-					autoHarvest
-				});
-			}
-		}
-		result.sort((a, b) => a.delta - b.delta);
-		return result;
-	}, [vault, debtRatioUpdates]);
-
-	useEffect(() => {
-		setBusy(true);
-		updatesPromise.then(result => {
-			setUpdates(result);
-			setBusy(false);
-		});
-	}, [updatesPromise]);
-
-	return {busy, updates};
+interface Commit {
+	title: string,
+	body: string[],
+	code: string[]
 }
 
-export default function Code({vault, debtRatioUpdates}) {
+function useCommitGenerator(blocks: Block[]) {
+	const {vaults} = useVaults();
+	const [busy, setBusy] = useState(false);
+	const [commit, setCommit] = useState<Commit | undefined>();
+
+	const commitPromise = useMemo(async () => {
+		const functionDef = ['', '@sign'];
+		if(!blocks.length) return {title: '', body: [] as string[], code: [...functionDef]};
+
+		setBusy(true);
+		const result = {title: '', body: [] as string[], code: [] as string[]};
+		const touchedVaults = [] as Vault[];
+		const touchedStrategies = [] as Strategy[];
+		const variables = [] as string[];
+		const tasks = [] as string[];
+		let hasManualHarvests = false;
+		functionDef.push('def go_seafood():');
+		for(const block of blocks) {
+			switch(`${block.primitive}/${block.call.signature}`) {
+			case `vault/${functions.vaults.updateDebtRatio.signature}`: {
+				const vault = vaults.find(v => v.network.chainId === block.chain && v.address === block.contract);
+				if(!vault) throw '!vault';
+				const strategy = vault.strategies.find(s => s.address === block.call.input[0]);
+				if(!strategy) throw '!strategy';
+
+				if(!touchedVaults.includes(vault)) {
+					tasks.push(`\t# ${vault.name}`);
+					tasks.push(`\tvault = safe.contract("${vault.address}")`);
+					tasks.push('');
+					touchedVaults.push(vault);
+				}
+
+				const update = block.call.input[1] as number;
+				const delta = update - (strategy.debtRatio?.toNumber() || 0);
+				result.body.push(strategy.name);
+				result.body.push(`change debt ratio by ${delta > 0 ? '+' : ''}${delta} bps`);
+				result.body.push('');
+				tasks.push(`\t# ${strategy.name}`);
+				tasks.push(`\t# Change debt ratio by ${delta > 0 ? '+' : ''}${delta} bps`);
+				tasks.push(`\tstrategy = safe.contract("${strategy.address}")`);
+				tasks.push(`\tvault.updateStrategyDebtRatio(strategy, ${update})`);
+
+				touchedStrategies.push(strategy);
+				break;
+
+			} case `strategy/${functions.strategies.harvest.signature}`: {
+				const strategy = vaults.filter(v => v.network.chainId === block.chain)
+					.flatMap(v => v.strategies)
+					.find(s => s.address === block.contract);
+				if(!strategy) throw '!strategy';
+
+				if(!touchedStrategies.includes(strategy)) {
+					result.body.push(`harvest ${strategy.name}`);
+					tasks.push(`\t# ${strategy.name}`);
+					tasks.push(`\tstrategy = safe.contract("${strategy.address}")`);
+					touchedStrategies.push(strategy);
+				}
+
+				const abi = await fetchAbi(strategy.network.chainId, strategy.address);
+				const autoHarvest = abi.some((f: {name: string}) => f.name === 'setForceHarvestTriggerOnce');
+
+				tasks.push(autoHarvest
+					? '\tstrategy.setForceHarvestTriggerOnce(True)'
+					: '\tmanual_harvest_strategies.append(strategy)');
+				tasks.push('');
+
+				if(!autoHarvest) hasManualHarvests = true;
+				break;
+			}}
+		}
+
+		if(hasManualHarvests) {
+			variables.push('');
+			variables.push('\tmanual_harvest_strategies = []');
+			variables.push('');
+			tasks.push('\tharvest_n_check_many(safe, manual_harvest_strategies)');
+			tasks.push('');
+		}
+
+		if(touchedVaults.length) {
+			result.title = `feat: Change debt ratios, ${touchedVaults.map(v => v.name).join(', ')}`;
+		} else {
+			result.title = `feat: Harvests, ${touchedStrategies.map(s => s.name).join(', ')}`;
+		}
+
+		setBusy(false);
+		return {...result, code: [...functionDef, ...variables, ...tasks]};
+	}, [blocks, setBusy, vaults]);
+
+	useEffect(() => {
+		commitPromise.then(result => setCommit(result));
+	}, [commitPromise, setCommit]);
+
+	return {busy, commit};
+}
+
+export default function Code({blocks}: {blocks: Block[]}) {
 	const [copied, setCopied] = useState(false);
 	const {authenticated, token, profile} = useAuth();
 	const sms = useSms();
-	const {busy, updates} = useUpdates(vault, debtRatioUpdates);
 	const [defaultBranchName, setDefaultBranchName] = useState(`${config.sms.repo}/refs/heads/seafood/`);
 	const [onPrRunning, setOnPrRunning] = useState(false);
-	const headlineRef = useRef();
-	const bodyRef = useRef();
+	const headlineRef = useRef<HTMLInputElement>({} as HTMLInputElement);
+	const bodyRef = useRef<HTMLTextAreaElement>({} as HTMLTextAreaElement);
+	const {commit, busy} = useCommitGenerator(blocks);
+
+	const linesOfCode = useMemo(() => {
+		if(!commit) return [];
+		return commit.code;
+	}, [commit]);
 
 	const gh = useMemo(() => {
-		if(!authenticated) return;
+		if(!(authenticated && token)) return;
 		return new GithubClient(token.access_token);
 	}, [authenticated, token]);
 
-	const linesOfCode = useMemo(() => {
-		const lines = ['', '@sign'];
-		if(!updates.length) return lines;
-
-		const hasManualHarvests = updates.some(update => !update.autoHarvest);
-
-		lines.push('def go_seafood():');
-		lines.push('');
-		lines.push(`\t# ${vault.name}`);
-		lines.push(`\tvault = safe.contract("${vault.address}")`);
-		lines.push('');
-		if(hasManualHarvests) {
-			lines.push('\tmanual_harvest_strategies = []');
-			lines.push('');
-		}
-
-		updates.forEach(update => {
-			lines.push(`\t# ${update.name}`);
-			lines.push(`\t# Change debt ratio by ${update.delta > 0 ? '+' : ''}${update.delta} bps`);
-			lines.push(`\tstrategy = safe.contract("${update.address}")`);
-			lines.push(`\tvault.updateStrategyDebtRatio(strategy, ${update.debtRatio})`);
-			lines.push(update.autoHarvest 
-				? '\tstrategy.setForceHarvestTriggerOnce(True)' 
-				: '\tmanual_harvest_strategies.append(strategy)');
-			lines.push('');
-		});
-
-		if(hasManualHarvests) {
-			lines.push('\tharvest_n_check_many(safe, manual_harvest_strategies)');
-			lines.push('');
-		}
-		return lines;
-	}, [vault, updates]);
 
 	const onCopy = useCallback(() => {
 		try {
@@ -106,40 +146,29 @@ export default function Code({vault, debtRatioUpdates}) {
 		}
 	}, [linesOfCode, setCopied]);
 
-	const defaultCommitMessage = useMemo(() => {
-		const body = [];
-		updates.forEach(update => {
-			body.push(update.name);
-			body.push(`- change debt ratio by ${update.delta > 0 ? '+' : ''}${update.delta} bps`);
-			body.push('');
-		});
-		return {
-			headline: `feat: Change Debt Ratios, ${vault?.name}`,
-			body: body.join('\n')
-		};
-	}, [vault, updates]);
-
 	const nextBranchName = useCallback(async () => {
-		if(!authenticated) return;
+		if(!(profile && gh)) return '';
 		const today = dayjs(new Date()).format('MMM-DD').toLowerCase();
 		const prefix = `refs/heads/seafood/${profile.login}/${today}/`;
 		const refs = await gh.getRefs(config.sms.owner, config.sms.repo, prefix);
 		const nonce = Math.max(0, ...refs.map(ref => parseInt(ref.name))) + 1;
 		return `seafood/${profile.login}/${today}/${nonce}`;
-	}, [authenticated, gh, profile]);
+	}, [gh, profile]);
 
 	useEffect(() => {
 		nextBranchName().then(branch => 
 			setDefaultBranchName(`${config.sms.repo}/refs/heads/${branch}`));
 	}, [nextBranchName]);
 
-	const commitMessage = useCallback(() => ({
-		headline: headlineRef.current.value,
-		body: bodyRef.current.value
-	}), []);
+	const commitMessage = useCallback(() => {
+		return {
+			headline: headlineRef.current?.value || '',
+			body: bodyRef.current?.value || ''
+		};
+	}, []);
 
 	const onPr = useCallback(async () => {
-		if(!authenticated) return;
+		if(!gh) return;
 		setOnPrRunning(true);
 		const main = await gh.getRef(config.sms.owner, config.sms.repo, `refs/heads/${config.sms.main}`);
 		const branch = await gh.createRef(main, await nextBranchName());
@@ -148,12 +177,13 @@ export default function Code({vault, debtRatioUpdates}) {
 			additions: [{
 				path: config.sms.script,
 				contents: window.btoa(unescape(encodeURIComponent(newSmsMainPy)))
-			}]
+			}],
+			deletions: []
 		});
 		const compareUrl = gh.makeCompareUrl(branch);
 		window.open(compareUrl, '_blank', 'noreferrer');
 		setOnPrRunning(false);
-	}, [authenticated, linesOfCode, sms, gh, nextBranchName, commitMessage]);
+	}, [gh, linesOfCode, sms, nextBranchName, commitMessage]);
 
 	if(busy) return <div className={'w-full h-full flex items-center justify-center'}>
 		<Spinner width={'3rem'} height={'3rem'}></Spinner>
@@ -168,8 +198,9 @@ export default function Code({vault, debtRatioUpdates}) {
 				</div>
 				<div className={'pt-2 flex flex-col gap-4'}>
 					<Input _ref={headlineRef}
+						type={'text'}
 						placeholder={'Pull Request Title'}
-						defaultValue={defaultCommitMessage.headline}
+						defaultValue={commit?.title || ''}
 						className={`
 						py-2 px-2 inline border-transparent leading-tight
 						text-xl bg-gray-300 dark:bg-gray-800
@@ -179,7 +210,7 @@ export default function Code({vault, debtRatioUpdates}) {
 						focus:dark:border-selected-600
 						rounded-md shadow-inner`} />
 					<TextArea _ref={bodyRef}
-						defaultValue={defaultCommitMessage.body}
+						defaultValue={commit?.body.join('\n') || ''}
 						spellCheck={false}
 						className={`
 						h-32 p-4 inline border-transparent leading-tight text-sm
@@ -230,12 +261,12 @@ export default function Code({vault, debtRatioUpdates}) {
 			border-t border-white dark:border-secondary-900
 			rounded-b-lg`}>
 			<Button onClick={onCopy}
-				disabled={updates?.length === 0} 
+				disabled={blocks.length === 0} 
 				icon={copied ? TbCheck : TbCopy} 
 				className={'w-48'} />
 			{sms.access && <Button onClick={onPr}
 				busy={onPrRunning} 
-				disabled={updates?.length === 0 || !token} 
+				disabled={blocks.length === 0 || !token} 
 				icon={BiGitPullRequest}
 				className={'w-48'} />}
 		</div>

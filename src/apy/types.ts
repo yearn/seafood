@@ -1,4 +1,4 @@
-import {BigNumber, Contract} from 'ethers';
+import {BigNumber, Contract, FixedNumber} from 'ethers';
 import {Vault} from '../context/useVaults/types';
 
 export interface BlockSample {
@@ -19,7 +19,7 @@ export interface Apy {
 	[-7]: number,
 	[-30]: number,
 	inception: number,
-	pps: BigNumber
+	pps: BigNumber | number
 }
 
 export interface ApyComputer {

@@ -1,110 +1,133 @@
 import {act, RenderHookResult} from '@testing-library/react';
 import {renderHook} from '@testing-library/react'
-import {providers} from 'ethers';
-import BlocksProvider, {BlockManager, useBlockManager} from './BlocksProvider';
+import BlocksProvider, {BlocksContext, useBlocks} from './BlocksProvider';
 import {Strategy, Vault} from '../useVaults/types';
-import {getChain} from '../../utils/utils';
 
 const mocks = {
 	vault: {
 		address: '0xdA816459F1AB5631232FE5e97a05BBBb94970c95',
 		governance: '0xFEB4acf3df3cDEA7399794D0869ef76A6EfAff52',
-		version: '0.4.3'
+		version: '0.4.3',
+		network: {chainId: 1}
 	} as Vault,
 	strategy: {
-		a: { address: '0x1676055fE954EE6fc388F9096210E5EbE0A9070c' } as Strategy,
-		b: { address: '0x9E3aeF1fb3dE09b8c46247fa707277b7331406B5' } as Strategy
+		a: { name: 'a', address: '0x1676055fE954EE6fc388F9096210E5EbE0A9070c', network: {chainId: 1} } as Strategy,
+		b: { name: 'b', address: '0x9E3aeF1fb3dE09b8c46247fa707277b7331406B5', network: {chainId: 1} } as Strategy,
+		c: { name: 'c', address: '0xF9fDc2B5F60355A237deb8BD62CC117b1C907f7b', network: {chainId: 1} } as Strategy
 	}
 };
 
 describe('<BlocksProvider />', () => {
 
-	let provider: providers.JsonRpcProvider;
-	beforeAll(() => {
-		provider = new providers.JsonRpcProvider(getChain(1).providers[0]);
-	});
-
-	let renderBlockManager: RenderHookResult<BlockManager, unknown>;
+	let render: RenderHookResult<BlocksContext, unknown>;
 	beforeEach(() => {
-		renderBlockManager = renderHook(() => useBlockManager(), {
-			wrapper: ({children}) => <BlocksProvider provider={provider}>{children}</BlocksProvider>
+		render = renderHook(() => useBlocks(), {
+			wrapper: ({children}) => <BlocksProvider>{children}</BlocksProvider>
 		});
 	});
 
-	function blockManager() {
-		return renderBlockManager.result.current;
-	}
-
-	it('Adds harvest blocks', async () => {
+	test('Adds harvest blocks', async () => {
 		await act(async () => {
-			await blockManager().addHarvest(mocks.vault, mocks.strategy.a);
+			await render.result.current.addHarvest(mocks.vault, mocks.strategy.a);
 		});
-		const blocks = blockManager().blocks;
+		const blocks = render.result.current.blocks;
 		expect(blocks.length).toEqual(1);
-		expect(blocks[0].contract.address).toEqual(mocks.strategy.a.address);
-		expect(blocks[0].functionCall.name).toEqual('harvest');
-		expect(blocks[0].functionInput.length).toEqual(0);
+		expect(blocks[0].contract).toEqual(mocks.strategy.a.address);
+		expect(blocks[0].call.signature).toEqual('harvest()');
+		expect(blocks[0].call.input.length).toEqual(0);
 	});
 
-	it('Only keeps one harvest per strategy', async () => {
+	test('Only keeps one harvest per strategy', async () => {
 		await act(async () => {
-			await blockManager().addHarvest(mocks.vault, mocks.strategy.a);
-			await blockManager().addHarvest(mocks.vault, mocks.strategy.a);
-			await blockManager().addHarvest(mocks.vault, mocks.strategy.b);
+			await render.result.current.addHarvest(mocks.vault, mocks.strategy.a);
+			await render.result.current.addHarvest(mocks.vault, mocks.strategy.a);
+			await render.result.current.addHarvest(mocks.vault, mocks.strategy.b);
 		});
-		expect(blockManager().blocks.length).toEqual(2);
+		expect(render.result.current.blocks.length).toEqual(2);
 	});
 
-	it('Removes harvest blocks', async () => {
+	test('Removes harvest blocks', async () => {
 		await act(async () => {
-			await blockManager().addHarvest(mocks.vault, mocks.strategy.a);
-			await blockManager().removeHarvest(mocks.strategy.a);
+			await render.result.current.addHarvest(mocks.vault, mocks.strategy.a);
+			await render.result.current.removeHarvest(mocks.strategy.a);
 		});
-		expect(blockManager().blocks.length).toEqual(0);
+		expect(render.result.current.blocks.length).toEqual(0);
 	});
 
-	it('Adds updateDebtRatio blocks', async () => {
+	test('Adds updateDebtRatio blocks', async () => {
 		await act(async () => {
-			await blockManager().addDebtRatioUpdate(mocks.vault, mocks.strategy.a, 100);
+			await render.result.current.addDebtRatioUpdate(mocks.vault, mocks.strategy.a, 100);
+			await render.result.current.addDebtRatioUpdate(mocks.vault, mocks.strategy.b, 200);
 		});
-		const blocks = blockManager().blocks;
-		expect(blocks.length).toEqual(2);
-		expect(blocks[0].contract.address).toEqual(mocks.vault.address);
-		expect(blocks[0].functionCall.name).toEqual('updateStrategyDebtRatio');
-		expect(blocks[0].functionInput.length).toEqual(2);
-		expect(blocks[0].functionInput[0]).toEqual(mocks.strategy.a.address);
-		expect(blocks[0].functionInput[1]).toEqual(100);
-		expect(blocks[1].contract.address).toEqual(mocks.strategy.a.address);
-		expect(blocks[1].functionCall.name).toEqual('harvest');
-		expect(blocks[1].functionInput.length).toEqual(0);
+		const {blocks} = render.result.current;
+		expect(blocks.length).toEqual(4);
+		expect(blocks[0].contract).toEqual(mocks.vault.address);
+		expect(blocks[0].call.signature).toEqual('updateStrategyDebtRatio(address,uint256)');
+		expect(blocks[0].call.input.length).toEqual(2);
+		expect(blocks[0].call.input[0]).toEqual(mocks.strategy.a.address);
+		expect(blocks[0].call.input[1]).toEqual(100);
+		expect(blocks[1].contract).toEqual(mocks.strategy.a.address);
+		expect(blocks[1].call.signature).toEqual('harvest()');
+		expect(blocks[1].call.input.length).toEqual(0);
+		expect(blocks[2].call.input[0]).toEqual(mocks.strategy.b.address);
+		expect(blocks[2].call.input[1]).toEqual(200);
+		expect(blocks[3].contract).toEqual(mocks.strategy.b.address);
+		expect(blocks[3].call.signature).toEqual('harvest()');
+		expect(blocks[3].call.input.length).toEqual(0);
 	});
 
-	it('Only keeps latest debt ratio update per strategy', async () => {
+	test('Orders debt ratio updates by delta ascending order', async () => {
 		await act(async () => {
-			await blockManager().addDebtRatioUpdate(mocks.vault, mocks.strategy.a, 100);
-			await blockManager().addDebtRatioUpdate(mocks.vault, mocks.strategy.a, 200);
+			await render.result.current.addDebtRatioUpdate(mocks.vault, mocks.strategy.a, 200);
+			await render.result.current.addDebtRatioUpdate(mocks.vault, mocks.strategy.b, 100);
 		});
-		expect(blockManager().blocks.length).toEqual(2);
-		expect(blockManager().blocks[0].functionInput[1]).toEqual(200);
+
+		const {blocks} = render.result.current;
+		expect(blocks.length).toEqual(4);
+		expect(blocks[0].call.input[0]).toEqual(mocks.strategy.b.address);
+		expect(blocks[0].call.input[1]).toEqual(100);
+		expect(blocks[2].call.input[0]).toEqual(mocks.strategy.a.address);
+		expect(blocks[2].call.input[1]).toEqual(200);
 	});
 
-	it('Removes debt ratio update blocks', async () => {
+	test('Only keeps latest debt ratio update per strategy', async () => {
 		await act(async () => {
-			await blockManager().addDebtRatioUpdate(mocks.vault, mocks.strategy.a, 100);
-			await blockManager().removeDebtRatioUpdate(mocks.vault, mocks.strategy.a);
+			await render.result.current.addDebtRatioUpdate(mocks.vault, mocks.strategy.a, 100);
+			await render.result.current.addDebtRatioUpdate(mocks.vault, mocks.strategy.a, 200);
 		});
-		expect(blockManager().blocks.length).toEqual(0);
+		expect(render.result.current.blocks.length).toEqual(2);
+		expect(render.result.current.blocks[0].call.input[1]).toEqual(200);
 	});
 
-	it('Orders debt ratio updates in ascending order', async () => {
+	test('Removes debt ratio update blocks', async () => {
 		await act(async () => {
-			await blockManager().addDebtRatioUpdate(mocks.vault, mocks.strategy.a, 200);
-			await blockManager().addDebtRatioUpdate(mocks.vault, mocks.strategy.b, 100);
+			await render.result.current.addDebtRatioUpdate(mocks.vault, mocks.strategy.a, 100);
+			await render.result.current.removeDebtRatioUpdate(mocks.vault, mocks.strategy.a);
 		});
-		expect(blockManager().blocks.length).toEqual(4);
-		expect(blockManager().blocks[0].functionInput[0]).toEqual(mocks.strategy.b.address);
-		expect(blockManager().blocks[0].functionInput[1]).toEqual(100);
-		expect(blockManager().blocks[2].functionInput[0]).toEqual(mocks.strategy.a.address);
-		expect(blockManager().blocks[2].functionInput[1]).toEqual(200);
+		expect(render.result.current.blocks.length).toEqual(0);
 	});
+
+	test('Extracts lists of DR updates', async () => {
+		await act(async () => {
+			await render.result.current.addDebtRatioUpdate(mocks.vault, mocks.strategy.a, 1);
+			await render.result.current.addDebtRatioUpdate(mocks.vault, mocks.strategy.b, 2);
+		});
+		const updates = render.result.current.extractDrUpdates(mocks.vault);
+		expect(Object.keys(updates).length).toEqual(2);
+		expect(updates[mocks.strategy.a.address]).toEqual(1);
+		expect(updates[mocks.strategy.b.address]).toEqual(2);
+	});
+
+	test('Resets blocks', async () => {
+		await act(async () => {
+			await render.result.current.addDebtRatioUpdate(mocks.vault, mocks.strategy.a, 1);
+			await render.result.current.reset();
+		});
+		expect(render.result.current.blocks.length).toEqual(0);
+	});
+
+	// // TODO
+	// test('Only adds blocks for one network at a time', async () => {
+	// 	expect(false).toBeTruthy();
+	// });
 });

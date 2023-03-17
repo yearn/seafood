@@ -1,34 +1,48 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {useLocation} from 'react-router-dom';
-import {motion} from 'framer-motion';
 import VaultProvider, {useVault} from './VaultProvider';
 import {useChrome} from '../Chrome';
 import Header from './Header';
 import Summary from './Summary';
 import Toolbar from './Toolbar';
 import Strategy from './Strategy';
-import SimulatorProvider, {useSimulator} from './SimulatorProvider';
+import BlocksProvider, {useBlocks} from '../../context/useSimulator/BlocksProvider';
+import SimulatorProvider, {useSimulator} from '../../context/useSimulator';
 import Code from './Code';
 import Spinner from '../controls/Spinner';
 import Events from './Events';
-import SimulatorStatus from './SimulatorStatus';
 import {SmallScreen} from '../../utils/breakpoints';
+import ProbesProvider from '../../context/useSimulator/ProbesProvider';
+import NestProviders from '../../context/NestProviders';
+import EmptySlot from './EmptySlot';
+import SimulatorStatusProvider from '../../context/useSimulator/SimulatorStatusProvider';
 
 function Layout() {
 	const location = useLocation();
 	const {setDialog} = useChrome();
 	const {loading, vault, token} = useVault();
-	const {engaged, debtRatioUpdates, strategyResults} = useSimulator();
+	const {blocks} = useBlocks();
+	const {results: simulatorResults} = useSimulator();
+
+	const queue = useMemo(() => {
+		if(!vault) return [];
+		const result = Array(20).fill(null).map((empty, index) => {
+			return vault.withdrawalQueue.length >= index
+				? vault.withdrawalQueue[index]
+				: empty;
+		});
+		return result;
+	}, [vault]);
 
 	useEffect(() => {
 		if(location.hash === '#code') {
-			setDialog({component: Code, args: {vault, debtRatioUpdates}});
+			setDialog({component: Code, args: {blocks}});
 		} else if(location.hash.startsWith('#harvest-events')) {
-			setDialog({component: Events, args: {vault, token, strategyResults}});
+			setDialog({component: Events, args: {vault, token, simulatorResults}});
 		} else {
 			setDialog(null);
 		}
-	}, [location, setDialog, vault, token, debtRatioUpdates, strategyResults]);
+	}, [location, setDialog, blocks, vault, token, simulatorResults]);
 
 	if(loading) return <div className={`
 		absolute w-full h-screen flex items-center justify-center`}>
@@ -37,26 +51,16 @@ function Layout() {
 
 	return <div>
 		<Header />
-		<div className={'grid grid-cols-1 sm:grid-cols-2'}>
+		<div className={'grid grid-cols-1 sm:grid-cols-2 2xl:pr-32 2xl:pl-6'}>
 			<Summary className={'sm:sticky sm:top-[120px] sm:z-0'} />
-			<div className={'flex flex-col gap-2 pb-20 sm:pt-2'}>
-				{vault.withdrawalQueue.map((strategy, index) => 
-					<Strategy key={index} strategy={strategy} />
-				)}
+			<div className={`flex flex-col gap-2 
+				sm:px-4 sm:pr-12 sm:pl-8 pb-20`}>
+				{queue.map((strategy, index) => <div key={index}>
+					{strategy && <Strategy index={index} strategy={strategy} />}
+					{!strategy && <EmptySlot index={index} />}
+				</div>)}
 			</div>
 		</div>
-
-		{engaged && <motion.div className={`
-		fixed z-10 bottom-[4.5rem] sm:bottom-0 w-full p-4
-		flex justify-end
-		backdrop-blur-md shadow`}
-		transition={{ease: 'easeIn', duration: .1}}
-		initial={{y: '50%'}}
-		animate={{y: '0%'}}>
-			<div className={'w-full sm:w-1/2 sm:px-8'}>
-				<SimulatorStatus />
-			</div>
-		</motion.div>}
 
 		<SmallScreen>
 			<Toolbar />
@@ -64,10 +68,16 @@ function Layout() {
 	</div>;
 }
 
+const Providers = NestProviders([
+	[VaultProvider],
+	[SimulatorStatusProvider],
+	[BlocksProvider],
+	[ProbesProvider],
+	[SimulatorProvider]
+]);
+
 export default function Vault() {
-	return <VaultProvider>
-		<SimulatorProvider>
-			<Layout></Layout>
-		</SimulatorProvider>
-	</VaultProvider>;
+	return <Providers>
+		<Layout></Layout>
+	</Providers>;
 }
