@@ -5,7 +5,7 @@
 	"tenderly": {
 		"forkUrl": "https://simulate.yearn.network/fork",
 		"dashboardUrl": "https://dashboard.tenderly.co/yearn/yearn-web/fork",
-		"rpcUrl": "https://rpc.tenderly.co/fork/"
+		"rpcUrl": "https://rpc.tenderly.co/fork"
 	},
 	"sms": {
 		"owner": "yearn",

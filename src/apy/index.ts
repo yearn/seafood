@@ -1,7 +1,7 @@
 import {ethers} from 'ethers';
 import {estimateBlockHeight} from '../utils/defillama';
-import * as types from './types';
 import computeV2Averaged from './v2/averaged';
+import * as types from './types';
 
 export async function getSamples(provider: ethers.providers.BaseProvider, reportBlocks: number[]) {
 	const day = 24 * 60 * 60;

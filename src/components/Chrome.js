@@ -36,7 +36,7 @@ export default function Chrome({children}) {
 					{children}
 				</div>
 				<AnimatePresence>
-					{dialog && <Dialog Component={dialog.component} args={dialog.args} />}
+					{dialog && <Dialog key={'dialog'} Component={dialog.component} args={dialog.args} />}
 				</AnimatePresence>
 			</div>
 		</div>

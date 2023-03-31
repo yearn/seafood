@@ -21,13 +21,13 @@ export interface Message {
 }
 
 export interface FileChanges {
-	additions: [{
+	additions: Array<{
 		path: string,
 		contents: string
-	}],
-	deletions: [{
+	}>,
+	deletions: Array<{
 		path: string
-	}]
+	}>
 }
 
 export interface Commit {

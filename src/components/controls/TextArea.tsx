@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {ChangeEventHandler, MutableRefObject, ReactNode} from 'react';
 
 export default function TextArea({
 	_ref,
@@ -8,6 +8,17 @@ export default function TextArea({
 	spellCheck=true, 
 	className, 
 	children
+} : {
+	_ref?: MutableRefObject<HTMLTextAreaElement> | undefined,
+	defaultValue: string | number,
+	onChange?: ChangeEventHandler<HTMLTextAreaElement> | undefined,
+	disabled?: boolean,
+	spellCheck?: boolean,
+	className?: string,
+	min?: number, 
+	max?: number, 
+	step?: number, 
+	children?: ReactNode
 }) {
 	return <textarea 
 		ref={_ref}

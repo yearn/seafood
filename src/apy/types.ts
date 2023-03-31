@@ -1,19 +1,5 @@
-import {BigNumber, Contract} from 'ethers';
-
-export interface Strategy {
-	address: string,
-	debtRatio: BigNumber | undefined,
-	performanceFee: BigNumber
-}
-
-export interface Vault {
-	address: string,
-	activation: BigNumber
-	performanceFee: BigNumber,
-	managementFee: BigNumber,
-	apiVersion: string,
-	strategies: Strategy[]
-}
+import {BigNumber, Contract, FixedNumber} from 'ethers';
+import {Vault} from '../context/useVaults/types';
 
 export interface BlockSample {
 	[0]: number,
@@ -33,7 +19,7 @@ export interface Apy {
 	[-7]: number,
 	[-30]: number,
 	inception: number,
-	pps: BigNumber
+	pps: BigNumber | number
 }
 
 export interface ApyComputer {

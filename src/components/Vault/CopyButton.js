@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {TbCopy, TbCheck} from 'react-icons/tb';
 import {Pebble} from '../controls';
 
-export default function CopyButton({clip, className}) {
+export default function CopyButton({clip, className = ''}) {
 	const [copied, setCopied] = useState(false);
 
 	function copy() {

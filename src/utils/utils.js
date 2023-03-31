@@ -31,13 +31,13 @@ function formatNumber(number, decimals = 2, nonFinite = '∞', compact = false) 
 	if(Number.isFinite(number)) {
 		let magnitude = '';
 		if(compact) {
-			if(number > 1_000_000_000) {
+			if(number >= 1_000_000_000) {
 				magnitude = 'b';
 				number = number / 1_000_000_000;
-			} else if(number > 1_000_000) {
+			} else if(number >= 1_000_000) {
 				magnitude = 'm';
 				number = number / 1_000_000;
-			} else if(number > 1_000) {
+			} else if(number >= 1_000) {
 				magnitude = 'k';
 				number = number / 1_000;
 			}
@@ -110,7 +110,7 @@ function highlightString(string, highlightRe) {
 	return string;
 }
 
-async function getAbi(chainId, contract) {
+async function fetchAbi(chainId, contract) {
 	const url = `/api/abi?chainId=${chainId}&contract=${contract}`;
 	return await(await fetch(url)).json();
 }
@@ -167,7 +167,7 @@ export {
 	formatCurrency,
 	formatTokens,
 	highlightString,
-	getAbi,
+	fetchAbi,
 	hydrateBigNumbersRecursively,
 	escapeRegex,
 	humanizeRiskCategory,

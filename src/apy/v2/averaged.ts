@@ -1,6 +1,7 @@
 import {BigNumber, Contract, FixedNumber} from 'ethers';
 import {compare} from 'compare-versions';
 import * as types from '../types';
+import {Vault} from '../../context/useVaults/types';
 
 function computeApy(before: types.PpsSample, after: types.PpsSample, blocksPerDay: number) {
 	const days = (after.block - before.block) / blocksPerDay;
@@ -10,7 +11,7 @@ function computeApy(before: types.PpsSample, after: types.PpsSample, blocksPerDa
 }
 
 export default async function compute(
-	vault: types.Vault,
+	vault: Vault,
 	vaultRpc: Contract,
 	samples: types.BlockSample
 ) : Promise<types.Apy> {
@@ -80,7 +81,7 @@ export default async function compute(
 		? netApr + managementFee
 		: netApr / (1 - performanceFee) + managementFee;
 
-	if(apy.net < 0 && compare(vault.apiVersion, '0.3.5', '>=')) {
+	if(apy.net < 0 && compare(vault.version, '0.3.5', '>=')) {
 		apy.net = 0;
 	}
 
