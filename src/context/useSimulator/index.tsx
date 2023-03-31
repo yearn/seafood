@@ -26,7 +26,7 @@ export default function SimulatorProvider({children}: {children: ReactNode}) {
 	const {setStatus} = useSimulatorStatus();
 	const {blocks} = useBlocks();
 	const [blockPointer, setBlockPointer] = useState<Block|null>(null);
-	const [results, setResults] = useState([] as SimulationResult[]);
+	const [results, setResults] = useState<SimulationResult[]>([] as SimulationResult[]);
 	const {probes} = useProbes();
 	const [probeStartResults, setProbeStartResults] = useState<ProbeResults[]>([]);
 	const [probeStopResults, setProbeStopResults] = useState<ProbeResults[]>([]);
@@ -49,7 +49,7 @@ export default function SimulatorProvider({children}: {children: ReactNode}) {
 			setBlockPointer(block);
 			const result = await tenderly.simulate(block, provider);
 			results.push(result);
-			setResults(results);
+			setResults([...results]);
 		}
 
 		setBlockPointer(null);

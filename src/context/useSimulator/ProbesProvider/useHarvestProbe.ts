@@ -28,7 +28,6 @@ export default function useHarvestProbe() {
 			name: 'harvest',
 
 			stop: async (_results: SimulationResult[], provider: providers.JsonRpcProvider) => {
-				console.log('harvestProbe.stop');
 				const harvestResults = _results.filter(result => 
 					result.block.call.signature === functions.strategies.harvest.signature
 				);
