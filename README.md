@@ -103,7 +103,13 @@ The aggregated data structure is stored in the browser's IndexDB and made availa
 
 
 ## Tests
-Seafood uses Jest for testing. Run tests like this:
+Seafood uses Jest for testing. Some tests require rpc integration, so first set this envar:
+```
+TEST_RPC=<eg, your infura mainnet url>
+```
+Infura not required, but you'll need a premium rpc or your own node to test.
+
+Run tests like this:
 ```console
 yarn test
 ```
