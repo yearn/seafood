@@ -202,9 +202,9 @@ async function fetchMulticallUpdates(vaultverse: yDaemon.Vault[][]) {
 		const vaults = vaultverse[index];
 		const multicall = new Multicall({ethersProvider: providerFor(chain), tryAggregate: true});
 		const promises = [] as Promise<VaultMulticallUpdate[] | StrategyMulticallUpdate[]>[];
-		promises.push(...await createVaultMulticalls(vaults, chain, multicall));
-		promises.push(...await createStrategyMulticalls(vaults, chain, multicall));
 		try {
+			promises.push(...await createVaultMulticalls(vaults, chain, multicall));
+			promises.push(...await createStrategyMulticalls(vaults, chain, multicall));
 			result.push(...(await Promise.all(promises)).flat());
 			status.push({status: 'ok', stage: 'multicall', chain: chain.id, timestamp: Date.now()} as SyncStatus);
 		} catch(error) {
