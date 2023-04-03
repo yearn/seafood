@@ -160,6 +160,11 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 		return 'dark:border-primary-900/40';
 	}, [simulatingStrategy, harvestProbeOutput, simulationError]);
 
+	const realRatio = useMemo(() => {
+		if(!vault?.totalAssets?.gt(0)) return 0;
+		return FixedNumber.from(strategy.totalDebt).divUnsafe(FixedNumber.from(vault?.totalAssets)).toUnsafeFloat();
+	}, [strategy, vault]);
+
 	return <Accordian
 		title={<AccordianTitle index={index} strategy={strategy} />}
 		expanded={strategy.debtRatio?.gt(0)}
@@ -212,7 +217,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 				</Row>
 
 				<Row label={'Real debt ratio'} alt={true}>
-					<Percentage value={FixedNumber.from(strategy.totalDebt).divUnsafe(FixedNumber.from(vault?.totalAssets)).toUnsafeFloat()} />
+					<Percentage value={realRatio} />
 				</Row>
 
 				<Row label={'Last harvest'}>
