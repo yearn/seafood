@@ -4,9 +4,8 @@ import {TiWarning} from 'react-icons/ti';
 import {useNavigate} from 'react-router';
 import TimeAgo from './controls/TimeAgo';
 
-export default function Sync() {
-	const navigate = useNavigate();
-	const {loading, cachetime, status, refresh} = useVaults();
+export function useVaultStatusUI() {
+	const {loading, cachetime, status} = useVaults();
 
 	const hasErrors = useMemo(() => {
 		return status.some(s => s.status === 'error');
@@ -26,6 +25,23 @@ export default function Sync() {
 		};
 	}, [loading, hasErrors]);
 
+	const message = useMemo(() => {
+		if(loading) return 'Syncing';
+		if(cachetime.getTime() > 0) {
+			if(!hasErrors) return <div>{'Synced '}<TimeAgo date={cachetime} /></div>;
+			if(hasErrors) return 'Synced with errors';
+		}
+		return '';
+	}, [loading, cachetime, hasErrors]);
+
+	return {message, colors, hasErrors};
+}
+
+export default function Sync() {
+	const navigate = useNavigate();
+	const {loading, refresh} = useVaults();
+	const {message, colors, hasErrors} = useVaultStatusUI();
+
 	const cursor = useMemo(() => {
 		return loading ? 'cursor-default' : 'cursor-pointer';
 	}, [loading]);
@@ -40,11 +56,7 @@ export default function Sync() {
 			px-3 py-2 text-xs rounded-lg 
 			transition duration-200
 			${colors.text} ${colors.hover} ${cursor}`}>
-			{loading && 'Syncing'}
-			{!loading && cachetime.getTime() > 0 && <div>
-				{!hasErrors && <>{'Synced '}<TimeAgo date={cachetime} /></>}
-				{hasErrors && <>{'Synced with errors'}</>}
-			</div>}
+			{message}
 		</div>
 
 		<div 

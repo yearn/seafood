@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React from 'react';
 import {TbBrandGithub} from 'react-icons/tb';
 import {useAuth} from '../context/useAuth';
 import Lux from './Lux';
@@ -19,23 +19,7 @@ function Button({onClick, className, children}) {
 }
 
 export default function Profile() {
-	const {profile, logout} = useAuth();
-
-	const login = () => {
-		const subdomain = window.location.hostname.split('.')[0];
-		const deployment = subdomain !== 'seafood' ? subdomain : '';
-		const redirect = process.env.REACT_APP_GITHUB_REDIRECT
-			+ `?deployment=${deployment}`;
-		const authorizeUrl = 'https://github.com/login/oauth/authorize'
-			+ `?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}`
-			+ '&scope=repo'
-			+ `&redirect_uri=${redirect}`;
-		window.location = encodeURI(authorizeUrl);
-	};
-
-	const browseProfile = useCallback(() => {
-		window.open(profile.html_url, '_blank', 'noreferrer');
-	}, [profile]);
+	const {profile, login, logout, browseProfile} = useAuth();
 
 	if(!profile) return <div className={`
 		group relative flex flex-col items-center justify-center`}>

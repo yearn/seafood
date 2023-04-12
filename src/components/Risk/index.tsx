@@ -42,7 +42,7 @@ export default function Risk() {
 					<Heatamp />
 				</ScrollContainer>
 			</div>
-			<div className={`fixed bottom-0 left-0 w-full sm:px-24 2xl:px-32 ${showClassName}`}>
+			<div className={`fixed bottom-0 sm:px-24 2xl:px-32 ${showClassName}`}>
 				<Footer innerRef={footerContainer} />
 			</div>
 		</div>

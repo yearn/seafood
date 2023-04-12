@@ -14,7 +14,9 @@ export default function Vaults() {
 	});
 
 	return <FilterProvider query={query} setQuery={setQuery} chips={chips} setChips={setChips}>
-		<Filter showVaultCount={true}></Filter>
-		<List />
+		<div className={'w-full flex flex-col'}>
+			<Filter showVaultCount={true}></Filter>
+			<List />
+		</div>
 	</FilterProvider>;
 }

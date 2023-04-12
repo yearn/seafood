@@ -7,7 +7,7 @@ import useScrollOverpass from '../context/useScrollOverpass';
 import Menu from './Menu';
 import Wordmark from './Wordmark';
 
-export default function Header() {
+export default function Header({className=''}) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const mediumBreakpoint = useMediumBreakpoint();
@@ -36,7 +36,8 @@ export default function Header() {
 			fixed z-50 top-0 p-4 flex flex-col
 			bg-transparent dark:bg-transparent
 			sm:static sm:h-[64px] sm:flex-row sm:justify-between
-			${effectClass}`}>
+			${effectClass}
+			${className}`}>
 			<SmallScreen>
 				<button onClick={() => navigate('#menu')} 
 					className={'m-0 p-0 text-4xl bg-transparent shadow-none w-1/5'}>

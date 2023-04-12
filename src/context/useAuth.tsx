@@ -37,8 +37,10 @@ interface AuthContext {
 	authenticated: boolean,
 	token: AuthToken | undefined,
 	profile: AuthProfile | undefined,
-	setToken: (token: AuthToken) => void
-	logout: () => void
+	setToken: (token: AuthToken) => void,
+	login: () => void,
+	logout: () => void,
+	browseProfile: () => void
 }
 
 const authContext = createContext({} as AuthContext);
@@ -49,6 +51,18 @@ export default function AuthProvider({children}: {children: ReactNode}) {
 	const [token, setToken] = useLocalStorage('token', undefined);
 	const [profile, setProfile] = useState<AuthProfile | undefined>();
 	const authenticated = useMemo(() => Boolean(profile), [profile]);
+
+	const login = useCallback(() => {
+		const subdomain = window.location.hostname.split('.')[0];
+		const deployment = subdomain !== 'seafood' ? subdomain : '';
+		const redirect = process.env.REACT_APP_GITHUB_REDIRECT
+			+ `?deployment=${deployment}`;
+		const authorizeUrl = 'https://github.com/login/oauth/authorize'
+			+ `?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}`
+			+ '&scope=repo'
+			+ `&redirect_uri=${redirect}`;
+		window.location.assign(encodeURI(authorizeUrl));
+	}, []);
 
 	const logout = useCallback(() => {
 		setToken(undefined);
@@ -78,12 +92,19 @@ export default function AuthProvider({children}: {children: ReactNode}) {
 		})();
 	}, [token, setToken, logout]);
 
+	const browseProfile = useCallback(() => {
+		if(!profile) return;
+		window.open(profile.html_url, '_blank', 'noreferrer');
+	}, [profile]);
+
 	return <authContext.Provider value={{
 		authenticated,
 		token, 
 		setToken,
 		profile,
-		logout
+		login,
+		logout,
+		browseProfile
 	}}>
 		{children}
 	</authContext.Provider>;

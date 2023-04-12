@@ -11,6 +11,6 @@ export default function Lux({className}) {
 			transition duration-200
 			cursor-pointer
 			${className}`}>
-		{darkMode ? <BsBrightnessHigh /> : <BsMoonFill />}
+		{darkMode ? <BsMoonFill /> : <BsBrightnessHigh />}
 	</div>;
 }

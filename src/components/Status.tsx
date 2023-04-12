@@ -45,7 +45,7 @@ export default function Status() {
 	const multicall = useMemo(() => status.filter(s => s.stage === 'multicall'), [status]);
 	const tvls = useMemo(() => status.filter(s => s.stage === 'tvls'), [status]);
 
-	return <div className={'mt-24 sm:mt-24 flex items-center justify-center'}>
+	return <div className={'w-full mt-24 sm:mt-24 flex items-center justify-center'}>
 		<div className={'w-full sm:w-1/2 px-4 flex flex-col gap-8'}>
 			<Stage title={'yDaemon'} status={ydaemon} />
 			<Stage title={'Multicalls'} status={multicall} />
