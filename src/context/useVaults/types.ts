@@ -18,6 +18,12 @@ export interface Vault {
 	},
 	version: string,
 	want: string,
+	token: {
+		address: string,
+		name: string,
+		symbol: string,
+		decimals: number
+	},
 	governance: string,
 	totalAssets: BigNumber | undefined,
 	availableDepositLimit: BigNumber | undefined,
@@ -121,6 +127,7 @@ export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: ITVLHistory
 		},
 		version: vault.version,
 		want: vault.token.address,
+		token: {...vault.token},
 		governance: vault.details.governance,
 		totalAssets: undefined,
 		availableDepositLimit: undefined,

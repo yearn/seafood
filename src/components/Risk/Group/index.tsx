@@ -58,9 +58,9 @@ export default function RiskGroup() {
 		<Spinner />
 	</div>;
 
-	return <div className={'pb-4 flex flex-col gap-2'}>
+	return <div className={'w-full pb-4 flex flex-col gap-2'}>
 		<Header group={group} />
-		<div className={'w-full flex flex-col sm:flex-row gap-2'}>
+		<div className={'w-full sm:px-[12%] flex flex-col sm:flex-row gap-2'}>
 			<div className={'sm:h-min sm:sticky sm:top-[110px] sm:z-0 sm:w-1/2 px-8 sm:px-12'}>
 				{Object.keys(report).map(key => <Slider key={key}
 					group={group.riskGroup} 

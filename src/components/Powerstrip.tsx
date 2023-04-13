@@ -73,9 +73,7 @@ function MenuLink({link, className}: {link: LinkInfo, className?: string}) {
 			w-full h-full flex items-center no-underline px-4
 			hover:bg-selected-300 hover:text-selected-900
 			hover:dark:bg-selected-600 hover:dark:text-white
-			active:transform active:scale-95
-			transition duration-200
-			cursor-pointer rounded-lg
+			cursor-pointer
 			${match ? 'bg-white dark:bg-primary-600/20' : ''}
 			${className}`;
 	}, [match, className]);
@@ -101,9 +99,9 @@ export default function Powerstrip({className}: {className?: string}) {
 		{to: '/sandbox', label: 'Sandbox', altPathPatterns: ['/sandbox']},
 		{
 			onClick: profile ? logout : login,
-			label: !profile ? 'Login with Github' : <div className={'w-full flex items-center justify-between'}>
+			label: !profile ? 'Login with Github' : <div className={'relative w-full flex items-center justify-between'}>
 				{'Logout'}
-				<img className={'w-7 h-7 rounded-full'}
+				<img className={'w-8 h-8 -m-2 rounded-full'}
 					src={profile.avatar_url} 
 					alt={'avatar'} />
 			</div>
@@ -142,7 +140,7 @@ export default function Powerstrip({className}: {className?: string}) {
 			{Lights.map(light => light)}
 		</div>
 
-		<div key={'powerstrip-hoverpad'} className={'fixed top-0 left-6 w-4 h-full'} />
+		<div key={'powerstrip-hoverpad'} className={'fixed top-0 left-6 w-6 h-full'} />
 
 		<AnimatePresence>
 			{hover && <motion.div key={'powerstrip-menu'}

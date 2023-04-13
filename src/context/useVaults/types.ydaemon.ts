@@ -41,7 +41,12 @@ export interface Vault {
 	address: string,
   name: string,
   version: string,
-  token: {address: string},
+  token: {
+    address: string,
+    name: string,
+    symbol: string,
+    decimals: number
+  },
   decimals: BigNumber,
   inception: BigNumber,
   details: {

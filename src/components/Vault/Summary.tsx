@@ -5,7 +5,7 @@ import {TiWarning} from 'react-icons/ti';
 import {BigNumber, ethers, FixedNumber} from 'ethers';
 import {formatTokens, formatPercent, formatBps} from '../../utils/utils';
 import {useVault} from './VaultProvider';
-import {Switch, Tooltip} from '../controls';
+import {Row, Switch, Tooltip} from '../controls';
 import {BsLightningChargeFill} from 'react-icons/bs';
 import {BiBadgeCheck} from 'react-icons/bi';
 import useLocalStorage from '../../utils/useLocalStorage';
@@ -17,7 +17,6 @@ import {BPS} from '../../constants';
 import {Apy} from '../../math/apy/types';
 import {useBlocks} from '../../context/useSimulator/BlocksProvider';
 import {getApyComputer} from '../../math/apy';
-import Row from './Row';
 
 dayjs.extend(duration);
 

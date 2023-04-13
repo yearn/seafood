@@ -5,6 +5,7 @@ import Chip from './Chip';
 import Dialog from './Dialog';
 import Input from './Input';
 import LinkButton from './LinkButton';
+import Row from './Row';
 import Select from './Select';
 import Spinner from './Spinner';
 import SmallIconButton from './SmallIconButton';
@@ -21,6 +22,7 @@ export {
 	Dialog,
 	Input,
 	LinkButton,
+	Row,
 	Select,
 	Spinner,
 	SmallIconButton,

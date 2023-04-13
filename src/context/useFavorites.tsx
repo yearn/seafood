@@ -2,19 +2,14 @@ import React, {createContext, ReactNode, useContext} from 'react';
 import useLocalStorage from 'use-local-storage';
 
 interface IFavoritesContext {
-	vaults: string[],
-	setVaults: (addresses: string[]) => void,
-	strategies: string[],
-	setStrategies: (addresses: string[]) => void
+  vaults: string[];
+  setVaults: (addresses: string[]) => void;
+  strategies: string[];
+  setStrategies: (addresses: string[]) => void;
 }
 
-/* eslint-disable @typescript-eslint/no-empty-function */
-const	FavoritesContext = createContext<IFavoritesContext>({
-	vaults: [],
-	setVaults: () => {},
-	strategies: [],
-	setStrategies: () => {}
-});
+
+const	FavoritesContext = createContext<IFavoritesContext>({} as IFavoritesContext);
 
 export const useFavorites = () => useContext(FavoritesContext);
 

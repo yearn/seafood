@@ -1,12 +1,12 @@
-import React, {ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {TbTractor} from 'react-icons/tb';
 import {BsChevronCompactDown, BsChevronCompactUp} from 'react-icons/bs';
 import TimeAgo from 'react-timeago';
-import {formatNumber, formatPercent, formatTokens, getAddressExplorer, truncateAddress} from '../../utils/utils';
-import {A, Button, Input, LinkButton} from '../controls';
+import {formatNumber, getAddressExplorer, truncateAddress} from '../../utils/utils';
+import {A, Button, Input, LinkButton, Row} from '../controls';
 import InfoChart from './InfoChart';
 import CopyButton from './CopyButton';
-import {Erc20, useVault} from './VaultProvider';
+import {useVault} from './VaultProvider';
 import HarvestHistory from './HarvestHistory';
 import {useLocation} from 'react-router-dom';
 import {translateRiskScore, translateTvlImpact} from '../Risk/Score';
@@ -18,7 +18,7 @@ import {BigNumber, FixedNumber} from 'ethers';
 import {functions} from '../../context/useSimulator/Blocks';
 import {HarvestOutput} from '../../context/useSimulator/ProbesProvider/useHarvestProbe';
 import Accordian from '../controls/Accordian';
-import Row from './Row';
+import {Percentage, Tokens} from '../controls/Fields';
 
 function AccordianTitle({index, strategy}: {index: number, strategy: TStrategy}) {
 	return <div className={`flex items-center gap-2
@@ -28,38 +28,9 @@ function AccordianTitle({index, strategy}: {index: number, strategy: TStrategy})
 	</div>;
 }
 
-function Field(
-	{value, simulated, delta, className, children}: 
-	{value: BigNumber | number, simulated?: boolean, delta?: number, className?: string, children: ReactNode}) {
-	return <div className={`
-		font-mono text-right
-		${simulated ? value >= 0 
-		? 'text-primary-600 dark:text-primary-400' 
-		: 'text-error-600 dark:text-error-400' : ''}
-		${className}`}>
-		{delta && value > 0 ? '+' : '' }{children}
-	</div>;	
-}
-
-function Tokens(
-	{value, token, simulated, delta, className}
-	: {value: BigNumber, token?: Erc20, simulated?: boolean, delta?: number, className?: string}) {
-	return <Field value={value} simulated={simulated} delta={delta} className={className}>
-		{formatTokens(value, token?.decimals, 2, true)}
-	</Field>;
-}
-
-function Percentage(
-	{value, simulated, delta, className}
-	: {value: number, simulated?: boolean, delta?: number, className?: string}) {
-	return <Field value={value} simulated={simulated} delta={delta} className={className}>
-		{formatPercent(value)}
-	</Field>;
-}
-
 export default function Strategy({index, strategy}: {index: number, strategy: TStrategy}) {
 	const location = useLocation();
-	const {vault, token, reports} = useVault();
+	const {vault, reports} = useVault();
 	const strategyHarvestHistory = reports.filter(r => r.strategy_address === strategy.address);
 	const [showHarvestHistory, setShowHarvestHistory] = useState(false);
 	const {blocks, addDebtRatioUpdate, removeDebtRatioUpdate, addHarvest, removeHarvest, computeVaultDr} = useBlocks();
@@ -213,7 +184,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 				</Row>
 
 				<Row label={'Estimated assets'}>
-					<Tokens value={strategy.estimatedTotalAssets} token={token} className={'text-xl'} />
+					<Tokens value={strategy.estimatedTotalAssets} decimals={vault?.token.decimals} className={'text-xl'} />
 				</Row>
 
 				<Row label={'Real debt ratio'} alt={true}>
@@ -235,7 +206,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 					{strategy.lendStatuses?.map((lender, index) => 
 						<Row key={index} label={<A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(strategy.network.chainId, lender.address)}>{lender.name}</A>}>
 							<div className={'w-1/2 flex items-center justify-between'}>
-								<Tokens value={lender.deposits} token={token} />
+								<Tokens value={lender.deposits} decimals={vault?.token.decimals} />
 								<Percentage value={FixedNumber.from(lender.apr).divUnsafe(FixedNumber.from(BigNumber.from(10).pow(18))).toUnsafeFloat()} />
 							</div>
 						</Row>)}
@@ -275,10 +246,10 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 						<Percentage value={harvestProbeOutput.apr.net} simulated={true} />
 					</Row>
 					<Row label={'Profit'}>
-						<Tokens value={harvestProbeOutput.flow.profit} token={token} simulated={true} />
+						<Tokens value={harvestProbeOutput.flow.profit} decimals={vault?.token.decimals} simulated={true} />
 					</Row>
 					<Row label={'Debt'} alt={true}>
-						<Tokens value={harvestProbeOutput.flow.debt} token={token} simulated={true} />
+						<Tokens value={harvestProbeOutput.flow.debt} decimals={vault?.token.decimals} simulated={true} />
 					</Row>
 				</>}
 

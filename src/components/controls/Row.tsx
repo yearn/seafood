@@ -18,6 +18,6 @@ export default function Row({
 		${alt ? 'bg-selected-400/5' : ''}
 		${heading ? 'mt-2 border-t dark:border-primary-900/40': ''}
 		${className}`}>
-		<div>{label}</div>{children}
+		{label}{children}
 	</div>;
 }
