@@ -1,7 +1,7 @@
 import {BigNumber, ethers, providers} from 'ethers';
 import {useCallback, useMemo} from 'react';
-import {getApyComputer, getSamples} from '../../../apy';
-import {Apy} from '../../../apy/types';
+import {getApyComputer, getSamples} from '../../../math/apy';
+import {Apy} from '../../../math/apy/types';
 import {GetVaultContract} from '../../../ethereum/EthHelpers';
 import {fetchHarvestReports} from '../../../utils/vaults';
 import {useVaults} from '../../useVaults';

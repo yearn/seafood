@@ -4,7 +4,7 @@ import {useVaults} from '../../useVaults';
 import {Probe} from './useProbes';
 import {functions, makeStrategiesBlock, parseEvents, RawEvent, StrategySnapshotBlockOutput} from '../Blocks';
 import tenderly, {SimulationResult} from '../../../tenderly';
-import {computeHarvestApr} from '../../../apr';
+import {computeHarvestApr} from '../../../math/apr';
 import {useSimulatorStatus} from '../SimulatorStatusProvider';
 
 export interface HarvestOutput {

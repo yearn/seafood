@@ -1,7 +1,7 @@
 import {BigNumber, Contract, FixedNumber} from 'ethers';
 import {compare} from 'compare-versions';
 import * as types from '../types';
-import {Vault} from '../../context/useVaults/types';
+import {Vault} from '../../../context/useVaults/types';
 
 function computeApy(before: types.PpsSample, after: types.PpsSample, blocksPerDay: number) {
 	const days = (after.block - before.block) / blocksPerDay;

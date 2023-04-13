@@ -1,7 +1,7 @@
 import compute from './averaged';
 import {BigNumber, Contract, providers} from 'ethers';
-import * as abis from '../../abi';
-import {Vault} from '../../context/useVaults/types';
+import * as abis from '../../../abi';
+import {Vault} from '../../../context/useVaults/types';
 
 describe('APY', () => {
 	test('yvUSDT 0.4.3 @ block 15871070', async function() {

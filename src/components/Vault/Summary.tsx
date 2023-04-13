@@ -14,9 +14,9 @@ import {computeDegradationTime} from '../../utils/vaults';
 import {useSimulator} from '../../context/useSimulator';
 import {ApyOutput} from '../../context/useSimulator/ProbesProvider/useApyProbe';
 import {BPS} from '../../constants';
-import {Apy} from '../../apy/types';
+import {Apy} from '../../math/apy/types';
 import {useBlocks} from '../../context/useSimulator/BlocksProvider';
-import {getApyComputer} from '../../apy';
+import {getApyComputer} from '../../math/apy';
 import Row from './Row';
 
 dayjs.extend(duration);

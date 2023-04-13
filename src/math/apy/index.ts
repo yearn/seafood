@@ -1,5 +1,5 @@
 import {ethers} from 'ethers';
-import {estimateBlockHeight} from '../utils/defillama';
+import {estimateBlockHeight} from '../../utils/defillama';
 import computeV2Averaged from './v2/averaged';
 import * as types from './types';
 

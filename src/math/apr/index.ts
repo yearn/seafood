@@ -1,6 +1,6 @@
 import {BigNumber, FixedNumber} from 'ethers';
-import {Strategy, Vault} from '../context/useVaults/types';
-import {HOURS_IN_A_YEAR, BPS, ONE} from '../constants';
+import {Strategy, Vault} from '../../context/useVaults/types';
+import {HOURS_IN_A_YEAR, BPS, ONE} from '../../constants';
 
 export function computeHarvestApr(vault: Vault, strategy: Strategy, snapshot: {totalGain: BigNumber, totalLoss: BigNumber}){
 	if(!snapshot) return {gross: 0, net: 0};

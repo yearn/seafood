@@ -1,5 +1,5 @@
 import {BigNumber, Contract, FixedNumber} from 'ethers';
-import {Vault} from '../context/useVaults/types';
+import {Vault} from '../../context/useVaults/types';
 
 export interface BlockSample {
 	[0]: number,
