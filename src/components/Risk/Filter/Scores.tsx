@@ -51,7 +51,7 @@ export default function Scores() {
 						ariaLabel={['Lower thumb', 'Upper thumb']}
 						ariaValuetext={state => `Thumb value ${state.valueNow}`}
 						renderThumb={(props, state) => <div {...props} className={`
-							w-4 h-4 top-[1px] rounded cursor-pointer outline-none
+							w-4 h-4 top-[1px] cursor-pointer outline-none
 							${scoreToBgColor(state.valueNow)}`}></div>}
 						renderTrack={(props) => <div key={props.key} className={`
 							absolute top-[8px] w-full h-[2px] cursor-pointer

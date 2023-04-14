@@ -8,7 +8,7 @@ export default function Footer({innerRef} : {innerRef: RefObject<HTMLDivElement>
 	const {risk, totalTvlUsd, totalStrategies, totalMedianRisks} = useFilter();
 
 	return <div ref={innerRef} className={`
-		w-full pr-4 py-2 flex items-center gap-1 overflow-x-hidden
+		w-full pr-4 sm:pr-10 py-2 flex items-center gap-1 overflow-x-hidden
 		sm:flex-none sm:grid sm:grid-cols-10`}>
 		<ColumnHeader className={'flex-col'}>
 			<div>{`${risk.length} groups`}</div>

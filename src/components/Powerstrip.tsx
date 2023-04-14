@@ -28,7 +28,7 @@ function useMatchRoutes(link: LinkInfo) {
 function Light({link}: {link: LinkInfo}) {
 	const on = useMatchRoutes(link);
 	return <div className={'h-[40px] flex items-center justify-center'}>
-		<div className={`w-1 h-1 rounded-full ${on ? 'bg-primary-600 dark:bg-primary-400' : 'bg-primary-600/40 dark:bg-primary-400/40'}`}></div>
+		<div className={`w-1 h-1 ${on ? 'bg-primary-600 dark:bg-primary-400' : 'bg-primary-600/40 dark:bg-primary-400/40'}`}></div>
 	</div>;
 }
 
@@ -40,24 +40,24 @@ function StatusLight() {
 		return <div className={`
 			h-[40px] flex items-center justify-center`}>
 			<div className={`
-				absolute h-2 w-2 rounded-full
+				absolute h-2 w-2
 				opacity-75 animate-ping
 				${colors.bg}`} />
 			<div className={`
-				h-1 w-1 m-1 rounded-full
+				h-1 w-1 m-1
 				${colors.bg}`} />
 		</div>;
 	}
 
 	return <div onClick={refresh} className={'h-[40px] flex items-center justify-center cursor-pointer'}>
-		<div className={`h-1 w-1 rounded-full ${colors.bg}`}></div>
+		<div className={`h-1 w-1 ${colors.bg}`}></div>
 	</div>;
 }
 
 function LoginLight() {
 	const {profile} = useAuth();
 	return <div className={'h-[40px] flex items-center justify-center'}>
-		<div className={`w-1 h-1 rounded-full ${profile ? 'bg-primary-600 dark:bg-primary-400' : 'bg-primary-600/40 dark:bg-primary-400/40'}`}></div>
+		<div className={`w-1 h-1 ${profile ? 'bg-primary-600 dark:bg-primary-400' : 'bg-primary-600/40 dark:bg-primary-400/40'}`}></div>
 	</div>;
 }
 
@@ -101,7 +101,7 @@ export default function Powerstrip({className}: {className?: string}) {
 			onClick: profile ? logout : login,
 			label: !profile ? 'Login with Github' : <div className={'relative w-full flex items-center justify-between'}>
 				{'Logout'}
-				<img className={'w-8 h-8 -m-2 rounded-full'}
+				<img className={'w-8 h-8 -m-2 rounded'}
 					src={profile.avatar_url} 
 					alt={'avatar'} />
 			</div>

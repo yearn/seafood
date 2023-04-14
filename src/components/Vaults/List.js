@@ -1,6 +1,6 @@
 import React from 'react';
 import {useVaults} from '../../context/useVaults';
-import {useFilter} from './useFilter';
+import {useFilter} from './Filter/useFilter';
 import {useNavigate} from 'react-router-dom';
 import Spinner from '../controls/Spinner';
 import Tile from './Tile';

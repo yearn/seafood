@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function SmallIconButton({icon, onClick, className, iconClassName}) {
+export default function SmallIconButton({icon, onClick, className, iconClassName=''}) {
 	return <div onClick={onClick} className={`
     w-6 h-6 
     flex items-center justify-center

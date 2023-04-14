@@ -1,7 +1,7 @@
 import React, {ReactNode, useCallback, useMemo, useState} from 'react';
 import {BigNumber} from 'ethers';
 import {Vault} from '../../context/useVaults/types';
-import {useFilter} from './useFilter';
+import {useFilter} from './Filter/useFilter';
 import {Row} from '../controls';
 import {Field, Percentage, Tokens} from '../controls/Fields';
 import {formatNumber, getAddressExplorer, highlightString, truncateAddress} from '../../utils/utils';
@@ -103,8 +103,8 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 					flex items-center gap-2
 					text-xs`}>
 					<Chip className={`
-						bg-primary-400/40 dark:bg-primary-900/40
-						border border-primary-400 dark:border-primary-900
+						bg-neutral-200/40 dark:bg-neutral-800/40
+						border border-neutral-200 dark:border-neutral-800
 						`}>{vault.version}</Chip>
 					<Chip className={`
 						bg-${vault.network.name}-40
@@ -134,7 +134,7 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 		<div className={'flex items-center gap-2'}>
 			<FavoriteButton vault={vault} className={'w-1/4 py-3 flex items-center justify-center'} />
 			<TileButton onClick={() => window.open(getAddressExplorer(vault.network.chainId, vault.address), '_blank', 'noreferrer')} 
-				className={'w-1/2 py-3 flex items-center justify-center text-sm'}>
+				className={'w-1/2 py-3 flex items-center justify-center font-mono text-sm'}>
 				{truncateAddress(vault.address)}
 			</TileButton>
 			<CopyButton clip={vault.address} className={'w-1/4 py-3 flex items-center justify-center'} />

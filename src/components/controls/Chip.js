@@ -2,22 +2,24 @@ import React from 'react';
 
 export default function Chip({label, icon = undefined, onClick, hot = true, className = ''}) {
 	return <div onClick={onClick} className={`
-		flex items-center
+		flex items-center h-8
 
 		${icon 
-		? 'aspect-square px-[.475rem] py-0'
-		: 'px-4 py-1'}
+		? 'aspect-square flex items-center justify-center'
+		: 'px-4'}
 
 		${hot 
-		? `text-secondary-50 bg-selected-400 sm:hover:bg-selected-300
-			dark:bg-selected-600 sm:hover:dark:bg-selected-500`
+		? `text-selected-800 dark:text-secondary-50
+			border border-selected-600 dark:border-selected-600
+			bg-selected-400/40 hover:bg-selected-300
+			dark:bg-selected-600/40 dark:hover:bg-selected-500`
 
-		: `text-secondary-600 bg-secondary-200 sm:hover:bg-selected-300 
-			dark:text-secondary-200 dark:bg-primary-900/40 sm:dark:hover:bg-selected-600`}
+		: `text-secondary-600 dark:text-secondary-200
+			border border-transparent
+			bg-secondary-200 sm:hover:bg-selected-300 
+			dark:bg-primary-900/40 sm:dark:hover:bg-selected-600`}
 
-		text-sm capitalize rounded-lg
-		active:transform active:scale-95
-		transition duration-200
+		text-sm capitalize
 		${onClick ? 'cursor-pointer' : ''}
 		${className}`}>
 		{label || icon({className: hot 

@@ -37,7 +37,10 @@ export default function Chrome({children}) {
 				<CheckForUpdates />
 				{children}
 			</div>
-			{dialog && <Dialog key={'dialog'} Component={dialog.component} args={dialog.args} />}
+			{dialog && <Dialog 
+				Component={dialog.component} 
+				args={dialog.args}
+				className={'text-secondary-900 dark:text-secondary-200'} />}
 		</div>
 	</ChromeContext.Provider>;
 }

@@ -4,13 +4,14 @@ import useKeypress from 'react-use-keypress';
 import {BsX} from 'react-icons/bs';
 import {motion} from 'framer-motion';
 
-export default function Dialog({Component, args}) {
+export default function Dialog({Component, args, className=''}) {
 	const navigate = useNavigate();
 	const close = useCallback(() => navigate(-1), [navigate]);
 	useKeypress(['Escape'], close);
 
 	return <div className={`
-		fixed z-20 inset-0 flex items-center justify-center backdrop-blur`}>
+		fixed z-20 inset-0 flex items-center justify-center backdrop-blur
+		${className}`}>
 		<div onClick={close} className={'absolute inset-0 z-1'} />
 		<motion.div className={`
 		absolute z-10 inset-0 sm:inset-8 p-0 bg-secondary-50 dark:bg-secondary-900 

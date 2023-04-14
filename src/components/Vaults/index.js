@@ -1,7 +1,7 @@
 import React from 'react';
 import useLocalStorage from 'use-local-storage';
 import {mergeDeep} from '../../utils/mergeDeep';
-import {FilterProvider, defaultChips} from './useFilter';
+import {FilterProvider, defaultChips} from './Filter/useFilter';
 import List from './List';
 import Filter from './Filter';
 

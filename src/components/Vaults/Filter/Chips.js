@@ -1,8 +1,9 @@
 import React from 'react';
 import {BsStarFill} from 'react-icons/bs';
 import {useFilter} from './useFilter';
-import config from '../../config';
-import {Chip} from '../controls';
+import {Chip} from '../../controls';
+import Network from './Network';
+import VaultOptions from './VaultOptions';
 
 export default function Chips() {
 	const {chips, setChips} = useFilter();
@@ -17,10 +18,7 @@ export default function Chips() {
 
 	return <div className={'flex flex-row items-center gap-3'}>
 		<Chip icon={BsStarFill} onClick={toggle('favorites')} hot={chips.favorites} />
-		<Chip label={'curve'} onClick={toggle('curve')} hot={chips.curve} />
-		<Chip label={'factory'} onClick={toggle('factory')} hot={chips.factory} />
-		{config.chains.map(chain => 
-			<Chip key={chain.id} label={chain.name} onClick={toggle(chain.name)} hot={chips[chain.name]} />
-		)}
+		<Network />
+		<VaultOptions />
 	</div>;
 }

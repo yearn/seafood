@@ -27,7 +27,7 @@ export default function Cell({
 		className={`
 			min-w-[138px] sm:min-w-0 h-16 flex items-center justify-center
 			border-2 border-transparent hover:border-secondary-100 dark:hover:border-secondary-900
-			rounded-sm cursor-default
+			cursor-default
 			${scoreToBgColor(score)} ${className}`}>
 		{children}
 		{floatie.open && mediumBreakpoint && <FloatingFocusManager context={floatie.context} modal={false}>
@@ -36,7 +36,7 @@ export default function Cell({
 				flex flex-col
 				bg-secondary-100 dark:bg-secondary-900
 				border dark:border-secondary-800 
-				shadow-lg shadow-secondary-900/40 dark:shadow-secondary-900/60 rounded-lg
+				shadow-lg shadow-secondary-900/40 dark:shadow-secondary-900/60
 				outline-none transition duration-200
 				${category === 'median' ? 'w-64' : 'w-96'}
         ${className}`}

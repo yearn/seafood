@@ -23,8 +23,9 @@ export default function Heatamp() {
 			<div onClick={() => navigate(`/risk/${report.riskGroupId}`)} className={`
 			min-w-[138px] sm:min-w-0 h-16 py-1 px-1
 			flex flex-col items-center justify-center text-center
-			hover:bg-selected-300 dark:hover:bg-selected-600 
-			active:scale-95 transition duration-200 rounded cursor-pointer`}
+			bg-neutral-200/40 dark:bg-neutral-800/40
+			hover:bg-selected-300 dark:hover:bg-selected-600
+			cursor-pointer`}
 			title={report.riskGroup}>
 				<div className={'w-[-webkit-fill-available] truncate text-xs 2xl:text-sm'}>{highlightString(report.riskGroup, queryRe)}</div>
 				<div className={'text-xs'}>{`${report.strategies} strategies`}</div>
