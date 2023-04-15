@@ -36,16 +36,14 @@ export default function Button({
 		${hot ? 'bg-primary-300 dark:bg-primary-800' : 'bg-primary-500 dark:bg-primary-900/40'}
 		text-secondary-50 sm:hover:bg-selected-400
 		sm:dark:hover:bg-selected-600
-		active:transform active:scale-95
 
 		disabled:text-secondary-400 disabled:dark:text-secondary-500
 		disabled:bg-gray-200 disabled:dark:bg-gray-900/80
 		sm:disabled:hover:bg-gray-200 sm:disabled:dark:hover:bg-gray-900/80
-		disabled:active:scale-100
 		disabled:cursor-default
 
-		rounded-lg cursor-pointer
-		transition duration-200
+		cursor-pointer
+
 		${icon && label ? 'pl-3' : ''}
 		${!label ? 'px-3' : ''}
 		${className}`}>

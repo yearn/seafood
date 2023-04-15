@@ -75,10 +75,10 @@ export default function FilterChip({
 		{...getReferenceProps()} 
 		onClick={onClick}
 		className={`
-		h-8 flex items-center px-4 cursor-default
+		h-10 flex items-center px-4 cursor-default
 		border border-transparent
 
-		${open
+		${open && mediumBreakpoint
 		? `text-selected-800 dark:text-secondary-200
 			bg-selected-300 dark:bg-selected-600`
 		: `text-secondary-600 dark:text-secondary-200

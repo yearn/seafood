@@ -97,7 +97,7 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 	}, [vault]);
 
 	return <div className={'flex flex-col gap-2'}>
-		<TileButton onClick={onClick} className={'px-3 py-3'}>
+		<TileButton onClick={onClick} className={'p-1 sm:p-3'}>
 			<Row label={<div className={'grow pr-4 truncate font-bold text-lg'}>{highlightString(vault.name, queryRe)}</div>} className={'z-10'}>
 				<div className={`
 					flex items-center gap-2

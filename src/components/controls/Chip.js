@@ -1,8 +1,9 @@
 import React from 'react';
 
-export default function Chip({label, icon = undefined, onClick, hot = true, className = ''}) {
+export default function Chip({label, icon = undefined, onClick, hot = true, tall = false, className = ''}) {
 	return <div onClick={onClick} className={`
-		flex items-center h-8
+		flex items-center
+		${tall ? 'h-10' : 'h-8'}
 
 		${icon 
 		? 'aspect-square flex items-center justify-center'

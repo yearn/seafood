@@ -17,7 +17,7 @@ export default function VaultOptions() {
 		return [{
 			key: 'curve',
 			label: 'Curve',
-			long: 'Include Curve Vaults',
+			long: 'Curve Vaults',
 			flag: Boolean(chips['curve'])
 		},
 		{
@@ -53,7 +53,7 @@ export default function VaultOptions() {
 
 	return <FilterChip hash={'fixins'} label={label}>
 		<div className={'w-full h-full flex flex-col'}>
-			<div className={'sm:hidden pl-6 pt-5 font-bold text-lg'}>{'Network filters'}</div>
+			<div className={'sm:hidden pl-6 pt-5 font-bold text-lg'}>{'Vault filters'}</div>
 			<div className={'grow flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-3'}>
 				{options.map((option) => 
 					<Chip key={option.key} 

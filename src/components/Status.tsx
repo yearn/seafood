@@ -3,6 +3,29 @@ import {useVaults} from '../context/useVaults';
 import {SyncStatus} from '../context/useVaults/worker';
 import {getChain} from '../utils/utils';
 import TimeAgo from './controls/TimeAgo';
+import {useVaultStatusUI} from './Sync';
+
+function StatusLight() {
+	const {loading, refresh} = useVaults();
+	const {colors} = useVaultStatusUI();
+
+	if(loading) {
+		return <div className={`
+			flex items-center justify-center`}>
+			<div className={`
+				absolute h-24 w-24
+				opacity-75 animate-ping
+				${colors.bg}`} />
+			<div className={`
+				h-20 w-20
+				${colors.bg}`} />
+		</div>;
+	}
+
+	return <div onClick={refresh} className={'flex items-center justify-center cursor-pointer'}>
+		<div className={`h-20 w-20 ${colors.bg}`}></div>
+	</div>;
+}
 
 function ListItem({status, className} : {status: SyncStatus, className: string}) {
 	const chain = useMemo(() => {
@@ -40,13 +63,22 @@ function Stage({title, status}: {title: string, status: SyncStatus[]}) {
 
 export default function Status() {
 	const {status} = useVaults();
-
+	const {message} = useVaultStatusUI();
 	const ydaemon = useMemo(() => status.filter(s => s.stage === 'ydaemon'), [status]);
 	const multicall = useMemo(() => status.filter(s => s.stage === 'multicall'), [status]);
 	const tvls = useMemo(() => status.filter(s => s.stage === 'tvls'), [status]);
 
 	return <div className={'w-full mt-24 sm:mt-24 flex items-center justify-center'}>
 		<div className={'w-full sm:w-1/2 px-4 flex flex-col gap-8'}>
+			<div className={'w-full h-48 flex items-center justify-center'}>
+				<div className={'w-1/2 pr-16 flex items-center justify-end'}>
+					<StatusLight />
+				</div>
+				<div className={'w-1/2 '}>
+					<div className={'font-bold'}>{'Seafood Data Sync'}</div>
+					<div className={'text-2xl'}>{message}</div>
+				</div>
+			</div>
 			<Stage title={'yDaemon'} status={ydaemon} />
 			<Stage title={'Multicalls'} status={multicall} />
 			<Stage title={'TVLs'} status={tvls} />

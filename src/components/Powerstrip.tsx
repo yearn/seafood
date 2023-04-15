@@ -91,17 +91,15 @@ export default function Powerstrip({className}: {className?: string}) {
 	const [hover, setHover] = useState(false);
 	const syncStatus = useVaultStatusUI();
 	const {profile, login, logout} = useAuth();
-
 	const links = [
 		{to: '/status', label: 'Status', altPathPatterns: []},
 		{to: '/', label: 'Vaults', altPathPatterns: ['/vault/:address']},
 		{to: '/risk', label: 'Risk', altPathPatterns: ['/risk/:group']},
-		{to: '/sandbox', label: 'Sandbox', altPathPatterns: ['/sandbox']},
 		{
 			onClick: profile ? logout : login,
 			label: !profile ? 'Login with Github' : <div className={'relative w-full flex items-center justify-between'}>
 				{'Logout'}
-				<img className={'w-8 h-8 -m-2 rounded'}
+				<img className={'w-8 h-8 -m-2'}
 					src={profile.avatar_url} 
 					alt={'avatar'} />
 			</div>
@@ -112,8 +110,7 @@ export default function Powerstrip({className}: {className?: string}) {
 		<StatusLight key={0} />,
 		<Light key={1} link={links[1]} />,
 		<Light key={2} link={links[2]} />,
-		<Light key={3} link={links[3]} />,
-		<LoginLight key={4} />
+		<LoginLight key={3} />
 	];
 	
 	const MenuLinks = [
@@ -124,9 +121,8 @@ export default function Powerstrip({className}: {className?: string}) {
 		</MenuItem>,
 		<MenuItem key={1}><MenuLink link={links[1]} /></MenuItem>,
 		<MenuItem key={2}><MenuLink link={links[2]} /></MenuItem>,
-		<MenuItem key={3}><MenuLink link={links[3]} /></MenuItem>,
-		<MenuItem key={4}>
-			<MenuLink link={{...links[4]}} />
+		<MenuItem key={3}>
+			<MenuLink link={{...links[3]}} />
 		</MenuItem>
 	];
 

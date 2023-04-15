@@ -1,48 +1,20 @@
-import {useState} from 'react';
-import {useScrollPosition} from '@n8tb1t/use-scroll-position';
-import {useMediumBreakpoint} from '../utils/breakpoints';
+import {useEffect, useState} from 'react';
 
 export default function useScrollOverpass() {
-	const mediumBreakpoint = useMediumBreakpoint();
-	const [show, setShow] = useState(false);
-	const [overpassClassName, setOverpassClassName] = useState('');
 	const showClassName = 'bg-secondary-100/60 dark:bg-black/60 backdrop-blur-md shadow';
-	const hideClassName = 'opacity-0 transition duration-200 pointer-events-none';
+	const hideClassName = 'bg-secondary-100/60 dark:bg-black/60 backdrop-blur-md';
+	const [overpassClassName, setOverpassClassName] = useState(hideClassName);
 
-	useScrollPosition(({prevPos, currPos}) => {
-		const yDelta = Math.abs(currPos.y - prevPos.y);
-		if(!mediumBreakpoint) {
-			if(currPos.y > -16) {
-				setShow(true);
-				setOverpassClassName('');
-			} else if(currPos.y > -118) {
-				setShow(true);
-				setOverpassClassName(showClassName);
-			} else if((currPos.y > prevPos.y) != show && yDelta <= 118) {
-				setOverpassClassName(show ? hideClassName : showClassName);
-				setShow(show => !show);
-			} else if(yDelta > 118) {
-				setShow(true);
-				setOverpassClassName(showClassName);
-			}
-
-		} else {
-			if(currPos.y > -64) {
-				setShow(true);
-				setOverpassClassName('');
-			} else if(currPos.y > -118) {
-				setShow(true);
-				setOverpassClassName(`${showClassName}`);
-			} else if((currPos.y > prevPos.y) != show && yDelta <= 118) {
-				if(!show) setOverpassClassName(showClassName);
-				setShow(show => !show);
-			} else if(yDelta > 118) {
-				setShow(true);
-				setOverpassClassName(showClassName);
-			}
+	useEffect(() => {
+		function updatePosition() {
+			setOverpassClassName(window.scrollY > 0 ? showClassName : hideClassName);
 		}
 
-	}, [show]);
+		window.addEventListener('scroll', updatePosition);
+		updatePosition();
+
+		return () => window.removeEventListener('scroll', updatePosition);
+	}, [setOverpassClassName]);
 
 	return {
 		overpassClassName, 

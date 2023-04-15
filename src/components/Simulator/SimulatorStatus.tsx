@@ -25,7 +25,7 @@ export default function SimulatorStatus({className}: {className?: string}) {
 
 	return <div className={`relative
 		grow px-4 h-10 flex items-center border
-		rounded-lg transition duration-500
+		transition duration-500
 		${effects} ${className}`}>
 		<AnimatePresence>
 			<motion.div 

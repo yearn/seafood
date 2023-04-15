@@ -1,21 +1,15 @@
 import React, {useEffect, useMemo} from 'react';
 import {useLocation} from 'react-router-dom';
 import VaultProvider, {useVault} from './VaultProvider';
-import {useChrome} from '../Chrome';
 import Header from './Header';
 import Summary from './Summary';
-import Toolbar from './Toolbar';
 import Strategy from './Strategy';
-import BlocksProvider, {useBlocks} from '../../context/useSimulator/BlocksProvider';
-import SimulatorProvider, {useSimulator} from '../../context/useSimulator';
-import Code from './Code';
+import {useBlocks} from '../../context/useSimulator/BlocksProvider';
+import {useSimulator} from '../../context/useSimulator';
 import Spinner from '../controls/Spinner';
 import Events from './Events';
-import {SmallScreen} from '../../utils/breakpoints';
-import ProbesProvider from '../../context/useSimulator/ProbesProvider';
-import NestProviders from '../../context/NestProviders';
 import EmptySlot from './EmptySlot';
-import SimulatorStatusProvider from '../../context/useSimulator/SimulatorStatusProvider';
+import {useChrome} from '../Chrome';
 
 function Layout() {
 	const location = useLocation();
@@ -35,13 +29,10 @@ function Layout() {
 	}, [vault]);
 
 	useEffect(() => {
-		if(location.hash === '#code') {
-			setDialog({component: Code, args: {blocks}});
-		} else if(location.hash.startsWith('#harvest-events')) {
-			setDialog({component: Events, args: {vault, token, simulatorResults}});
-		} else {
-			setDialog(null);
-		}
+		if(location.hash.startsWith('#harvest-events')) setDialog({
+			component: Events, 
+			args: {vault, token, simulatorResults}
+		});
 	}, [location, setDialog, blocks, vault, token, simulatorResults]);
 
 	if(loading) return <div className={`
@@ -61,23 +52,11 @@ function Layout() {
 				</div>)}
 			</div>
 		</div>
-
-		<SmallScreen>
-			<Toolbar />
-		</SmallScreen>
 	</div>;
 }
 
-const Providers = NestProviders([
-	[VaultProvider],
-	[SimulatorStatusProvider],
-	[BlocksProvider],
-	[ProbesProvider],
-	[SimulatorProvider]
-]);
-
 export default function Vault() {
-	return <Providers>
+	return <VaultProvider>
 		<Layout></Layout>
-	</Providers>;
+	</VaultProvider>;
 }

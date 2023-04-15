@@ -5,8 +5,9 @@ import {A} from '../controls';
 import {useVault} from './VaultProvider';
 import Chip from './Chip';
 import CopyButton from './CopyButton';
-import Tools from './Tools';
+import Simulator from '../Simulator';
 import {BiggerThanSmallScreen} from '../../utils/breakpoints';
+import SimulatorStatus from '../Simulator/SimulatorStatus';
 
 export default function Header() {
 	const {vault, provider} = useVault();
@@ -34,8 +35,9 @@ export default function Header() {
 			</div>
 		</div>
 		<BiggerThanSmallScreen>
-			<div className={'relative mr-12 ml-8 flex flex-col'}>
-				<Tools />
+			<div className={'relative mr-12 ml-8 flex gap-3'}>
+				<Simulator />
+				<SimulatorStatus />
 			</div>
 		</BiggerThanSmallScreen>
 	</div>;

@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {Button} from '../controls';
 import {BsCode} from 'react-icons/bs';
@@ -6,13 +6,22 @@ import {CgUndo} from 'react-icons/cg';
 import {IoIosPlay} from 'react-icons/io';
 import {useBlocks} from '../../context/useSimulator/BlocksProvider';
 import {useSimulator} from '../../context/useSimulator';
-import SimulatorStatus from './SimulatorStatus';
+import {useChrome} from '../Chrome';
+import Code from '../Code';
 
-export default function Tools() {
+export default function Simulator({className}: {className?: string}) {
 	const location = useLocation();
 	const navigate = useNavigate();
+	const {setDialog} = useChrome();
 	const {blocks, reset: resetBlocks} = useBlocks();
 	const {simulating, reset: resetSimulator, initializeAndSimulate} = useSimulator();
+
+	useEffect(() => {
+		if(location.hash === '#code') setDialog({
+			component: Code, 
+			args: {blocks}
+		});
+	}, [location, setDialog, blocks]);
 
 	const onStart = useCallback(async () => {
 		if(!blocks.length) return;
@@ -24,10 +33,10 @@ export default function Tools() {
 		resetSimulator();
 	}, [resetBlocks, resetSimulator]);
 
-	return 	<div className={'w-full flex items-center justify-center gap-4'}>
-		<Button title={'Simulator code'}
+	return 	<div className={`flex items-center justify-center gap-2 sm:gap-3 ${className}`}>
+		<Button title={blocks.length ? 'Simulator code' : 'Simulator code (empty)'}
 			icon={BsCode}
-			badge={blocks.length ? blocks.length.toString() : null}
+			badge={blocks.length ? blocks.length.toString() : undefined}
 			onClick={() => navigate(`${location.pathname}#code`)}
 			disabled={!blocks.length}
 			iconClassName={'text-2xl'}
@@ -45,6 +54,5 @@ export default function Tools() {
 			disabled={!blocks.length || simulating}
 			iconClassName={'text-2xl'}
 			className={'grow sm:grow-0'} />
-		<SimulatorStatus className={'hidden sm:flex'} />
 	</div>;
 }
