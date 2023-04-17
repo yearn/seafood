@@ -4,7 +4,7 @@ import tenderly, {SimulationResult} from '../../tenderly';
 import {Block} from './Blocks';
 import {useBlocks} from './BlocksProvider';
 import {Probe, ProbeResults, useProbes} from './ProbesProvider/useProbes';
-import {useSimulatorStatus} from './SimulatorStatusProvider';
+import {DEFAULT_STATUS, useSimulatorStatus} from './SimulatorStatusProvider';
 
 export interface Simulator {
 	simulate: (provider: providers.JsonRpcProvider) => void,
@@ -33,46 +33,54 @@ export default function SimulatorProvider({children}: {children: ReactNode}) {
 	const [simulating, setSimulating] = useState(false);
 
 	const simulate = useCallback(async (provider: providers.JsonRpcProvider) => {
-		setSimulating(true);
+		try {
+			setSimulating(true);
 
-		for(const probe of probes) {
-			if(probe.start) {
-				const result = await probe.start(provider) as ProbeResults;
-				setProbeStartResults(current => [...current, result]);
+			for(const probe of probes) {
+				if(probe.start) {
+					const result = await probe.start(provider) as ProbeResults;
+					setProbeStartResults(current => [...current, result]);
+				}
 			}
-		}
+	
+			const results = [] as SimulationResult[];
+			for(const block of blocks) {
+				const status = block.meta?.['status'] as string;
+				if(status) setStatus(status);
+				setBlockPointer(block);
+				const result = await tenderly.simulate(block, provider);
+				results.push(result);
+				setResults([...results]);
+			}
+	
+			setBlockPointer(null);
+			for(const probe of probes) {
+				const result = await probe.stop(results, provider) as ProbeResults;
+				setProbeStopResults(current => [...current, result]);
+			}
+	
+			setSimulating(false);
+			setStatus('Simulation complete');
 
-		const results = [] as SimulationResult[];
-		for(const block of blocks) {
-			const status = block.meta?.['status'] as string;
-			if(status) setStatus(status);
-			setBlockPointer(block);
-			const result = await tenderly.simulate(block, provider);
-			results.push(result);
-			setResults([...results]);
+		} catch (error) {
+			setSimulating(false);
+			setStatus(`Error: ${error}`);
+			return;
 		}
-
-		setBlockPointer(null);
-		for(const probe of probes) {
-			const result = await probe.stop(results, provider) as ProbeResults;
-			setProbeStopResults(current => [...current, result]);
-		}
-
-		setSimulating(false);
-		setStatus('Simulation complete');
 	}, [setSimulating, setBlockPointer, setStatus, setResults, probes, blocks]);
 
-	const reset = useCallback(() => {
+	const reset = useCallback((resetStatus = true) => {
 		setBlockPointer(null);
 		setResults([]);
 		setProbeStartResults([]);
 		setProbeStopResults([]);
-	}, [setBlockPointer, setResults, setProbeStartResults, setProbeStopResults]);
+		if(resetStatus) setStatus(DEFAULT_STATUS);
+	}, [setBlockPointer, setResults, setProbeStartResults, setProbeStopResults, setStatus]);
 
 	const initializeAndSimulate = useCallback(async () => {
 		setSimulating(true);
 		setStatus('Initialize simulator');
-		reset();
+		reset(false);
 		const provider = await tenderly.createProvider(blocks[0].chain);
 		setTimeout(async () => {
 			await simulate(provider);

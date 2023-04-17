@@ -4,7 +4,6 @@ export default function A({href, title = '', target, rel, className = '', childr
 	return <a href={href} title={title} className={`
 	underline underline-offset-2
 	hover:text-selected-400
-	transition duration-200
 	${className}`}
 	target={target} rel={rel}>
 		{children}

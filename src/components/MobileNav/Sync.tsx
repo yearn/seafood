@@ -1,8 +1,8 @@
 import React, {useCallback, useMemo} from 'react';
-import {useVaults} from '../context/useVaults';
+import {useVaults} from '../../context/useVaults';
 import {TiWarning} from 'react-icons/ti';
 import {useNavigate} from 'react-router';
-import TimeAgo from './controls/TimeAgo';
+import TimeAgo from '../controls/TimeAgo';
 
 export function useVaultStatusUI() {
 	const {loading, cachetime, status} = useVaults();
@@ -52,32 +52,32 @@ export default function Sync() {
 	}, [loading, refresh]);
 
 	return <div className={'flex items-center gap-1'}>
-		<div onClick={onClick} title={loading ? '' : 'Start sync'} className={`
-			px-3 py-2 text-xs rounded-lg 
+		<div onClick={() => navigate('/status')} title={loading ? '' : 'Start sync'} className={`
+			px-3 py-2 text-xs 
 			transition duration-200
 			${colors.text} ${colors.hover} ${cursor}`}>
 			{message}
 		</div>
 
 		<div 
-			onClick={() => {if(!loading) navigate('/status');}}
+			onClick={onClick}
 			title={loading ? '' : 'Status'}
 			className={`
-			p-2 relative flex items-center justify-center rounded-lg
+			p-2 relative flex items-center justify-center
 			${loading ? '' : colors.hover} ${cursor}`}>
 			{loading && <>
 				{loading && <div className={`
-					absolute h-3 w-3 rounded-full
+					absolute h-3 w-3
 					opacity-75 animate-ping
 					${colors.bg}`} />}
 				<div className={`
-					h-2 w-2 m-1 rounded-full
+					h-2 w-2 m-1
 					${colors.bg}`} />
 			</>}
 
 			{!loading && <div>
 				{!hasErrors && <div className={`
-					h-2 w-2 m-1 rounded-full
+					h-2 w-2 m-1
 					${colors.bg}`} />}
 				{hasErrors && <TiWarning className={`${colors.text} -m-[2px]`} />}
 			</div>}

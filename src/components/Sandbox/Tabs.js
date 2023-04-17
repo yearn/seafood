@@ -1,12 +1,12 @@
 import React from 'react';
 import {BsBox, BsCode} from 'react-icons/bs';
 import {useLocation, useNavigate} from 'react-router-dom';
-import useScrollOverpass from '../../context/useScrollOverpass';
+import {useChrome} from '../Chrome';
 
 export default function Tabs() {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const {overpassClassName} = useScrollOverpass();
+	const {overpassClassName} = useChrome();
 
 	const selectTab = hash => {
 		return () => {

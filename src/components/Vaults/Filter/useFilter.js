@@ -1,4 +1,6 @@
-import React, {createContext, useContext, useEffect, useMemo, useState} from 'react';
+import React, {createContext, useContext, useMemo, useState} from 'react';
+import useLocalStorage from 'use-local-storage';
+import {mergeDeep} from '../../../utils/mergeDeep';
 import {useVaults} from '../../../context/useVaults';
 import {useFavorites} from '../../../context/useFavorites';
 import {curveRe, escapeRegex, factoryRe} from '../../../utils/utils';
@@ -14,24 +16,36 @@ function getLatestTvl(vault) {
 	return series[series.length - 1];
 }
 
-export function FilterProvider({query, setQuery, chips, setChips, children}) {
+export function FilterProvider({children}) {
 	const {vaults} = useVaults();
 	const favorites = useFavorites();
-	const [filter, setFilter] = useState([]);
+	const [query, setQuery] = useLocalStorage('Vaults.filter.query', '');
+	const [chips, setChips] = useLocalStorage('Vaults.filter.chips', defaultChips(), {
+		parser: (str) => {
+			return mergeDeep(defaultChips(), JSON.parse(str));
+		}
+	});
+	const [ready, setReady] = useState(false);
+
 	const queryRe = useMemo(() => { return new RegExp(escapeRegex(query), 'i'); }, [query]);
 
-	useEffect(() => {
-		setFilter(vaults.filter(vault => {
+	const filter = useMemo(() => {
+		if(!vaults.length) return [];
+
+		const result = vaults.filter(vault => {
 			if(query && !queryRe.test(vault.name)) return false;
-			if(chips.favorites && !favorites.vaults.includes(vault.address)) return false;
+			if(chips.favorites && !favorites.vaults?.includes(vault.address)) return false;
 			if(!chips[vault.network.name]) return false;
 			if(chips.tvlgtzero && getLatestTvl(vault) <= 0) return false;
 			if(chips.curve && chips.factory) return true;
 			if(chips.curve && !chips.factory) return !factoryRe.test(vault.name);
 			if(!chips.curve && chips.factory) return factoryRe.test(vault.name);
 			return !(curveRe.test(vault.name) || factoryRe.test(vault.name));
-		}));
-	}, [query, queryRe, chips, vaults, favorites]);
+		});
+
+		setReady(true);
+		return result;
+	}, [query, queryRe, chips, vaults, favorites, setReady]);
 
 	return <FilterContext.Provider value={{
 		query, 
@@ -39,7 +53,8 @@ export function FilterProvider({query, setQuery, chips, setChips, children}) {
 		setQuery,
 		chips, 
 		setChips,
-		filter
+		filter,
+		ready
 	}}>{children}</FilterContext.Provider>;
 }
 

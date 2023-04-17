@@ -8,8 +8,8 @@ import {formatNumber} from '../../utils/utils';
 
 export default function List() {
 	const navigate = useNavigate();
-	const {loading} = useVaults();
-	const {filter} = useFilter();
+	const {loading, vaults} = useVaults();
+	const {filter, ready} = useFilter();
 
 	const totalTvl = useMemo(() => {
 		return filter.map(vault => {
@@ -19,34 +19,34 @@ export default function List() {
 		}).reduce((a, b) => a + b, 0);
 	}, [filter]);
 
-	return <>
-		{loading && filter.length === 0 && <div className={`
-			absolute w-full h-screen flex items-center justify-center`}>
-			<Spinner />
-		</div>}
+	if(loading && vaults.length === 0) return <div className={`
+		absolute inset-0 flex items-center justify-center`}>
+		<Spinner />
+	</div>;
 
-		{filter.length > 0 && <div className={`
-			max-w-full p-2 sm:p-4 
-			grid grid-flow-row gap-2 grid-cols-1 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4`}>
+	if(!ready) return <></>;
 
-			<div className={'pb-4 sm:py-0 flex flex-col items-center justify-center text-2xl sm:text-3xl'}>
-				<div className={'grid grid-cols-3 gap-2 sm:gap-4'}>
-					<div className={'font-mono text-right'}>{filter.length}</div>
-					<div className={'col-span-2'}>{'Vaults'}</div>
-					<div className={'font-mono text-right'}>{formatNumber(totalTvl, 0, 'No TVL', true)}</div>
-					<div className={'col-span-2'}>{'TVL (USD)'}</div>
-				</div>
+	return <div className={`
+		max-w-full p-2 sm:p-4 
+		grid grid-flow-row gap-2 grid-cols-1 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4`}>
+
+		<div className={'sm:min-h-[280px] pb-4 sm:py-0 flex flex-col items-center justify-center text-2xl sm:text-3xl'}>
+			<div className={'grid grid-cols-3 gap-2 sm:gap-4'}>
+				<div className={'font-mono text-right'}>{filter.length}</div>
+				<div className={'col-span-2'}>{'Vaults'}</div>
+				<div className={'font-mono text-right'}>{formatNumber(totalTvl, 0, 'No TVL', true)}</div>
+				<div className={'col-span-2'}>{'TVL (USD)'}</div>
 			</div>
+		</div>
 
-			{filter.map((vault, index) => {
-				return <Tile key={index} vault={vault} onClick={(event) => {
-					if (event.ctrlKey || event.shiftKey || event.metaKey) {
-						window.open(`/vault/${vault.address}`, '_blank');
-					}else{
-						navigate(`/vault/${vault.address}`);
-					}
-				}} />;
-			})}
-		</div>}
-	</>;
+		{filter.map((vault, index) => {
+			return <Tile key={index} vault={vault} onClick={(event) => {
+				if (event.ctrlKey || event.shiftKey || event.metaKey) {
+					window.open(`/vault/${vault.address}`, '_blank');
+				}else{
+					navigate(`/vault/${vault.address}`);
+				}
+			}} />;
+		})}
+	</div>;
 }

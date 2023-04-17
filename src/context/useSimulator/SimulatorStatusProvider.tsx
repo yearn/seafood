@@ -9,8 +9,10 @@ export const simulatorStatusContext = createContext<SimulatorStatus>({} as Simul
 
 export const useSimulatorStatus = () => useContext(simulatorStatusContext);
 
+export const DEFAULT_STATUS = 'Vault simulator idle..';
+
 export default function SimulatorStatusProvider({children}: {children: ReactNode}) {
-	const [status, setStatus] = useState('Vault simulator idle..');
+	const [status, setStatus] = useState(DEFAULT_STATUS);
 	return <simulatorStatusContext.Provider value={{status, setStatus}}>
 		{children}
 	</simulatorStatusContext.Provider>;

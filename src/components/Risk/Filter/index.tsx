@@ -19,11 +19,11 @@ export default function Filter() {
 		}
 	}, [query, vaults]);
 
-	return <div className={`
-		pt-2 sm:pt-0 px-2 sm:pl-4 
+	return <div className={`w-full
+		pt-2 sm:pt-0 px-2 sm:px-0 
 		flex flex-col sm:flex-row gap-3`}>
-		<Search className={'w-[72%] sm:w-44 ml-[15%] sm:ml-0'} />
-		<ScrollContainer className={'w-full flex items-center gap-3'}>
+		<Search className={''} />
+		<ScrollContainer className={'w-full sm:w-min flex items-center gap-3'}>
 			{vault && <div className={'px-4 col-span-10 flex items-center gap-2 whitespace-nowrap'}>
 				{vault.name}
 				<Chip label={vault.version} className={'bg-primary-400 dark:bg-primary-900'} />

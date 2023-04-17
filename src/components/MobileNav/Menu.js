@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link, matchRoutes, useLocation} from 'react-router-dom';
 import CloseDialog from '../controls/Dialog/Close';
-import Sync from '../Sync';
+import Sync from './Sync';
 import Wordmark from '../Wordmark';
 import Profile from './Profile';
 

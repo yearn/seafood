@@ -151,11 +151,9 @@ export function useFloatie(
 	useEffect(() => {
 		if(location.hash === `#${hash}`) {
 			setDialog({
-				component: Score,
+				Component: Score,
 				args: {group, category, score, breakdown}
 			});
-		} else if(location.hash.length === 0) {
-			setDialog(null);
 		}
 	}, [location, setDialog, group, category, score, breakdown, hash]);
 

@@ -8,22 +8,46 @@ export interface Chain {
 	providers: string[]
 }
 
+export interface Network {
+	chainId: number,
+	name: string
+}
+
+export interface Token {
+	address: string,
+	name: string,
+	symbol: string,
+	decimals: number
+}
+
+export interface Apy {
+	type: string,
+	gross: number,
+	net: number,
+	[-7]: number,
+	[-30]: number,
+	inception: number
+}
+
+export const defaultVault = {
+	...({} as Vault),
+	network: {} as Network,
+	token: {} as Token,
+	apy: {} as Apy,
+	tvls: {
+		dates: [],
+		tvls: []
+	} as TVLHistory
+};
+
 export interface Vault {
 	address: string,
 	name: string,
 	price: number,
-	network: {
-		chainId: number,
-		name: string
-	},
+	network: Network,
 	version: string,
 	want: string,
-	token: {
-		address: string,
-		name: string,
-		symbol: string,
-		decimals: number
-	},
+	token: Token,
 	governance: string,
 	totalAssets: BigNumber | undefined,
 	availableDepositLimit: BigNumber | undefined,
@@ -37,18 +61,11 @@ export interface Vault {
 	activation: BigNumber,
 	strategies: Strategy[],
 	withdrawalQueue: Strategy[],
-	apy: {
-		type: string,
-		gross: number,
-		net: number,
-		[-7]: number,
-		[-30]: number,
-		inception: number
-	},
-	tvls: ITVLHistory
+	apy: Apy,
+	tvls: TVLHistory
 }
 
-export interface ITVLHistory {
+export interface TVLHistory {
 	dates: number[],
 	tvls: number[]
 }
@@ -57,10 +74,7 @@ export interface Strategy {
 	address: string,
 	name: string,
 	risk: RiskReport,
-	network: {
-		chainId: number,
-		name: string
-	},
+	network: Network,
 	activation: BigNumber,
 	debtRatio: BigNumber | undefined,
 	performanceFee: BigNumber,
@@ -116,7 +130,7 @@ export interface RiskReport {
 	tvl: number
 }
 
-export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: ITVLHistory) : Vault {
+export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: TVLHistory) : Vault {
 	return {
 		address: vault.address,
 		name: vault.name,

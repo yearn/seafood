@@ -341,7 +341,7 @@ async function createStrategyMulticalls(vaults: yDaemon.Vault[], chain: ySeafood
 
 interface TVLVerse {
 	[chainId: number]: {
-		[vaultAddress: string] : ySeafood.ITVLHistory
+		[vaultAddress: string] : ySeafood.TVLHistory
 	}
 }
 

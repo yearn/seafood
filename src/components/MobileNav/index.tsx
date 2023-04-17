@@ -1,5 +1,4 @@
 import React from 'react';
-import useScrollOverpass from '../../context/useScrollOverpass';
 import {RxHamburgerMenu} from 'react-icons/rx';
 import {useNavigate} from 'react-router-dom';
 import {Button} from '../controls';
@@ -8,10 +7,11 @@ import {AnimatePresence, motion} from 'framer-motion';
 import SimulatorStatus from '../Simulator/SimulatorStatus';
 import {useSimulator} from '../../context/useSimulator';
 import Menu from './Menu';
+import {useChrome} from '../Chrome';
 
 export default function MobileNav({className}: {className: string}) {
 	const navigate = useNavigate();
-	const {showClassName} = useScrollOverpass();
+	const {showOverpassClassName} = useChrome();
 	const {simulating} = useSimulator();
 
 	return <>
@@ -21,7 +21,7 @@ export default function MobileNav({className}: {className: string}) {
 			w-full px-2 py-2
 			flex flex-col items-center justify-end
 			border-t border-white dark:border-secondary-900
-			${showClassName}
+			${showOverpassClassName}
 			${className}`}>
 
 			<AnimatePresence>

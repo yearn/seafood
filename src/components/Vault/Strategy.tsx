@@ -10,7 +10,7 @@ import {useVault} from './VaultProvider';
 import HarvestHistory from './HarvestHistory';
 import {useLocation} from 'react-router-dom';
 import {translateRiskScore, translateTvlImpact} from '../Risk/Score';
-import {scoreToBgColor} from '../Risk/colors';
+import {scoreToBgColor, scoreToBorderColor} from '../Risk/colors';
 import {useBlocks, findDebtRatioUpdate, findHarvest} from '../../context/useSimulator/BlocksProvider';
 import {useSimulator} from '../../context/useSimulator';
 import {Strategy as TStrategy} from '../../context/useVaults/types';
@@ -139,12 +139,12 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 	return <Accordian
 		title={<AccordianTitle index={index} strategy={strategy} />}
 		expanded={strategy.debtRatio?.gt(0)}
-		className={`px-4 py-2 border rounded-lg ${borderClassName}`}>
+		className={`px-2 sm:px-4 py-2 border ${borderClassName}`}>
 
 		<div className={'sm:px-2 sm:py-2 flex flex-col gap-2'}>
 			<div className={'flex flex-col gap-2 w-full'}>
 
-				<div className={'mb-2 flex items-center justify-between'}>
+				<div className={'my-2 flex items-center justify-between'}>
 					<div className={'text-lg font-bold whitespace-nowrap truncate'}>{'Target debt ratio'}</div>
 					<div className={'flex items-center gap-2 sm:gap-4'}>
 						<div className={'relative flex items-center'}>
@@ -214,22 +214,23 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 
 				<Row label={'Risk group'} alt={true} heading={true}>
 					<div className={'w-1/2 flex items-center justify-between'}>
-						<div>{'TVL Impact'}</div>
-						<div>{'Median Risk'}</div>
+						<div>{'Impact'}</div>
+						<div>{'Median'}</div>
 					</div>
 				</Row>
 
 				<Row label={<div className={'break-words truncate'}><LinkButton to={`/risk/${strategy.risk.riskGroupId}`}>{strategy.risk.riskGroup}</LinkButton></div>}>
 					<div className={'w-1/2 flex items-center justify-between'}>
 						<div className={`
-							px-2 flex items-center justify-center
-							text-sm rounded-lg
-							${scoreToBgColor(strategy.risk.riskDetails.TVLImpact)}`}>
+							px-2 flex items-center justify-center text-sm border
+							${scoreToBgColor(strategy.risk.riskDetails.TVLImpact, true)}
+							${scoreToBorderColor(strategy.risk.riskDetails.TVLImpact)}`}>
 							{translateTvlImpact(strategy.risk.riskDetails.TVLImpact as 0 | 1 | 2 | 3 | 4 | 5)}
 						</div>
 						<div className={`
-							px-2 flex items-center justify-center text-sm rounded-lg
-							${scoreToBgColor(strategy.risk.riskDetails.median)}`}>
+							px-2 flex items-center justify-center text-sm border
+							${scoreToBgColor(strategy.risk.riskDetails.median, true)}
+							${scoreToBorderColor(strategy.risk.riskDetails.median)}`}>
 							{translateRiskScore(strategy.risk.riskDetails.median as 1 | 2 | 3 | 4 | 5)}
 						</div>
 					</div>

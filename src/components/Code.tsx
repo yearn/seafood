@@ -1,16 +1,16 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {TbCopy, TbCheck} from 'react-icons/tb';
 import {BiGitBranch, BiGitPullRequest} from 'react-icons/bi';
-import {Button, Input, Spinner, TextArea} from '../controls';
-import {useAuth} from '../../context/useAuth';
-import {GithubClient} from '../../utils/github';
+import {Button, Input, Spinner, TextArea} from './controls';
+import {useAuth} from '../context/useAuth';
+import {GithubClient} from '../utils/github';
 import dayjs from 'dayjs';
-import config from '../../config.json';
-import {useSms} from '../../context/useSms';
-import {fetchAbi} from '../../utils/utils';
-import {Block, functions} from '../../context/useSimulator/Blocks';
-import {useVaults} from '../../context/useVaults';
-import {Strategy, Vault} from '../../context/useVaults/types';
+import config from '../config.json';
+import {useSms} from '../context/useSms';
+import {fetchAbi} from '../utils/utils';
+import {Block, functions} from '../context/useSimulator/Blocks';
+import {useVaults} from '../context/useVaults';
+import {Strategy, Vault} from '../context/useVaults/types';
 
 interface Commit {
 	title: string,
@@ -208,7 +208,7 @@ export default function Code({blocks}: {blocks: Block[]}) {
 						focus-visible:outline-primary-400 focus-visible:dark:outline-selected-600
 						focus:ring-0 focus:border-primary-400 focus:bg-gray-200
 						focus:dark:border-selected-600
-						rounded-md shadow-inner`} />
+						shadow-inner`} />
 					<TextArea _ref={bodyRef}
 						defaultValue={commit?.body.join('\n') || ''}
 						spellCheck={false}
@@ -217,13 +217,13 @@ export default function Code({blocks}: {blocks: Block[]}) {
 						bg-gray-300 dark:bg-gray-800
 						focus:ring-0 focus:border-primary-400 focus:bg-gray-200
 						focus:dark:border-selected-600
-						rounded-md shadow-inner resize-none`} />
+						shadow-inner resize-none`} />
 				</div>
 				<div className={'py-2 text-xs text-primary-600'}>{config.sms.script}</div>			
 			</>}
 			<div className={`
 				py-4 border border-gray-300 dark:border-gray-800
-				overflow-x-scroll rounded-md`}>
+				overflow-x-auto override-scroll`}>
 				{sms.access && (sms.mainpy || ['', '', '', '']).slice(-4, -1).map((line, index) => 
 					<div key={index} className={'flex items-center'}>
 						<div className={`
@@ -258,8 +258,7 @@ export default function Code({blocks}: {blocks: Block[]}) {
 		<div className={`
 			absolute bottom-0 w-full px-4 sm:px-8 py-4
 			flex items-center justify-end gap-4
-			border-t border-white dark:border-secondary-900
-			rounded-b-lg`}>
+			border-t border-white dark:border-secondary-900`}>
 			<Button onClick={onCopy}
 				disabled={blocks.length === 0} 
 				icon={copied ? TbCheck : TbCopy} 

@@ -21,7 +21,7 @@ export default function Search({className}: {className: string}) {
 		queryElement.current.value = '';
 	}
 
-	return <div className={'relative flex items-center'}>
+	return <div className={`relative flex items-center ${className}`}>
 		<Input
 			_ref={queryElement}
 			type={'text'}
@@ -29,11 +29,10 @@ export default function Search({className}: {className: string}) {
 			defaultValue={query}
 			onChange={(e: ChangeEvent) => {debounceQuery((e.target as HTMLInputElement)?.value);}} 
 			className={`
-			sm:w-72 h-10 px-3 leading-tight border outline-none
+			w-full h-10 px-3 leading-tight border outline-none
 			bg-secondary-300 border-transparent text-primary-900
 			dark:bg-secondary-900/80 dark:border-secondary-800 dark:text-primary-200
-			focus:border-selected-400 focus:dark:border-selected-600 focus:ring-0
-			${className}`} />
+			focus:border-selected-400 focus:dark:border-selected-600 focus:ring-0`} />
 		{query && <SmallIconButton icon={BsX} onClick={clearQuery} className={'absolute right-2'} />}
 	</div>;
 }

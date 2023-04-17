@@ -40,10 +40,8 @@ export default function FilterChip({
 	useEffect(() => {
 		if(location.hash === `#${hash}`) {
 			setDialog({
-				component: () => children
+				Component: () => <>{children}</>
 			});
-		} else if(location.hash.length === 0) {
-			setDialog(null);
 		}
 	}, [location, setDialog, hash, children]);
 

@@ -1,11 +1,19 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {FC, useCallback, useEffect} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import useKeypress from 'react-use-keypress';
 import {BsX} from 'react-icons/bs';
 import {motion} from 'framer-motion';
 import {useChrome} from './Chrome';
 
-export default function Dialog({Component, args, className=''}) {
+export interface DialogContext {
+	Component: FC<any>,
+	args?: {[key: string]: any;}, 
+	className?: string
+}
+
+export default function Dialog({
+	Component, args, className
+}: DialogContext) {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const {setDialog} = useChrome();
@@ -13,11 +21,11 @@ export default function Dialog({Component, args, className=''}) {
 	useKeypress(['Escape'], close);
 
 	useEffect(() => {
-		if(location.hash === '') setDialog(null);
+		if(location.hash === '') setDialog(undefined);
 	}, [location, setDialog]);
 
 	return <div className={`
-		fixed z-20 inset-0 flex items-center justify-center backdrop-blur
+		fixed z-20 inset-0 flex items-center justify-center bg-black/60
 		${className}`}>
 		<div onClick={close} className={'absolute inset-0 z-1'} />
 		<motion.div className={`

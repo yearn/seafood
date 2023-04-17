@@ -3,14 +3,14 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {BsBox, BsCode, BsPlay} from 'react-icons/bs';
 import SelectProvider from '../SelectProvider';
 import {AddBlockButton} from '../AddBlockDialog';
-import useScrollOverpass from '../../context/useScrollOverpass';
 import {useBlocks} from './useBlocks';
 import {Button} from '../controls';
+import {useChrome} from '../Chrome';
 
 export default function Toolbar() {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const {overpassClassName} = useScrollOverpass();
+	const {overpassClassName} = useChrome();
 	const {blocks, simulate, reset} = useBlocks();
 
 	return <div className={`sticky top-0 pl-4 pr-4 py-2 flex items-center justify-between ${overpassClassName}`}>

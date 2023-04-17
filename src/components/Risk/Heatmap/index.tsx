@@ -12,13 +12,13 @@ export default function Heatamp() {
 	const {available, risk, queryRe} = useFilter();
 
 	if(!available) return <div className={`
-		absolute w-full h-screen flex items-center justify-center`}>
+		absolute inset-0 flex items-center justify-center`}>
 		<Spinner />
 	</div>;
 
 	return <>
 		{risk.map(report => <div key={report.riskGroupId} className={`
-			pr-4 flex items-center gap-1
+			pr-4 sm:pr-0 flex items-center gap-1
 			sm:flex-none sm:grid sm:grid-cols-10`}>
 			<div onClick={() => navigate(`/risk/${report.riskGroupId}`)} className={`
 			min-w-[138px] sm:min-w-0 h-16 py-1 px-1

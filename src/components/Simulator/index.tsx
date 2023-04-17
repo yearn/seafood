@@ -18,7 +18,7 @@ export default function Simulator({className}: {className?: string}) {
 
 	useEffect(() => {
 		if(location.hash === '#code') setDialog({
-			component: Code, 
+			Component: Code, 
 			args: {blocks}
 		});
 	}, [location, setDialog, blocks]);

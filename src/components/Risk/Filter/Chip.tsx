@@ -40,10 +40,8 @@ export default function FilterChip({
 	useEffect(() => {
 		if(location.hash === `#${hash}`) {
 			setDialog({
-				component: () => children
+				Component: () => <>{children}</>
 			});
-		} else if(location.hash.length === 0) {
-			setDialog(null);
 		}
 	}, [location, setDialog, hash, children]);
 
@@ -75,7 +73,7 @@ export default function FilterChip({
 		{...getReferenceProps()} 
 		onClick={onClick}
 		className={`
-		h-8 flex items-center px-4 cursor-default
+		h-10 flex items-center px-4 cursor-default
 		border border-transparent
 
 		${open

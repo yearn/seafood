@@ -17,7 +17,6 @@ export default function ColumnHeader({
 	return <div onClick={onClick} className={`
 		min-w-[138px] sm:min-w-0 px-4 py-2
 		relative flex items-center justify-center text-sm 2xl:text-base
-		border border-transparent
 
 		${sort ? `text-secondary-600 dark:text-secondary-200
 			bg-secondary-300/40 dark:bg-primary-900/40

@@ -26,13 +26,13 @@ function getTvlSeries(vault: Vault) {
 
 function Minibars({vault}: {vault: Vault}) {
 	const series = getTvlSeries(vault);
-	const maxBar = 20;
+	const maxBar = 100;
 	const maxSeries = Math.max(...series);
 	const scale = maxBar / maxSeries;
 	const bars = series.map(tvl => Math.round(scale * tvl) || 1);
-	return <div className={'flex items-end gap-1'}>
+	return <div className={'h-[20px] flex items-end gap-1'}>
 		{bars.map((bar, index) => <div key={index} className={`
-			w-2 h-[${bar}px]
+			w-2 h-[${bar}%]
 			bg-secondary-600 group-hover:bg-selected-500
 			dark:bg-secondary-200 dark:group-hover:bg-selected-400`} />)}
 	</div>;

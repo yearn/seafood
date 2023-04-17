@@ -1,9 +1,9 @@
 import React, {useMemo} from 'react';
 import {RiskReportWithVaults} from '.';
-import useScrollOverpass from '../../../context/useScrollOverpass';
+import {useChrome} from '../../Chrome';
 
 export default function Header({group}: {group: RiskReportWithVaults}) {
-	const {overpassClassName} = useScrollOverpass();
+	const {overpassClassName} = useChrome();
 
 	const strategyCount = useMemo(() => {
 		return group.vaults.map(v => v.strategies.length).reduce((a, b) => a + b, 0);

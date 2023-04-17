@@ -5,7 +5,7 @@ import Wordmark from './Wordmark';
 import Icon from './Icon';
 import {A} from './controls';
 import Starfield from './Starfield';
-import {useVaultStatusUI} from './Sync';
+import {useVaultStatusUI} from './MobileNav/Sync';
 import {useVaults} from '../context/useVaults';
 import Lux from './Lux';
 import {useAuth} from '../context/useAuth';
@@ -140,7 +140,7 @@ export default function Powerstrip({className}: {className?: string}) {
 
 		<AnimatePresence>
 			{hover && <motion.div key={'powerstrip-menu'}
-				transition={{type: 'spring', stiffness: 800, damping: 32}}
+				transition={{type: 'spring', stiffness: 2000, damping: 32}}
 				initial={{x: -6}}
 				animate={{x: 0}}
 				exit={{x: -10, opacity: 0}}

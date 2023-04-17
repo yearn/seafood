@@ -1,4 +1,5 @@
 import React from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
 import {IconType} from 'react-icons';
 import Spinner from './Spinner';
 
@@ -65,13 +66,22 @@ export default function Button({
 			width={'1.5rem'}
 			height={'1.5rem'} />}
 
-		{badge && <div className={'absolute -top-2 -right-2 flex w-5 h-5'}>
-			<div className={`
-				relative w-5 h-5 flex items-center justify-center
-				bg-primary-300 dark:bg-primary-800
-				font-mono text-xs
-				rounded-full shadow`}>{badge}</div>
-		</div>}
+		<AnimatePresence initial={false}>
+			{badge && <motion.div
+				key={badge}
+				transition={{type: 'spring', stiffness: 2000, damping: 32}}
+				initial={{y: 6, opacity: 0}}
+				animate={{y: 0, opacity: 1}}
+				exit={{y: 6, opacity: 0}}
+				className={'absolute -top-2 -right-2 flex w-5 h-5'}>
+				<div className={`
+					relative w-5 h-5 flex items-center justify-center
+					bg-primary-300 dark:bg-primary-800
+					font-mono text-xs
+					shadow`}>{badge}</div>
+			</motion.div>}
+		</AnimatePresence>
+
 
 		{notify && <div className={'absolute -top-1 -right-1 flex h-3 w-3'}>
 			<div className={`

@@ -15,6 +15,7 @@ export default function Switch({checked, onChange, checkedIcon, uncheckedIcon}) 
 	}, [darkMode]);
 
 	return <ReactSwitch
+		borderRadius={0}
 		onChange={onChange}
 		checked={checked}
 		offColor={offColor} onColor={onColor}
