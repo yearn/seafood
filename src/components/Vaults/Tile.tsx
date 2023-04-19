@@ -3,11 +3,14 @@ import {BigNumber} from 'ethers';
 import {Vault} from '../../context/useVaults/types';
 import {useFilter} from './Filter/useFilter';
 import {Row} from '../controls';
-import {Field, Percentage, Tokens} from '../controls/Fields';
+import {Bps, Field, Percentage, Tokens} from '../controls/Fields';
 import {formatNumber, getAddressExplorer, highlightString, truncateAddress} from '../../utils/utils';
 import {BsStar, BsStarFill} from 'react-icons/bs';
 import {TbCheck, TbCopy} from 'react-icons/tb';
 import {useFavorites} from '../../context/useFavorites';
+import {useBlocks} from '../../context/useSimulator/BlocksProvider';
+import {useSimulator} from '../../context/useSimulator';
+import {useApyProbeDelta, useApyProbeResults} from '../../context/useSimulator/ProbesProvider/useApyProbe';
 
 function Chip({className, children}: {className: string, children: ReactNode}) {
 	return <div className={`
@@ -38,16 +41,26 @@ function Minibars({vault}: {vault: Vault}) {
 	</div>;
 }
 
-function TileButton({onClick, className, children}: {onClick: () => void, className: string, children?: ReactNode}) {
+function TileButton({
+	onClick,
+	selected,
+	className,
+	children
+}: {
+	onClick: () => void,
+	selected?: boolean,
+	className: string,
+	children?: ReactNode
+}) {
 	return <div onClick={onClick} className={`
 	group relative
-	border border-transparent
+	border ${selected ? 'border-primary-400 dark:border-primary-600' : 'border-transparent'}
 	hover:border-selected-700 hover:text-selected-700
 	dark:hover:border-selected-400 dark:hover:text-selected-400
 	cursor-pointer ${className}`}>{children}</div>;
 }
 
-function FavoriteButton({vault, className}: {vault: Vault, className: string}) {
+function FavoriteButton({vault, selected, className}: {vault: Vault, selected: boolean, className: string}) {
 	const favorites = useFavorites();
 
 	const toggle = useCallback(() => {
@@ -61,13 +74,13 @@ function FavoriteButton({vault, className}: {vault: Vault, className: string}) {
 		favorites.setVaults(addresses);
 	}, [vault, favorites]);
 
-	return <TileButton onClick={toggle} className={className}>
+	return <TileButton onClick={toggle} selected={selected} className={className}>
 		{!favorites.vaults.includes(vault.address) && <BsStar />}
 		{favorites.vaults.includes(vault.address) && <BsStarFill className={'fill-attention-400 glow-attention-md'} />}
 	</TileButton>;
 }
 
-function CopyButton({clip, className}: {clip: string, className: string}) {
+function CopyButton({clip, selected, className}: {clip: string, selected: boolean, className: string}) {
 	const [copied, setCopied] = useState(false);
 
 	const copy = useCallback(() => {
@@ -81,23 +94,30 @@ function CopyButton({clip, className}: {clip: string, className: string}) {
 		}
 	}, [clip, setCopied]);
 
-	return <TileButton onClick={copy} className={className}>
-		{!copied && <TbCopy className={''} />}
-		{copied && <TbCheck className={''} />}
+	return <TileButton onClick={copy} selected={selected} className={className}>
+		{!copied && <TbCopy />}
+		{copied && <TbCheck />}
 	</TileButton>;
 }
 
 export default function Tile({vault, onClick}: {vault: Vault, onClick: () => void}) {
 	const {queryRe} = useFilter();
+	const {blocksForVault, computeVaultDr} = useBlocks();
 
+	const hasBlocks = useMemo(() => blocksForVault(vault).length > 0, [vault, blocksForVault]);
+	const debtRatio = useMemo(() => computeVaultDr(vault), [vault, computeVaultDr]);
 	const tvl = useMemo(() => {
 		const series = getTvlSeries(vault);
 		if(!series.length) return NaN;
 		return series[series.length - 1];
 	}, [vault]);
 
+	const simulator = useSimulator();
+	const apyProbeResults = useApyProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
+	const apyDelta = useApyProbeDelta(vault, apyProbeResults, false);
+
 	return <div className={'flex flex-col gap-2'}>
-		<TileButton onClick={onClick} className={'p-1 sm:p-3'}>
+		<TileButton onClick={onClick} selected={hasBlocks} className={'p-1 sm:p-3'}>
 			<Row label={<div className={'grow pr-4 truncate font-bold text-lg'}>{highlightString(vault.name, queryRe)}</div>} className={'z-10'}>
 				<div className={`
 					flex items-center gap-2
@@ -112,17 +132,21 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						`}>{vault.network.name}</Chip>
 				</div>
 			</Row>
-			<Row label={'APY'} alt={true} heading={true}>
-				<Percentage value={vault.apy.net} />
-			</Row>
-			<Row label={'TVL (USD)'}>
+			<Row label={'TVL (USD)'} alt={true} heading={true}>
 				<div className={'flex items-center gap-4'}>
 					<Minibars vault={vault} />
 					<Field value={formatNumber(tvl, 2, 'No TVL', true)} />
 				</div>
 			</Row>
+			<Row label={'APY'}>
+				{!(apyProbeResults.stop && apyDelta) && <Percentage value={vault.apy.net} />}
+				{apyProbeResults.stop && apyDelta && <div className={'flex items-center gap-2'}>
+					<Percentage simulated={true} value={apyProbeResults.stop.apy.net} />
+					<Bps value={apyDelta.net} />
+				</div>}
+			</Row>
 			<Row label={'Allocated'} alt={true}>
-				<Percentage bps={true} decimals={0} value={vault.debtRatio?.toNumber() || 0} />
+				<Percentage simulated={debtRatio.touched} bps={true} decimals={2} value={debtRatio.value} />
 			</Row>
 			<Row label={'Free assets'}>
 				<Tokens decimals={vault.token.decimals || 18} value={vault.totalAssets?.sub(vault.totalDebt || BigNumber.from(0)) || BigNumber.from(0)} />
@@ -132,12 +156,12 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 			</Row>
 		</TileButton>
 		<div className={'flex items-center gap-2'}>
-			<FavoriteButton vault={vault} className={'w-1/4 py-3 flex items-center justify-center'} />
-			<TileButton onClick={() => window.open(getAddressExplorer(vault.network.chainId, vault.address), '_blank', 'noreferrer')} 
-				className={'w-1/2 py-3 flex items-center justify-center font-mono text-sm'}>
+			<FavoriteButton vault={vault} selected={hasBlocks} className={'w-1/4 h-10 py-3 flex items-center justify-center'} />
+			<TileButton selected={hasBlocks} onClick={() => window.open(getAddressExplorer(vault.network.chainId, vault.address), '_blank', 'noreferrer')} 
+				className={'w-1/2 h-10 py-3 flex items-center justify-center font-mono text-sm'}>
 				{truncateAddress(vault.address)}
 			</TileButton>
-			<CopyButton clip={vault.address} className={'w-1/4 py-3 flex items-center justify-center'} />
+			<CopyButton clip={vault.address} selected={hasBlocks} className={'w-1/4 h-10 py-3 flex items-center justify-center'} />
 		</div>
 	</div>;
 }

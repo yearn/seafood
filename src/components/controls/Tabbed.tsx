@@ -1,10 +1,4 @@
-// write me react UI components that create a bare minimum tabbed UI structure
-// - use TypeScript
-// - do not include any styling
-// - clicking tabs should show and hide different content
-// - only responsd with code, no conversation
-
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 interface TabProps {
 	label: string
@@ -21,11 +15,23 @@ interface TabbedProps {
 	className?: string
 	tabClassName?: string
 	activeTabClassName?: string,
-	contentClassName?: string
+	contentClassName?: string,
+	storageKey?: string
 }
 
-const Tabbed: React.FC<TabbedProps> = ({tabs, className, tabClassName, activeTabClassName, contentClassName}) => {
-	const [activeTabIndex, setActiveTabIndex] = useState(0);
+const Tabbed: React.FC<TabbedProps> = ({tabs, className, tabClassName, activeTabClassName, contentClassName, storageKey}) => {
+	const [activeTabIndex, setActiveTabIndex] = useState(() => {
+		if(!storageKey) return 0;
+		const stored = localStorage.getItem(storageKey);
+		if(!stored) return 0;
+		return parseInt(stored, 10) || 0;
+	});
+
+	useEffect(() => {
+		if(!storageKey) return;
+		localStorage.setItem(storageKey, activeTabIndex.toString());
+	}, [storageKey, activeTabIndex]);
+
 	return <div>
 		<div className={className}>
 			{tabs.map(({label}, index) => <Tab

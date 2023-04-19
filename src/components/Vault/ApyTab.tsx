@@ -1,61 +1,28 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import {Vault} from '../../context/useVaults/types';
 import {getApyComputer} from '../../math/apy';
 import {useSimulator} from '../../context/useSimulator';
-import {Apy} from '../../math/apy/types';
-import {ApyOutput} from '../../context/useSimulator/ProbesProvider/useApyProbe';
+import {useApyProbeDelta, useApyProbeResults} from '../../context/useSimulator/ProbesProvider/useApyProbe';
 import useLocalStorage from '../../utils/useLocalStorage';
 import {Row, Switch, Tooltip} from '../controls';
 import {TiWarning} from 'react-icons/ti';
 import {BsLightningChargeFill} from 'react-icons/bs';
 import {BiBadgeCheck} from 'react-icons/bi';
-import {formatBps, formatPercent} from '../../utils/utils';
+import {formatPercent} from '../../utils/utils';
 import {computeDegradationTime} from '../../utils/vaults';
-import {BigNumber, FixedNumber} from 'ethers';
-import {BPS} from '../../constants';
+import {Bps} from '../controls/Fields';
 
 dayjs.extend(duration);
-
-function BpsCell({value}: {value?: number}) {
-	if(!value) {
-		return <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>
-			{'--'}
-		</div>;
-	} else {
-		return <div className={`
-			font-mono text-right
-			${value < 0 ? 'text-red-400' : 'text-primary-600 dark:text-primary-400'}`}>
-			{`${Number.isFinite(value) ? value < 0 ? '' : '+' : ''}${formatBps(value, '--')}`}
-		</div>;
-	}
-}
 
 export default function ApyTab({vault}: {vault: Vault}) {
 	const [apyComputer] = useState(getApyComputer(vault?.apy.type || 'v2:averaged'));
 	const simulator = useSimulator();
-	const [apyDelta, setApyDelta] = useState<Apy|null>(null);
 	const [liveApy, setLiveApy] = useLocalStorage('vault.liveApy', false);
 
-	const apyProbeResult = useMemo(() => {
-		if(!vault) return {} as {
-			start: ApyOutput | null | undefined,
-			stop: ApyOutput | null | undefined
-		};
-
-		const start = (simulator.probeStartResults
-			.find(r => r.name === 'apy')
-			?.output as ApyOutput[])
-			?.find(o => o.vault === vault.address);
-
-		const stop = (simulator.probeStopResults
-			.find(r => r.name === 'apy')
-			?.output as ApyOutput[])
-			?.find(o => o.vault === vault.address);
-
-		return {start, stop};
-	}, [vault, simulator.probeStartResults, simulator.probeStopResults]);
+	const apyProbeResults = useApyProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
+	const apyDelta = useApyProbeDelta(vault, apyProbeResults, liveApy);
 
 	const degradation = useMemo(() => {
 		if(!vault) return '';
@@ -64,32 +31,6 @@ export default function ApyTab({vault}: {vault: Vault}) {
 		if(duration.asHours() >= 1) return ` (+${Math.floor(duration.asHours())}hr degradation)`;
 		return ` (+${Math.floor(duration.asMinutes())}min degradation)`;
 	}, [vault]);
-
-	useEffect(() => {
-		if(!vault) return;
-		if(apyProbeResult.start && apyProbeResult.stop) {
-			const pps = FixedNumber.from((apyProbeResult.stop.apy.pps as BigNumber)
-				.sub(apyProbeResult.start.apy.pps))
-				.divUnsafe(FixedNumber.from(apyProbeResult.start.apy.pps))
-				.mulUnsafe(BPS)
-				.toUnsafeFloat();
-
-			const startApy = liveApy
-				? apyProbeResult.start.apy
-				: vault.apy;
-
-			setApyDelta({
-				[-7]: apyProbeResult.stop.apy[-7] - startApy[-7],
-				[-30]: apyProbeResult.stop.apy[-30] - startApy[-30],
-				inception: apyProbeResult.stop.apy.inception - startApy.inception,
-				net: apyProbeResult.stop.apy.net - startApy.net,
-				gross: apyProbeResult.stop.apy.gross - startApy.gross,
-				pps
-			});
-		} else {
-			setApyDelta(null);
-		}
-	}, [apyProbeResult, vault, liveApy]);
 
 	return <div className={'mb-4 flex flex-col gap-4'}>
 		<div className={'w-full px-2 py-2 flex items-center justify-between'}>
@@ -127,42 +68,42 @@ export default function ApyTab({vault}: {vault: Vault}) {
 
 		<Row label={'Gross'} alt={true} heading={true}>
 			<div className={'w-3/4 grid grid-cols-3'}>
-				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResult.start?.apy.gross, 4, '--')}</div>}
+				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy.gross, 4, '--')}</div>}
 				{!liveApy && <div className={'font-mono text-right'}>{formatPercent(vault?.apy.gross, 4)}</div>}
-				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResult.stop?.apy.gross, 4, '--')}</div>
-				<BpsCell value={apyDelta?.gross} />
+				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy.gross, 4, '--')}</div>
+				<Bps value={apyDelta?.gross || 0} />
 			</div>
 		</Row>
 		<Row label={'Net'}>
 			<div className={'w-3/4 grid grid-cols-3'}>
-				{liveApy && <div className={'font-bold font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResult.start?.apy.net, 4, '--')}</div>}
+				{liveApy && <div className={'font-bold font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy.net, 4, '--')}</div>}
 				{!liveApy && <div className={'font-bold font-mono text-right'}>{formatPercent(vault?.apy.net, 4)}</div>}
-				<div className={'font-bold font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResult.stop?.apy.net, 4, '--')}</div>
-				<BpsCell value={apyDelta?.net} />
+				<div className={'font-bold font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy.net, 4, '--')}</div>
+				<Bps value={apyDelta?.net || 0} />
 			</div>
 		</Row>
 		<Row label={'Weekly'} alt={true}>
 			<div className={'w-3/4 grid grid-cols-3'}>
-				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResult.start?.apy[-7], 4, '--')}</div>}
+				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy[-7], 4, '--')}</div>}
 				{!liveApy && <div className={'font-mono text-right'}>{formatPercent(vault?.apy[-7], 4)}</div>}
-				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResult.stop?.apy[-7], 4, '--')}</div>
-				<BpsCell value={apyDelta?.[-7]} />
+				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy[-7], 4, '--')}</div>
+				<Bps value={apyDelta?.[-7] || 0} />
 			</div>
 		</Row>
 		<Row label={'Monthly'}>
 			<div className={'w-3/4 grid grid-cols-3'}>
-				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResult.start?.apy[-30], 4, '--')}</div>}
+				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy[-30], 4, '--')}</div>}
 				{!liveApy && <div className={'font-mono text-right'}>{formatPercent(vault?.apy[-30], 4)}</div>}
-				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResult.stop?.apy[-30], 4, '--')}</div>
-				<BpsCell value={apyDelta?.[-30]} />
+				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy[-30], 4, '--')}</div>
+				<Bps value={apyDelta?.[-30] || 0} />
 			</div>
 		</Row>
 		<Row label={'Inception'} alt={true}>
 			<div className={'w-3/4 grid grid-cols-3'}>
-				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResult.start?.apy.inception, 4, '--')}</div>}
+				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy.inception, 4, '--')}</div>}
 				{!liveApy && <div className={'font-mono text-right'}>{formatPercent(vault?.apy.inception, 4)}</div>}
-				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResult.stop?.apy.inception, 4, '--')}</div>
-				<BpsCell value={apyDelta?.inception} />
+				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy.inception, 4, '--')}</div>
+				<Bps value={apyDelta?.inception || 0} />
 			</div>
 		</Row>
 		<Row label={'PPS (x1000)'}>

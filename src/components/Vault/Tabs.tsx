@@ -19,6 +19,7 @@ export default function Tabs({className}: {className?: string}) {
 			tabClassName={'px-6 py-2 border border-transparent bg-secondary-200 dark:bg-primary-950'}
 			activeTabClassName={'px-6 py-2 border-t border-x border-primary-400'}
 			contentClassName={'py-6'}
+			storageKey={'src/vault/tabs'}
 			tabs={[
 				{label: 'Assets', content: AssetsTab({vault})},
 				{label: 'APY', content: ApyTab({vault})},
@@ -34,6 +35,7 @@ export default function Tabs({className}: {className?: string}) {
 			tabClassName={'px-6 py-2 border border-transparent bg-primary-950'}
 			activeTabClassName={'px-6 py-2 border-t border-x border-primary-600'}
 			contentClassName={'py-6'}
+			storageKey={'src/vault/tabs'}
 			tabs={[
 				{label: 'Assets', content: AssetsTab({vault})},
 				{label: 'APY', content: ApyTab({vault})},

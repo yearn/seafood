@@ -49,7 +49,7 @@ export default function Risk() {
 				<Heatamp />
 			</ScrollContainer>
 		</div>
-		<div className={`fixed bottom-0 left-6 right-0 sm:px-24 2xl:px-32 ${showOverpassClassName}`}>
+		<div className={`sticky bottom-0 left-6 right-0 sm:px-24 2xl:px-32 ${showOverpassClassName}`}>
 			<Footer innerRef={footerContainer} />
 		</div>
 	</div>;
@@ -57,9 +57,9 @@ export default function Risk() {
 	return <div className={'w-full pb-20'}>
 		<div className={'relative flex flex-col gap-1'}>
 			<div className={`
-				sticky top-0 left-0 sm:pr-4 pt-2 pb-2 flex flex-col items-center gap-2
+				sticky top-0 left-0 pt-2 pb-2 flex flex-col items-center gap-2
 				${overpassClassName}`}>
-				<div className={'w-full sm:pb-2 col-span-10'}>
+				<div className={'w-full col-span-10'}>
 					<Filter />
 				</div>
 				{header}
@@ -68,11 +68,11 @@ export default function Risk() {
 				onStartScroll={onScrollHeatmap} 
 				onScroll={onScrollHeatmap} 
 				onEndScroll={onScrollHeatmap} 
-				className={'w-full sm:px-24 2xl:px-32 flex flex-col gap-1'}>
+				className={'w-full flex flex-col gap-1'}>
 				<Heatamp />
 			</ScrollContainer>
 		</div>
-		<div className={`fixed w-full bottom-0 sm:px-24 2xl:px-32 ${showOverpassClassName}`}>
+		<div className={`fixed w-full bottom-0 ${showOverpassClassName}`}>
 			<Footer innerRef={footerContainer} />
 		</div>
 	</div>;

@@ -10,6 +10,7 @@ export interface Touched {
 
 export interface BlocksContext {
 	blocks: Block[],
+	blocksForVault: (vault: Vault) => Block[],
 	addHarvest: (vault: Vault, strategy: Strategy) => Promise<void>,
 	removeHarvest: (vault: Vault, strategy: Strategy) => void,
 	addDebtRatioUpdate: (vault: Vault, strategy: Strategy, debtRatio: number) => Promise<void>,
@@ -62,6 +63,10 @@ export default function BlocksProvider({children}: {children: ReactNode}) {
 			return result;
 		});
 	}, [setBlocksByVault]);
+
+	const blocksForVault = useCallback((vault: Vault) => {
+		return blocksByVault[vault.address] || [];
+	}, [blocksByVault]);
 
 	const addHarvest = useCallback(async (vault: Vault, strategy: Strategy) => {
 		const block = await makeHarvestBlock(vault, strategy);
@@ -157,6 +162,7 @@ export default function BlocksProvider({children}: {children: ReactNode}) {
 
 	return <blocksContext.Provider value={{
 		blocks,
+		blocksForVault,
 		addHarvest,
 		removeHarvest,
 		addDebtRatioUpdate,

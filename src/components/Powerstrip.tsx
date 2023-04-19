@@ -132,7 +132,7 @@ export default function Powerstrip({className}: {className?: string}) {
 		className={`
 		bg-secondary-100 dark:bg-black
 		${className}`}>
-		<div className={'z-10 pt-6 flex flex-col items-center justify-center gap-2'}>
+		<div className={'z-10 pt-5 flex flex-col items-center justify-center gap-2'}>
 			{Lights.map(light => light)}
 		</div>
 
@@ -152,7 +152,7 @@ export default function Powerstrip({className}: {className?: string}) {
 					bg-secondary-100 dark:bg-black drop-shadow-lg`}></div>
 				<div className={`
 					absolute z-[10] top-0 left-0
-					w-full h-full pt-6 pr-3 pb-12
+					w-full h-full pt-5 pr-3 pb-12
 					flex flex-col justify-between
 					bg-secondary-100 dark:bg-black`}>
 					<div className={'flex flex-col gap-2'}>
