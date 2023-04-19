@@ -34,7 +34,7 @@ function useCommitGenerator(blocks: Block[]) {
 		const variables = [] as string[];
 		const tasks = [] as string[];
 		let hasManualHarvests = false;
-		functionDef.push('def go_seafood():');
+		functionDef.push('def eat_your_seafood():');
 		for(const block of blocks) {
 			switch(`${block.primitive}/${block.call.signature}`) {
 			case `vault/${functions.vaults.updateDebtRatio.signature}`: {
@@ -44,7 +44,8 @@ function useCommitGenerator(blocks: Block[]) {
 				if(!strategy) throw '!strategy';
 
 				if(!touchedVaults.includes(vault)) {
-					tasks.push(`\t# ${vault.name}`);
+					tasks.push('');
+					tasks.push(`\t# ~ ~ ~ ${vault.name} ~ ~ ~ <*)))><`);
 					tasks.push(`\tvault = safe.contract("${vault.address}")`);
 					tasks.push('');
 					touchedVaults.push(vault);

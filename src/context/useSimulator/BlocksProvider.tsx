@@ -1,4 +1,4 @@
-import React, {createContext, ReactNode, useCallback, useContext, useState} from 'react';
+import React, {createContext, ReactNode, useCallback, useContext, useMemo, useState} from 'react';
 import {Strategy, Vault} from '../useVaults/types';
 import {Block, functions, makeDebtRatioUpdateBlock, makeHarvestBlock} from './Blocks';
 
@@ -11,7 +11,7 @@ export interface Touched {
 export interface BlocksContext {
 	blocks: Block[],
 	addHarvest: (vault: Vault, strategy: Strategy) => Promise<void>,
-	removeHarvest: (strategy: Strategy) => void,
+	removeHarvest: (vault: Vault, strategy: Strategy) => void,
 	addDebtRatioUpdate: (vault: Vault, strategy: Strategy, debtRatio: number) => Promise<void>,
 	removeDebtRatioUpdate: (vault: Vault, strategy: Strategy) => void,
 	extractDrUpdates: (vault: Vault) => {[address: string]: number},
@@ -49,19 +49,31 @@ export const blocksContext = createContext<BlocksContext>({} as BlocksContext);
 export const useBlocks = () => useContext(blocksContext);
 
 export default function BlocksProvider({children}: {children: ReactNode}) {
-	const [blocks, setBlocks] = useState<Block[]>([]);
+	const [blocksByVault, setBlocksByVault] = useState<{[key: string]: Block[]}>({});
+
+	const blocks = useMemo(() => {
+		return Object.keys(blocksByVault).map(key => blocksByVault[key]).flat();
+	}, [blocksByVault]);
+
+	const setBlocks = useCallback((vault: Vault, setter: (current: Block[]) => Block[]) => {
+		setBlocksByVault(current => {
+			const result = {...current};
+			result[vault.address] = setter(result[vault.address] || []);
+			return result;
+		});
+	}, [setBlocksByVault]);
 
 	const addHarvest = useCallback(async (vault: Vault, strategy: Strategy) => {
 		const block = await makeHarvestBlock(vault, strategy);
-		setBlocks(current => {
+		setBlocks(vault, current => {
 			const index = findHarvestIndex(current, strategy);
 			if(index > -1) return current;
 			return [...current, block];
 		});
 	}, [setBlocks]);
 
-	const removeHarvest = useCallback((strategy: Strategy) => {
-		setBlocks(current => {
+	const removeHarvest = useCallback((vault: Vault, strategy: Strategy) => {
+		setBlocks(vault, current => {
 			const index = findHarvestIndex(current, strategy);
 			if(index < 0) return current;
 			const result = [...current];
@@ -73,7 +85,7 @@ export default function BlocksProvider({children}: {children: ReactNode}) {
 	const addDebtRatioUpdate = useCallback(async (vault: Vault, strategy: Strategy, debtRatio: number) => {
 		const debtRatioUpdate = await makeDebtRatioUpdateBlock(vault, strategy, debtRatio);
 		const harvest = await makeHarvestBlock(vault, strategy);
-		setBlocks(current => {
+		setBlocks(vault, current => {
 			const result = [...current];
 			const debtRatioUpdateIndex = findDebtRatioUpdateIndex(result, vault, strategy);
 			if(debtRatioUpdateIndex > -1) result.splice(debtRatioUpdateIndex, 1);
@@ -98,7 +110,7 @@ export default function BlocksProvider({children}: {children: ReactNode}) {
 	}, [setBlocks]);
 
 	const removeDebtRatioUpdate = useCallback((vault: Vault, strategy: Strategy) => {
-		setBlocks(current => {
+		setBlocks(vault, current => {
 			const result = [...current];
 			const debtRatioUpdateIndex = findDebtRatioUpdateIndex(result, vault, strategy);
 			if(debtRatioUpdateIndex < 0) return current;
@@ -140,8 +152,8 @@ export default function BlocksProvider({children}: {children: ReactNode}) {
 	}, [extractDrUpdates]);
 
 	const reset = useCallback(() => {
-		setBlocks([]);
-	}, [setBlocks]);
+		setBlocksByVault({});
+	}, [setBlocksByVault]);
 
 	return <blocksContext.Provider value={{
 		blocks,

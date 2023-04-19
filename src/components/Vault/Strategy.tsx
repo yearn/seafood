@@ -119,7 +119,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 	const toggleHarvest = useCallback(async () => {
 		if(!vault) return;
 		if(hasHarvestBlock) {
-			await removeHarvest(strategy);
+			await removeHarvest(vault, strategy);
 		} else {
 			await addHarvest(vault, strategy);
 		}
@@ -160,7 +160,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 		: 'bg-gray-300 dark:bg-primary-900/40'}
 							focus:border-primary-400 focus:ring-0
 							focus:dark:border-selected-600 focus:ring-0
-							rounded-md shadow-inner`}
+							shadow-inner`}
 								defaultValue={debtRatioDefaultValue}
 								onChange={onChangeDebtRatio}
 								disabled={simulating}
