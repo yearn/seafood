@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import ScrollContainer from 'react-indiana-drag-scroll';
 
 interface TabProps {
 	label: string
@@ -24,7 +25,8 @@ const Tabbed: React.FC<TabbedProps> = ({tabs, className, tabClassName, activeTab
 		if(!storageKey) return 0;
 		const stored = localStorage.getItem(storageKey);
 		if(!stored) return 0;
-		return parseInt(stored, 10) || 0;
+		const result = parseInt(stored, 10) || 0;
+		return result > (tabs.length - 1) ? 0 : result;
 	});
 
 	useEffect(() => {
@@ -33,7 +35,7 @@ const Tabbed: React.FC<TabbedProps> = ({tabs, className, tabClassName, activeTab
 	}, [storageKey, activeTabIndex]);
 
 	return <div>
-		<div className={className}>
+		<ScrollContainer className={className}>
 			{tabs.map(({label}, index) => <Tab
 				key={label}
 				label={label}
@@ -41,7 +43,7 @@ const Tabbed: React.FC<TabbedProps> = ({tabs, className, tabClassName, activeTab
 				onClick={() => setActiveTabIndex(index)}
 				className={index === activeTabIndex ? activeTabClassName : tabClassName}
 			/>)}
-		</div>
+		</ScrollContainer>
 		<div className={contentClassName}>{tabs.length && tabs[activeTabIndex].content}</div>
 	</div>;
 };

@@ -122,7 +122,7 @@ async function openDb() {
 			if(event.newVersion == 3) {
 				const vaults = await getStore<ySeafood.Vault[]>(dbRequest.result, 'vaults');
 				refreshStore(dbRequest.result, 'vaults', 
-					vaults.map(v => ({...v, token: {address: '', name: '', symbol: '', decimals: 0}}))
+					vaults.map(v => ({...v, token: {address: '', name: '', symbol: '', decimals: 0, description: ''}}))
 				);
 			}
 		};

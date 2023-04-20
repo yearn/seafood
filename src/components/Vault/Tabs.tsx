@@ -5,6 +5,7 @@ import StrategiesTab from './StrategiesTab';
 import AssetsTab from './AssetsTab';
 import ApyTab from './ApyTab';
 import {useMediumBreakpoint} from '../../utils/breakpoints';
+import InfoTab from './InfoTab';
 
 export default function Tabs({className}: {className?: string}) {
 	const mediumBreakpoint = useMediumBreakpoint();
@@ -23,7 +24,7 @@ export default function Tabs({className}: {className?: string}) {
 			tabs={[
 				{label: 'Assets', content: AssetsTab({vault})},
 				{label: 'APY', content: ApyTab({vault})},
-				{label: 'Info', content: '...'}
+				{label: 'Info', content: InfoTab({vault})}
 			]} />
 	</div>;
 
@@ -39,7 +40,8 @@ export default function Tabs({className}: {className?: string}) {
 			tabs={[
 				{label: 'Assets', content: AssetsTab({vault})},
 				{label: 'APY', content: ApyTab({vault})},
-				{label: 'Strategies', content: StrategiesTab({vault})}
+				{label: 'Strategies', content: StrategiesTab({vault})},
+				{label: 'Info', content: InfoTab({vault})}
 			]} />
 	</div>;
 }

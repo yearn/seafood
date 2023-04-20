@@ -18,8 +18,8 @@ interface ChromeContext {
 }
 
 const overpass = {
-	showClassName: 'bg-secondary-100/60 dark:bg-black/60 backdrop-blur-md shadow',
-	hideClassName: 'bg-secondary-100/60 dark:bg-black/60 backdrop-blur-md'
+	showClassName: 'bg-secondary-100 dark:bg-black shadow',
+	hideClassName: 'bg-secondary-100 dark:bg-black'
 };
 
 const	chromeContext = createContext({} as ChromeContext);

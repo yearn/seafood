@@ -17,7 +17,8 @@ export interface Token {
 	address: string,
 	name: string,
 	symbol: string,
-	decimals: number
+	decimals: number,
+	description: string
 }
 
 export interface Apy {
@@ -73,6 +74,7 @@ export interface TVLHistory {
 export interface Strategy {
 	address: string,
 	name: string,
+	description: string,
 	risk: RiskReport,
 	network: Network,
 	activation: BigNumber,
@@ -175,6 +177,7 @@ export function parseStrategy(vault: yDaemon.Vault, strategy: yDaemon.Strategy, 
 	return {
 		address: strategy.address,
 		name: strategy.name,
+		description: strategy.description,
 		risk: {
 			...strategy.risk, 
 			riskGroupId: riskGroupNameToId(strategy.risk.riskGroup),
