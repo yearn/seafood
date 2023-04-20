@@ -3,7 +3,7 @@ import {TbTractor} from 'react-icons/tb';
 import {BsChevronCompactDown, BsChevronCompactUp} from 'react-icons/bs';
 import TimeAgo from 'react-timeago';
 import {formatNumber, getAddressExplorer, truncateAddress} from '../../utils/utils';
-import {A, Button, Input, LinkButton, Row} from '../controls';
+import {A, Button, Input, LinkButton, Row, Switch} from '../controls';
 import InfoChart from './InfoChart';
 import CopyButton from './CopyButton';
 import {useVault} from './VaultProvider';
@@ -11,10 +11,10 @@ import HarvestHistory from './HarvestHistory';
 import {useLocation} from 'react-router-dom';
 import {translateRiskScore, translateTvlImpact} from '../Risk/Score';
 import {scoreToBgColor, scoreToBorderColor} from '../Risk/colors';
-import {useBlocks, findDebtRatioUpdate, findHarvest} from '../../context/useSimulator/BlocksProvider';
+import {useBlocks, findDebtRatioUpdate, findHarvest, findSetDoHealthCheck} from '../../context/useSimulator/BlocksProvider';
 import {useSimulator} from '../../context/useSimulator';
 import {Strategy as TStrategy} from '../../context/useVaults/types';
-import {BigNumber, FixedNumber} from 'ethers';
+import {BigNumber, FixedNumber, ethers} from 'ethers';
 import {functions} from '../../context/useSimulator/Blocks';
 import {HarvestOutput} from '../../context/useSimulator/ProbesProvider/useHarvestProbe';
 import Accordian from '../controls/Accordian';
@@ -33,7 +33,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 	const {vault, reports} = useVault();
 	const strategyHarvestHistory = reports.filter(r => r.strategy_address === strategy.address);
 	const [showHarvestHistory, setShowHarvestHistory] = useState(false);
-	const {blocks, addDebtRatioUpdate, removeDebtRatioUpdate, addHarvest, removeHarvest, computeVaultDr} = useBlocks();
+	const {blocks, addDebtRatioUpdate, removeDebtRatioUpdate, addSetDoHealthCheck, removeSetDoHealthCheck, addHarvest, removeHarvest, computeVaultDr} = useBlocks();
 	const vaultDebtRatio = computeVaultDr(vault);
 	const drInput = useRef<HTMLInputElement>({} as HTMLInputElement);
 	const {simulating, blockPointer, results: simulatorResults, probeStopResults} = useSimulator();
@@ -126,8 +126,8 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 	}, [hasHarvestBlock, removeHarvest, addHarvest, vault, strategy]);
 
 	const borderClassName = useMemo(() => {
-		if(simulatingStrategy || harvestProbeOutput) return 'border-primary-400 dark:border-primary-400/60';
 		if(simulationError) return 'border-error-500 dark:border-error-400';
+		if(simulatingStrategy || harvestResult || harvestProbeOutput) return 'border-primary-400 dark:border-primary-400/60';
 		return 'dark:border-primary-900/40';
 	}, [simulatingStrategy, harvestProbeOutput, simulationError]);
 
@@ -135,6 +135,24 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 		if(!vault?.totalAssets?.gt(0)) return 0;
 		return FixedNumber.from(strategy.totalDebt).divUnsafe(FixedNumber.from(vault?.totalAssets)).toUnsafeFloat();
 	}, [strategy, vault]);
+
+	const healthCheck = useMemo(() => {
+		if(!strategy.healthCheck || strategy.healthCheck === ethers.constants.AddressZero) return undefined;
+		return strategy.healthCheck;
+	}, [strategy]);
+
+	const doHealthCheck = useMemo(() => {
+		const block = findSetDoHealthCheck(blocks, strategy);
+		if(block) return {checked: block.call.input[0] as boolean, simulated: true};
+		return {checked: strategy.doHealthCheck, simulated: false};
+	}, [blocks, strategy]);
+
+	const toggleHealthCheck = useCallback((checked: boolean) => {
+		if(!vault) return;
+		const block = findSetDoHealthCheck(blocks, strategy);
+		if(block) removeSetDoHealthCheck(vault, strategy);
+		else addSetDoHealthCheck(vault, strategy, checked);
+	}, [blocks, vault, strategy, addSetDoHealthCheck, removeSetDoHealthCheck]);
 
 	return <Accordian
 		title={<AccordianTitle index={index} strategy={strategy} />}
@@ -144,8 +162,14 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 		<div className={'sm:px-2 sm:py-2 flex flex-col gap-2'}>
 			<div className={'flex flex-col gap-2 w-full'}>
 
-				<div className={'my-2 flex items-center justify-between'}>
-					<div className={'text-lg font-bold whitespace-nowrap truncate'}>{'Target debt ratio'}</div>
+				<Row label={'Address'} alt={true} heading={true}>
+					<div className={'flex items-center gap-4'}>
+						<A target={'_blank'} href={getAddressExplorer(strategy.network.chainId, strategy.address)} rel={'noreferrer'}>{truncateAddress(strategy.address)}</A>
+						<CopyButton clip={strategy.address}></CopyButton>
+					</div>
+				</Row>
+
+				<Row label={<div className={'text-lg font-bold'}>{'Debt Ratio'}</div>}>
 					<div className={'flex items-center gap-2 sm:gap-4'}>
 						<div className={'relative flex items-center'}>
 							<div className={'absolute top-[6px] left-[10px] sm:right-[8px] max-w-fit text-xl'}>{'%'}</div>
@@ -174,12 +198,22 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 							hot={hasHarvestBlock}
 							iconClassName={'text-2xl'} />
 					</div>
-				</div>
+				</Row>
 
-				<Row label={'Address'} alt={true} heading={true}>
+				<Row label={<div className={'text-lg font-bold'}>{'Health Check'}</div>} alt={true}>
 					<div className={'flex items-center gap-4'}>
-						<A target={'_blank'} href={getAddressExplorer(strategy.network.chainId, strategy.address)} rel={'noreferrer'}>{truncateAddress(strategy.address)}</A>
-						<CopyButton clip={strategy.address}></CopyButton>
+						{!healthCheck && <div className={'text-secondary-400'}>{'No health check'}</div>}
+						{healthCheck && <A 
+							target={'_blank'} 
+							href={getAddressExplorer(strategy.network.chainId, healthCheck)} 
+							rel={'noreferrer'}>
+							{truncateAddress(healthCheck)}
+						</A>}
+						<div className={`
+							p-1 flex items-center justify-center
+							border ${doHealthCheck.simulated ? 'border-primary-400' : 'border-transparent'}`}>
+							<Switch disabled={!healthCheck || simulating} checked={doHealthCheck.checked} onChange={toggleHealthCheck}></Switch>
+						</div>
 					</div>
 				</Row>
 

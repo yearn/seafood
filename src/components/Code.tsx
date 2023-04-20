@@ -18,10 +18,54 @@ interface Commit {
 	code: string[]
 }
 
+function primitives(vaults: Vault[], block: Block) {
+	let vault: Vault | undefined;
+	let strategy: Strategy | undefined;
+
+	if(block.primitive === 'vault') {
+		vault = vaults.find(v => v.network.chainId === block.chain && v.address === block.contract);
+		if(!vault) throw '!vault';
+		strategy = vault.strategies.find(s => s.address === block.call.input[0]);
+		if(!strategy) throw '!strategy';
+	} else {
+		strategy = vaults.filter(v => v.network.chainId === block.chain)
+			.flatMap(v => v.strategies)
+			.find(s => s.address === block.contract);
+		if(!strategy) throw '!strategy';
+		vault = vaults.find(v => 
+			v.network.chainId === strategy?.network.chainId
+			&& v.strategies.some(s => s.address === strategy?.address));
+		if(!vault) throw '!vault';
+	}
+
+	return {vault, strategy} as {vault: Vault, strategy: Strategy};
+}
+
 function useCommitGenerator(blocks: Block[]) {
 	const {vaults} = useVaults();
 	const [busy, setBusy] = useState(false);
 	const [commit, setCommit] = useState<Commit | undefined>();
+
+	const getVaultHeader = useCallback((vault: Vault) => {
+		const result = [] as string[];
+		result.push('');
+		result.push(`\t# ~ ~ ~ ${vault.name} ~ ~ ~ <*)))><`);
+		const hasDrs = blocks.some(b => 
+			b.primitive === 'vault' 
+			&& b.chain === vault.network.chainId
+			&& b.contract === vault.address 
+			&& b.call.signature === functions.vaults.updateDebtRatio.signature);
+		if(hasDrs) result.push(`\tvault = safe.contract("${vault.address}")`);
+		result.push('');
+		return result;
+	}, [blocks]);
+
+	const getStrategyHeader = useCallback((strategy: Strategy) => {
+		const result = [] as string[];
+		result.push(`\t# ${strategy.name}`);
+		result.push(`\tstrategy = safe.contract("${strategy.address}")`);
+		return result;
+	}, []);
 
 	const commitPromise = useMemo(async () => {
 		const functionDef = ['', '@sign'];
@@ -35,22 +79,21 @@ function useCommitGenerator(blocks: Block[]) {
 		const tasks = [] as string[];
 		let hasManualHarvests = false;
 		functionDef.push('def eat_your_seafood():');
+
 		for(const block of blocks) {
+			const {vault, strategy} = primitives(vaults, block);
+			if(!touchedVaults.includes(vault)) {
+				tasks.push(...getVaultHeader(vault));
+				touchedVaults.push(vault);
+			}
+
+			if(block.primitive === 'strategy' &&!touchedStrategies.includes(strategy)) {
+				tasks.push(...getStrategyHeader(strategy));
+				touchedStrategies.push(strategy);
+			}
+
 			switch(`${block.primitive}/${block.call.signature}`) {
 			case `vault/${functions.vaults.updateDebtRatio.signature}`: {
-				const vault = vaults.find(v => v.network.chainId === block.chain && v.address === block.contract);
-				if(!vault) throw '!vault';
-				const strategy = vault.strategies.find(s => s.address === block.call.input[0]);
-				if(!strategy) throw '!strategy';
-
-				if(!touchedVaults.includes(vault)) {
-					tasks.push('');
-					tasks.push(`\t# ~ ~ ~ ${vault.name} ~ ~ ~ <*)))><`);
-					tasks.push(`\tvault = safe.contract("${vault.address}")`);
-					tasks.push('');
-					touchedVaults.push(vault);
-				}
-
 				const update = block.call.input[1] as number;
 				const delta = update - (strategy.debtRatio?.toNumber() || 0);
 				result.body.push(strategy.name);
@@ -64,19 +107,14 @@ function useCommitGenerator(blocks: Block[]) {
 				touchedStrategies.push(strategy);
 				break;
 
+			} case `strategy/${functions.strategies.setDoHealthCheck.signature}`: {
+				result.body.push(`setDoHealthCheck(${Boolean(block.call.input[0])}) ${strategy.name}`);
+				const doHealthCheck = block.call.input[0] ? 'True' : 'False';
+				tasks.push(`\tstrategy.setDoHealthCheck(${doHealthCheck})`);
+				break;
+
 			} case `strategy/${functions.strategies.harvest.signature}`: {
-				const strategy = vaults.filter(v => v.network.chainId === block.chain)
-					.flatMap(v => v.strategies)
-					.find(s => s.address === block.contract);
-				if(!strategy) throw '!strategy';
-
-				if(!touchedStrategies.includes(strategy)) {
-					result.body.push(`harvest ${strategy.name}`);
-					tasks.push(`\t# ${strategy.name}`);
-					tasks.push(`\tstrategy = safe.contract("${strategy.address}")`);
-					touchedStrategies.push(strategy);
-				}
-
+				result.body.push(`harvest ${strategy.name}`);
 				const abi = await fetchAbi(strategy.network.chainId, strategy.address);
 				const autoHarvest = abi.some((f: {name: string}) => f.name === 'setForceHarvestTriggerOnce');
 
@@ -93,7 +131,6 @@ function useCommitGenerator(blocks: Block[]) {
 		if(hasManualHarvests) {
 			variables.push('');
 			variables.push('\tmanual_harvest_strategies = []');
-			variables.push('');
 			tasks.push('\tharvest_n_check_many(safe, manual_harvest_strategies)');
 			tasks.push('');
 		}
@@ -106,7 +143,7 @@ function useCommitGenerator(blocks: Block[]) {
 
 		setBusy(false);
 		return {...result, code: [...functionDef, ...variables, ...tasks]};
-	}, [blocks, setBusy, vaults]);
+	}, [blocks, setBusy, vaults, getVaultHeader, getStrategyHeader]);
 
 	useEffect(() => {
 		commitPromise.then(result => setCommit(result));

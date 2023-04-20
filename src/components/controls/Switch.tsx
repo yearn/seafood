@@ -1,9 +1,21 @@
-import React, {useMemo} from 'react';
+import React, {ReactNode, useMemo} from 'react';
 import ReactSwitch from 'react-switch';
 import {useChrome} from '../Chrome';
 import colors from 'tailwindcss/colors';
 
-export default function Switch({checked, onChange, checkedIcon, uncheckedIcon}) {
+export default function Switch({
+	checked,
+	onChange, 
+	checkedIcon, 
+	uncheckedIcon,
+	disabled,
+} : {
+	checked: boolean,
+	onChange: (checked: boolean) => void,
+	checkedIcon?: boolean | JSX.Element | undefined,
+	uncheckedIcon?: boolean | JSX.Element | undefined,
+	disabled?: boolean
+}) {
 	const {darkMode} = useChrome();
 
 	const offColor = useMemo(() => {
@@ -19,5 +31,8 @@ export default function Switch({checked, onChange, checkedIcon, uncheckedIcon}) 
 		onChange={onChange}
 		checked={checked}
 		offColor={offColor} onColor={onColor}
-		checkedIcon={checkedIcon || false} uncheckedIcon={uncheckedIcon || false} />;
+		checkedIcon={checkedIcon || false}
+		uncheckedIcon={uncheckedIcon || false}
+		disabled={disabled}
+	/>;
 }

@@ -1,16 +1,16 @@
 import React, {ReactNode} from 'react';
 
 export default function Row({
-	label, 
-	alt, 
+	label,
+	alt,
 	heading,
 	className,
 	children
 }: {
-	label?: ReactNode, 
+	label?: ReactNode,
 	alt?: boolean,
 	heading?: boolean
-	className?: string, 
+	className?: string,
 	children: ReactNode
 }) {
 	return <div className={`

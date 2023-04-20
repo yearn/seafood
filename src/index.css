@@ -23,3 +23,7 @@ body {
   sm:scrollbar-track-secondary-50 sm:scrollbar-thumb-secondary-300 sm:hover:scrollbar-thumb-selected-400
   dark:sm:scrollbar-track-primary-950 dark:sm:scrollbar-thumb-primary-900 dark:sm:hover:scrollbar-thumb-selected-500;
 }
+
+.a {
+  @apply underline underline-offset-2 hover:text-selected-400;
+}

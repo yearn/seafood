@@ -88,7 +88,9 @@ export interface Strategy {
 	totalGain: BigNumber,
 	totalLoss: BigNumber,
 	withdrawalQueuePosition: number,
-	lendStatuses: LendStatus[] | undefined
+	lendStatuses: LendStatus[] | undefined,
+	healthCheck: string,
+	doHealthCheck: boolean
 }
 
 export interface LendStatus {
@@ -202,7 +204,9 @@ export function parseStrategy(vault: yDaemon.Vault, strategy: yDaemon.Strategy, 
 		totalGain: BigNumber.from(strategy.details.totalGain || 0),
 		totalLoss: BigNumber.from(strategy.details.totalLoss || 0),
 		withdrawalQueuePosition: strategy.details.withdrawalQueuePosition,
-		lendStatuses: undefined
+		lendStatuses: undefined,
+		healthCheck: strategy.details.healthCheck,
+		doHealthCheck: strategy.details.doHealthCheck
 	};
 }
 

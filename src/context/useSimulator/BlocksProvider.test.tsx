@@ -2,6 +2,7 @@ import {act, RenderHookResult} from '@testing-library/react';
 import {renderHook} from '@testing-library/react'
 import BlocksProvider, {BlocksContext, useBlocks} from './BlocksProvider';
 import {Strategy, Vault} from '../useVaults/types';
+import {functions} from './Blocks';
 
 const mocks = {
 	vault: { 
@@ -39,6 +40,35 @@ describe('<BlocksProvider />', () => {
 		});
 	});
 
+	test('Adds setDoHealthCheck blocks', async () => {
+		await act(async () => {
+			await render.result.current.addSetDoHealthCheck(mocks.vault.a, mocks.vault.a.withdrawalQueue[0], true);
+		});
+		const blocks = render.result.current.blocks;
+		expect(blocks.length).toEqual(1);
+
+		expect(blocks[0].contract).toEqual(mocks.vault.a.withdrawalQueue[0].address);
+		expect(blocks[0].call.signature).toEqual(functions.strategies.setDoHealthCheck.signature);
+		expect(blocks[0].call.input[0]).toEqual(true);
+	});
+
+	test('Only keeps one setDoHealthCheck per strategy', async () => {
+		await act(async () => {
+			await render.result.current.addSetDoHealthCheck(mocks.vault.a, mocks.vault.a.withdrawalQueue[0], true);
+			await render.result.current.addSetDoHealthCheck(mocks.vault.a, mocks.vault.a.withdrawalQueue[0], true);
+			await render.result.current.addSetDoHealthCheck(mocks.vault.a, mocks.vault.a.withdrawalQueue[1], true);
+		});
+		expect(render.result.current.blocks.length).toEqual(2);
+	});
+
+	test('Removes setDoHealthCheck blocks', async () => {
+		await act(async () => {
+			await render.result.current.addSetDoHealthCheck(mocks.vault.a, mocks.vault.a.withdrawalQueue[0], true);
+			await render.result.current.removeSetDoHealthCheck(mocks.vault.a, mocks.vault.a.withdrawalQueue[0]);
+		});
+		expect(render.result.current.blocks.length).toEqual(0);
+	});
+
 	test('Adds harvest blocks', async () => {
 		await act(async () => {
 			await render.result.current.addHarvest(mocks.vault.a, mocks.vault.a.withdrawalQueue[0]);
@@ -47,7 +77,7 @@ describe('<BlocksProvider />', () => {
 		expect(blocks.length).toEqual(1);
 
 		expect(blocks[0].contract).toEqual(mocks.vault.a.withdrawalQueue[0].address);
-		expect(blocks[0].call.signature).toEqual('harvest()');
+		expect(blocks[0].call.signature).toEqual(functions.strategies.harvest.signature);
 		expect(blocks[0].call.input.length).toEqual(0);
 	});
 
@@ -67,6 +97,16 @@ describe('<BlocksProvider />', () => {
 		});
 		expect(render.result.current.blocks.length).toEqual(0);
 	});
+	
+	test('Orders harvests and healthcheck changes', async () => {
+		await act(async () => {
+			await render.result.current.addHarvest(mocks.vault.a, mocks.vault.a.withdrawalQueue[0]);
+			await render.result.current.addSetDoHealthCheck(mocks.vault.a, mocks.vault.a.withdrawalQueue[0], false);
+		});
+		expect(render.result.current.blocks.length).toEqual(2);
+		expect(render.result.current.blocks[0].call.signature).toEqual(functions.strategies.setDoHealthCheck.signature);
+		expect(render.result.current.blocks[1].call.signature).toEqual(functions.strategies.harvest.signature);
+	});
 
 	test('Adds updateDebtRatio blocks', async () => {
 		await act(async () => {
@@ -77,20 +117,20 @@ describe('<BlocksProvider />', () => {
 		expect(blocks.length).toEqual(4);
 
 		expect(blocks[0].contract).toEqual(mocks.vault.a.address);
-		expect(blocks[0].call.signature).toEqual('updateStrategyDebtRatio(address,uint256)');
+		expect(blocks[0].call.signature).toEqual(functions.vaults.updateDebtRatio.signature);
 		expect(blocks[0].call.input.length).toEqual(2);
 		expect(blocks[0].call.input[0]).toEqual(mocks.vault.a.withdrawalQueue[0].address);
 		expect(blocks[0].call.input[1]).toEqual(100);
 
 		expect(blocks[1].contract).toEqual(mocks.vault.a.withdrawalQueue[0].address);
-		expect(blocks[1].call.signature).toEqual('harvest()');
+		expect(blocks[1].call.signature).toEqual(functions.strategies.harvest.signature);
 		expect(blocks[1].call.input.length).toEqual(0);
 
 		expect(blocks[2].call.input[0]).toEqual(mocks.vault.a.withdrawalQueue[1].address);
 		expect(blocks[2].call.input[1]).toEqual(200);
 
 		expect(blocks[3].contract).toEqual(mocks.vault.a.withdrawalQueue[1].address);
-		expect(blocks[3].call.signature).toEqual('harvest()');
+		expect(blocks[3].call.signature).toEqual(functions.strategies.harvest.signature);
 		expect(blocks[3].call.input.length).toEqual(0);
 	});
 
@@ -168,9 +208,4 @@ describe('<BlocksProvider />', () => {
 		expect(blocks[6].call.input[0]).toEqual(mocks.vault.b.withdrawalQueue[0].address);
 		expect(blocks[6].call.input[1]).toEqual(200);
 	});
-
-	// // TODO
-	// test('Only adds blocks for one network at a time', async () => {
-	// 	expect(false).toBeTruthy();
-	// });
 });

@@ -60,7 +60,7 @@ export default function ApyTab({vault}: {vault: Vault}) {
 					</div>
 				</div>
 				<div className={'col-span-2 text-primary-600 dark:text-primary-400 text-right'}>
-					{'Simulated APY'}
+					{'Future APY'}
 					<div className={'text-xs'}>{degradation}</div>
 				</div>
 			</div>

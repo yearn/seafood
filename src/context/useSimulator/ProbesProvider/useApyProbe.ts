@@ -59,13 +59,13 @@ export default function useApyProbe() {
 			name: 'apy',
 
 			start: async (provider: providers.JsonRpcProvider) => {
-				setStatus('Compute current APYs');
+				setStatus('Compute current APY');
 				const result = await runApyProbe(provider);
 				return {name: 'apy', output: result};
 			},
 
 			stop: async (_results: SimulationResult[], provider: providers.JsonRpcProvider) => {
-				setStatus('Compute simulated APYs');
+				setStatus('Compute future APY');
 				const degradationTime = longestDegradationTime();
 				await provider.send('evm_increaseTime', [ethers.utils.hexValue(degradationTime)]);
 				await provider.send('evm_mine', []);

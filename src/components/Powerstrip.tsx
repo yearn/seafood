@@ -165,7 +165,7 @@ export default function Powerstrip({className}: {className?: string}) {
 							<Icon className={'absolute z-10 w-1/4 top-1 right-2'} fill={'black'} />
 						</div>
 						<Wordmark className={'text-3xl'} />
-						<div className={'flex items-center gap-3'}>
+						<div className={'mt-3 flex items-center justify-center gap-3 flex-wrap'}>
 							<A href={'https://github.com/yearn/seafood'}
 								title={'https://github.com/yearn/seafood'}
 								target={'_blank'}
@@ -173,19 +173,33 @@ export default function Powerstrip({className}: {className?: string}) {
 								className={'text-xs'}>
 								{'github'}
 							</A>
-							<A href={'https://discord.yearn.finance'}
-								title={'https://discord.yearn.finance'}
+							<A href={'https://yearn.finance'}
+								title={'https://yearn.finance'}
 								target={'_blank'}
 								rel={'noreferrer'}
 								className={'text-xs'}>
-								{'discord'}
+								{'yearn.fi'}
 							</A>
-							<A href={'https://twitter.com/iearnfinance'}
-								title={'https://twitter.com/iearnfinance'}
+							<A href={'https://yearn.watch'}
+								title={'https://yearn.watch'}
 								target={'_blank'}
 								rel={'noreferrer'}
 								className={'text-xs'}>
-								{'twitter'}
+								{'yWatch'}
+							</A>
+							<A href={'https://yearn.vision'}
+								title={'https://yearn.vision'}
+								target={'_blank'}
+								rel={'noreferrer'}
+								className={'text-xs'}>
+								{'yVision'}
+							</A>
+							<A href={'https://github.com/yearn/ydaemon'}
+								title={'https://github.com/yearn/ydaemon'}
+								target={'_blank'}
+								rel={'noreferrer'}
+								className={'text-xs'}>
+								{'yDaemon'}
 							</A>
 						</div>
 					</div>

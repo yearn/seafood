@@ -1,14 +1,15 @@
 import React, {useMemo} from 'react';
 import {Vault} from '../../context/useVaults/types';
-import {formatPercent} from '../../utils/utils';
+import {formatPercent, getAddressExplorer} from '../../utils/utils';
+import {A} from '../controls';
 
-function	parseMarkdown(markdownText: string) {
+// adapted from yearn/web-ui
+function parseMarkdown(markdownText: string) {
 	const htmlText = markdownText
-		.replace(/\[(.*?)\]\((.*?)\)/gim, "<a class='link' target='_blank' href='$2'>$1</a>")
-		.replace(/~~(.*?)~~/gim, "<span class='text-primary-500'>$1</span>")
+		.replace(/\[(.*?)\]\((.*?)\)/gim, "<a class='a' target='_blank' rel='noreferrer' href='$2'>$1</a>")
+		.replace(/~~(.*?)~~/gim, "<span class='line-through'>$1</span>")
 		.replace(/\*\*(.*?)\*\*/gim, "<span class='font-bold'>$1</span>")
 		;
-
 	return htmlText.trim();
 }
 
@@ -18,14 +19,23 @@ export default function InfoTab({vault}: {vault: Vault}) {
 		return vault.withdrawalQueue.filter(v => v.debtRatio?.gt(0));
 	}, [vault]);
 
-	return <div className={'flex flex-col gap-2'}>
+	return <div className={'flex flex-col gap-3'}>
 		<div>
-			<div className={'font-bold'}>{`Token: ${vault.token.symbol}`}</div>
-			<div className={'sm:text-sm'}>{vault.token.description || 'No description found.'}</div>
+			<div className={'font-bold'}>
+				<A href={getAddressExplorer(vault.network.chainId, vault.token.address)} target={'_blank'} rel={'noreferrer'}>
+					{vault.token.symbol}
+				</A>
+			</div>
+			<div className={'sm:text-sm'} 
+				dangerouslySetInnerHTML={{__html: parseMarkdown((vault.token.description || 'No description found.').replaceAll('{{token}}', vault.token.symbol))}} />
 		</div>
 		{activeStrategies.map(strategy => <div key={strategy.address}>
-			<div className={'font-bold'}>{`${formatPercent((strategy.debtRatio?.toNumber() || 0) / 10_000)} ${strategy.name}`}</div>
-			<div className={'sm:text-sm'} dangerouslySetInnerHTML={{__html: parseMarkdown((strategy.description || 'No description found.').replaceAll('{{token}}', vault.token.symbol))}} />
+			<div className={'flex items-center gap-2'}>
+				<div className={'font-mono font-bold'}>{formatPercent((strategy.debtRatio?.toNumber() || 0) / 10_000)}</div>
+				<div className={'font-bold'}>{`~ ${strategy.name}`}</div>
+			</div>
+			<div className={'sm:text-sm'} 
+				dangerouslySetInnerHTML={{__html: parseMarkdown((strategy.description || 'No description found.').replaceAll('{{token}}', vault.token.symbol))}} />
 		</div>)}
 	</div>;
 }
