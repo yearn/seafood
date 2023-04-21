@@ -16,7 +16,7 @@ function Chip({className, children}: {className: string, children: ReactNode}) {
 	return <div className={`
 		px-2 py-1 ${className}
 		group-hover:border-selected-500 group-hover:bg-selected-500
-		dark:group-hover:border-selected-400 dark:group-hover:bg-selected-400
+		group-active:border-selected-600 group-active:bg-selected-600 group-active:text-black
 		group-hover:text-black`}>
 		{children}
 	</div>;
@@ -36,8 +36,8 @@ function Minibars({vault}: {vault: Vault}) {
 	return <div className={'h-[20px] flex items-end gap-1'}>
 		{bars.map((bar, index) => <div key={index} className={`
 			w-2 h-[${bar}%]
-			bg-secondary-600 group-hover:bg-selected-500
-			dark:bg-secondary-200 dark:group-hover:bg-selected-400`} />)}
+			bg-secondary-600 group-hover:bg-selected-500 group-active:bg-selected-700
+			dark:bg-secondary-200 dark:group-hover:bg-selected-400 dark:group-active:bg-selected-600`} />)}
 	</div>;
 }
 
@@ -55,8 +55,10 @@ function TileButton({
 	return <div onClick={onClick} className={`
 	group relative
 	border ${selected ? 'border-primary-400 dark:border-primary-600' : 'border-transparent'}
-	hover:border-selected-700 hover:text-selected-700
+	hover:border-selected-500 hover:text-selected-500
+	active:border-selected-700 active:text-selected-700
 	dark:hover:border-selected-400 dark:hover:text-selected-400
+	dark:active:border-selected-600 dark:active:text-selected-600
 	cursor-pointer ${className}`}>{children}</div>;
 }
 

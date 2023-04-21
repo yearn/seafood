@@ -38,7 +38,7 @@ export default function Scores() {
 	}, [setScores]);
 
 	return <FilterChip hash={'scores'} label={label}>
-		<div className={'w-full h-full flex flex-col'}>
+		<div className={'w-full h-full flex flex-col text-secondary-900 dark:text-secondary-200'}>
 			<div className={'sm:hidden pl-6 pt-5 font-bold text-lg'}>{'Risk score filters'}</div>
 			<div className={'grow flex flex-col gap-6 items-center justify-center sm:grid-flow-col sm:grid-rows-4 sm:gap-3'}>
 				{Object.keys(scores).map(key => <div key={key} className={`

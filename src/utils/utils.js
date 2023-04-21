@@ -18,9 +18,13 @@ function getAddressExplorer(chainId, address){
 	return `${chain.explorer}/address/${address}`;
 }
 
-function getTxExplorer(chainId, address){
+function getTxExplorer(chainId, hash){
 	const chain = getChain(chainId);
-	return `${chain.explorer}/tx/${address}`;
+	return `${chain.explorer}/tx/${hash}`;
+}
+
+function getEigenTxExplorer(hash) {
+	return `https://eigenphi.io/mev/eigentx/${hash}`;
 }
 
 function truncateAddress(address) {
@@ -159,7 +163,8 @@ export {
 	curveRe,
 	factoryRe,
 	getAddressExplorer, 
-	getTxExplorer, 
+	getTxExplorer,
+	getEigenTxExplorer,
 	truncateAddress, 
 	formatNumber, 
 	formatPercent,

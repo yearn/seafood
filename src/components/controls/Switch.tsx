@@ -1,4 +1,4 @@
-import React, {ReactNode, useMemo} from 'react';
+import React, {useMemo} from 'react';
 import ReactSwitch from 'react-switch';
 import {useChrome} from '../Chrome';
 import colors from 'tailwindcss/colors';

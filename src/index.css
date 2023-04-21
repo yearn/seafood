@@ -25,5 +25,5 @@ body {
 }
 
 .a {
-  @apply underline underline-offset-2 hover:text-selected-400;
+  @apply underline underline-offset-2 hover:text-selected-400 active:text-selected-600;
 }

@@ -87,7 +87,7 @@ function useCommitGenerator(blocks: Block[]) {
 				touchedVaults.push(vault);
 			}
 
-			if(block.primitive === 'strategy' &&!touchedStrategies.includes(strategy)) {
+			if(!touchedStrategies.includes(strategy)) {
 				tasks.push(...getStrategyHeader(strategy));
 				touchedStrategies.push(strategy);
 			}
@@ -99,9 +99,7 @@ function useCommitGenerator(blocks: Block[]) {
 				result.body.push(strategy.name);
 				result.body.push(`change debt ratio by ${delta > 0 ? '+' : ''}${delta} bps`);
 				result.body.push('');
-				tasks.push(`\t# ${strategy.name}`);
 				tasks.push(`\t# Change debt ratio by ${delta > 0 ? '+' : ''}${delta} bps`);
-				tasks.push(`\tstrategy = safe.contract("${strategy.address}")`);
 				tasks.push(`\tvault.updateStrategyDebtRatio(strategy, ${update})`);
 
 				touchedStrategies.push(strategy);
@@ -228,7 +226,7 @@ export default function Code({blocks}: {blocks: Block[]}) {
 	</div>;
 
 	return <div className={'relative w-full h-full'}>
-		<div className={'max-h-full px-4 sm:px-8 pt-12 pb-20 flex flex-col overflow-x-auto'}>
+		<div className={`${sms.access ? 'max-h-full' : 'h-full'} px-4 sm:px-8 pt-12 pb-20 flex flex-col overflow-x-auto`}>
 			{sms.access && <>
 				<div className={'flex items-center text-xs gap-1 text-primary-600'}>
 					<BiGitBranch />
@@ -242,10 +240,7 @@ export default function Code({blocks}: {blocks: Block[]}) {
 						className={`
 						py-2 px-2 inline border-transparent leading-tight
 						text-xl bg-gray-300 dark:bg-gray-800
-						focus-visible:outline focus-visible:outline-1
-						focus-visible:outline-primary-400 focus-visible:dark:outline-selected-600
-						focus:ring-0 focus:border-primary-400 focus:bg-gray-200
-						focus:dark:border-selected-600
+						focus:border-selected-400 focus:dark:border-selected-600 focus:ring-0
 						shadow-inner`} />
 					<TextArea _ref={bodyRef}
 						defaultValue={commit?.body.join('\n') || ''}
@@ -261,7 +256,8 @@ export default function Code({blocks}: {blocks: Block[]}) {
 			</>}
 			<div className={`
 				py-4 border border-gray-300 dark:border-gray-800
-				overflow-x-auto override-scroll`}>
+				overflow-x-auto override-scroll
+				${sms.access ? '' : 'mt-6 h-full'}`}>
 				{sms.access && (sms.mainpy || ['', '', '', '']).slice(-4, -1).map((line, index) => 
 					<div key={index} className={'flex items-center'}>
 						<div className={`
@@ -295,8 +291,7 @@ export default function Code({blocks}: {blocks: Block[]}) {
 
 		<div className={`
 			absolute bottom-0 w-full px-4 sm:px-8 py-4
-			flex items-center justify-end gap-4
-			border-t border-white dark:border-secondary-900`}>
+			flex items-center justify-end gap-4`}>
 			<Button onClick={onCopy}
 				disabled={blocks.length === 0} 
 				icon={copied ? TbCheck : TbCopy} 

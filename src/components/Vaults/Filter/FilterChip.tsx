@@ -73,15 +73,15 @@ export default function FilterChip({
 		{...getReferenceProps()} 
 		onClick={onClick}
 		className={`
-		h-10 flex items-center px-4 cursor-default
-		border border-transparent
+		h-10 flex items-center px-4 cursor-default border
 
 		${open && mediumBreakpoint
-		? `text-selected-800 dark:text-secondary-200
-			bg-selected-300 dark:bg-selected-600`
-		: `text-secondary-600 dark:text-secondary-200
-			bg-secondary-300/40 dark:bg-primary-900/40
-			border-[#d4d4d8] dark:border-primary-900`}
+		? `bg-selected-300 text-selected-800
+			dark:bg-selected-600 dark:text-black
+			border-transparent`
+		: `bg-primary-400/40 text-secondary-600 
+			dark:bg-primary-900/40 dark:text-secondary-200
+			border-primary-400 dark:border-primary-900`}
 
 		text-sm capitalize outline-none
 		whitespace-nowrap`}>
@@ -89,10 +89,10 @@ export default function FilterChip({
 		{open && mediumBreakpoint && <FloatingFocusManager context={context} modal={false}>
 			<div ref={refs.setFloating} {...getFloatingProps()} className={`
 				z-[100] w-max p-8 -ml-[32px]
-				bg-secondary-100 dark:bg-secondary-900
-				shadow-lg shadow-secondary-900/40 dark:shadow-secondary-900/60
+				bg-secondary-100 dark:bg-black
+				border border-selected-200 dark:border-selected-900
+				shadow-lg shadow-secondary-900/10 dark:shadow-black/80
 				outline-none shadow-md
-				transition duration-200
         ${className}`}
 			style={{
 				...styles,

@@ -34,9 +34,9 @@ export default function Cell({
 			<div ref={floatie.refs.setFloating} {...floatie.getFloatingProps()} className={`
 				z-[100] p-4
 				flex flex-col
-				bg-secondary-100 dark:bg-secondary-900
-				border dark:border-secondary-800 
-				shadow-lg shadow-secondary-900/40 dark:shadow-secondary-900/60
+				bg-secondary-100 dark:bg-black
+				border border-selected-200 dark:border-selected-900
+				shadow-lg shadow-secondary-900/20 dark:shadow-black/60
 				outline-none transition duration-200
 				${category === 'median' ? 'w-64' : 'w-96'}
         ${className}`}

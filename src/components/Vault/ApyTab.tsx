@@ -33,7 +33,7 @@ export default function ApyTab({vault}: {vault: Vault}) {
 	}, [vault]);
 
 	return <div className={'mb-4 flex flex-col gap-4'}>
-		<div className={'w-full px-2 py-2 flex items-center justify-between'}>
+		<div className={'w-full px-2 pt-1 flex items-center justify-between'}>
 			<div>
 				{'Current APY'}
 				{apyComputer.type === vault?.apy.type && <>

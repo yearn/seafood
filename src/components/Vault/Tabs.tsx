@@ -17,8 +17,12 @@ export default function Tabs({className}: {className?: string}) {
 		${className}`}>
 		<Tabbed
 			className={'flex items-start gap-3'}
-			tabClassName={'px-6 py-2 border border-transparent bg-secondary-200 dark:bg-primary-950'}
-			activeTabClassName={'px-6 py-2 border-t border-x border-primary-400'}
+			tabClassName={`px-6 py-2
+				border-b-4 
+				border-secondary-200 hover:border-selected-400 active:border-selected-600
+				dark:border-secondary-800 hover:dark:border-selected-500 active:dark:border-selected-700`}
+			activeTabClassName={`px-6 py-2
+				border-b-4 border-primary-400`}
 			contentClassName={'py-6'}
 			storageKey={'src/vault/tabs'}
 			tabs={[
@@ -33,8 +37,12 @@ export default function Tabs({className}: {className?: string}) {
 		${className}`}>
 		<Tabbed
 			className={'flex items-start gap-3'}
-			tabClassName={'px-6 py-2 border border-transparent bg-primary-950'}
-			activeTabClassName={'px-6 py-2 border-t border-x border-primary-600'}
+			tabClassName={`px-6 py-2
+				border-b-4 
+				border-secondary-200 hover:border-selected-400 active:border-selected-600
+				dark:border-secondary-800 hover:dark:border-selected-500 active:dark:border-selected-700`}
+			activeTabClassName={`px-6 py-2
+				border-b-4 border-primary-400`}
 			contentClassName={'py-6'}
 			storageKey={'src/vault/tabs'}
 			tabs={[

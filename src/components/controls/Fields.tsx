@@ -8,7 +8,7 @@ export function Field(
 	if(!children) children = (typeof value === 'string' || typeof value === 'number') ? value : value.toString();
 	if(typeof value === 'string') {
 		return <div className={`
-			text-right group-hover:text-current
+			text-right group-hover:text-current group-active:text-current
 			${simulated ? 'text-primary-600 dark:text-primary-400' : ''}
 			${className}`}>
 			{children}
@@ -16,7 +16,7 @@ export function Field(
 	} else {
 		const gte0 = BigNumber.isBigNumber(value) ? value.gte(0) : value >= 0;
 		return <div className={`
-			font-mono text-right group-hover:text-current
+			font-mono text-right group-hover:text-current group-active:text-current
 			${simulated ? gte0
 		? 'text-primary-600 dark:text-primary-400' 
 		: 'text-error-600 dark:text-error-400' : ''}

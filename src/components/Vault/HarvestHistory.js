@@ -3,6 +3,7 @@ import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
 import {formatNumber, formatPercent, formatCurrency, getTxExplorer} from '../../utils/utils';
 import {A} from '../controls';
 import dayjs from 'dayjs';
+import EigenPhi from './EigenPhi';
 
 function ColumnHeader({children}) {
 	return <th className={'text-right first:text-left'}>{children}</th>;
@@ -29,9 +30,12 @@ function HarvestHistory({history}){
 						{history.map((e, i) => {
 							return <tr key={e.txn_hash} className={`${i % 2 === 0 ? '' : 'bg-selected-400/5'}`}>
 								<Cell textAlign={'text-left'}>
-									<A href={getTxExplorer(e.chain_id, e.txn_hash)} target={'_blank'} rel={'noreferrer'}>
-										{dayjs(new Date(e.timestamp * 1000)).format('YYYY-MM-DD')}
-									</A>
+									<div className={'flex items-center gap-2'}>
+										<A href={getTxExplorer(e.chain_id, e.txn_hash)} target={'_blank'} rel={'noreferrer'}>
+											{dayjs(new Date(e.timestamp * 1000)).format('YYYY-MM-DD')}
+										</A>
+										<EigenPhi tx={e.txn_hash} />
+									</div>
 								</Cell>
 								<Cell>{formatNumber(parseFloat(e.gain), 5)}</Cell>
 								<Cell>{formatCurrency(parseFloat(e.want_gain_usd))}</Cell>
@@ -57,7 +61,12 @@ function HarvestHistory({history}){
 					{history.map((e, i) => {
 						const time = new Date(e.timestamp * 1000);
 						return <tr key={e.txn_hash} className={i % 2 === 0 ? 'bg-selected-400/5' : ''}>
-							<Cell textAlign={'text-left'}><A href={getTxExplorer(e.chain_id, e.txn_hash)} target={'_blank'} rel={'noreferrer'}>{time.toGMTString()}</A></Cell>
+							<Cell textAlign={'text-left'}>
+								<div className={'flex items-center gap-3'}>
+									<A href={getTxExplorer(e.chain_id, e.txn_hash)} target={'_blank'} rel={'noreferrer'}>{time.toGMTString()}</A>
+									<EigenPhi tx={e.txn_hash} />
+								</div>
+							</Cell>
 							<Cell>{formatNumber(parseFloat(e.gain), 5)}</Cell>
 							<Cell>{formatCurrency(parseFloat(e.want_gain_usd))}</Cell>
 							<Cell>{formatPercent(parseFloat(e.rough_apr_pre_fee))}</Cell>

@@ -2,7 +2,7 @@ import React, {ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} f
 import {TbTractor} from 'react-icons/tb';
 import {BsChevronCompactDown, BsChevronCompactUp} from 'react-icons/bs';
 import TimeAgo from 'react-timeago';
-import {formatNumber, getAddressExplorer, truncateAddress} from '../../utils/utils';
+import {formatNumber, getAddressExplorer, getTxExplorer, truncateAddress} from '../../utils/utils';
 import {A, Button, Input, LinkButton, Row, Switch} from '../controls';
 import InfoChart from './InfoChart';
 import CopyButton from './CopyButton';
@@ -19,6 +19,8 @@ import {functions} from '../../context/useSimulator/Blocks';
 import {HarvestOutput} from '../../context/useSimulator/ProbesProvider/useHarvestProbe';
 import Accordian from '../controls/Accordian';
 import {Percentage, Tokens} from '../controls/Fields';
+import EigenPhi from './EigenPhi';
+import Tenderly from './Tenderly';
 
 function AccordianTitle({index, strategy}: {index: number, strategy: TStrategy}) {
 	return <div className={`flex items-center gap-2
@@ -49,8 +51,11 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 	}, [blocks, strategy]);
 
 	const latestHarvest = useMemo(() => {
-		return new Date(BigNumber.from(strategy.lastReport).mul(1000).toNumber());
-	}, [strategy]);
+		return {
+			date: new Date(BigNumber.from(strategy.lastReport).mul(1000).toNumber()),
+			tx: reports.length > 0 ? reports[0].txn_hash : undefined
+		};
+	}, [strategy, reports]);
 
 	const drUpdate = useMemo(() => {
 		if(!vault) return;
@@ -129,7 +134,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 		if(simulationError) return 'border-error-500 dark:border-error-400';
 		if(simulatingStrategy || harvestResult || harvestProbeOutput) return 'border-primary-400 dark:border-primary-400/60';
 		return 'dark:border-primary-900/40';
-	}, [simulatingStrategy, harvestProbeOutput, simulationError]);
+	}, [simulatingStrategy, harvestResult, harvestProbeOutput, simulationError]);
 
 	const realRatio = useMemo(() => {
 		if(!vault?.totalAssets?.gt(0)) return 0;
@@ -204,9 +209,8 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 					<div className={'flex items-center gap-4'}>
 						{!healthCheck && <div className={'text-secondary-400'}>{'No health check'}</div>}
 						{healthCheck && <A 
-							target={'_blank'} 
 							href={getAddressExplorer(strategy.network.chainId, healthCheck)} 
-							rel={'noreferrer'}>
+							target={'_blank'} rel={'noreferrer'}>
 							{truncateAddress(healthCheck)}
 						</A>}
 						<div className={`
@@ -226,7 +230,14 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 				</Row>
 
 				<Row label={'Last harvest'}>
-					<TimeAgo date={latestHarvest}></TimeAgo>
+					{latestHarvest.tx && <div className={'flex items-center gap-3'}>
+						<A href={getTxExplorer(strategy.network.chainId, latestHarvest.tx)}
+							target={'_blank'} rel={'noreferrer'}>
+							<TimeAgo date={latestHarvest.date} />
+						</A>
+						<EigenPhi tx={latestHarvest.tx} />
+					</div>}
+					{!latestHarvest.tx && <TimeAgo date={latestHarvest.date} />}
 				</Row>
 
 				{(strategy.lendStatuses?.length || 0) > 0 && <>
@@ -272,7 +283,10 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 
 				{harvestProbeOutput && <>
 					<Row label={'Harvest simulation'} alt={true} heading={true}>
-						<LinkButton className={'text-primary-600 dark:text-primary-400'} to={`${location.pathname}#harvest-events-${strategy.address}`}>{'Success'}</LinkButton>
+						<div className={'flex items-center gap-3'}>
+							<LinkButton className={'text-primary-600 dark:text-primary-400'} to={`${location.pathname}#harvest-events-${strategy.address}`}>{'Success'}</LinkButton>
+							{harvestResult?.explorerUrl && <Tenderly url={harvestResult.explorerUrl} className={'text-primary-600 dark:text-primary-400'} />}
+						</div>
 					</Row>
 					<Row label={'Gross APR'}>
 						<Percentage value={harvestProbeOutput.apr.gross} simulated={true} />

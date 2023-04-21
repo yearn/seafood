@@ -32,11 +32,13 @@ export default function Button({
 }) {
 
 	return <button onClick={onClick} disabled={disabled} title={title} className={`
-		relative flex items-center justify-center
-		h-10 px-4 border-2 border-transparent
-		${hot ? 'bg-primary-300 dark:bg-primary-800' : 'bg-primary-500 dark:bg-primary-900/40'}
-		text-secondary-50 sm:hover:bg-selected-400
-		sm:dark:hover:bg-selected-600
+		group relative flex items-center justify-center
+		h-10 px-4 border
+
+		${hot ? 'bg-primary-200 border-primary-600 dark:bg-primary-800 dark:border-primary-400' 
+		: 'bg-primary-500 dark:bg-primary-900/40 border-transparent'}
+		sm:hover:bg-selected-400 sm:active:bg-selected-500
+		sm:dark:hover:bg-selected-600 sm:dark:active:bg-selected-700
 
 		disabled:text-secondary-400 disabled:dark:text-secondary-500
 		disabled:bg-gray-200 disabled:dark:bg-gray-900/80
@@ -54,7 +56,8 @@ export default function Button({
 			{icon({className: `text-xl
 			${disabled 
 		? 'text-gray-400 dark:text-gray-600 pointer-events-none' 
-		: 'text-secondary-900 dark:text-secondary-300'}
+		: `text-secondary-900 
+			dark:text-primary-400 sm:group-hover:dark:text-black sm:group-active:dark:text-black`}
 			${label ? 'mr-2' : ''}
 			${iconClassName}`})}
 			{'\u00A0'}

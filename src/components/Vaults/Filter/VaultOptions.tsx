@@ -29,7 +29,7 @@ export default function VaultOptions() {
 		{
 			key: 'tvlgtzero',
 			label: 'TVL>0',
-			long: 'Only TVL > 0',
+			long: 'TVL > 0',
 			flag: Boolean(chips['tvlgtzero'])
 		}] as Option [];
 	}, [chips]);

@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useEffect, useMemo} from 'react';
 import {useParams} from 'react-router-dom';
 import {useVaults} from '../../../context/useVaults';
 import {RiskCategories, RiskReport, Strategy, Vault} from '../../../context/useVaults/types';
@@ -7,6 +7,7 @@ import {Spinner} from '../../controls';
 import Header from './Header';
 import Slider from './Slider';
 import VaultSummary from './VaultSummary';
+import {usePowertools} from '../../Powertools';
 
 export interface RiskReportWithVaults extends RiskReport {
 	vaults: {
@@ -42,6 +43,12 @@ function useRiskGroup() {
 
 export default function RiskGroup() {
 	const group = useRiskGroup();
+	const {setEnable} = usePowertools();
+
+	useEffect(() => {
+		setEnable(false);
+		return () => setEnable(true);
+	}, [setEnable]);
 
 	const report = useMemo(() => {
 		if(!group.riskDetails) return {} as RiskCategories;
@@ -58,10 +65,10 @@ export default function RiskGroup() {
 		<Spinner />
 	</div>;
 
-	return <div className={'w-full pb-4 flex flex-col gap-2'}>
+	return <div className={'w-full sm:px-[30%] pb-20 flex flex-col gap-2'}>
 		<Header group={group} />
-		<div className={'w-full sm:px-[12%] flex flex-col sm:flex-row gap-2'}>
-			<div className={'sm:h-min sm:sticky sm:top-[110px] sm:z-0 sm:w-1/2 px-8 sm:px-12'}>
+		<div className={'w-full flex flex-col gap-2'}>
+			<div className={'px-8 sm:px-0'}>
 				{Object.keys(report).map(key => <Slider key={key}
 					group={group.riskGroup} 
 					category={key}
@@ -69,7 +76,7 @@ export default function RiskGroup() {
 					details={getSliderDetails(key)}
 				/>)}
 			</div>
-			<div className={'sm:w-1/2 mt-6 sm:-mt-16 px-2 sm:pr-16 flex flex-col gap-3'}>
+			<div className={'mt-6 px-2 flex flex-col gap-3'}>
 				{group.vaults.map((v, index) => <VaultSummary key={index} 
 					vault={v.vault} 
 					strategies={v.strategies} 

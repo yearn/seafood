@@ -143,8 +143,8 @@ export default function BlocksProvider({children}: {children: ReactNode}) {
 			if(debtRatioUpdateIndex > -1) result.splice(debtRatioUpdateIndex, 1);
 			const harvestIndex = findHarvestIndex(result, strategy);
 			if(harvestIndex > -1) result.splice(harvestIndex, 1);
-			const setDoHealthCheck = findSetDoHealthCheck(current, strategy);
-			if(setDoHealthCheck) result.splice(findSetDoHealthCheckIndex(current, strategy), 1);
+			const setDoHealthCheck = findSetDoHealthCheck(result, strategy);
+			if(setDoHealthCheck) result.splice(findSetDoHealthCheckIndex(result, strategy), 1);
 
 			let insertIndex = result.length - 1;
 			for(let i = 0; i < result.length; i++) {

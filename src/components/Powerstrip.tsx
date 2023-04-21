@@ -72,7 +72,9 @@ function MenuLink({link, className}: {link: LinkInfo, className?: string}) {
 		return `
 			w-full h-full flex items-center no-underline px-4
 			hover:bg-selected-300 hover:text-selected-900
-			hover:dark:bg-selected-600 hover:dark:text-white
+			active:bg-selected-400 active:text-selected-900
+			hover:dark:bg-selected-600 hover:dark:text-black
+			active:dark:bg-selected-700 active:dark:text-black
 			cursor-pointer
 			${match ? 'bg-white dark:bg-primary-600/20' : ''}
 			${className}`;

@@ -24,8 +24,8 @@ export default function ColumnHeader({
 
 		${sortable ? `cursor-pointer
 			bg-neutral-200/40 dark:bg-neutral-800/40
-			hover:bg-selected-300 hover:border-selected-300
-			dark:hover:bg-selected-600 dark:hover:border-selected-600` : ''}
+			hover:bg-selected-300 hover:border-selected-300 active:bg-selected-400
+			dark:hover:bg-selected-600 dark:hover:border-selected-600 dark:active:bg-selected-700` : ''}
 
 		${className}`}>
 		<div className={'w-[-webkit-fill-available] truncate capitalize text-center'}>

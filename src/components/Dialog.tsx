@@ -6,8 +6,8 @@ import {motion} from 'framer-motion';
 import {useChrome} from './Chrome';
 
 export interface DialogContext {
-	Component: FC<any>,
-	args?: {[key: string]: any;}, 
+	Component: FC<any>,	// eslint-disable-line @typescript-eslint/no-explicit-any
+	args?: {[key: string]: any;}, // eslint-disable-line @typescript-eslint/no-explicit-any
 	className?: string
 }
 
@@ -25,7 +25,7 @@ export default function Dialog({
 	}, [location, setDialog]);
 
 	return <div className={`
-		fixed z-20 inset-0 flex items-center justify-center bg-black/60
+		fixed z-20 inset-0 flex items-center justify-center backdrop-blur
 		${className}`}>
 		<div onClick={close} className={'absolute inset-0 z-1'} />
 		<motion.div className={`

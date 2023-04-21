@@ -9,12 +9,6 @@ import {usePowertools} from './Powertools';
 function StatusLight() {
 	const {loading, refresh} = useVaults();
 	const {colors} = useVaultStatusUI();
-	const {setEnable} = usePowertools();
-
-	useEffect(() => {
-		setEnable(false);
-		return () => setEnable(true);
-	}, [setEnable]);
 
 	if(loading) {
 		return <div className={`
@@ -74,6 +68,12 @@ export default function Status() {
 	const ydaemon = useMemo(() => status.filter(s => s.stage === 'ydaemon'), [status]);
 	const multicall = useMemo(() => status.filter(s => s.stage === 'multicall'), [status]);
 	const tvls = useMemo(() => status.filter(s => s.stage === 'tvls'), [status]);
+	const {setEnable} = usePowertools();
+
+	useEffect(() => {
+		setEnable(false);
+		return () => setEnable(true);
+	}, [setEnable]);
 
 	return <div className={'w-full pt-6 sm:pt-0 pb-16 flex items-center justify-center'}>
 		<div className={'w-full sm:w-1/2 px-4 flex flex-col gap-8'}>

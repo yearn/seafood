@@ -19,9 +19,9 @@ export default function InfoTab({vault}: {vault: Vault}) {
 		return vault.withdrawalQueue.filter(v => v.debtRatio?.gt(0));
 	}, [vault]);
 
-	return <div className={'flex flex-col gap-3'}>
+	return <div className={'px-2 pb-16 flex flex-col gap-3'}>
 		<div>
-			<div className={'font-bold'}>
+			<div className={'font-bold text-lg'}>
 				<A href={getAddressExplorer(vault.network.chainId, vault.token.address)} target={'_blank'} rel={'noreferrer'}>
 					{vault.token.symbol}
 				</A>
