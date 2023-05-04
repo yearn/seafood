@@ -8,6 +8,7 @@ import Header from './Header';
 import Slider from './Slider';
 import VaultSummary from './VaultSummary';
 import {usePowertools} from '../../Powertools';
+import Tabbed from '../../controls/Tabbed';
 
 export interface RiskReportWithVaults extends RiskReport {
 	vaults: {
@@ -41,14 +42,8 @@ function useRiskGroup() {
 	}, [params, vaults]);
 }
 
-export default function RiskGroup() {
+function Scores() {
 	const group = useRiskGroup();
-	const {setEnable} = usePowertools();
-
-	useEffect(() => {
-		setEnable(false);
-		return () => setEnable(true);
-	}, [setEnable]);
 
 	const report = useMemo(() => {
 		if(!group.riskDetails) return {} as RiskCategories;
@@ -60,6 +55,35 @@ export default function RiskGroup() {
 		return `${formatNumber(group.tvl, 2, '', true)}`;
 	}, [group]);
 
+	return <div className={'px-2 sm:px-0'}>
+		{Object.keys(report).map(key => <Slider key={key}
+			group={group.riskGroup} 
+			category={key}
+			score={report[key as keyof (RiskCategories | 'median')]} 
+			details={getSliderDetails(key)}
+		/>)}
+	</div>;
+}
+
+function Vaults() {
+	const group = useRiskGroup();
+	return <div className={'px-2 flex flex-col gap-3'}>
+		{group.vaults.map((v, index) => <VaultSummary key={index} 
+			vault={v.vault} 
+			strategies={v.strategies} 
+		/>)}
+	</div>;
+}
+
+export default function RiskGroup() {
+	const group = useRiskGroup();
+	const {setEnable} = usePowertools();
+
+	useEffect(() => {
+		setEnable(false);
+		return () => setEnable(true);
+	}, [setEnable]);
+
 	if(!group.riskDetails) return <div className={`
 		absolute w-full h-screen flex items-center justify-center`}>
 		<Spinner />
@@ -68,20 +92,20 @@ export default function RiskGroup() {
 	return <div className={'w-full sm:px-[30%] pb-20 flex flex-col gap-2'}>
 		<Header group={group} />
 		<div className={'w-full flex flex-col gap-2'}>
-			<div className={'px-8 sm:px-0'}>
-				{Object.keys(report).map(key => <Slider key={key}
-					group={group.riskGroup} 
-					category={key}
-					score={report[key as keyof (RiskCategories | 'median')]} 
-					details={getSliderDetails(key)}
-				/>)}
-			</div>
-			<div className={'mt-6 px-2 flex flex-col gap-3'}>
-				{group.vaults.map((v, index) => <VaultSummary key={index} 
-					vault={v.vault} 
-					strategies={v.strategies} 
-				/>)}
-			</div>
+			<Tabbed
+				className={'px-4 sm:px-6 flex items-start gap-3'}
+				tabClassName={`px-6 py-2
+					border-b-4 
+					border-secondary-200 hover:border-selected-400 active:border-selected-600
+					dark:border-secondary-800 hover:dark:border-selected-500 active:dark:border-selected-700`}
+				activeTabClassName={`px-6 py-2
+					border-b-4 border-primary-400`}
+				contentClassName={'py-6'}
+				storageKey={'src/vault/tabs'}
+				tabs={[
+					{label: 'Scores', content: <Scores />},
+					{label: 'Vaults', content: <Vaults />}
+				]} />
 		</div>
 	</div>;
 }
