@@ -47,7 +47,7 @@ export default function FilterChip({
 
 	const {x, y, refs, strategy, context} = useFloating({
 		open,
-		placement: 'bottom-start',
+		placement: 'bottom-end',
 		onOpenChange: setOpen,
 		middleware: [
 			offset(16),
@@ -88,7 +88,7 @@ export default function FilterChip({
 		{label}
 		{open && mediumBreakpoint && <FloatingFocusManager context={context} modal={false}>
 			<div ref={refs.setFloating} {...getFloatingProps()} className={`
-				z-[100] w-max p-8 -ml-[32px]
+				z-[100] w-max p-8 ml-[32px]
 				bg-secondary-100 dark:bg-black
 				border border-selected-200 dark:border-selected-900
 				shadow-lg shadow-secondary-900/10 dark:shadow-black/80
