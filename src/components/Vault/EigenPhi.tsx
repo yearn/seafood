@@ -2,8 +2,9 @@ import React, {useCallback} from 'react';
 import {Pebble} from '../controls';
 import {getEigenTxExplorer} from '../../utils/utils';
 
-export default function EigenPhi({tx}: {tx: string}) {
+export default function EigenPhi({tx}: {tx?: string}) {
 	const navigate = useCallback(() => {
+		if(!tx) return;
 		window.open(getEigenTxExplorer(tx), '_blank', 'noreferrer');
 	}, [tx]);
 

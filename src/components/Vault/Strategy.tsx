@@ -231,14 +231,13 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 				</Row>
 
 				<Row label={'Last harvest'}>
-					{latestHarvest.tx && <div className={'flex items-center gap-3'}>
+					<div className={'flex items-center gap-3'}>	
 						<A href={getTxExplorer(strategy.network.chainId, latestHarvest.tx)}
 							target={'_blank'} rel={'noreferrer'}>
 							<TimeAgo date={latestHarvest.date} />
 						</A>
 						<EigenPhi tx={latestHarvest.tx} />
-					</div>}
-					{!latestHarvest.tx && <TimeAgo date={latestHarvest.date} />}
+					</div>
 				</Row>
 
 				{(strategy.lendStatuses?.length || 0) > 0 && <>
