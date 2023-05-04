@@ -35,13 +35,14 @@ export default function Button({
 		group relative flex items-center justify-center
 		h-10 px-4 border
 
-		${hot ? 'bg-primary-200 border-primary-600 dark:bg-primary-800 dark:border-primary-400' 
-		: 'bg-primary-500 dark:bg-primary-900/40 border-transparent'}
+		${hot && !disabled ? 'bg-primary-200 dark:bg-primary-800' : ''}
+		${hot ? 'border-primary-600 dark:border-primary-400 hover:border-selected-400 dark:hover:border-selected-600'
+		: 'bg-transparent sm:bg-primary-500 sm:dark:bg-primary-900/40 border-transparent'}
 		sm:hover:bg-selected-400 sm:active:bg-selected-500
 		sm:dark:hover:bg-selected-600 sm:dark:active:bg-selected-700
 
 		disabled:text-secondary-400 disabled:dark:text-secondary-500
-		disabled:bg-gray-200 disabled:dark:bg-gray-900/80
+		sm:disabled:bg-gray-200 sm:disabled:dark:bg-gray-900/80
 		sm:disabled:hover:bg-gray-200 sm:disabled:dark:hover:bg-gray-900/80
 		disabled:cursor-default
 

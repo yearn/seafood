@@ -39,7 +39,7 @@ export default function MobileNav({className}: {className: string}) {
 
 			<div className={'w-full py-2 flex items-center gap-2 sm:gap-3'}>
 				<Button onClick={() => navigate('#menu')} 
-					className={'m-0 p-0 bg-transparent shadow-none w-1/5'}
+					className={'w-1/5'}
 					iconClassName={'text-2xl'}
 					icon={RxHamburgerMenu} />
 				<Simulator className={'grow'} />

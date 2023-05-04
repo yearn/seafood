@@ -185,8 +185,9 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 							border-transparent leading-tight
 							font-mono text-xl text-right
 							${drUpdate && !simulating
-		? 'bg-primary-300 dark:bg-primary-800' 
+		? 'bg-primary-200 dark:bg-primary-800' 
 		: 'bg-gray-300 dark:bg-primary-900/40'}
+							${drUpdate ? 'border-primary-600 dark:border-primary-400' : ''}
 							focus:border-primary-400 focus:ring-0
 							focus:dark:border-selected-600 focus:ring-0
 							shadow-inner`}
