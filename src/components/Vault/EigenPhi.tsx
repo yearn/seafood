@@ -9,6 +9,6 @@ export default function EigenPhi({tx}: {tx?: string}) {
 	}, [tx]);
 
 	return <Pebble title={'Explore on EigenPhi'} onClick={navigate}>
-		<img width={'16'} height={16} src={'/eigentx.png'} alt={'EigenPhi'} className={'group-hover:grayscale group-hover:brightness-0'} />
+		<img width={'16'} height={16} src={'/eigentx.png'} alt={'EigenPhi'} className={'grayscale group-hover:brightness-0'} />
 	</Pebble>;
 }

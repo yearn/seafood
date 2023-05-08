@@ -52,8 +52,7 @@ export default function VaultTile({vault, queryRe, onClick}) {
 					<div className={`
 						w-36 text-sm -mr-[10px]
 						text-secondary-900 dark:text-secondary-500
-						sm:dark:group-hover:text-secondary-200
-						transition duration-200`}>
+						sm:dark:group-hover:text-secondary-200`}>
 						{!vault.withdrawalQueue && <div>
 							<div><Bone></Bone></div>
 							<div><Bone></Bone></div>
@@ -66,9 +65,7 @@ export default function VaultTile({vault, queryRe, onClick}) {
 						</div>}
 					</div>
 				</div>
-				<div className={`
-					relative grow flex
-					transition duration-200`}>
+				<div className={'relative grow flex'}>
 					{vault.withdrawalQueue && <VaultTvl vault={vault} animate={true} />}
 				</div>
 			</div>

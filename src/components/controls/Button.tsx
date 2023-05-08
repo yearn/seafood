@@ -35,7 +35,7 @@ export default function Button({
 		group relative flex items-center justify-center
 		h-10 px-4 border
 
-		${hot && !disabled ? 'bg-primary-200 dark:bg-primary-800' : ''}
+		${hot && !disabled ? 'bg-primary-200 dark:bg-primary-800 hover:border-selected-800 hover:dark:border-selected-300' : ''}
 		${hot ? 'border-primary-600 dark:border-primary-400 hover:border-selected-400 dark:hover:border-selected-600'
 		: 'bg-transparent sm:bg-primary-500 sm:dark:bg-primary-900/40 border-transparent'}
 		sm:hover:bg-selected-400 sm:active:bg-selected-500

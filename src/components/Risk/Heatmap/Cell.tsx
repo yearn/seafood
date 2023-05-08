@@ -37,7 +37,7 @@ export default function Cell({
 				bg-secondary-100 dark:bg-black
 				border border-selected-200 dark:border-selected-900
 				shadow-lg shadow-secondary-900/20 dark:shadow-black/60
-				outline-none transition duration-200
+				outline-none
 				${category === 'median' ? 'w-64' : 'w-96'}
         ${className}`}
 			style={floatie.style}>

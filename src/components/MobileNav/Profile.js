@@ -12,7 +12,6 @@ function Button({onClick, className, children}) {
 		sm:text-selected-900 sm:hover:text-selected-50
 		sm:dark:text-secondary-900 sm:dark:hover:text-secondary-50
 		whitespace-nowrap
-		transition duration-200
 		${className}`}>
 		{children}
 	</button>;

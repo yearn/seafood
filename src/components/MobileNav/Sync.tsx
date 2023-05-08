@@ -53,8 +53,7 @@ export default function Sync() {
 
 	return <div className={'flex items-center gap-1'}>
 		<div onClick={() => navigate('/status')} title={loading ? '' : 'Start sync'} className={`
-			px-3 py-2 text-xs 
-			transition duration-200
+			px-3 py-2 text-xs
 			${colors.text} ${colors.hover} ${cursor}`}>
 			{message}
 		</div>
