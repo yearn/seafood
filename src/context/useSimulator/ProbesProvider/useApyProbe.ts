@@ -59,7 +59,7 @@ export default function useApyProbe() {
 			name: 'apy',
 
 			start: async (provider: providers.JsonRpcProvider) => {
-				setStatus('Compute current APY');
+				setStatus('Compute live APY');
 				const result = await runApyProbe(provider);
 				return {name: 'apy', output: result};
 			},
