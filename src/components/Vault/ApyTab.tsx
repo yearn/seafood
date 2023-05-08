@@ -6,8 +6,7 @@ import {getApyComputer} from '../../math/apy';
 import {useSimulator} from '../../context/useSimulator';
 import {useApyProbeDelta, useApyProbeResults} from '../../context/useSimulator/ProbesProvider/useApyProbe';
 import useLocalStorage from '../../utils/useLocalStorage';
-import {Row, Switch, Tooltip} from '../controls';
-import {TiWarning} from 'react-icons/ti';
+import {Row, Switch} from '../controls';
 import {BsLightningChargeFill} from 'react-icons/bs';
 import {BiBadgeCheck} from 'react-icons/bi';
 import {formatPercent} from '../../utils/utils';
@@ -20,6 +19,7 @@ export default function ApyTab({vault}: {vault: Vault}) {
 	const [apyComputer] = useState(getApyComputer(vault?.apy.type || 'v2:averaged'));
 	const simulator = useSimulator();
 	const [liveApy, setLiveApy] = useLocalStorage('vault.liveApy', false);
+	const apyMismatch = useMemo(() => apyComputer.type !== vault?.apy.type, [apyComputer, vault]);
 
 	const apyProbeResults = useApyProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
 	const apyDelta = useApyProbeDelta(vault, apyProbeResults, liveApy);
@@ -35,19 +35,10 @@ export default function ApyTab({vault}: {vault: Vault}) {
 	return <div className={'mb-4 flex flex-col gap-4'}>
 		<div className={'w-full px-2 pt-1 flex items-center justify-between'}>
 			<div>
-				{'Current APY'}
-				{apyComputer.type === vault?.apy.type && <>
-					<div className={'text-xs'}>{vault.apy.type}</div>
-				</>}
-				{apyComputer.type !== vault?.apy.type && <>
-					<div 
-						data-tip={`><(((*> - This vault should use the '${vault?.apy.type}' method to calculate apy, but Seafood doesn't support that yet. Using ${apyComputer.type} for now!`}
-						className={'w-fit flex items-center gap-1 text-xs text-attention-600 dark:text-attention-400 cursor-default'}>
-						<Tooltip place={'top'} type={'dark'} effect={'solid'} />
-						<TiWarning />
-						{apyComputer.type}
-					</div>
-				</>}
+				{liveApy ? 'Live APY' : 'Exporter APY'}
+				<div className={`text-xs ${apyMismatch && liveApy ? 'text-attention-600 dark:text-attention-400' : ''}`}>
+					{liveApy ? apyComputer.type : vault.apy.type}
+				</div>
 			</div>
 			<div className={'w-[60%] flex items-center justify-between'}>
 				<div className={'flex justify-end'}>
@@ -112,5 +103,13 @@ export default function ApyTab({vault}: {vault: Vault}) {
 				{(apyDelta?.pps as number || 0) > 0 ? '+' : ''}{formatPercent(apyDelta?.pps, 2, '--')}
 			</div>
 		</Row>
+		{apyMismatch && <div className={`
+			p-2 border border-attention-600 dark:border-attention-400
+			text-attention-600 dark:text-attention-400
+			bg-attention-100 dark:bg-attention-950
+			`}>
+			{`For this vault we should use the '${vault?.apy.type}' method to calculate apy, but Seafood doesn't support that yet. Using ${apyComputer.type} for Live and Future apy instead.`}
+		</div>}
+
 	</div>;
 }
