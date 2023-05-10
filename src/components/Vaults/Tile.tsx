@@ -3,7 +3,7 @@ import {Vault} from '../../context/useVaults/types';
 import {useFilter} from './Filter/useFilter';
 import {Row} from '../controls';
 import {Bps, Field, Number, Percentage, Tokens} from '../controls/Fields';
-import {formatNumber, getAddressExplorer, highlightString, truncateAddress} from '../../utils/utils';
+import {getAddressExplorer, highlightString, truncateAddress} from '../../utils/utils';
 import {BsStar, BsStarFill} from 'react-icons/bs';
 import {TbCheck, TbCopy} from 'react-icons/tb';
 import {useFavorites} from '../../context/useFavorites';
