@@ -1,5 +1,5 @@
 import compute from './averaged';
-import {BigNumber, Contract, providers} from 'ethers';
+import {BigNumber, Contract, providers, ethers} from 'ethers';
 import * as abis from '../../../abi';
 import {Vault} from '../../../context/useVaults/types';
 
@@ -9,14 +9,14 @@ describe('APY', () => {
 			address: '0x3B27F92C0e212C671EA351827EDF93DB27cc0c65',
 			activation: BigNumber.from(1655484586),
 			performanceFee: BigNumber.from(2000),
-			managementFee: BigNumber.from(0),
+			managementFee: ethers.constants.Zero,
 			version: '0.4.3',
 			strategies: [
-				{address: '0x016919386387898E4Fa87c7c4D3324F75f178F12', debtRatio: BigNumber.from(0), performanceFee: BigNumber.from(0)},
-				{address: '0xeAD650E673F497CdBE365F7a855273BbB468e454', debtRatio: BigNumber.from(3000), performanceFee: BigNumber.from(0)},
-				{address: '0x087794F304aEB337388a40e7c382A0fEa78c47fC', debtRatio: BigNumber.from(0), performanceFee: BigNumber.from(0)},
-				{address: '0x1de1401c71362C05C680c5Fd073888719d8f4196', debtRatio: BigNumber.from(1450), performanceFee: BigNumber.from(0)},
-				{address: '0xBc04eFD0D18685BA97cFAdE4e2D3171701B4099c', debtRatio: BigNumber.from(5550), performanceFee: BigNumber.from(0)}
+				{address: '0x016919386387898E4Fa87c7c4D3324F75f178F12', debtRatio: ethers.constants.Zero, performanceFee: ethers.constants.Zero},
+				{address: '0xeAD650E673F497CdBE365F7a855273BbB468e454', debtRatio: BigNumber.from(3000), performanceFee: ethers.constants.Zero},
+				{address: '0x087794F304aEB337388a40e7c382A0fEa78c47fC', debtRatio: ethers.constants.Zero, performanceFee: ethers.constants.Zero},
+				{address: '0x1de1401c71362C05C680c5Fd073888719d8f4196', debtRatio: BigNumber.from(1450), performanceFee: ethers.constants.Zero},
+				{address: '0xBc04eFD0D18685BA97cFAdE4e2D3171701B4099c', debtRatio: BigNumber.from(5550), performanceFee: ethers.constants.Zero}
 			]
 		} as Vault;
 		const samples = {

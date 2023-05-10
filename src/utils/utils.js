@@ -35,13 +35,13 @@ function formatNumber(number, decimals = 2, nonFinite = '∞', compact = false) 
 	if(Number.isFinite(number)) {
 		let magnitude = '';
 		if(compact) {
-			if(number >= 1_000_000_000) {
+			if(Math.abs(number) >= 1_000_000_000) {
 				magnitude = 'b';
 				number = number / 1_000_000_000;
-			} else if(number >= 1_000_000) {
+			} else if(Math.abs(number) >= 1_000_000) {
 				magnitude = 'm';
 				number = number / 1_000_000;
-			} else if(number >= 1_000) {
+			} else if(Math.abs(number) >= 1_000) {
 				magnitude = 'k';
 				number = number / 1_000;
 			}
@@ -77,7 +77,7 @@ function formatPercent(number, decimals = 2, nonFinite = '∞') {
 
 function formatBps(number, nonFinite = '∞') {
 	if(Number.isFinite(number))
-		return `${parseInt(number * 10_000)}bps`;
+		return `${Math.round(number * 10_000)}bps`;
 	else
 		return nonFinite;
 }

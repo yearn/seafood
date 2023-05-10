@@ -15,7 +15,7 @@ const mocks = {
 		address: '0xdA816459F1AB5631232FE5e97a05BBBb94970c95',
 		governance: '0xFEB4acf3df3cDEA7399794D0869ef76A6EfAff52',
 		performanceFee: BigNumber.from(2000),
-		managementFee: BigNumber.from(0),
+		managementFee: ethers.constants.Zero,
 		version: '0.4.3',
 		network: {chainId: 1}
 	} as Vault,
@@ -27,7 +27,7 @@ const mocks = {
 			totalGain: BigNumber.from(ethers.utils.parseEther('2')),
 			totalLoss: BigNumber.from(ethers.utils.parseEther('0')),
 			lastReport: BigNumber.from((Math.round(Date.now() / 1000) - (7 * 24 * 60 * 60))),
-			delegatedAssets: BigNumber.from(0),
+			delegatedAssets: ethers.constants.Zero,
 			network: {chainId: 1}
 		} as Strategy,
 	}

@@ -45,11 +45,6 @@ export interface BlockOutput {
 	events: unknown[]
 }
 
-export interface StrategySnapshotBlockOutput extends BlockOutput {
-	totalGain: BigNumber,
-	totalLoss: BigNumber
-}
-
 export interface HarvestBlockOutput extends BlockOutput {
 	flow: {
 		profit: BigNumber,
@@ -142,22 +137,6 @@ export async function makeDebtRatioUpdateBlock(
 		meta: {
 			delta,
 			status: `Update DR ${delta > 0 ? '+' : ''}${delta}bps ${strategy.name}`
-		}
-	};
-}
-
-export async function makeStrategiesBlock(
-	vault: Vault, 
-	strategy: Strategy
-) : Promise<Block> {
-	return {
-		primitive: 'vault',
-		chain: vault.network.chainId,
-		contract: vault.address,
-		signer: vault.governance,
-		call: {
-			signature: functions.vaults.strategies.signature,
-			input: [strategy.address]
 		}
 	};
 }

@@ -1,9 +1,8 @@
 import React, {ReactNode, useCallback, useMemo, useState} from 'react';
-import {BigNumber} from 'ethers';
 import {Vault} from '../../context/useVaults/types';
 import {useFilter} from './Filter/useFilter';
 import {Row} from '../controls';
-import {Bps, Field, Percentage, Tokens} from '../controls/Fields';
+import {Bps, Field, Number, Percentage, Tokens} from '../controls/Fields';
 import {formatNumber, getAddressExplorer, highlightString, truncateAddress} from '../../utils/utils';
 import {BsStar, BsStarFill} from 'react-icons/bs';
 import {TbCheck, TbCopy} from 'react-icons/tb';
@@ -11,6 +10,8 @@ import {useFavorites} from '../../context/useFavorites';
 import {useBlocks} from '../../context/useSimulator/BlocksProvider';
 import {useSimulator} from '../../context/useSimulator';
 import {useApyProbeDelta, useApyProbeResults} from '../../context/useSimulator/ProbesProvider/useApyProbe';
+import {useAssetsProbeResults} from '../../context/useSimulator/ProbesProvider/useAssetsProbe';
+import {getTvlSeries} from '../../utils/vaults';
 
 function Chip({className, children}: {className: string, children: ReactNode}) {
 	return <div className={`
@@ -20,11 +21,6 @@ function Chip({className, children}: {className: string, children: ReactNode}) {
 		group-hover:text-black`}>
 		{children}
 	</div>;
-}
-
-function getTvlSeries(vault: Vault) {
-	if(!vault.tvls?.tvls?.length) return [];
-	return [vault.tvls.dates.slice(-3), vault.tvls.tvls.slice(-3)][1];
 }
 
 function Minibars({vault}: {vault: Vault}) {
@@ -104,19 +100,29 @@ function CopyButton({clip, selected, className}: {clip: string, selected: boolea
 
 export default function Tile({vault, onClick}: {vault: Vault, onClick: () => void}) {
 	const {queryRe} = useFilter();
-	const {blocksForVault, computeVaultDr} = useBlocks();
-
-	const hasBlocks = useMemo(() => blocksForVault(vault).length > 0, [vault, blocksForVault]);
-	const debtRatio = useMemo(() => computeVaultDr(vault), [vault, computeVaultDr]);
-	const tvl = useMemo(() => {
-		const series = getTvlSeries(vault);
-		if(!series.length) return NaN;
-		return series[series.length - 1];
-	}, [vault]);
-
+	const {blocksForVault} = useBlocks();
 	const simulator = useSimulator();
 	const apyProbeResults = useApyProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
 	const apyDelta = useApyProbeDelta(vault, apyProbeResults, false);
+	const {tvl, freeAssets, allocated} = useAssetsProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
+
+	const hasBlocks = useMemo(() => blocksForVault(vault).length > 0, [vault, blocksForVault]);
+
+	const apy = useMemo(() => {
+		if(apyProbeResults.stop && apyDelta) {
+			return {
+				simulated: true,
+				value: apyProbeResults.stop.apy.net,
+				delta: apyDelta.net
+			};
+		} else {
+			return {
+				simulated: false,
+				value: vault.apy.net,
+				delta: 0
+			};
+		}
+	}, [vault, apyProbeResults, apyDelta]);
 
 	return <div className={'flex flex-col gap-2'}>
 		<TileButton onClick={onClick} selected={hasBlocks} className={'p-1 sm:p-3'}>
@@ -134,24 +140,65 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						`}>{vault.network.name}</Chip>
 				</div>
 			</Row>
-			<Row label={'TVL (USD)'} alt={true} heading={true}>
-				<div className={'flex items-center gap-4'}>
-					<Minibars vault={vault} />
-					<Field value={formatNumber(tvl, 2, 'No TVL', true)} />
+			<Row label={<div className={'flex items-center gap-4'}>
+				<div>{'TVL (USD)'}</div>
+				<Minibars vault={vault} />
+			</div>} alt={true} heading={true}>
+				<div className={'flex items-center gap-2'}>
+					{tvl.simulated && <Number
+						value={tvl.delta}
+						simulated={tvl.simulated}
+						decimals={2}
+						compact={true}
+						sign={true}
+						format={'(%s)'}
+						className={'text-xs'} />}
+					<Number
+						value={tvl.value}
+						simulated={tvl.simulated}
+						decimals={2}
+						nonFinite={'No TVL'}
+						compact={true} />
 				</div>
 			</Row>
 			<Row label={'APY'}>
-				{!(apyProbeResults.stop && apyDelta) && <Percentage value={vault.apy.net} />}
-				{apyProbeResults.stop && apyDelta && <div className={'flex items-center gap-2'}>
-					<Percentage simulated={true} value={apyProbeResults.stop.apy.net} />
-					<Bps value={apyDelta.net} />
-				</div>}
-			</Row>
-			<Row label={'Allocated'} alt={true}>
-				<Percentage simulated={debtRatio.touched} bps={true} decimals={2} value={debtRatio.value} />
+				<div className={'flex items-center gap-2'}>
+					{apy.simulated && <Bps 
+						simulated={true} 
+						value={apy.delta}
+						sign={true}
+						format={'(%s)'}
+						className={'text-xs'} />}
+					<Percentage simulated={apy.simulated} value={apy.value} />
+				</div>
 			</Row>
 			<Row label={'Free assets'}>
-				<Tokens decimals={vault.token.decimals || 18} value={vault.totalAssets?.sub(vault.totalDebt || BigNumber.from(0)) || BigNumber.from(0)} />
+				<div className={'flex items-center gap-2'}>
+					{freeAssets.simulated && <Tokens
+						simulated={freeAssets.simulated}
+						value={freeAssets.delta}
+						decimals={vault.token.decimals || 18}
+						sign={true}
+						format={'(%s)'}
+						className={'text-xs'} />}
+					<Tokens 
+						simulated={freeAssets.simulated} 
+						value={freeAssets.value} 
+						decimals={vault.token.decimals || 18} />
+				</div>
+			</Row>
+			<Row label={'Allocated'} alt={true}>
+				<div className={'flex items-center gap-2'}>
+					{allocated.simulated && <Bps
+						simulated={allocated.simulated}
+						value={allocated.delta}
+						sign={true}
+						format={'(%s)'}
+						className={'text-xs'} />}
+					<Percentage
+						simulated={allocated.simulated}
+						value={allocated.value} />
+				</div>
 			</Row>
 			<Row label={'Strategies in queue'} alt={true}>
 				<Field value={vault.withdrawalQueue.length} />

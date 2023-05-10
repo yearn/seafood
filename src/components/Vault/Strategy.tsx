@@ -18,9 +18,10 @@ import {BigNumber, FixedNumber, ethers} from 'ethers';
 import {functions} from '../../context/useSimulator/Blocks';
 import {HarvestOutput} from '../../context/useSimulator/ProbesProvider/useHarvestProbe';
 import Accordian from '../controls/Accordian';
-import {Percentage, Tokens} from '../controls/Fields';
+import {Bps, Percentage, Tokens} from '../controls/Fields';
 import EigenPhi from './EigenPhi';
 import Tenderly from './Tenderly';
+import {useAssetsProbeResults} from '../../context/useSimulator/ProbesProvider/useAssetsProbe';
 
 function AccordianTitle({index, strategy}: {index: number, strategy: TStrategy}) {
 	return <div className={`flex items-center gap-2
@@ -38,7 +39,8 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 	const {blocks, addDebtRatioUpdate, removeDebtRatioUpdate, addSetDoHealthCheck, removeSetDoHealthCheck, addHarvest, removeHarvest, computeVaultDr} = useBlocks();
 	const vaultDebtRatio = computeVaultDr(vault);
 	const drInput = useRef<HTMLInputElement>({} as HTMLInputElement);
-	const {simulating, blockPointer, results: simulatorResults, probeStopResults} = useSimulator();
+	const {simulating, blockPointer, results: simulatorResults, probeStartResults, probeStopResults} = useSimulator();
+	const {stop: assetsProbeOutput} = useAssetsProbeResults(vault, probeStartResults, probeStopResults);
 
 	const simulatingStrategy = useMemo(() => {
 		if(!blockPointer) return false;
@@ -136,10 +138,37 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 		return 'dark:border-primary-900/40';
 	}, [simulatingStrategy, harvestResult, harvestProbeOutput, simulationError]);
 
+	const estimatedTotalAssets = useMemo(() => {
+		if(harvestProbeOutput) return {
+			simulated: true,
+			value: strategy.estimatedTotalAssets,
+			delta: harvestProbeOutput.estimatedTotalAssets.sub(strategy.estimatedTotalAssets)
+		};
+		return {
+			simulated: false,
+			value: strategy.estimatedTotalAssets,
+			delta: ethers.constants.Zero
+		};
+	}, [strategy, harvestProbeOutput]);
+
 	const realRatio = useMemo(() => {
-		if(!vault?.totalAssets?.gt(0)) return 0;
-		return FixedNumber.from(strategy.totalDebt).divUnsafe(FixedNumber.from(vault?.totalAssets)).toUnsafeFloat();
-	}, [strategy, vault]);
+		if(!vault?.totalAssets?.gt(0)) return {simulated: false, value: 0, delta: 0};
+		const actual = FixedNumber.from(strategy.totalDebt).divUnsafe(FixedNumber.from(vault?.totalAssets)).toUnsafeFloat();
+		if(harvestProbeOutput && assetsProbeOutput) {
+			const simulated = FixedNumber.from(harvestProbeOutput.totalDebt).divUnsafe(FixedNumber.from(assetsProbeOutput.totalAssets)).toUnsafeFloat();
+			return {
+				simulated: true,
+				value: simulated,
+				delta: simulated - actual
+			};
+		} else {
+			return {
+				simulated: false,
+				value: actual,
+				delta: 0
+			};
+		}
+	}, [strategy, vault, harvestProbeOutput, assetsProbeOutput]);
 
 	const healthCheck = useMemo(() => {
 		if(!strategy.healthCheck || strategy.healthCheck === ethers.constants.AddressZero) return undefined;
@@ -223,11 +252,32 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 				</Row>
 
 				<Row label={'Estimated assets'}>
-					<Tokens value={strategy.estimatedTotalAssets} decimals={vault?.token.decimals} className={'text-xl'} />
+					<div className={'flex items-center gap-2'}>
+						{estimatedTotalAssets.simulated && <Tokens
+							simulated={estimatedTotalAssets.simulated}
+							value={estimatedTotalAssets.delta} 
+							decimals={vault?.token.decimals}
+							sign={true}
+							format={'(%s)'}
+							className={'text-sm'} />}
+						<Tokens
+							simulated={estimatedTotalAssets.simulated}
+							value={estimatedTotalAssets.value} 
+							decimals={vault?.token.decimals} 
+							className={'text-xl'} />
+					</div>
 				</Row>
 
 				<Row label={'Real debt ratio'} alt={true}>
-					<Percentage value={realRatio} />
+					<div className={'flex items-center gap-2'}>
+						{realRatio.simulated && <Bps 
+							simulated={true}
+							value={realRatio.delta}
+							sign={true}
+							format={'(%s)'}
+							className={'text-xs'} />}
+						<Percentage simulated={realRatio.simulated} value={realRatio.value} />
+					</div>
 				</Row>
 
 				<Row label={'Last harvest'}>

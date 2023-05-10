@@ -279,7 +279,7 @@ async function createVaultMulticalls(vaults: yDaemon.Vault[], chain: ySeafood.Ch
 			const results = multiresults[vault.address].callsReturnContext;
 			const lockedProfitDegradation = results[4].returnValues[0] && results[4].returnValues[0].type === 'BigNumber'
 				? BigNumber.from(results[4].returnValues[0])
-				: BigNumber.from(0);
+				: ethers.constants.Zero;
 			parsed.push({
 				type: 'vault',
 				chainId: chain.id,

@@ -1,21 +1,16 @@
 import React, {useMemo} from 'react';
-import {useBlocks} from '../../context/useSimulator/BlocksProvider';
 import {Vault} from '../../context/useVaults/types';
 import {FixedNumber, ethers} from 'ethers';
 import {Row} from '../controls';
 import {formatPercent, formatTokens} from '../../utils/utils';
-import {BPS} from '../../constants';
 import TvlBars from './TvlBars';
+import {useAssetsProbeResults} from '../../context/useSimulator/ProbesProvider/useAssetsProbe';
+import {useSimulator} from '../../context/useSimulator';
+import {Bps, Percentage, Tokens} from '../controls/Fields';
 
 export default function AssetsTab({vault}: {vault: Vault}) {
-	const {computeVaultDr} = useBlocks();
-
-	const vaultDebtRatio = computeVaultDr(vault);
-
-	const allocated = useMemo(() => {
-		if((vault.totalAssets || ethers.constants.Zero).eq(0)) return 0;
-		return vaultDebtRatio.value / BPS.toUnsafeFloat();
-	}, [vault, vaultDebtRatio]);
+	const simulator = useSimulator();
+	const {totalAssets, freeAssets, allocated} = useAssetsProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
 
 	const utilization = useMemo(() => {
 		if(!vault) return 0;
@@ -28,16 +23,47 @@ export default function AssetsTab({vault}: {vault: Vault}) {
 	return <div className={'flex flex-col sm:gap-8'}>
 		<div className={'w-full flex flex-col gap-4'}>
 			<Row label={'Total Assets'} className={'font-bold text-2xl'}>
-				<div className={'font-bold font-mono text-3xl text-right'}>{formatTokens(vault.totalAssets, vault.token.decimals, 2, true)}</div>
+				<div className={'flex items-center gap-2'}>
+					{totalAssets.simulated && <Tokens
+						simulated={true}
+						value={totalAssets.delta}
+						decimals={vault.token.decimals || 18}
+						sign={true}
+						format={'(%s)'}
+						className={'text-base'} />}
+					<Tokens
+						simulated={totalAssets.simulated}
+						value={totalAssets.value}
+						decimals={vault.token.decimals || 18}
+						className={'text-3xl'} />
+				</div>
 			</Row>
 			<Row label={'Free assets'} alt={true} heading={true}>
-				<div className={'font-mono text-right'}>{formatTokens(vault.totalAssets?.sub(vault.totalDebt || 0), vault.token.decimals, 2, true)}</div>
+				<div className={'flex items-center gap-2'}>
+					{freeAssets.simulated && <Tokens
+						simulated={freeAssets.simulated}
+						value={freeAssets.delta}
+						decimals={vault.token.decimals || 18}
+						sign={true}
+						format={'(%s)'}
+						className={'text-xs'} />}
+					<Tokens 
+						simulated={freeAssets.simulated} 
+						value={freeAssets.value} 
+						decimals={vault.token.decimals || 18} />
+				</div>
 			</Row>
 			<Row label={'Allocated'}>
-				<div className={
-					`font-mono text-right 
-					${vaultDebtRatio.touched ? 'text-primary-600 dark:text-primary-400' : ''}`}>
-					{formatPercent(allocated, 2, '--')}
+				<div className={'flex items-center gap-2'}>
+					{allocated.simulated && <Bps
+						simulated={allocated.simulated}
+						value={allocated.delta}
+						sign={true}
+						format={'(%s)'}
+						className={'text-xs'} />}
+					<Percentage
+						simulated={allocated.simulated}
+						value={allocated.value} />
 				</div>
 			</Row>
 			<Row label={'Deposit limit'} alt={true}>

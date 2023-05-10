@@ -51,7 +51,7 @@ export default function useApyProbe() {
 	}, [vaultsToProbe, measureApy]);
 
 	const longestDegradationTime = useCallback(() => {
-		return vaultsToProbe.map(v => computeDegradationTime(v)).reduce((a, b) => a.gt(b) ? a : b, BigNumber.from(0));
+		return vaultsToProbe.map(v => computeDegradationTime(v)).reduce((a, b) => a.gt(b) ? a : b, ethers.constants.Zero);
 	}, [vaultsToProbe]);
 
 	const probe = useMemo(() => {

@@ -62,7 +62,7 @@ export default function ApyTab({vault}: {vault: Vault}) {
 				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy.gross, 4, '--')}</div>}
 				{!liveApy && <div className={'font-mono text-right'}>{formatPercent(vault?.apy.gross, 4)}</div>}
 				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy.gross, 4, '--')}</div>
-				<Bps value={apyDelta?.gross || 0} />
+				<Bps value={apyDelta?.gross || 0} simulated={true} sign={true} />
 			</div>
 		</Row>
 		<Row label={'Net'}>
@@ -70,7 +70,7 @@ export default function ApyTab({vault}: {vault: Vault}) {
 				{liveApy && <div className={'font-bold font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy.net, 4, '--')}</div>}
 				{!liveApy && <div className={'font-bold font-mono text-right'}>{formatPercent(vault?.apy.net, 4)}</div>}
 				<div className={'font-bold font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy.net, 4, '--')}</div>
-				<Bps value={apyDelta?.net || 0} />
+				<Bps value={apyDelta?.net || 0} simulated={true} sign={true} />
 			</div>
 		</Row>
 		<Row label={'Weekly'} alt={true}>
@@ -78,7 +78,7 @@ export default function ApyTab({vault}: {vault: Vault}) {
 				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy[-7], 4, '--')}</div>}
 				{!liveApy && <div className={'font-mono text-right'}>{formatPercent(vault?.apy[-7], 4)}</div>}
 				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy[-7], 4, '--')}</div>
-				<Bps value={apyDelta?.[-7] || 0} />
+				<Bps value={apyDelta?.[-7] || 0} simulated={true} sign={true} />
 			</div>
 		</Row>
 		<Row label={'Monthly'}>
@@ -86,7 +86,7 @@ export default function ApyTab({vault}: {vault: Vault}) {
 				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy[-30], 4, '--')}</div>}
 				{!liveApy && <div className={'font-mono text-right'}>{formatPercent(vault?.apy[-30], 4)}</div>}
 				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy[-30], 4, '--')}</div>
-				<Bps value={apyDelta?.[-30] || 0} />
+				<Bps value={apyDelta?.[-30] || 0} simulated={true} sign={true} />
 			</div>
 		</Row>
 		<Row label={'Inception'} alt={true}>
@@ -94,7 +94,7 @@ export default function ApyTab({vault}: {vault: Vault}) {
 				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy.inception, 4, '--')}</div>}
 				{!liveApy && <div className={'font-mono text-right'}>{formatPercent(vault?.apy.inception, 4)}</div>}
 				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy.inception, 4, '--')}</div>
-				<Bps value={apyDelta?.inception || 0} />
+				<Bps value={apyDelta?.inception || 0} simulated={true} sign={true} />
 			</div>
 		</Row>
 		<Row label={'PPS (x1000)'}>

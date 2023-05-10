@@ -1,6 +1,6 @@
-import React, {ReactNode} from 'react';
+import React, {ReactNode, useMemo} from 'react';
 import {BigNumber} from 'ethers';
-import {formatBps, formatPercent, formatTokens} from '../../utils/utils';
+import {formatBps, formatNumber, formatPercent, formatTokens} from '../../utils/utils';
 
 export function Field(
 	{value, simulated, className, children}: 
@@ -26,27 +26,50 @@ export function Field(
 	}
 }
 
+export function Number(
+	{value, simulated, decimals, nonFinite, compact, sign, format, className}
+	: {value: number, simulated?: boolean, decimals?: number, nonFinite?: string, compact?: boolean, sign?: boolean, format?: string, className?: string}) {
+	const result = useMemo(() => {
+		const _ = `${sign ? (value < 0 ? '' : '+') : ''}${formatNumber(value, decimals, nonFinite, compact)}`;
+		return format ? format.replace('%s', _) : _;
+	}, [value, decimals, nonFinite, compact, sign, format]);
+	return <Field value={value} simulated={simulated} className={className}>
+		{result}
+	</Field>;
+}
+
 export function Bps(
-	{value, className}
-	: {value: number, className?: string}) {
-	return <Field value={value} simulated={true} className={className}>
-		{`${value > 0 ? '+' : ''}${formatBps(value)}`}
+	{value, simulated, sign, format, className}
+	: {value: number, simulated?: boolean, sign?: boolean, format?: string, className?: string}) {
+	const result = useMemo(() => {
+		const _ = `${sign ? (value < 0 ? '' : '+') : ''}${formatBps(value)}`;
+		return format ? format.replace('%s', _) : _;
+	}, [value, sign, format]);
+	return <Field value={value} simulated={simulated} className={className}>
+		{result}
 	</Field>;
 }
 
 export function Tokens(
-	{value, decimals, simulated, className}
-	: {value: BigNumber, decimals?: number, simulated?: boolean, className?: string}) {
+	{value, simulated, decimals, sign, format, className}
+	: {value: BigNumber, simulated?: boolean, decimals?: number, sign?: boolean, format?: string, className?: string}) {
+	const result = useMemo(() => {
+		const _ = `${sign ? (value.lt(0) ? '' : '+') : ''}${formatTokens(value, decimals, 2, true)}`;
+		return format ? format.replace('%s', _) : _;
+	}, [value, decimals, sign, format]);
 	return <Field value={value} simulated={simulated} className={className}>
-		{formatTokens(value, decimals, 2, true)}
+		{result}
 	</Field>;
 }
 
 export function Percentage(
-	{value, simulated, bps, decimals, className}
-	: {value: number, simulated?: boolean, bps?: boolean, decimals?: number, className?: string}) {
-	if(bps) value = value / 10_000;
+	{value, simulated, bps, decimals, sign, format, className}
+	: {value: number, simulated?: boolean, bps?: boolean, decimals?: number, sign?: boolean, format?: string, className?: string}) {
+	const result = useMemo(() => {
+		const _ = `${sign ? (value < 0 ? '' : '+') : ''}${formatPercent(bps ? value / 10_000 : value, decimals)}`;
+		return format ? format.replace('%s', _) : _;
+	}, [value, bps, decimals, sign, format]);
 	return <Field value={value} simulated={simulated} className={className}>
-		{formatPercent(value, decimals)}
+		{result}
 	</Field>;
 }

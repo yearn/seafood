@@ -2,10 +2,11 @@ import {BigNumber, providers} from 'ethers';
 import {useMemo} from 'react';
 import {useVaults} from '../../useVaults';
 import {Probe} from './useProbes';
-import {functions, makeStrategiesBlock, parseEvents, RawEvent, StrategySnapshotBlockOutput} from '../Blocks';
-import tenderly, {SimulationResult} from '../../../tenderly';
+import {functions, parseEvents, RawEvent} from '../Blocks';
+import {SimulationResult} from '../../../tenderly';
 import {computeHarvestApr} from '../../../math/apr';
 import {useSimulatorStatus} from '../SimulatorStatusProvider';
+import {GetStrategyContract} from '../../../ethereum/EthHelpers';
 
 export interface HarvestOutput {
 	strategy: string,
@@ -16,7 +17,9 @@ export interface HarvestOutput {
 	apr: {
 		gross: number,
 		net: number
-	}
+	},
+	estimatedTotalAssets: BigNumber,
+	totalDebt: BigNumber
 }
 
 export default function useHarvestProbe() {
@@ -52,12 +55,15 @@ export default function useHarvestProbe() {
 					const strategy = vault.withdrawalQueue.find(s => s.address === result.block.contract);
 					if(!strategy) throw '!address';
 
-					const snapshotBlock = await makeStrategiesBlock(vault, strategy);
-					const snapshotResult = await tenderly.simulate(snapshotBlock, provider);
-					const snapshot = snapshotResult.output as StrategySnapshotBlockOutput | undefined;
-					const apr = snapshot ? computeHarvestApr(vault, strategy, snapshot) : {gross: 0, net: 0};
+					const apr = computeHarvestApr(vault, strategy, {
+						totalGain: report.args.totalGain,
+						totalLoss: report.args.totalLoss
+					});
 
-					results.push({strategy: strategy.address, flow, apr});
+					const contract = GetStrategyContract(strategy.address, provider);
+					const estimatedTotalAssets = await contract.estimatedTotalAssets();
+
+					results.push({strategy: strategy.address, flow, apr, estimatedTotalAssets, totalDebt: report.args.totalDebt});
 				}
 
 				return {name: 'harvest', output: results};

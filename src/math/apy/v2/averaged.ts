@@ -1,4 +1,4 @@
-import {BigNumber, Contract, FixedNumber} from 'ethers';
+import {BigNumber, Contract, FixedNumber, ethers} from 'ethers';
 import {compare} from 'compare-versions';
 import * as types from '../types';
 import {Vault} from '../../../context/useVaults/types';
@@ -18,8 +18,8 @@ export default async function compute(
 
 	const pps = {
 		[0]: await vaultRpc.pricePerShare({blockTag: samples[0]}),
-		[-7]: BigNumber.from(0),
-		[-30]: BigNumber.from(0),
+		[-7]: ethers.constants.Zero,
+		[-30]: ethers.constants.Zero,
 		inception: await vaultRpc.pricePerShare({blockTag: samples.inception})
 	};
 
@@ -66,8 +66,8 @@ export default async function compute(
 	apy.net = netApyCandidates.find(apy => apy > 0) || 0;
 
 	const strategistFees = vault.strategies
-		.map(strategy => strategy.debtRatio?.mul(strategy.performanceFee) || BigNumber.from(0))
-		.reduce((a: BigNumber, b: BigNumber) => a.add(b), BigNumber.from(0));
+		.map(strategy => strategy.debtRatio?.mul(strategy.performanceFee) || ethers.constants.Zero)
+		.reduce((a: BigNumber, b: BigNumber) => a.add(b), ethers.constants.Zero);
 
 	const performanceFee = strategistFees.add(vault.performanceFee).toNumber() / 10_000;
 	const managementFee = vault.managementFee.toNumber() / 10_000;
