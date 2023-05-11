@@ -104,7 +104,7 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 	const simulator = useSimulator();
 	const apyProbeResults = useApyProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
 	const apyDelta = useApyProbeDelta(vault, apyProbeResults, false);
-	const {tvl, freeAssets, allocated} = useAssetsProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
+	const {tvl, freeAssets, deployed: allocated} = useAssetsProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
 
 	const hasBlocks = useMemo(() => blocksForVault(vault).length > 0, [vault, blocksForVault]);
 
@@ -172,6 +172,19 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 					<Percentage simulated={apy.simulated} value={apy.value} />
 				</div>
 			</Row>
+			<Row label={'Allocated'} alt={true}>
+				<div className={'flex items-center gap-2'}>
+					{allocated.simulated && <Bps
+						simulated={allocated.simulated}
+						value={allocated.delta}
+						sign={true}
+						format={'(%s)'}
+						className={'text-xs'} />}
+					<Percentage
+						simulated={allocated.simulated}
+						value={allocated.value} />
+				</div>
+			</Row>
 			<Row label={'Free assets'}>
 				<div className={'flex items-center gap-2'}>
 					{freeAssets.simulated && <Tokens
@@ -185,19 +198,6 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						simulated={freeAssets.simulated} 
 						value={freeAssets.value} 
 						decimals={vault.token.decimals || 18} />
-				</div>
-			</Row>
-			<Row label={'Allocated'} alt={true}>
-				<div className={'flex items-center gap-2'}>
-					{allocated.simulated && <Bps
-						simulated={allocated.simulated}
-						value={allocated.delta}
-						sign={true}
-						format={'(%s)'}
-						className={'text-xs'} />}
-					<Percentage
-						simulated={allocated.simulated}
-						value={allocated.value} />
 				</div>
 			</Row>
 			<Row label={'Strategies in queue'} alt={true}>

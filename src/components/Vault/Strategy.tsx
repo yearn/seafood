@@ -141,7 +141,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 	const estimatedTotalAssets = useMemo(() => {
 		if(harvestProbeOutput) return {
 			simulated: true,
-			value: strategy.estimatedTotalAssets,
+			value: harvestProbeOutput.estimatedTotalAssets,
 			delta: harvestProbeOutput.estimatedTotalAssets.sub(strategy.estimatedTotalAssets)
 		};
 		return {
@@ -153,9 +153,9 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 
 	const realRatio = useMemo(() => {
 		if(!vault?.totalAssets?.gt(0)) return {simulated: false, value: 0, delta: 0};
-		const actual = FixedNumber.from(strategy.totalDebt).divUnsafe(FixedNumber.from(vault?.totalAssets)).toUnsafeFloat();
+		const actual = strategy.totalDebt.mul(10_000).div(vault?.totalAssets || ethers.constants.Zero).toNumber() / 10_000;
 		if(harvestProbeOutput && assetsProbeOutput) {
-			const simulated = FixedNumber.from(harvestProbeOutput.totalDebt).divUnsafe(FixedNumber.from(assetsProbeOutput.totalAssets)).toUnsafeFloat();
+			const simulated = harvestProbeOutput.totalDebt.mul(10_000).div(assetsProbeOutput.totalAssets).toNumber() / 10_000;
 			return {
 				simulated: true,
 				value: simulated,

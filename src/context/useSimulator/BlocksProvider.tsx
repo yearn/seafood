@@ -2,8 +2,8 @@ import React, {createContext, ReactNode, useCallback, useContext, useMemo, useSt
 import {Strategy, Vault} from '../useVaults/types';
 import {Block, functions, makeDebtRatioUpdateBlock, makeHarvestBlock, makeSetDoHealthCheckBlock} from './Blocks';
 
-export interface Touched {
-	touched: boolean,
+export interface Simulated {
+	simulated: boolean,
 	value: number,
 	delta: number
 }
@@ -18,7 +18,7 @@ export interface BlocksContext {
 	addDebtRatioUpdate: (vault: Vault, strategy: Strategy, debtRatio: number) => Promise<void>,
 	removeDebtRatioUpdate: (vault: Vault, strategy: Strategy) => void,
 	extractDrUpdates: (vault: Vault) => {[address: string]: number},
-	computeVaultDr: (vault: Vault | null | undefined) => Touched,
+	computeVaultDr: (vault: Vault | null | undefined) => Simulated,
 	reset: () => void
 }
 
@@ -188,7 +188,7 @@ export default function BlocksProvider({children}: {children: ReactNode}) {
 	}, [blocks]);
 
 	const computeVaultDr = useCallback((vault: Vault | null | undefined) => {
-		if(!vault) return {} as Touched;
+		if(!vault) return {} as Simulated;
 		const drUpdates = extractDrUpdates(vault);
 		const debtRatio = vault.withdrawalQueue.map((s: Strategy) => {
 			if(drUpdates[s.address] !== undefined) {
@@ -200,7 +200,7 @@ export default function BlocksProvider({children}: {children: ReactNode}) {
 			}
 		}).reduce((a: number, b: number) => a + b, 0);
 		return {
-			touched: Boolean(Object.keys(drUpdates).length),
+			simulated: Boolean(Object.keys(drUpdates).length),
 			value: debtRatio,
 			delta: debtRatio - (vault.debtRatio?.toNumber() || 0),
 		};

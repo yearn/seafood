@@ -16,9 +16,6 @@ export interface AssetsOutput {
 }
 
 export function useAssetsProbeResults(vault: Vault | undefined, startResults: ProbeResults[], stopResults: ProbeResults[]) {
-	const {computeVaultDr} = useBlocks();
-	const vaultDebtRatio = computeVaultDr(vault);
-
 	const start = useMemo(() => {
 		if(!vault) return undefined;
 		return (startResults
@@ -72,44 +69,46 @@ export function useAssetsProbeResults(vault: Vault | undefined, startResults: Pr
 	}, [vault, totalAssets]);
 
 	const freeAssets = useMemo(() => {
-		const starting = vault?.totalAssets?.sub(vault.totalDebt || 0) || ethers.constants.Zero;
+		const actual = vault?.totalAssets?.sub(vault.totalDebt || 0) || ethers.constants.Zero;
 		if(stop) {
-			const ending = stop.totalAssets.sub(stop.totalDebt);
+			const simulated = stop.totalAssets.sub(stop.totalDebt);
 			return {
 				simulated: true,
-				value: ending,
-				delta: ending.sub(starting)
+				value: simulated,
+				delta: simulated.sub(actual)
 			};
 		} else {
 			return {
 				simulated: false,
-				value: starting,
+				value: actual,
 				delta: ethers.constants.Zero
 			};
 		}
 	}, [vault, stop]);
 
-	const allocated = useMemo(() => {
-		if((vault?.totalAssets || ethers.constants.Zero).eq(0)) 
+	const deployed = useMemo(() => {
+		if((vault?.totalAssets || ethers.constants.Zero).eq(0)) {
 			return {simulated: false, value: 0, delta: 0};
+		}
+
+		const actual = (vault?.totalDebt || ethers.constants.Zero).mul(10_000).div(vault?.totalAssets || ethers.constants.Zero).toNumber() / 10_000;
 		if(stop) {
-			const starting = (vault?.debtRatio?.toNumber() || 0) / 10_000;
-			const ending = stop.totalDebt.mul(10_000).div(stop.totalAssets).toNumber() / 10_000;
+			const simulated = stop.totalDebt.mul(10_000).div(stop.totalAssets).toNumber() / 10_000;
 			return {
 				simulated: true,
-				value: ending,
-				delta: ending - starting
+				value: simulated,
+				delta: simulated - actual
 			};
 		} else {
 			return {
-				simulated: vaultDebtRatio.touched,
-				value: vaultDebtRatio.value / 10_000,
-				delta: vaultDebtRatio.delta / 10_000
+				simulated: false,
+				value: actual,
+				delta: 0
 			};
 		}
-	}, [vault, vaultDebtRatio, stop]);
+	}, [vault, stop]);
 
-	return {start, stop, totalAssets, tvl, freeAssets, allocated};
+	return {start, stop, totalAssets, tvl, freeAssets, deployed};
 }
 
 export default function useAssetsProbe() {

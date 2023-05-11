@@ -7,10 +7,13 @@ import TvlBars from './TvlBars';
 import {useAssetsProbeResults} from '../../context/useSimulator/ProbesProvider/useAssetsProbe';
 import {useSimulator} from '../../context/useSimulator';
 import {Bps, Percentage, Tokens} from '../controls/Fields';
+import {useBlocks} from '../../context/useSimulator/BlocksProvider';
 
 export default function AssetsTab({vault}: {vault: Vault}) {
+	const {computeVaultDr} = useBlocks();
 	const simulator = useSimulator();
-	const {totalAssets, freeAssets, allocated} = useAssetsProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
+	const vaultDebtRatio = computeVaultDr(vault);
+	const {totalAssets, freeAssets, deployed} = useAssetsProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
 
 	const utilization = useMemo(() => {
 		if(!vault) return 0;
@@ -38,7 +41,33 @@ export default function AssetsTab({vault}: {vault: Vault}) {
 						className={'text-3xl'} />
 				</div>
 			</Row>
-			<Row label={'Free assets'} alt={true} heading={true}>
+			<Row label={'Total debt ratio'} alt={true} heading={true}>
+				<div className={'flex items-center gap-2'}>
+					{vaultDebtRatio.simulated && <Bps
+						simulated={vaultDebtRatio.simulated}
+						value={vaultDebtRatio.delta / 10_000}
+						sign={true}
+						format={'(%s)'}
+						className={'text-xs'} />}
+					<Percentage
+						simulated={vaultDebtRatio.simulated} 
+						value={vaultDebtRatio.value / 10_000} />
+				</div>
+			</Row>
+			<Row label={'Allocated'}>
+				<div className={'flex items-center gap-2'}>
+					{deployed.simulated && <Bps
+						simulated={deployed.simulated}
+						value={deployed.delta}
+						sign={true}
+						format={'(%s)'}
+						className={'text-xs'} />}
+					<Percentage
+						simulated={deployed.simulated}
+						value={deployed.value} />
+				</div>
+			</Row>
+			<Row label={'Free assets'} alt={true}>
 				<div className={'flex items-center gap-2'}>
 					{freeAssets.simulated && <Tokens
 						simulated={freeAssets.simulated}
@@ -53,27 +82,14 @@ export default function AssetsTab({vault}: {vault: Vault}) {
 						decimals={vault.token.decimals || 18} />
 				</div>
 			</Row>
-			<Row label={'Allocated'}>
-				<div className={'flex items-center gap-2'}>
-					{allocated.simulated && <Bps
-						simulated={allocated.simulated}
-						value={allocated.delta}
-						sign={true}
-						format={'(%s)'}
-						className={'text-xs'} />}
-					<Percentage
-						simulated={allocated.simulated}
-						value={allocated.value} />
-				</div>
-			</Row>
-			<Row label={'Deposit limit'} alt={true}>
+			<Row label={'Deposit limit'}>
 				<div className={'font-mono text-right'}>{formatTokens(vault.depositLimit, vault.token.decimals, 2, true)}</div>
 			</Row>
-			<Row label={'Utilization'}>
+			<Row label={'Utilization'} alt={true}>
 				<div className={'font-mono text-right'}>{formatPercent(utilization, 2)}</div>
 			</Row>
 		</div>
-		<div className={'w-full py-4 sm:my-0'}>
+		<div className={'w-full pb-4 sm:my-0'}>
 			{vault && <TvlBars vault={vault} />}
 		</div>
 	</div>;
