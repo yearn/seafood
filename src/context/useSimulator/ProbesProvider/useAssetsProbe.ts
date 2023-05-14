@@ -128,7 +128,7 @@ export default function useAssetsProbe() {
 			name: 'assets',
 
 			start: async (provider: providers.JsonRpcProvider) => {
-				setStatus('Measure starting assets');
+				setStatus('Measure assets');
 				const results = [] as AssetsOutput[];
 				for(const vault of vaultsToProbe) {
 					const contract = await GetVaultContract(vault.address, provider, vault.version);
@@ -144,7 +144,7 @@ export default function useAssetsProbe() {
 			},
 
 			stop: async (_results: SimulationResult[], provider: providers.JsonRpcProvider) => {
-				setStatus('Measure assets flow');
+				setStatus('Measure asset flows');
 				const results = [] as AssetsOutput[];
 				for(const vault of vaultsToProbe) {
 					const contract = await GetVaultContract(vault.address, provider, vault.version);

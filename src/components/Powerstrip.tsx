@@ -27,8 +27,8 @@ function useMatchRoutes(link: LinkInfo) {
 
 function Light({link}: {link: LinkInfo}) {
 	const on = useMatchRoutes(link);
-	return <div className={'h-[40px] flex items-center justify-center'}>
-		<div className={`w-1 h-1 ${on ? 'bg-primary-600 dark:bg-primary-400' : 'bg-primary-600/40 dark:bg-primary-400/40'}`}></div>
+	return <div className={'h-[40px] flex items-center justify-start'}>
+		<div className={`w-2 h-1 ${on ? 'bg-primary-600 dark:bg-primary-400' : 'bg-primary-600/40 dark:bg-primary-400/40'}`}></div>
 	</div>;
 }
 
@@ -38,26 +38,26 @@ function StatusLight() {
 
 	if(loading) {
 		return <div className={`
-			h-[40px] flex items-center justify-center`}>
+			h-[40px] flex items-center justify-start`}>
 			<div className={`
 				absolute h-2 w-2
 				opacity-75 animate-ping
 				${colors.bg}`} />
 			<div className={`
-				h-1 w-1 m-1
+				h-1 w-2
 				${colors.bg}`} />
 		</div>;
 	}
 
-	return <div onClick={refresh} className={'h-[40px] flex items-center justify-center cursor-pointer'}>
-		<div className={`h-1 w-1 ${colors.bg}`}></div>
+	return <div onClick={refresh} className={'h-[40px] flex items-center justify-start cursor-pointer'}>
+		<div className={`h-1 w-2 ${colors.bg}`}></div>
 	</div>;
 }
 
 function LoginLight() {
 	const {profile} = useAuth();
-	return <div className={'h-[40px] flex items-center justify-center'}>
-		<div className={`w-1 h-1 ${profile ? 'bg-primary-600 dark:bg-primary-400' : 'bg-primary-600/40 dark:bg-primary-400/40'}`}></div>
+	return <div className={'h-[40px] flex items-center justify-start'}>
+		<div className={`w-2 h-1 ${profile ? 'bg-primary-600 dark:bg-primary-400' : 'bg-primary-600/40 dark:bg-primary-400/40'}`}></div>
 	</div>;
 }
 
@@ -134,7 +134,7 @@ export default function Powerstrip({className}: {className?: string}) {
 		className={`
 		bg-secondary-100 dark:bg-black
 		${className}`}>
-		<div className={'z-10 pt-5 flex flex-col items-center justify-center gap-2'}>
+		<div className={'z-10 pt-5 flex flex-col items-start justify-center gap-2'}>
 			{Lights.map(light => light)}
 		</div>
 
