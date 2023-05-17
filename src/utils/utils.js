@@ -27,6 +27,10 @@ function getEigenTxExplorer(hash) {
 	return `https://eigenphi.io/mev/eigentx/${hash}`;
 }
 
+function getYearnExplorer(vault) {
+	return `https://yearn.finance/vaults/${vault.network.chainId}/${vault.address}`;
+}
+
 function truncateAddress(address) {
 	return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
@@ -63,7 +67,7 @@ function formatNumber(number, decimals = 2, nonFinite = '∞', compact = false) 
 }
 
 function formatPercent(number, decimals = 2, nonFinite = '∞') {
-	if(Number.isFinite(number))
+	if(Number.isFinite(number)) {
 		return number.toLocaleString(
 			navigator?.language, 
 			{
@@ -71,6 +75,7 @@ function formatPercent(number, decimals = 2, nonFinite = '∞') {
 				minimumFractionDigits: decimals, 
 				maximumFractionDigits: decimals
 			});
+	}
 	else
 		return nonFinite;
 }
@@ -165,6 +170,7 @@ export {
 	getAddressExplorer, 
 	getTxExplorer,
 	getEigenTxExplorer,
+	getYearnExplorer,
 	truncateAddress, 
 	formatNumber, 
 	formatPercent,

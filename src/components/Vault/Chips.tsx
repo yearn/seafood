@@ -3,6 +3,7 @@ import {Vault} from '../../context/useVaults/types';
 import {A} from '../controls';
 import {getAddressExplorer, truncateAddress} from '../../utils/utils';
 import CopyButton from './CopyButton';
+import Yearn from './Yearn';
 
 function Chip({className, children}: {className: string, children: ReactNode}) {
 	return <div className={`
@@ -28,5 +29,6 @@ export default function Chips({vault}: {vault: Vault}) {
 			{truncateAddress(vault.address)}
 		</A>
 		<CopyButton clip={vault.address}></CopyButton>
+		<Yearn vault={vault} />
 	</div>;
 }

@@ -51,12 +51,12 @@ export function Bps(
 }
 
 export function Tokens(
-	{value, simulated, decimals, sign, format, className}
-	: {value: BigNumber, simulated?: boolean, decimals?: number, sign?: boolean, format?: string, className?: string}) {
+	{value, simulated, decimals, accuracy, sign, format, className}
+	: {value: BigNumber, simulated?: boolean, decimals?: number, accuracy?: number, sign?: boolean, format?: string, className?: string}) {
 	const result = useMemo(() => {
-		const _ = `${sign ? (value.lt(0) ? '' : '+') : ''}${formatTokens(value, decimals, 2, true)}`;
+		const _ = `${sign ? (value.lt(0) ? '' : '+') : ''}${formatTokens(value, decimals, accuracy || 2, true)}`;
 		return format ? format.replace('%s', _) : _;
-	}, [value, decimals, sign, format]);
+	}, [value, decimals, accuracy, sign, format]);
 	return <Field value={value} simulated={simulated} className={className}>
 		{result}
 	</Field>;

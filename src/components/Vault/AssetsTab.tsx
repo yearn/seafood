@@ -41,7 +41,7 @@ export default function AssetsTab({vault}: {vault: Vault}) {
 						className={'text-3xl'} />
 				</div>
 			</Row>
-			<Row label={'Total debt ratio'} alt={true} heading={true}>
+			<Row label={'Allocated'} alt={true} heading={true}>
 				<div className={'flex items-center gap-2'}>
 					{vaultDebtRatio.simulated && <Bps
 						simulated={vaultDebtRatio.simulated}
@@ -54,9 +54,9 @@ export default function AssetsTab({vault}: {vault: Vault}) {
 						value={vaultDebtRatio.value / 10_000} />
 				</div>
 			</Row>
-			<Row label={'Allocated'}>
+			<Row label={'Deployed'}>
 				<div className={'flex items-center gap-2'}>
-					{deployed.simulated && <Bps
+					{deployed.simulated && <Percentage
 						simulated={deployed.simulated}
 						value={deployed.delta}
 						sign={true}

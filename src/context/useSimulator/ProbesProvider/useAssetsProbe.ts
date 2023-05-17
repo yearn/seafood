@@ -2,7 +2,7 @@ import {useMemo} from 'react';
 import {useVaults} from '../../useVaults';
 import {useSimulatorStatus} from '../SimulatorStatusProvider';
 import {SimulationResult} from '../../../tenderly';
-import {BigNumber, ethers, providers} from 'ethers';
+import {BigNumber, FixedNumber, ethers, providers} from 'ethers';
 import {useBlocks} from '../BlocksProvider';
 import {Probe, ProbeResults} from './useProbes';
 import {GetVaultContract} from '../../../ethereum/EthHelpers';
@@ -91,9 +91,14 @@ export function useAssetsProbeResults(vault: Vault | undefined, startResults: Pr
 			return {simulated: false, value: 0, delta: 0};
 		}
 
-		const actual = (vault?.totalDebt || ethers.constants.Zero).mul(10_000).div(vault?.totalAssets || ethers.constants.Zero).toNumber() / 10_000;
+		const totalDebt = FixedNumber.from(vault?.totalDebt?.toString() || '0');
+		const totalAssets = FixedNumber.from(vault?.totalAssets?.toString() || '0');
+		const actual = totalDebt.divUnsafe(totalAssets).toUnsafeFloat();
+
 		if(stop) {
-			const simulated = stop.totalDebt.mul(10_000).div(stop.totalAssets).toNumber() / 10_000;
+			const totalSimulatedDebt = FixedNumber.from(stop.totalDebt.toString());
+			const totalSimulatedAssets = FixedNumber.from(stop.totalAssets.toString());
+			const simulated = totalSimulatedDebt.divUnsafe(totalSimulatedAssets).toUnsafeFloat();
 			return {
 				simulated: true,
 				value: simulated,
