@@ -15,18 +15,26 @@ export default function VaultOptions() {
 
 	const options = useMemo(() => {
 		return [{
+			key: 'v2',
+			label: 'v2',
+			long: 'v2',
+			flag: Boolean(chips['v2'])
+		}, {
+			key: 'v1',
+			label: 'v1',
+			long: 'v1',
+			flag: Boolean(chips['v1'])
+		}, {
 			key: 'curve',
 			label: 'Curve',
 			long: 'Curve Vaults',
 			flag: Boolean(chips['curve'])
-		},
-		{
+		}, {
 			key: 'factory',
 			label: 'Factory',
 			long: 'Factory Vaults',
 			flag: Boolean(chips['factory'])
-		},
-		{
+		}, {
 			key: 'tvlgtzero',
 			label: 'TVL>0',
 			long: 'TVL > 0',

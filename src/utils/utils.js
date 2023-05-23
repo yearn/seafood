@@ -39,7 +39,10 @@ function formatNumber(number, decimals = 2, nonFinite = '∞', compact = false) 
 	if(Number.isFinite(number)) {
 		let magnitude = '';
 		if(compact) {
-			if(Math.abs(number) >= 1_000_000_000) {
+			if(Math.abs(number) >= 1_000_000_000_000) {
+				magnitude = 't';
+				number = number / 1_000_000_000_000;
+			} else if(Math.abs(number) >= 1_000_000_000) {
 				magnitude = 'b';
 				number = number / 1_000_000_000;
 			} else if(Math.abs(number) >= 1_000_000) {

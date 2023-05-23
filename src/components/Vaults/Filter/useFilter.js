@@ -36,6 +36,11 @@ export function FilterProvider({children}) {
 			if(query && !queryRe.test(vault.name)) return false;
 			if(chips.favorites && !favorites.vaults?.includes(vault.address)) return false;
 			if(!chips[vault.network.name]) return false;
+
+			const version = parseFloat(vault.version);
+			if(!chips.v1 && version < .4) return false;
+			if(!chips.v2 && version >= .4 && version < 3) return false;
+
 			if(chips.tvlgtzero && getLatestTvl(vault) <= 0) return false;
 			if(chips.curve && chips.factory) return true;
 			if(chips.curve && !chips.factory) return !factoryRe.test(vault.name);
@@ -63,7 +68,9 @@ export function defaultChips() {
 		favorites: false,
 		curve: false,
 		factory: false,
-		tvlgtzero: false,
+		tvlgtzero: true,
+		v1: false,
+		v2: true
 	};
 	config.chains.forEach(chain => result[chain.name] = true);
 	return result;
