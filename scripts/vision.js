@@ -35,7 +35,7 @@ async function main() {
         ['Accept']: 'application/json',
         ['Content-Type']: 'application/json'
       },
-      url: 'https://staging.yearn.vision/api/ds/query',
+      url: 'https://yearn.vision/api/ds/query',
       data: query
     })
 

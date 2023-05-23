@@ -36,7 +36,7 @@ router.get('/tvls', function(req, res, next) {
 			['Accept']: 'application/json',
 			['Content-Type']: 'application/json'
 		},
-		url: 'https://staging.yearn.vision/api/ds/query',
+		url: 'https://yearn.vision/api/ds/query',
 		data: query
 	}).then(response => {
 		if(response.data.error) {
