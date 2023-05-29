@@ -29,7 +29,6 @@ export default function TextArea({
 		className={`
 		text-secondary-900
 		dark:text-secondary-200
-		transition duration-200
 		${className}`}>
 		{children}
 	</textarea>;

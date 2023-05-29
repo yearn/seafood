@@ -18,9 +18,17 @@ function getAddressExplorer(chainId, address){
 	return `${chain.explorer}/address/${address}`;
 }
 
-function getTxExplorer(chainId, address){
+function getTxExplorer(chainId, hash){
 	const chain = getChain(chainId);
-	return `${chain.explorer}/tx/${address}`;
+	return `${chain.explorer}/tx/${hash}`;
+}
+
+function getEigenTxExplorer(hash) {
+	return `https://eigenphi.io/mev/eigentx/${hash}`;
+}
+
+function getYearnExplorer(vault) {
+	return `https://yearn.finance/vaults/${vault.network.chainId}/${vault.address}`;
 }
 
 function truncateAddress(address) {
@@ -31,13 +39,16 @@ function formatNumber(number, decimals = 2, nonFinite = '∞', compact = false) 
 	if(Number.isFinite(number)) {
 		let magnitude = '';
 		if(compact) {
-			if(number >= 1_000_000_000) {
+			if(Math.abs(number) >= 1_000_000_000_000) {
+				magnitude = 't';
+				number = number / 1_000_000_000_000;
+			} else if(Math.abs(number) >= 1_000_000_000) {
 				magnitude = 'b';
 				number = number / 1_000_000_000;
-			} else if(number >= 1_000_000) {
+			} else if(Math.abs(number) >= 1_000_000) {
 				magnitude = 'm';
 				number = number / 1_000_000;
-			} else if(number >= 1_000) {
+			} else if(Math.abs(number) >= 1_000) {
 				magnitude = 'k';
 				number = number / 1_000;
 			}
@@ -59,7 +70,7 @@ function formatNumber(number, decimals = 2, nonFinite = '∞', compact = false) 
 }
 
 function formatPercent(number, decimals = 2, nonFinite = '∞') {
-	if(Number.isFinite(number))
+	if(Number.isFinite(number)) {
 		return number.toLocaleString(
 			navigator?.language, 
 			{
@@ -67,13 +78,14 @@ function formatPercent(number, decimals = 2, nonFinite = '∞') {
 				minimumFractionDigits: decimals, 
 				maximumFractionDigits: decimals
 			});
+	}
 	else
 		return nonFinite;
 }
 
 function formatBps(number, nonFinite = '∞') {
 	if(Number.isFinite(number))
-		return `${parseInt(number * 10_000)}bps`;
+		return `${Math.round(number * 10_000)}bps`;
 	else
 		return nonFinite;
 }
@@ -159,7 +171,9 @@ export {
 	curveRe,
 	factoryRe,
 	getAddressExplorer, 
-	getTxExplorer, 
+	getTxExplorer,
+	getEigenTxExplorer,
+	getYearnExplorer,
 	truncateAddress, 
 	formatNumber, 
 	formatPercent,

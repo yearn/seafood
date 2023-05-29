@@ -1,5 +1,12 @@
 import {BigNumber, ethers} from 'ethers';
 import {Vault} from '../context/useVaults/types';
+import config from '../config.json';
+
+function computeDegradationTime(vault: Vault) {
+	if((vault?.lockedProfitDegradation || ethers.constants.Zero).eq(0)) return ethers.constants.Zero;
+	const coefficient = BigNumber.from('1000000000000000000');
+	return coefficient.div(vault.lockedProfitDegradation as BigNumber);
+}
 
 export interface HarvestReport {
 	chain_id: string,
@@ -30,13 +37,20 @@ async function fetchHarvestReports(vault: Vault) {
 	return await response.json() as HarvestReport[];
 }
 
-function computeDegradationTime(vault: Vault) {
-	if((vault?.lockedProfitDegradation || ethers.constants.Zero).eq(0)) return BigNumber.from(0);
-	const coefficient = BigNumber.from('1000000000000000000');
-	return coefficient.div(vault.lockedProfitDegradation as BigNumber);
+async function fetchMeta(vault: Vault) {
+	const request = `${config.ydaemon.url}/${vault.network.chainId}/meta/vaults/${vault.address}`;
+	const response = await fetch(request);
+	return await response.json();
+}
+
+function getTvlSeries(vault: Vault) {
+	if(!vault.tvls?.tvls?.length) return [];
+	return [vault.tvls.dates.slice(-3), vault.tvls.tvls.slice(-3)][1];
 }
 
 export {
+	computeDegradationTime,
 	fetchHarvestReports,
-	computeDegradationTime
+	fetchMeta,
+	getTvlSeries
 };

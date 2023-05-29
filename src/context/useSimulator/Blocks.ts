@@ -14,13 +14,16 @@ export const functions = {
 		}
 	}, 
 	strategies: {
+		setDoHealthCheck: {
+			signature: 'setDoHealthCheck(bool)'
+		},
 		harvest: {
 			signature: 'harvest()',
 			events: [
 				'event Harvested(uint256 profit, uint256 loss, uint256 debtPayment, uint256 debtOutstanding)',
 				'event StrategyReported(address indexed strategy, uint256 gain, uint256 loss, uint256 debtPaid, uint256 totalGain, uint256 totalLoss, uint256 totalDebt, uint256 debtAdded, uint256 debtRatio)'
 			]
-		},
+		}
 	}
 };
 
@@ -40,11 +43,6 @@ export interface Block {
 
 export interface BlockOutput {
 	events: unknown[]
-}
-
-export interface StrategySnapshotBlockOutput extends BlockOutput {
-	totalGain: BigNumber,
-	totalLoss: BigNumber
 }
 
 export interface HarvestBlockOutput extends BlockOutput {
@@ -80,6 +78,26 @@ export function parseEvents(eventSignatures: string[], rawEvents: RawEvent[]) {
 export function refsAddress(block: Block, address: string) {
 	return block.contract === address
 	|| block.call.input.includes(address);
+}
+
+export async function makeSetDoHealthCheckBlock(
+	vault: Vault, 
+	strategy: Strategy,
+	doHealthCheck: boolean
+) : Promise<Block> {
+	return {
+		primitive: 'strategy',
+		chain: vault.network.chainId,
+		contract: strategy.address,
+		signer: vault.governance,
+		call: {
+			signature: functions.strategies.setDoHealthCheck.signature,
+			input: [doHealthCheck]
+		},
+		meta: {
+			status: `set doHealthCheck = ${doHealthCheck}, ${strategy.name}`
+		}
+	};
 }
 
 export async function makeHarvestBlock(
@@ -119,22 +137,6 @@ export async function makeDebtRatioUpdateBlock(
 		meta: {
 			delta,
 			status: `Update DR ${delta > 0 ? '+' : ''}${delta}bps ${strategy.name}`
-		}
-	};
-}
-
-export async function makeStrategiesBlock(
-	vault: Vault, 
-	strategy: Strategy
-) : Promise<Block> {
-	return {
-		primitive: 'vault',
-		chain: vault.network.chainId,
-		contract: vault.address,
-		signer: vault.governance,
-		call: {
-			signature: functions.vaults.strategies.signature,
-			input: [strategy.address]
 		}
 	};
 }

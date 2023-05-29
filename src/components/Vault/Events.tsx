@@ -5,15 +5,12 @@ import {Vault} from '../../context/useVaults/types';
 import {SimulationResult} from '../../tenderly';
 import {formatPercent, formatTokens, truncateAddress} from '../../utils/utils';
 import {A} from '../controls';
-import {Erc20} from './VaultProvider';
 
 export default function Events({
 	vault,
-	token,
 	simulatorResults
 } : {
 	vault: Vault | undefined,
-	token: Erc20 | undefined,
 	simulatorResults: SimulationResult[] | undefined
 }) {
 	const location = useLocation();
@@ -49,7 +46,7 @@ export default function Events({
 
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	const formatArg = useCallback((key: string, arg: any) => {
-		if(!token) return '';
+		if(!vault) return '';
 		const addressRe = /^(0x[a-fA-F0-9]{40})$/;
 		const tokenAmountRe = /^\d{9,}$/;
 
@@ -60,12 +57,12 @@ export default function Events({
 			if(addressRe.test(arg)) {
 				return truncateAddress(arg);
 			} else if(tokenAmountRe.test(arg)) {
-				return formatTokens(arg, token.decimals, 2, false);
+				return formatTokens(arg, vault.token.decimals, 2, false);
 			} else {
 				return arg;
 			}
 		}}
-	}, [token]);
+	}, [vault]);
 
 	if(!(vault && strategy)) return <></>;
 

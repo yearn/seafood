@@ -151,11 +151,9 @@ export function useFloatie(
 	useEffect(() => {
 		if(location.hash === `#${hash}`) {
 			setDialog({
-				component: Score,
+				Component: Score,
 				args: {group, category, score, breakdown}
 			});
-		} else if(location.hash.length === 0) {
-			setDialog(null);
 		}
 	}, [location, setDialog, group, category, score, breakdown, hash]);
 
@@ -221,7 +219,7 @@ export default function Score({
 		{category === 'median' && <div className={'pl-4 text-xs'}>{'Excluding TVL impact'}</div>}
 		<div className={'pt-8 sm:pt-4 flex flex-col gap-4 sm:gap-2'}>
 			{Object.keys(breakdown).map(key => <div key={key} className={`
-				min-h-[52px] py-1 px-4 text-xs flex items-center gap-4 rounded-lg
+				min-h-[52px] py-1 px-4 text-xs flex items-center gap-4
 				${category === 'median' ? 'justify-center' : ''}
 				${Math.ceil(score) === parseInt(key) ? 'border-2 ' + scoreToBorderColor(score) : ''}`}>
 				{category !== 'TVLImpact' && <div className={'min-w-[64px] flex flex-col items-center justify-center'}>

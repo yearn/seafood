@@ -10,7 +10,6 @@ export default function Select({options, value, onChange, disabled, className}) 
 		disabled:bg-gray-200 disabled:dark:bg-gray-800
 
 		rounded-lg cursor-pointer
-		transition duration-200
 		${className}`}>
 
 		{options && options.map(option => 

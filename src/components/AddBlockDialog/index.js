@@ -11,7 +11,7 @@ import SetInputs from './SetInputs';
 import Manual from './Manual';
 import {Button, Switch} from '../controls';
 import useLocalStorage from 'use-local-storage';
-import useScrollOverpass from '../../context/useScrollOverpass';
+import {useChrome} from '../Chrome';
 
 export function AddBlockButton() {
 	const location = useLocation();
@@ -29,7 +29,7 @@ export function AddBlockButton() {
 
 export default function AddBlockDialog({addBlockContext, onAddBlock}) {
 	const navigate = useNavigate();
-	const {showClassName} = useScrollOverpass();
+	const {showOverpassClassName} = useChrome();
 	const {selectedProvider, steps, setSteps, result} = addBlockContext;
 	const [manual, setManual] = useLocalStorage('addBlock.manual', false);
 
@@ -95,7 +95,7 @@ export default function AddBlockDialog({addBlockContext, onAddBlock}) {
 			flex items-center justify-between
 			border-t border-white dark:border-secondary-900
 			rounded-b-lg
-			${showClassName}`}>
+			${showOverpassClassName}`}>
 			<div className={'flex items-center gap-2'}>
 				<Switch onChange={toggleManual} checked={manual} />
 				<div onClick={toggleManual} className={'text-sm cursor-default'}>{'Manual'}</div>

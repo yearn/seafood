@@ -1,20 +1,28 @@
-import React from 'react';
-import useLocalStorage from 'use-local-storage';
-import {mergeDeep} from '../../utils/mergeDeep';
-import {FilterProvider, defaultChips} from './useFilter';
+import React, {useEffect} from 'react';
 import List from './List';
 import Filter from './Filter';
+import {useChrome} from '../Chrome';
+import {usePowertools} from '../Powertools';
 
 export default function Vaults() {
-	const [query, setQuery] = useLocalStorage('Vaults.filter.query', '');
-	const [chips, setChips] = useLocalStorage('Vaults.filter.chips', defaultChips(), {
-		parser: (str) => {
-			return mergeDeep(defaultChips(), JSON.parse(str));
-		}
-	});
+	const {overpassClassName} = useChrome();
+	const {setLeftPanel} = usePowertools();
 
-	return <FilterProvider query={query} setQuery={setQuery} chips={chips} setChips={setChips}>
-		<Filter showVaultCount={true}></Filter>
-		<List />
-	</FilterProvider>;
+	useEffect(() => {
+		setLeftPanel(<Filter />);
+	}, [setLeftPanel]);
+
+	return <>
+		<div className={'sm:hidden w-full flex flex-col'}>
+			<div className={`sticky top-0 z-10 
+				w-full h-full px-3 flex items-center justify-between gap-3
+				${overpassClassName}`}>
+				<Filter />
+			</div>
+			<List />
+		</div>
+		<div className={'hidden w-full sm:flex sm:flex-col'}>
+			<List />
+		</div>
+	</>;
 }

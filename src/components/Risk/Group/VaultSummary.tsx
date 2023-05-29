@@ -1,9 +1,14 @@
 import {BigNumber} from 'ethers';
-import React, {useCallback, useMemo} from 'react';
+import React, {ReactNode, useCallback, useMemo} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Strategy, Vault} from '../../../context/useVaults/types';
 import {formatNumber} from '../../../utils/utils';
-import Chip from '../../tiles/Chip';
+
+function Chip({className, children}: {className: string, children: ReactNode}) {
+	return <div className={`text-sm px-2 py-1 ${className}`}>
+		{children}
+	</div>;
+}
 
 export default function VaultSummary({vault, strategies}: {vault: Vault, strategies: Strategy[]}) {
 	const navigate = useNavigate();
@@ -18,11 +23,13 @@ export default function VaultSummary({vault, strategies}: {vault: Vault, strateg
 
 	return <div onClick={() => navigate(`/vault/${vault.address}`)} className={`
 		p-3 sm:px-6 sm:py-3 flex flex-col
-		bg-selected-100 dark:bg-primary-600/20
-		hover:bg-selected-300 hover:dark:bg-selected-600
-		active:transform active:scale-[99%]
-		transition duration-200
-		rounded-lg cursor-pointer`}>
+		border border-transparent
+		hover:border-selected-500 active:border-selected-700
+		hover:text-selected-500 active:text-selected-700
+		hover:dark:border-selected-600 active:dark:border-selected-700
+		hover:dark:text-selected-600 active:dark:text-selected-700
+
+		cursor-pointer`}>
 		<div className={'flex items-center justify-between'}>
 			<div className={'w-2/3 break-words truncate font-bold text-lg'}>{vault.name}</div>
 			<div className={'font-mono text-2xl'}>{formatNumber(tvl, 2, '', true)}</div>
@@ -39,8 +46,14 @@ export default function VaultSummary({vault, strategies}: {vault: Vault, strateg
 			</div>)}
 		</div>
 		<div className={'py-2 flex items-center gap-2'}>
-			<Chip label={vault.version} className={'bg-primary-400 dark:bg-primary-900'} />
-			<Chip label={vault.network.name} className={`bg-${vault.network.name}`} />
+			<Chip className={`
+				bg-neutral-200/40 dark:bg-neutral-800/40
+				border border-neutral-200 dark:border-neutral-800
+				`}>{vault.version}</Chip>
+			<Chip className={`
+				bg-${vault.network.name}-40
+				border border-${vault.network.name}
+				`}>{vault.network.name}</Chip>
 		</div>
 	</div>;
 }

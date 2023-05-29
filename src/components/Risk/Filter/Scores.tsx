@@ -38,7 +38,7 @@ export default function Scores() {
 	}, [setScores]);
 
 	return <FilterChip hash={'scores'} label={label}>
-		<div className={'w-full h-full flex flex-col'}>
+		<div className={'w-full h-full flex flex-col text-secondary-900 dark:text-secondary-200'}>
 			<div className={'sm:hidden pl-6 pt-5 font-bold text-lg'}>{'Risk score filters'}</div>
 			<div className={'grow flex flex-col gap-6 items-center justify-center sm:grid-flow-col sm:grid-rows-4 sm:gap-3'}>
 				{Object.keys(scores).map(key => <div key={key} className={`
@@ -51,7 +51,7 @@ export default function Scores() {
 						ariaLabel={['Lower thumb', 'Upper thumb']}
 						ariaValuetext={state => `Thumb value ${state.valueNow}`}
 						renderThumb={(props, state) => <div {...props} className={`
-							w-4 h-4 top-[1px] rounded cursor-pointer outline-none
+							w-4 h-4 top-[1px] cursor-pointer outline-none
 							${scoreToBgColor(state.valueNow)}`}></div>}
 						renderTrack={(props) => <div key={props.key} className={`
 							absolute top-[8px] w-full h-[2px] cursor-pointer

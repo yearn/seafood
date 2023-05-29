@@ -27,17 +27,17 @@ export default function Cell({
 		className={`
 			min-w-[138px] sm:min-w-0 h-16 flex items-center justify-center
 			border-2 border-transparent hover:border-secondary-100 dark:hover:border-secondary-900
-			rounded-sm cursor-default
+			cursor-default
 			${scoreToBgColor(score)} ${className}`}>
 		{children}
 		{floatie.open && mediumBreakpoint && <FloatingFocusManager context={floatie.context} modal={false}>
 			<div ref={floatie.refs.setFloating} {...floatie.getFloatingProps()} className={`
 				z-[100] p-4
 				flex flex-col
-				bg-secondary-100 dark:bg-secondary-900
-				border dark:border-secondary-800 
-				shadow-lg shadow-secondary-900/40 dark:shadow-secondary-900/60 rounded-lg
-				outline-none transition duration-200
+				bg-secondary-100 dark:bg-black
+				border border-selected-200 dark:border-selected-900
+				shadow-lg shadow-secondary-900/20 dark:shadow-black/60
+				outline-none
 				${category === 'median' ? 'w-64' : 'w-96'}
         ${className}`}
 			style={floatie.style}>

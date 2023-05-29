@@ -1,33 +1,52 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {useVaults} from '../../context/useVaults';
-import {useFilter} from './useFilter';
+import {useFilter} from './Filter/useFilter';
 import {useNavigate} from 'react-router-dom';
-import {VaultTile} from '../tiles';
 import Spinner from '../controls/Spinner';
+import Tile from './Tile';
+import {formatNumber} from '../../utils/utils';
 
 export default function List() {
 	const navigate = useNavigate();
-	const {loading} = useVaults();
-	const {filter, queryRe} = useFilter();
+	const {loading, vaults} = useVaults();
+	const {filter, ready} = useFilter();
 
-	return <>
-		{loading && filter.length === 0 && <div className={`
-			absolute w-full h-screen flex items-center justify-center`}>
-			<Spinner />
-		</div>}
+	const totalTvl = useMemo(() => {
+		return filter.map(vault => {
+			if(!vault.tvls?.tvls?.length) return 0;
+			const series = [vault.tvls.dates.slice(-3), vault.tvls.tvls.slice(-3)][1];
+			return series[series.length - 1];
+		}).reduce((a, b) => a + b, 0);
+	}, [filter]);
 
-		{filter.length > 0 && <div className={`
-			max-w-full p-2 sm:p-4 
-			grid grid-flow-row gap-2 grid-cols-1 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4`}>
-			{filter.map(vault => {
-				return <VaultTile key={vault.address} vault={vault} queryRe={queryRe} onClick={(event) => {
-					if (event.ctrlKey || event.shiftKey || event.metaKey) {
-						window.open(`/vault/${vault.address}`, '_blank');
-					}else{
-						navigate(`/vault/${vault.address}`);
-					}
-				}} />;
-			})}
-		</div>}
-	</>;
+	if(loading && vaults.length === 0) return <div className={`
+		absolute inset-0 flex items-center justify-center`}>
+		<Spinner />
+	</div>;
+
+	if(!ready) return <></>;
+
+	return <div className={`
+		max-w-full p-2 sm:p-4 
+		grid grid-flow-row gap-2 grid-cols-1 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4`}>
+
+		<div className={'sm:min-h-[280px] pb-4 sm:py-0 flex flex-col items-center justify-center text-2xl sm:text-3xl'}>
+			<div className={'grid grid-cols-3 gap-2 sm:gap-4'}>
+				<div className={'font-mono text-right'}>{filter.length}</div>
+				<div className={'col-span-2'}>{'Vaults'}</div>
+				<div className={'font-mono text-right'}>{formatNumber(totalTvl, 0, 'No TVL', true)}</div>
+				<div className={'col-span-2'}>{'TVL (USD)'}</div>
+			</div>
+		</div>
+
+		{filter.map((vault, index) => {
+			return <Tile key={index} vault={vault} onClick={(event) => {
+				if (event.ctrlKey || event.shiftKey || event.metaKey) {
+					window.open(`/vault/${vault.address}`, '_blank');
+				}else{
+					navigate(`/vault/${vault.address}`);
+				}
+			}} />;
+		})}
+	</div>;
 }

@@ -104,21 +104,49 @@ async function sort(vaults: ySeafood.Vault[]) {
 	});
 }
 
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 async function openDb() {
 	return new Promise<IDBDatabase>((resolve, reject) => {
 		const dbRequest = self.indexedDB.open('seafood', DB_VERSION);
 		dbRequest.onerror = (e: Event) => reject(e);
-		dbRequest.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+		dbRequest.onupgradeneeded = async (event: IDBVersionChangeEvent) => {
 			if(!event.newVersion) return;
+
 			if(event.oldVersion === 0) {
 				dbRequest.result.createObjectStore('vaults', {keyPath: ['network.chainId', 'address']});
 				dbRequest.result.createObjectStore('status', {keyPath: ['stage', 'chain']});
-			} else if(event.oldVersion === 1 && event.newVersion == 2) {
+			} else if(event.oldVersion === 1) {
 				dbRequest.result.createObjectStore('status', {keyPath: ['stage', 'chain']});
 			}
+
+			if(event.newVersion == 3) {
+				const vaults = await getStore<ySeafood.Vault[]>(dbRequest.result, 'vaults');
+				refreshStore(dbRequest.result, 'vaults', 
+					vaults.map(v => ({...v, token: {address: '', name: '', symbol: '', decimals: 0, description: ''}}))
+				);
+			}
 		};
-		dbRequest.onsuccess = () => resolve(dbRequest.result);
+		dbRequest.onsuccess = () => {
+			waitForAllTransactions(dbRequest.result).then(() => {
+				resolve(dbRequest.result);
+			}).catch(e => reject(e));
+		};
+	});
+}
+
+function waitForAllTransactions(db: IDBDatabase): Promise<void> {
+	return new Promise((resolve) => {
+		const promises: Promise<void>[] = [];
+		for (const storeName of db.objectStoreNames) {
+			const store = db.transaction(storeName, 'readonly').objectStore(storeName);
+			const promise = new Promise<void>((resolve) => {
+				store.transaction.oncomplete = () => {
+					resolve();
+				};
+			});
+			promises.push(promise);
+		}
+		Promise.all(promises).then(() => resolve());
 	});
 }
 
@@ -251,7 +279,7 @@ async function createVaultMulticalls(vaults: yDaemon.Vault[], chain: ySeafood.Ch
 			const results = multiresults[vault.address].callsReturnContext;
 			const lockedProfitDegradation = results[4].returnValues[0] && results[4].returnValues[0].type === 'BigNumber'
 				? BigNumber.from(results[4].returnValues[0])
-				: BigNumber.from(0);
+				: ethers.constants.Zero;
 			parsed.push({
 				type: 'vault',
 				chainId: chain.id,
@@ -313,7 +341,7 @@ async function createStrategyMulticalls(vaults: yDaemon.Vault[], chain: ySeafood
 
 interface TVLVerse {
 	[chainId: number]: {
-		[vaultAddress: string] : ySeafood.ITVLHistory
+		[vaultAddress: string] : ySeafood.TVLHistory
 	}
 }
 

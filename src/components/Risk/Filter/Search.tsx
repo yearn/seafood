@@ -22,7 +22,7 @@ export default function Search({className}: {className: string}) {
 		defaultValue={query}
 		onChange={(e: ChangeEvent) => {debounceQuery((e.target as HTMLInputElement)?.value);}} 
 		className={`
-		py-2 px-3 rounded-lg leading-tight border outline-none
+		py-2 px-3 leading-tight border outline-none
 		bg-secondary-300 border-transparent text-primary-900
 		dark:bg-secondary-900/80 dark:border-secondary-800 dark:text-primary-200
 		focus:border-selected-400 focus:dark:border-selected-600 focus:ring-0

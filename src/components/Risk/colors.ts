@@ -1,10 +1,10 @@
-export function scoreToBgColor(score: number) {
+export function scoreToBgColor(score: number, alpha = false) {
 	switch(Math.ceil(score)) {
-	case 1 : return 'bg-green-900';
-	case 2 : return 'bg-green-600';
-	case 3 : return 'bg-yellow-500';
-	case 4 : return 'bg-orange-500';
-	case 5 : return 'bg-red-600';
+	case 1 : return alpha ? 'bg-green-900/40' : 'bg-green-900';
+	case 2 : return alpha ? 'bg-green-600/40': 'bg-green-600';
+	case 3 : return alpha ? 'bg-yellow-500/40' : 'bg-yellow-500';
+	case 4 : return alpha ? 'bg-orange-500/40' : 'bg-orange-500';
+	case 5 : return alpha ? 'bg-red-600/40' : 'bg-red-600';
 	default: return 'bg-transparent';
 	}
 }

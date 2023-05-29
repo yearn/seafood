@@ -106,7 +106,7 @@ const FilterContext = createContext<Filter>({
 
 export const useFilter = () => useContext(FilterContext);
 
-export default function FilterProvider({children}: {children: ReactNode}) {
+export function FilterProvider({children}: {children: ReactNode}) {
 	const {vaults} = useVaults();
 	const [risk, setRisk] = useState([] as SummarizedRiskReport[]);
 	const [totalTvlUsd, setTotalTvlUsd] = useState(0);

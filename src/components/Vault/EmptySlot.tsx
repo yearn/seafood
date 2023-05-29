@@ -12,6 +12,6 @@ export default function EmptySlot({index}: {index: number}) {
 	return <Accordian
 		title={<AccordianTitle index={index} />}
 		disabled={true}
-		className={'px-4 py-2 border dark:border-primary-900/40 rounded-lg'}>
+		className={'px-4 py-2 border dark:border-primary-900/40'}>
 	</Accordian>;
 }

@@ -23,10 +23,9 @@ export default function Slider({
 	return <div ref={floatie.refs.setReference} 
 		{...floatie.getReferenceProps()} 
 		onClick={floatie.openModal}
-		className={`
+		className={`border border-transparent
 		px-2 sm:px-6 py-3 sm:py-2 flex flex-col gap-2 sm:gap-1
-		hover:bg-selected-100 dark:hover:bg-primary-600/20
-		transition duration-200 rounded-lg`}>
+		hover:border-selected-300 dark:hover:border-selected-800`}>
 		<div className={'flex items-center justify-between'}>
 			<div>{humanizeRiskCategory(category)}</div>
 			<div>{details}</div>
@@ -38,7 +37,7 @@ export default function Slider({
 			className={'relative w-full h-[20px]'}
 			value={score}
 			renderThumb={(props, state) => <div {...props} className={`
-				w-4 h-4 top-[1px] rounded outline-none
+				w-4 h-4 top-[1px] outline-none
 				${scoreToBgColor(state.valueNow)}`}></div>}
 			renderTrack={(props) => <div key={props.key} className={`
 				absolute top-[8px] w-full h-[2px]
@@ -48,11 +47,10 @@ export default function Slider({
 		{floatie.open && mediumBreakpoint && <FloatingFocusManager context={floatie.context} modal={false}>
 			<div ref={floatie.refs.setFloating} {...floatie.getFloatingProps()} className={`
 				z-[100] p-4
-				flex flex-col
-				bg-secondary-100 dark:bg-secondary-900
-				border dark:border-secondary-800
-				shadow-lg shadow-secondary-900/40 dark:shadow-secondary-900 rounded-lg
-				outline-none transition duration-200
+				bg-secondary-100 dark:bg-black
+				border border-selected-200 dark:border-selected-900
+				shadow-lg shadow-secondary-900/10 dark:shadow-black/80
+				outline-none shadow-md
 				${category === 'median' ? 'w-64' : 'w-96'}`}
 			style={floatie.style}>
 				<Score group={group} category={category} score={score} />

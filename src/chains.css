@@ -3,9 +3,29 @@
   dark:bg-zinc-500;
 }
 
+.bg-ethereum-40 {
+  @apply bg-zinc-400/40
+  dark:bg-zinc-600/40;
+}
+
+.border-ethereum {
+  @apply border-zinc-400
+  dark:border-zinc-600;
+}
+
 .bg-fantom {
   @apply bg-indigo-400
   dark:bg-indigo-600;
+}
+
+.bg-fantom-40 {
+  @apply bg-indigo-400/40
+  dark:bg-indigo-600/40;
+}
+
+.border-fantom {
+  @apply border-indigo-400
+  dark:border-indigo-600;
 }
 
 .bg-optimism {
@@ -13,7 +33,27 @@
   dark:bg-red-600;
 }
 
+.bg-optimism-40 {
+  @apply bg-red-400/40
+  dark:bg-red-600/40;
+}
+
+.border-optimism {
+  @apply border-red-400
+  dark:border-red-600;
+}
+
 .bg-arbitrum {
   @apply bg-[#28a1ef]
   dark:bg-[#28a1ef];
+}
+
+.bg-arbitrum-40 {
+  @apply bg-[#28a1ef]/40
+  dark:bg-[#28a1ef]/40;
+}
+
+.border-arbitrum {
+  @apply border-[#28a1ef]
+  dark:border-[#28a1ef];
 }

@@ -13,10 +13,8 @@ export default function Close({onClick}) {
 
 		w-12 h-12 text-4xl
 		flex items-center justify-center
-		active:scale-90
 
-		rounded-full cursor-pointer
-		transition duration-200`}>
+		rounded-full cursor-pointer`}>
 		<BsX />
 	</div>;
 }

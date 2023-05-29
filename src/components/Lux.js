@@ -8,9 +8,8 @@ export default function Lux({className}) {
 	return <div onClick={() => {setDarkMode(!darkMode);}} 
 		className={`
 			flex items-center justify-center
-			transition duration-200
 			cursor-pointer
 			${className}`}>
-		{darkMode ? <BsBrightnessHigh /> : <BsMoonFill />}
+		{darkMode ? <BsMoonFill /> : <BsBrightnessHigh />}
 	</div>;
 }

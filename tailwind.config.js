@@ -3,6 +3,10 @@ const plugin = require('tailwindcss/plugin');
 const {default: flattenColorPalette} = require('tailwindcss/lib/util/flattenColorPalette');
 const {toRgba} = require('tailwindcss/lib/util/withAlphaVariable');
 
+function heightSafeList() {
+  const maxheight = 101;
+  return Array(maxheight).fill(0).map((_, index) => `h-[${index}%]`);
+}
 
 module.exports = {
   content: ['./src/**/*.{html,js,ts,tsx}'],
@@ -10,7 +14,8 @@ module.exports = {
     'sm:h-14',
     'bg-stripes',
     'bg-stripes-black',
-    'bg-secondary-900'
+    'bg-secondary-900',
+    ...heightSafeList()
   ],
   darkMode: 'class',
   theme: {
@@ -53,6 +58,7 @@ module.exports = {
   },
   plugins: [
     require('@tailwindcss/forms'),
+    require('tailwind-scrollbar'),
 
     plugin(function({addUtilities}) {
       addUtilities({

@@ -8,4 +8,9 @@ describe('Utils', () => {
     const result = utils.formatTokens(tokens, decimals);
     expect(result).toBe('1.00');
   })
+
+  test('Formats bps', function() {
+    const result = utils.formatBps(3 / 10_000);
+    expect(result).toBe('3bps');
+  })
 })

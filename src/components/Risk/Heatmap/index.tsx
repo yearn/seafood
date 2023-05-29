@@ -12,19 +12,21 @@ export default function Heatamp() {
 	const {available, risk, queryRe} = useFilter();
 
 	if(!available) return <div className={`
-		absolute w-full h-screen flex items-center justify-center`}>
+		absolute inset-0 flex items-center justify-center`}>
 		<Spinner />
 	</div>;
 
 	return <>
 		{risk.map(report => <div key={report.riskGroupId} className={`
-			pr-4 flex items-center gap-1
+			pr-4 sm:pr-0 flex items-center gap-1
 			sm:flex-none sm:grid sm:grid-cols-10`}>
 			<div onClick={() => navigate(`/risk/${report.riskGroupId}`)} className={`
 			min-w-[138px] sm:min-w-0 h-16 py-1 px-1
 			flex flex-col items-center justify-center text-center
-			hover:bg-selected-300 dark:hover:bg-selected-600 
-			active:scale-95 transition duration-200 rounded cursor-pointer`}
+			bg-neutral-200/40 dark:bg-neutral-800/40
+			hover:bg-selected-300 active:bg-selected-400
+			dark:hover:bg-selected-600 dark:active:bg-selected-700
+			cursor-pointer`}
 			title={report.riskGroup}>
 				<div className={'w-[-webkit-fill-available] truncate text-xs 2xl:text-sm'}>{highlightString(report.riskGroup, queryRe)}</div>
 				<div className={'text-xs'}>{`${report.strategies} strategies`}</div>

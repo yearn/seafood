@@ -15,11 +15,18 @@ export default function ColumnHeader({
 	children: ReactNode
 }) {
 	return <div onClick={onClick} className={`
-		min-w-[138px] sm:min-w-0 px-4 py-2 rounded-lg
+		min-w-[138px] sm:min-w-0 px-4 py-2
 		relative flex items-center justify-center text-sm 2xl:text-base
-		transition duration-200 active:transform
-		${sort ? 'bg-secondary-200 dark:bg-primary-900/40' : ''}
-		${sortable ? 'hover:bg-selected-300 dark:hover:bg-selected-600 cursor-pointer active:scale-95' : ''}
+
+		${sort ? `text-secondary-600 dark:text-secondary-200
+			bg-secondary-300/40 dark:bg-primary-900/40
+			border-[#d4d4d8] dark:border-primary-900` : ''}
+
+		${sortable ? `cursor-pointer
+			bg-neutral-200/40 dark:bg-neutral-800/40
+			hover:bg-selected-300 hover:border-selected-300 active:bg-selected-400
+			dark:hover:bg-selected-600 dark:hover:border-selected-600 dark:active:bg-selected-700` : ''}
+
 		${className}`}>
 		<div className={'w-[-webkit-fill-available] truncate capitalize text-center'}>
 			{children}

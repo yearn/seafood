@@ -4,6 +4,10 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Goldman:wght@700&display=swap');
 
+html {
+  @apply w-full max-h-screen overflow-hidden;
+}
+
 body {
   @apply bg-secondary-900 select-none;
 }
@@ -12,4 +16,14 @@ body {
   @apply bg-clip-text text-transparent 
   bg-gradient-to-r 
   from-purple-500 to-pink-500;
+}
+
+.override-scroll {
+  @apply sm:scrollbar-thin 
+  sm:scrollbar-track-secondary-50 sm:scrollbar-thumb-secondary-300 sm:hover:scrollbar-thumb-selected-400
+  dark:sm:scrollbar-track-primary-950 dark:sm:scrollbar-thumb-primary-900 dark:sm:hover:scrollbar-thumb-selected-500;
+}
+
+.a {
+  @apply underline underline-offset-2 hover:text-selected-400 active:text-selected-600;
 }

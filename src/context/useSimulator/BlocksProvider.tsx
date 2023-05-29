@@ -1,22 +1,37 @@
-import React, {createContext, ReactNode, useCallback, useContext, useState} from 'react';
+import React, {createContext, ReactNode, useCallback, useContext, useMemo, useState} from 'react';
 import {Strategy, Vault} from '../useVaults/types';
-import {Block, functions, makeDebtRatioUpdateBlock, makeHarvestBlock} from './Blocks';
+import {Block, functions, makeDebtRatioUpdateBlock, makeHarvestBlock, makeSetDoHealthCheckBlock} from './Blocks';
 
-export interface Touched {
-	touched: boolean,
+export interface Simulated {
+	simulated: boolean,
 	value: number,
 	delta: number
 }
 
 export interface BlocksContext {
 	blocks: Block[],
+	blocksForVault: (vault: Vault) => Block[],
+	addSetDoHealthCheck: (vault: Vault, strategy: Strategy, doHealthCheck: boolean) => Promise<void>,
+	removeSetDoHealthCheck: (vault: Vault, strategy: Strategy) => void,
 	addHarvest: (vault: Vault, strategy: Strategy) => Promise<void>,
-	removeHarvest: (strategy: Strategy) => void,
+	removeHarvest: (vault: Vault, strategy: Strategy) => void,
 	addDebtRatioUpdate: (vault: Vault, strategy: Strategy, debtRatio: number) => Promise<void>,
 	removeDebtRatioUpdate: (vault: Vault, strategy: Strategy) => void,
 	extractDrUpdates: (vault: Vault) => {[address: string]: number},
-	computeVaultDr: (vault: Vault | null | undefined) => Touched,
+	computeVaultDr: (vault: Vault | null | undefined) => Simulated,
 	reset: () => void
+}
+
+function findSetDoHealthCheckIndex(blocks: Block[], strategy: Strategy) {
+	return blocks.findIndex(b =>
+		b.contract == strategy.address
+		&& b.call.signature === functions.strategies.setDoHealthCheck.signature
+	);
+}
+
+export function findSetDoHealthCheck(blocks: Block[], strategy: Strategy) {
+	const index = findSetDoHealthCheckIndex(blocks, strategy);
+	return index > -1 ? blocks[index] : null;	
 }
 
 function findHarvestIndex(blocks: Block[], strategy: Strategy) {
@@ -49,19 +64,68 @@ export const blocksContext = createContext<BlocksContext>({} as BlocksContext);
 export const useBlocks = () => useContext(blocksContext);
 
 export default function BlocksProvider({children}: {children: ReactNode}) {
-	const [blocks, setBlocks] = useState<Block[]>([]);
+	const [blocksByVault, setBlocksByVault] = useState<{[key: string]: Block[]}>({});
 
-	const addHarvest = useCallback(async (vault: Vault, strategy: Strategy) => {
-		const block = await makeHarvestBlock(vault, strategy);
-		setBlocks(current => {
-			const index = findHarvestIndex(current, strategy);
+	const blocks = useMemo(() => {
+		return Object.keys(blocksByVault).map(key => blocksByVault[key]).flat();
+	}, [blocksByVault]);
+
+	const setBlocks = useCallback((vault: Vault, setter: (current: Block[]) => Block[]) => {
+		setBlocksByVault(current => {
+			const result = {...current};
+			result[vault.address] = setter(result[vault.address] || []);
+			return result;
+		});
+	}, [setBlocksByVault]);
+
+	const blocksForVault = useCallback((vault: Vault) => {
+		return blocksByVault[vault.address] || [];
+	}, [blocksByVault]);
+
+	const addSetDoHealthCheck = useCallback(async (vault: Vault, strategy: Strategy, doHealthCheck: boolean) => {
+		const block = await makeSetDoHealthCheckBlock(vault, strategy, doHealthCheck);
+		setBlocks(vault, current => {
+			const index = findSetDoHealthCheckIndex(current, strategy);
 			if(index > -1) return current;
-			return [...current, block];
+			const harvestIndex = findHarvestIndex(current, strategy);
+			if(harvestIndex > -1) {
+				const result = [...current];
+				result.splice(harvestIndex, 0, block);
+				return result;
+			} else {
+				return [...current, block];
+			}
 		});
 	}, [setBlocks]);
 
-	const removeHarvest = useCallback((strategy: Strategy) => {
-		setBlocks(current => {
+	const removeSetDoHealthCheck = useCallback((vault: Vault, strategy: Strategy) => {
+		setBlocks(vault, current => {
+			const index = findSetDoHealthCheckIndex(current, strategy);
+			if(index < 0) return current;
+			const result = [...current];
+			result.splice(index, 1);
+			return result;
+		});
+	}, [setBlocks]);
+
+	const addHarvest = useCallback(async (vault: Vault, strategy: Strategy) => {
+		const block = await makeHarvestBlock(vault, strategy);
+		setBlocks(vault, current => {
+			const index = findHarvestIndex(current, strategy);
+			if(index > -1) return current;
+			const setDoHealthCheckIndex = findSetDoHealthCheckIndex(current, strategy);
+			if(setDoHealthCheckIndex > -1 && current.length > 1) {
+				const result = [...current];
+				result.splice(setDoHealthCheckIndex + 1, 0, block);
+				return result;
+			} else {
+				return [...current, block];
+			}
+		});
+	}, [setBlocks]);
+
+	const removeHarvest = useCallback((vault: Vault, strategy: Strategy) => {
+		setBlocks(vault, current => {
 			const index = findHarvestIndex(current, strategy);
 			if(index < 0) return current;
 			const result = [...current];
@@ -73,12 +137,14 @@ export default function BlocksProvider({children}: {children: ReactNode}) {
 	const addDebtRatioUpdate = useCallback(async (vault: Vault, strategy: Strategy, debtRatio: number) => {
 		const debtRatioUpdate = await makeDebtRatioUpdateBlock(vault, strategy, debtRatio);
 		const harvest = await makeHarvestBlock(vault, strategy);
-		setBlocks(current => {
+		setBlocks(vault, current => {
 			const result = [...current];
 			const debtRatioUpdateIndex = findDebtRatioUpdateIndex(result, vault, strategy);
 			if(debtRatioUpdateIndex > -1) result.splice(debtRatioUpdateIndex, 1);
 			const harvestIndex = findHarvestIndex(result, strategy);
 			if(harvestIndex > -1) result.splice(harvestIndex, 1);
+			const setDoHealthCheck = findSetDoHealthCheck(result, strategy);
+			if(setDoHealthCheck) result.splice(findSetDoHealthCheckIndex(result, strategy), 1);
 
 			let insertIndex = result.length - 1;
 			for(let i = 0; i < result.length; i++) {
@@ -92,13 +158,14 @@ export default function BlocksProvider({children}: {children: ReactNode}) {
 
 			insertIndex++;
 			result.splice(insertIndex, 0, harvest);
+			if(setDoHealthCheck) result.splice(insertIndex, 0, setDoHealthCheck);
 			result.splice(insertIndex, 0, debtRatioUpdate);
 			return result;
 		});
 	}, [setBlocks]);
 
 	const removeDebtRatioUpdate = useCallback((vault: Vault, strategy: Strategy) => {
-		setBlocks(current => {
+		setBlocks(vault, current => {
 			const result = [...current];
 			const debtRatioUpdateIndex = findDebtRatioUpdateIndex(result, vault, strategy);
 			if(debtRatioUpdateIndex < 0) return current;
@@ -121,7 +188,7 @@ export default function BlocksProvider({children}: {children: ReactNode}) {
 	}, [blocks]);
 
 	const computeVaultDr = useCallback((vault: Vault | null | undefined) => {
-		if(!vault) return {} as Touched;
+		if(!vault) return {} as Simulated;
 		const drUpdates = extractDrUpdates(vault);
 		const debtRatio = vault.withdrawalQueue.map((s: Strategy) => {
 			if(drUpdates[s.address] !== undefined) {
@@ -133,18 +200,21 @@ export default function BlocksProvider({children}: {children: ReactNode}) {
 			}
 		}).reduce((a: number, b: number) => a + b, 0);
 		return {
-			touched: Boolean(Object.keys(drUpdates).length),
+			simulated: Boolean(Object.keys(drUpdates).length),
 			value: debtRatio,
 			delta: debtRatio - (vault.debtRatio?.toNumber() || 0),
 		};
 	}, [extractDrUpdates]);
 
 	const reset = useCallback(() => {
-		setBlocks([]);
-	}, [setBlocks]);
+		setBlocksByVault({});
+	}, [setBlocksByVault]);
 
 	return <blocksContext.Provider value={{
 		blocks,
+		blocksForVault,
+		addSetDoHealthCheck,
+		removeSetDoHealthCheck,
 		addHarvest,
 		removeHarvest,
 		addDebtRatioUpdate,

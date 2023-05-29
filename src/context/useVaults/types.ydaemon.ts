@@ -3,6 +3,7 @@ import {BigNumber} from 'ethers';
 export interface Strategy {
   address: string,
   name: string,
+  description: string,
   details: {
     activation: BigNumber,
     debtRatio: BigNumber | undefined,
@@ -13,7 +14,9 @@ export interface Strategy {
     totalDebt: BigNumber,
     totalGain: BigNumber,
     totalLoss: BigNumber,
-    withdrawalQueuePosition: number    
+    withdrawalQueuePosition: number,
+    healthCheck: string,
+    doHealthCheck: boolean
   },
   risk: {
     riskGroup: string,
@@ -41,7 +44,13 @@ export interface Vault {
 	address: string,
   name: string,
   version: string,
-  token: {address: string},
+  token: {
+    address: string,
+    name: string,
+    symbol: string,
+    decimals: number,
+    description: string
+  },
   decimals: BigNumber,
   inception: BigNumber,
   details: {

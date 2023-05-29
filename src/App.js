@@ -14,14 +14,28 @@ import Vault from './components/Vault';
 import Risk from './components/Risk';
 import RiskGroup from './components/Risk/Group';
 import Status from './components/Status';
+import SimulatorStatusProvider from './context/useSimulator/SimulatorStatusProvider';
+import BlocksProvider from './context/useSimulator/BlocksProvider';
+import ProbesProvider from './context/useSimulator/ProbesProvider';
+import SimulatorProvider from './context/useSimulator';
+import {PowertoolsProvider} from './components/Powertools';
+import {FilterProvider as VaultsFilterProvider} from './components/Vaults/Filter/useFilter';
+import {FilterProvider as RiskFilterProvider} from './components/Risk/Filter/Provider';
 
 const Providers = NestProviders([
 	[RPCProviderContextApp],
 	[BrowserRouter],
 	[AuthProvider],
-	[VaultsProvider],
 	[FavoritesProvider],
+	[VaultsProvider],
+	[VaultsFilterProvider],
 	[SmsProvider],
+	[SimulatorStatusProvider],
+	[BlocksProvider],
+	[ProbesProvider],
+	[SimulatorProvider],
+	[RiskFilterProvider],
+	[PowertoolsProvider],
 	[Chrome]
 ]);
 
