@@ -1,5 +1,4 @@
 import {useMemo} from 'react';
-import {useVaults} from '../../useVaults';
 import {useSimulatorStatus} from '../SimulatorStatusProvider';
 import {SimulationResult} from '../../../tenderly';
 import {BigNumber, FixedNumber, ethers, providers} from 'ethers';
@@ -117,16 +116,8 @@ export function useAssetsProbeResults(vault: Vault | undefined, startResults: Pr
 }
 
 export default function useAssetsProbe() {
-	const {vaults} = useVaults();
-	const {blocks} = useBlocks();
+	const {referencedVaults} = useBlocks();
 	const {setStatus} = useSimulatorStatus();
-
-	const vaultsToProbe = useMemo(() => {
-		return vaults.filter(vault => {
-			const addresses = [vault.address, ...vault.strategies.map(s => s.address)];
-			return blocks.some(block => addresses.includes(block.contract));
-		});
-	}, [blocks, vaults]);
 
 	const probe = useMemo(() => {
 		return {
@@ -135,7 +126,7 @@ export default function useAssetsProbe() {
 			start: async (provider: providers.JsonRpcProvider) => {
 				setStatus('Measure assets');
 				const results = [] as AssetsOutput[];
-				for(const vault of vaultsToProbe) {
+				for(const vault of referencedVaults) {
 					const contract = await GetVaultContract(vault.address, provider, vault.version);
 					const totalAssets = await contract.totalAssets();
 					const totalDebt = await contract.totalDebt();
@@ -151,7 +142,7 @@ export default function useAssetsProbe() {
 			stop: async (_results: SimulationResult[], provider: providers.JsonRpcProvider) => {
 				setStatus('Measure asset flows');
 				const results = [] as AssetsOutput[];
-				for(const vault of vaultsToProbe) {
+				for(const vault of referencedVaults) {
 					const contract = await GetVaultContract(vault.address, provider, vault.version);
 					const totalAssets = await contract.totalAssets();
 					const totalDebt = await contract.totalDebt();
@@ -164,7 +155,7 @@ export default function useAssetsProbe() {
 				return {name: 'assets', output: results};
 			}
 		} as Probe;
-	}, [vaultsToProbe, setStatus]);
+	}, [referencedVaults, setStatus]);
 
 	return probe;
 }

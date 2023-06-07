@@ -23,7 +23,7 @@ export const	SimulatorContext = createContext<Simulator>({} as Simulator);
 export const useSimulator = () => useContext(SimulatorContext);
 
 export default function SimulatorProvider({children}: {children: ReactNode}) {
-	const {setStatus} = useSimulatorStatus();
+	const {setStatus, setTenderlyUrl, setError} = useSimulatorStatus();
 	const {blocks} = useBlocks();
 	const [blockPointer, setBlockPointer] = useState<Block|null>(null);
 	const [results, setResults] = useState<SimulationResult[]>([] as SimulationResult[]);
@@ -63,19 +63,26 @@ export default function SimulatorProvider({children}: {children: ReactNode}) {
 			setStatus('Simulation complete');
 
 		} catch (error) {
+			console.error(error);
 			setSimulating(false);
-			setStatus(`Error: ${error}`);
+			setStatus(`${error}`);
+			setTenderlyUrl(await tenderly.latestSimulationUrl(provider));
+			setError(true);
 			return;
 		}
-	}, [setSimulating, setBlockPointer, setStatus, setResults, probes, blocks]);
+	}, [setSimulating, setBlockPointer, setStatus, setTenderlyUrl, setError, setResults, probes, blocks]);
 
 	const reset = useCallback((resetStatus = true) => {
 		setBlockPointer(null);
 		setResults([]);
 		setProbeStartResults([]);
 		setProbeStopResults([]);
-		if(resetStatus) setStatus(DEFAULT_STATUS);
-	}, [setBlockPointer, setResults, setProbeStartResults, setProbeStopResults, setStatus]);
+		setTenderlyUrl(null);
+		setError(false);
+		if(resetStatus) {
+			setStatus(DEFAULT_STATUS);
+		}
+	}, [setBlockPointer, setResults, setProbeStartResults, setProbeStopResults, setStatus, setTenderlyUrl, setError]);
 
 	const initializeAndSimulate = useCallback(async () => {
 		setSimulating(true);
