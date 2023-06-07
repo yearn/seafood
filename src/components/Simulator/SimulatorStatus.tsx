@@ -2,7 +2,6 @@ import React, {useMemo} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import {useSimulator} from '../../context/useSimulator';
 import {useSimulatorStatus} from '../../context/useSimulator/SimulatorStatusProvider';
-import {A} from '../controls';
 import Tenderly from '../Vault/Tenderly';
 
 export default function SimulatorStatus({className}: {className?: string}) {
@@ -29,7 +28,7 @@ export default function SimulatorStatus({className}: {className?: string}) {
 			text-secondary-300 dark:text-secondary-700
 			`;
 		}
-	}, [simulating, status, error]);
+	}, [simulating, error]);
 
 	return <div className={`relative
 		grow px-4 h-10 flex items-center border
