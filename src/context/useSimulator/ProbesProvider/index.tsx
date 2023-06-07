@@ -6,10 +6,10 @@ import useAssetsProbe from './useAssetsProbe';
 
 export default function ProbesProvider({children}: {children: ReactNode}) {
 	const harvest = useHarvestProbe();
-	const apy = useApyProbe();
 	const assets = useAssetsProbe();
+	const apy = useApyProbe();
 	return <ProbesContext.Provider value={{probes: [
-		harvest, apy, assets
+		harvest, assets, apy
 	]}}>
 		{children}
 	</ProbesContext.Provider>;
