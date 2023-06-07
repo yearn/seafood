@@ -4,7 +4,6 @@ import {getApyComputer, getSamples} from '../../../math/apy';
 import {Apy} from '../../../math/apy/types';
 import {GetVaultContract} from '../../../ethereum/EthHelpers';
 import {fetchHarvestReports} from '../../../utils/vaults';
-import {useVaults} from '../../useVaults';
 import {Vault} from '../../useVaults/types';
 import {Probe, ProbeResults} from './useProbes';
 import {computeDegradationTime} from '../../../utils/vaults';
@@ -19,8 +18,7 @@ export interface ApyOutput {
 }
 
 export default function useApyProbe() {
-	const {vaults} = useVaults();
-	const {blocks} = useBlocks();
+	const {referencedVaults} = useBlocks();
 	const {setStatus} = useSimulatorStatus();
 
 	const measureApy = useCallback(async (vault: Vault, provider: providers.JsonRpcProvider) => {
@@ -32,27 +30,20 @@ export default function useApyProbe() {
 		return await computer.compute(vault, contract, samples);
 	}, []);
 
-	const vaultsToProbe = useMemo(() => {
-		return vaults.filter(vault => {
-			const addresses = [vault.address, ...vault.strategies.map(s => s.address)];
-			return blocks.some(block => addresses.includes(block.contract));
-		});
-	}, [blocks, vaults]);
-
 	const runApyProbe = useCallback(async (provider: providers.JsonRpcProvider) => {
 		const result = [] as ApyOutput[];
-		for(const vault of vaultsToProbe) {
+		for(const vault of referencedVaults) {
 			result.push({
 				vault: vault.address,
 				apy: await measureApy(vault, provider)
 			});
 		}
 		return result;
-	}, [vaultsToProbe, measureApy]);
+	}, [referencedVaults, measureApy]);
 
 	const longestDegradationTime = useCallback(() => {
-		return vaultsToProbe.map(v => computeDegradationTime(v)).reduce((a, b) => a.gt(b) ? a : b, ethers.constants.Zero);
-	}, [vaultsToProbe]);
+		return referencedVaults.map(v => computeDegradationTime(v)).reduce((a, b) => a.gt(b) ? a : b, ethers.constants.Zero);
+	}, [referencedVaults]);
 
 	const probe = useMemo(() => {
 		return {

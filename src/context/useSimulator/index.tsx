@@ -65,7 +65,7 @@ export default function SimulatorProvider({children}: {children: ReactNode}) {
 		} catch (error) {
 			console.error(error);
 			setSimulating(false);
-			setStatus(`Error: ${error}`);
+			setStatus(`${error}`);
 			setTenderlyUrl(await tenderly.latestSimulationUrl(provider));
 			setError(true);
 			return;
@@ -77,10 +77,10 @@ export default function SimulatorProvider({children}: {children: ReactNode}) {
 		setResults([]);
 		setProbeStartResults([]);
 		setProbeStopResults([]);
+		setTenderlyUrl(null);
+		setError(false);
 		if(resetStatus) {
 			setStatus(DEFAULT_STATUS);
-			setTenderlyUrl(null);
-			setError(false);
 		}
 	}, [setBlockPointer, setResults, setProbeStartResults, setProbeStopResults, setStatus, setTenderlyUrl, setError]);
 
