@@ -214,7 +214,16 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						decimals={vault.token.decimals || 18} />
 				</div>
 			</Row>
-			<Row label={'Strategies in queue'}>
+			<Row label={'Rewards (USD)'}>
+				<div className={'flex items-center gap-2'}>
+					<Number
+						simulated={false} 
+						value={vault.rewardsUsd || 0}
+						compact={true}
+						decimals={2} />
+				</div>
+			</Row>
+			<Row label={'Strategies'} alt={true}>
 				<Field value={vault.withdrawalQueue.length} />
 			</Row>
 		</TileButton>

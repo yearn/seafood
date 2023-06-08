@@ -30,10 +30,32 @@ interface ICallbacks {
 
 export interface SyncStatus {
 	status: 'ok' | 'error'
-	stage: 'ydaemon' | 'multicall' | 'tvls',
+	stage: 'ydaemon' | 'multicall' | 'tvls' | 'rewards',
 	chain: number | 'all',
 	error?: unknown,
 	timestamp: number
+}
+
+interface Tradeable {
+	strategy: string,
+	token: string,
+	name: string,
+	symbol: string,
+	decimals: number
+}
+
+const cache = {
+	prices: [] as {chainId: number, token: string, price: number}[],
+	tradeFactories: [] as {
+		chainId: number, 
+		tradeFactory: string,
+		tradeables: Tradeable[]
+	}[],
+};
+
+function resetCache() {
+	cache.prices = [];
+	cache.tradeFactories = [];
 }
 
 async function start(options: IStartOptions, callbacks?: ICallbacks) {
@@ -47,12 +69,15 @@ async function start(options: IStartOptions, callbacks?: ICallbacks) {
 
 async function refresh(callbacks?: ICallbacks) {
 	if(callbacks?.startRefresh) callbacks.startRefresh();
+	resetCache();
+
 	const {result: vaultverse, status: vaultStatus} = await fetchVaultverse();
 	const {result: multicallUpdates, status: multicallStatus} = await fetchMulticallUpdates(vaultverse);
-	const {result: tvlverse, status: tvlStatus} = await fetchTvlVerse();
+	const {result: rewardsUpdates, status: rewardsStatus} = await fetchRewardsUpdates(multicallUpdates);
+	const {result: tvlUpdates, status: tvlStatus} = await fetchTvlUpdates();
 
-	const vaults = merge(vaultverse, multicallUpdates, tvlverse);
-	const status = [...vaultStatus, ...multicallStatus, tvlStatus];
+	const vaults = merge(vaultverse, multicallUpdates, rewardsUpdates, tvlUpdates);
+	const status = [...vaultStatus, ...multicallStatus, ...rewardsStatus, tvlStatus];
 
 	const db = await openDb();
 	await refreshStore(db, 'vaults', vaults);
@@ -153,13 +178,16 @@ function waitForAllTransactions(db: IDBDatabase): Promise<void> {
 function merge(
 	vaultverse: yDaemon.Vault[][], 
 	multicallUpdates: (VaultMulticallUpdate|StrategyMulticallUpdate)[],
-	tvlverse: TVLVerse
+	strategyRewardsUpdates: StrategyRewardsUpdate[][],
+	tvlUpdates: TVLUpdates
 ){
 	const result = [];
 	for(const [index, chain] of config.chains.entries()) {
-		const vaults = vaultverse[index]?.map(vault => ySeafood.parseVault(vault, chain, tvlverse[chain.id][vault.address]));
+		const vaults = vaultverse[index]?.map(vault => ySeafood.parseVault(vault, chain, tvlUpdates[chain.id][vault.address]));
 		const strategies = vaults.map(vault => vault.withdrawalQueue).flat();
 		const updates = multicallUpdates.filter(u => u.chainId === chain.id);
+		const rewardsUpdates = strategyRewardsUpdates[index];
+
 		updates.forEach(update => {
 			if(update.type === 'vault') {
 				const vault = vaults.find(v => 
@@ -180,9 +208,21 @@ function merge(
 				if(strategy) {
 					strategy.lendStatuses = update.lendStatuses;
 					strategy.name = update.name;
+					strategy.tradeFactory = update.tradeFactory;
 				}
-
 			}
+		});
+
+		rewardsUpdates.forEach(update => {
+			const strategy = strategies.find(s => 
+				s.network.chainId === chain.id 
+				&& s.address === update.address);
+			if(strategy) strategy.rewards = update.rewards;
+		});
+
+		vaults.forEach(vault => {
+			vault.rewardsUsd = vault.withdrawalQueue.map(s => s.rewards).flat()
+				.reduce((acc, reward) => acc + reward?.amountUsd, 0);
 		});
 
 		aggregateRiskGroupTvls(vaults);
@@ -221,7 +261,15 @@ interface StrategyMulticallUpdate {
 	chainId: number,
 	address: string,
 	name: string,
-	lendStatuses: ySeafood.LendStatus[] | undefined
+	lendStatuses: ySeafood.LendStatus[] | undefined,
+	tradeFactory: string | undefined
+}
+
+interface StrategyRewardsUpdate {
+	readonly type: 'rewards',
+	chainId: number,
+	address: string,
+	rewards: ySeafood.Reward[]
 }
 
 async function fetchMulticallUpdates(vaultverse: yDaemon.Vault[][]) {
@@ -307,7 +355,8 @@ async function createStrategyMulticalls(vaults: yDaemon.Vault[], chain: ySeafood
 		abi: abi.strategy,
 		calls: [
 			{reference: 'lendStatuses', methodName: 'lendStatuses', methodParameters: []},
-			{reference: 'name', methodName: 'name', methodParameters: []}
+			{reference: 'name', methodName: 'name', methodParameters: []},
+			{reference: 'tradeFactory', methodName: 'tradeFactory', methodParameters: []}
 		]
 	}));
 
@@ -325,12 +374,16 @@ async function createStrategyMulticalls(vaults: yDaemon.Vault[], chain: ySeafood
 					address: tuple[3]
 				})) : undefined;
 
+			const tradeFactory = results[2].returnValues[0] === ethers.constants.AddressZero 
+				? undefined : results[2].returnValues[0];
+
 			parsed.push({
 				type: 'strategy',
 				chainId: chain.id,
 				address: strategy.address,
 				lendStatuses,
-				name: results[1].returnValues[0] || strategy.name
+				name: results[1].returnValues[0] || strategy.name,
+				tradeFactory
 			});
 		});
 		return parsed;
@@ -339,13 +392,13 @@ async function createStrategyMulticalls(vaults: yDaemon.Vault[], chain: ySeafood
 	return result;
 }
 
-interface TVLVerse {
+interface TVLUpdates {
 	[chainId: number]: {
 		[vaultAddress: string] : ySeafood.TVLHistory
 	}
 }
 
-async function fetchTvlVerse() : Promise<{result: TVLVerse, status: SyncStatus}> {
+async function fetchTvlUpdates() : Promise<{result: TVLUpdates, status: SyncStatus}> {
 	try {
 		return  {
 			result: await (await fetch('/api/vision/tvls')).json(),
@@ -357,6 +410,99 @@ async function fetchTvlVerse() : Promise<{result: TVLVerse, status: SyncStatus}>
 			status: {status: 'error', stage: 'tvls', chain: 'all', error, timestamp: Date.now()}
 		};
 	}
+}
+
+async function getTradeables(strategy: string, tradeFactory: string, chain: ySeafood.Chain) {
+	let tradeables = cache.tradeFactories.find(t => t.chainId === chain.id && t.tradeFactory === tradeFactory)?.tradeables;
+	if(!tradeables) {
+		tradeables = await (await fetch(`/api/tradeables/?chainId=${chain.id}&tradeFactory=${tradeFactory}`)).json() as Tradeable[];
+		cache.tradeFactories.push({chainId: chain.id, tradeFactory, tradeables});
+	}
+	return tradeables.filter(t => t.strategy === strategy) as Tradeable[];
+}
+
+async function getPrice(token: string, chain: ySeafood.Chain) {
+	let price = cache.prices.find(p => p.chainId === chain.id && p.token === token)?.price;
+	if(!price) {
+		const request = `${config.ydaemon.url}/${chain.id}/prices/${token}?humanized=true`;
+		price = parseFloat(await (await fetch(request)).text());
+		cache.prices.push({chainId: chain.id, token, price});
+	}
+	return price;
+}
+
+async function fetchRewardsUpdates(multicallUpdates: (VaultMulticallUpdate|StrategyMulticallUpdate)[]) 
+: Promise<{result: StrategyRewardsUpdate[][], status: SyncStatus[]}> {
+	const result = [] as StrategyRewardsUpdate[][], status = [] as SyncStatus[];
+	for(const chain of config.chains) {
+		try {
+			const updates = await fetchRewards(multicallUpdates, chain);
+			result.push(updates);
+			status.push({status: 'ok', stage: 'rewards', chain: chain.id, timestamp: Date.now()} as SyncStatus);
+		} catch(error) {
+			result.push([]);
+			status.push({status: 'error', stage: 'rewards', chain: chain.id, error, timestamp: Date.now()} as SyncStatus);
+		}
+	}
+	return {result, status};
+}
+
+async function fetchRewards(multicallUpdates: (VaultMulticallUpdate|StrategyMulticallUpdate)[], chain: ySeafood.Chain) {
+	const strategyUpdates = multicallUpdates.filter(u => u.chainId === chain.id && u.type === 'strategy' && u.tradeFactory) as StrategyMulticallUpdate[];
+	const multicall = new Multicall({ethersProvider: providerFor(chain), tryAggregate: true});
+	const balanceMulticalls = [];
+
+	for(const strategyUpdate of strategyUpdates) {
+		const tradeables = await getTradeables(strategyUpdate.address, strategyUpdate.tradeFactory as string, chain);
+		balanceMulticalls.push(...tradeables.map(tradeable => ({
+			reference: `${tradeable.token}/${strategyUpdate.address}`,
+			contractAddress: tradeable.token,
+			abi: abi.erc20,
+			calls: [{reference: 'balanceOf', methodName: 'balanceOf', methodParameters: [strategyUpdate.address]}]
+		})));
+	}
+
+	const balanceResults = await batchMulticalls(multicall, balanceMulticalls);
+
+	const udpates = [] as StrategyRewardsUpdate[];
+	for(const strategyUpdate of strategyUpdates) {
+		const strategy = strategyUpdate.address;
+		const tradeFactory = strategyUpdate.tradeFactory;
+		const tradeables = await getTradeables(strategy, tradeFactory as string, chain);
+
+		const rewards = [] as ySeafood.Reward[];
+		for(const tradeable of tradeables) {
+			const amount = BigNumber.from(balanceResults[`${tradeable.token}/${strategyUpdate.address}`].callsReturnContext[0].returnValues[0]);
+			let amountUsd = 0;
+
+			if(amount.gt(0)) {
+				let price = await getPrice(tradeable.token, chain);
+				if(Number.isNaN(price)) {
+					console.warn('price NaN', chain.id, strategy, tradeable.token, tradeable.name, tradeable.symbol);
+					price = 0;
+				}
+				amountUsd = price * (amount.mul(10_000).div(BigNumber.from(10).pow(tradeable.decimals)).toNumber() / 10_000);
+			}
+
+			rewards.push({
+				token: tradeable.token,
+				name: tradeable.name,
+				symbol: tradeable.symbol,
+				decimals: tradeable.decimals,
+				amount,
+				amountUsd
+			});
+		}
+
+		udpates.push({
+			type: 'rewards',
+			chainId: chain.id,
+			address: strategy,
+			rewards
+		});
+	}
+
+	return udpates;
 }
 
 export default {} as typeof Worker & { new (): Worker };

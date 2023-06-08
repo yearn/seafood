@@ -6,7 +6,7 @@ import {formatPercent, formatTokens} from '../../utils/utils';
 import TvlBars from './TvlBars';
 import {useAssetsProbeResults} from '../../context/useSimulator/ProbesProvider/useAssetsProbe';
 import {useSimulator} from '../../context/useSimulator';
-import {Bps, Percentage, Tokens} from '../controls/Fields';
+import {Bps, Number, Percentage, Tokens} from '../controls/Fields';
 import {useBlocks} from '../../context/useSimulator/BlocksProvider';
 
 export default function AssetsTab({vault}: {vault: Vault}) {
@@ -88,6 +88,9 @@ export default function AssetsTab({vault}: {vault: Vault}) {
 			<Row label={'Utilization'} alt={true}>
 				<div className={'font-mono text-right'}>{formatPercent(utilization, 2)}</div>
 			</Row>
+			{vault.rewardsUsd > 0 && <Row label={'Rewards (USD)'}>
+				<Number className={'font-bold'} value={vault.rewardsUsd} decimals={2} />
+			</Row>}
 		</div>
 		<div className={'w-full pb-4 sm:my-0'}>
 			{vault && <TvlBars vault={vault} />}

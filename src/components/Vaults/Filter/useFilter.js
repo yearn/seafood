@@ -42,6 +42,7 @@ export function FilterProvider({children}) {
 			if(!chips.v2 && version >= .4 && version < 3) return false;
 
 			if(chips.tvlgtzero && getLatestTvl(vault) <= 0) return false;
+			if(chips.rewardsgtzero && vault.rewardsUsd <= 0) return false;
 			if(chips.curve && chips.factory) return true;
 			if(chips.curve && !chips.factory) return !factoryRe.test(vault.name);
 			if(!chips.curve && chips.factory) return factoryRe.test(vault.name);

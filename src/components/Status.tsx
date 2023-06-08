@@ -67,6 +67,7 @@ export default function Status() {
 	const {message} = useVaultStatusUI();
 	const ydaemon = useMemo(() => status.filter(s => s.stage === 'ydaemon'), [status]);
 	const multicall = useMemo(() => status.filter(s => s.stage === 'multicall'), [status]);
+	const rewards = useMemo(() => status.filter(s => s.stage === 'rewards'), [status]);
 	const tvls = useMemo(() => status.filter(s => s.stage === 'tvls'), [status]);
 	const {setEnable} = usePowertools();
 
@@ -88,6 +89,7 @@ export default function Status() {
 			</div>
 			<Stage title={'yDaemon'} status={ydaemon} />
 			<Stage title={'Multicalls'} status={multicall} />
+			<Stage title={'Rewards'} status={rewards} />
 			<Stage title={'TVLs'} status={tvls} />
 		</div>
 	</div>;

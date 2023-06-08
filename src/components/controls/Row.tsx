@@ -11,7 +11,7 @@ export default function Row({
 	alt?: boolean,
 	heading?: boolean
 	className?: string,
-	children: ReactNode
+	children?: ReactNode
 }) {
 	return <div className={`
 		px-2 py-1 flex items-center justify-between

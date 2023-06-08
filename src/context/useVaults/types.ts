@@ -63,7 +63,8 @@ export interface Vault {
 	strategies: Strategy[],
 	withdrawalQueue: Strategy[],
 	apy: Apy,
-	tvls: TVLHistory
+	tvls: TVLHistory,
+	rewardsUsd: number
 }
 
 export interface TVLHistory {
@@ -90,7 +91,10 @@ export interface Strategy {
 	withdrawalQueuePosition: number,
 	lendStatuses: LendStatus[] | undefined,
 	healthCheck: string,
-	doHealthCheck: boolean
+	doHealthCheck: boolean,
+	tradeFactory: string | undefined,
+	keeper: string | undefined,
+	rewards: Reward[],
 }
 
 export interface LendStatus {
@@ -98,6 +102,15 @@ export interface LendStatus {
 	address: string,
 	deposits: BigNumber,
 	apr: BigNumber
+}
+
+export interface Reward {
+	token: string,
+	name: string,
+	symbol: string,
+	decimals: number,
+	amount: BigNumber,
+	amountUsd: number,
 }
 
 export interface RiskCategories {
@@ -171,7 +184,8 @@ export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: TVLHistory)
 			[-30]: vault.apy.points.month_ago,
 			inception: vault.apy.points.inception
 		},
-		tvls
+		tvls,
+		rewardsUsd: 0
 	};
 }
 
@@ -206,7 +220,10 @@ export function parseStrategy(vault: yDaemon.Vault, strategy: yDaemon.Strategy, 
 		withdrawalQueuePosition: strategy.details.withdrawalQueuePosition,
 		lendStatuses: undefined,
 		healthCheck: strategy.details.healthCheck,
-		doHealthCheck: strategy.details.doHealthCheck
+		doHealthCheck: strategy.details.doHealthCheck,
+		tradeFactory: undefined,
+		keeper: strategy.details.keeper || undefined,
+		rewards: []
 	};
 }
 

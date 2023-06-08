@@ -18,10 +18,11 @@ import {BigNumber, FixedNumber, ethers} from 'ethers';
 import {functions} from '../../context/useSimulator/Blocks';
 import {HarvestOutput} from '../../context/useSimulator/ProbesProvider/useHarvestProbe';
 import Accordian from '../controls/Accordian';
-import {Bps, Percentage, Tokens} from '../controls/Fields';
+import {Bps, Number, Percentage, Tokens} from '../controls/Fields';
 import EigenPhi from './EigenPhi';
 import Tenderly from './Tenderly';
 import {useAssetsProbeResults} from '../../context/useSimulator/ProbesProvider/useAssetsProbe';
+import {DUST} from '../../constants';
 
 function AccordianTitle({index, strategy}: {index: number, strategy: TStrategy}) {
 	return <div className={`flex items-center gap-2
@@ -188,6 +189,14 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 		else addSetDoHealthCheck(vault, strategy, checked);
 	}, [blocks, vault, strategy, addSetDoHealthCheck, removeSetDoHealthCheck]);
 
+	const nonZeroRewards = useMemo(() => {
+		return strategy.rewards.filter(r => r.amount.gt(DUST));
+	}, [strategy]);
+
+	const totalRewardsUsd = useMemo(() => {
+		return strategy.rewards.map(r => r.amountUsd).reduce((acc, reward) => acc + reward, 0);
+	}, [strategy]);
+
 	return <Accordian
 		title={<AccordianTitle index={index} strategy={strategy} />}
 		expanded={strategy.debtRatio?.gt(0)}
@@ -251,6 +260,26 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 					</div>
 				</Row>
 
+				{<Row label={'Keeper'}>
+					<div className={'flex items-center gap-4'}>
+						{strategy.keeper && <>
+							<A target={'_blank'} href={getAddressExplorer(strategy.network.chainId, strategy.keeper)} rel={'noreferrer'}>{truncateAddress(strategy.keeper)}</A>
+							<CopyButton clip={strategy.keeper}></CopyButton>
+						</>}
+						{!strategy.keeper && <div className={'text-secondary-400'}>{'No keeper'}</div>}
+					</div>
+				</Row>}
+
+				{<Row label={'Trade handler'} alt={true}>
+					<div className={'flex items-center gap-4'}>
+						{strategy.tradeFactory && <>
+							<A target={'_blank'} href={getAddressExplorer(strategy.network.chainId, strategy.tradeFactory)} rel={'noreferrer'}>{truncateAddress(strategy.tradeFactory)}</A>
+							<CopyButton clip={strategy.tradeFactory}></CopyButton>
+						</>}
+						{!strategy.tradeFactory && <div className={'text-secondary-400'}>{'No trade handler'}</div>}
+					</div>
+				</Row>}
+
 				<Row label={'Estimated assets'}>
 					<div className={'flex items-center gap-2'}>
 						{estimatedTotalAssets.simulated && <Tokens
@@ -303,6 +332,23 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 							<div className={'w-1/2 flex items-center justify-between'}>
 								<Tokens value={lender.deposits} decimals={vault?.token.decimals} />
 								<Percentage value={FixedNumber.from(lender.apr).divUnsafe(FixedNumber.from(BigNumber.from(10).pow(18))).toUnsafeFloat()} />
+							</div>
+						</Row>)}
+				</>}
+
+				{strategy.tradeFactory && <>
+					<Row label={'Rewards'} alt={true} heading={true}>
+						<Number className={'font-bold'} value={totalRewardsUsd} decimals={2} format={'%s USD'} />
+					</Row>
+					{nonZeroRewards.length === 0 && <Row label={<div></div>}>
+						<div className={'text-secondary-400'}>{'No available rewards'}</div>
+					</Row>}
+					{nonZeroRewards.length > 0 && nonZeroRewards.map((reward, index) =>
+						<Row key={index} label={<A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(strategy.network.chainId, reward.token)}>{reward.symbol}</A>} alt={index % 2 === 1}>
+							<div className={'w-1/2 flex items-center justify-between'}>
+								<Tokens value={reward.amount} decimals={reward.decimals} />
+								{reward.amountUsd === 0 && <div className={'text-secondary-400'}>{'NA'}</div>}
+								{reward.amountUsd > 0 && <Number value={reward.amountUsd} decimals={2} format={'%s USD'} />}
 							</div>
 						</Row>)}
 				</>}
