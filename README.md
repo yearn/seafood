@@ -12,9 +12,9 @@ Yearn dashboard for vault management and reporting
 
 
 ## Dev environment setup
-In production seafood currently runs on nodejs version 16. For an easy way to install a particular node version in your dev environment, or multiple node versions on the same system, try Node Version Manager (NVM). See https://github.com/nvm-sh/nvm#install--update-script for install instructions.
+Seafood is a node app. For an easy way to install a particular node version in your dev environment, or multiple node versions on the same system, try Node Version Manager (NVM). See https://github.com/nvm-sh/nvm#install--update-script for install instructions.
 
-1 - With NVM installed, install node 16 and yarn:
+1 - With NVM installed, install node 16 (or higher) and yarn:
 ```console
 nvm install 16
 npm install -g yarn
@@ -40,17 +40,21 @@ cp env.example .env
   ```
   If you don't have these credentials, ask someone at yearn.
 
-  - To run vault and strategy simulations, set a token for tenderly and explorer urls for each supported chain:
+  - To run vault and strategy simulations, set a token for tenderly, explorer urls, and rps urls for each supported chain:
   ```
   TENDERLY_ACCESS_TOKEN=
   EXPLORER_API_FOR_1=
   EXPLORER_API_FOR_250=
   EXPLORER_API_FOR_10=
   EXPLORER_API_FOR_42161=
+  RPC_FOR_1=
+  RPC_FOR_250=
+  RPC_FOR_10=
+  RPC_FOR_42161=
   ```
-  To get a token, first create an account on https://tenderly.co. Then from your tenderly dashboard go to Settings, Authorization, Generate Access Token. Your tenderly account also needs access to yearn's tenderly organization account. To get access, ask someone at yearn to invite you.
+  To get a token, first create an account on https://tenderly.co. Then from your tenderly dashboard go to Settings, Authorization, Generate Access Token. Your tenderly account also needs access to yearn's tenderly organization account. To get access, ask someone at yearn for an invite.
 
-  You can use your own explorer urls, but without premium access you'll likely get rate limit errors in seafood. Better, yearn also hosts its own internal block explorers that work great with seafood. To get these, ask someone at yearn.
+  You can use your own explorer and rpc urls, but without premium access you'll likely get rate limit errors in seafood. You can also ask someone at yearn for access to internal explorer and rpc urls.
 
 
 4 - Run the app:
@@ -67,14 +71,15 @@ Open a browser at http://localhost:3000
 `/api/routes/abi` - Smart contract abis with a twist of cache.\
 `/api/routes/getVaults` - Vault and strategy related data. (obsoleting)\
 `/api/routes/github` - Generate GitHub bearer tokens for Seafood users.\
-`/api/routes/tenderly` - Generate Tenderly simulation forks.
+`/api/routes/tenderly` - Generate Tenderly simulation forks.\
+`/api/routes/tradeables` - List tradeable erc20s for a given trade handler
 
 ### frontend
 `/public` - Static files.\
 `/scripts` - Various helper scripts used during dev. (obsoleting)\
 `/src` - Resources for building Seafood's frontend.\
 `/src/abi` - Some static abis that are needed by Seafood and some that..aren't 👀\
-`/src/apy` - Logic for computing APY on demand.\
+`/src/math` - Logic for computing APY and APR on demand.\
 `/src/components` - Most of Seafood's React components go here\
 `/src/components/controls` - Specifically, common UI controls live here.\
 `/src/context` - Seafood's React hooks live here. So why call it `context`?\
@@ -97,7 +102,7 @@ To give a unified, cross-chain view of Yearn's products, Seafood's primary data 
 - Execute multicalls on each network for any data yDaemon doesn't have yet
 - Merge results into one data structure
 
-This process requires network and cpu bandwidth large enough that it caused jank in the UI. To de-jank, Seafood moved this aggregation logic into a [web worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers). The worker decouples the aggregation logic from the UI's thread. It also provides an execution environment outside of React, enhancing code readability.
+This process requires network and cpu bandwidth large enough that it caused jank in the UI. To de-jank, Seafood moved this aggregation logic into a [web worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) decoupling aggregation overhead from the UI's thread.
 
 The aggregated data structure is stored in the browser's IndexDB and made available to the app through a hook called [useVaults](/src/context/useVaults). 
 
@@ -121,7 +126,6 @@ yarn test
 - This project is configured to automatically enforce linting and style rules.
 - CSS. For frontend layout and styling Seafood uses Tailwinds and follows their [utility-first](https://tailwindcss.com/docs/utility-first) principle.
 - Tests. For now, Seafood only requires tests for domain logic and doesn't cover frontend\UI logic. So if your work requires complex domain logic, like computing APY, include tests for it. If you're just adding some buttons, no worries, amigo 😎
-- Documentation. Seafood prefers readable, self-documenting code over comments.
-
+- Documentation, minimal. We have GPT now for crying out loud 🤖
 
 \><(((*> - Onward!
