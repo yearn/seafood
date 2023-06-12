@@ -28,6 +28,9 @@ module.exports = {
         'attention': colors.yellow,
         'error': colors.red
       },
+      fontFamily: {
+        'wordmark': ['Goldman']
+      },
       keyframes: {
         'slide-in-x': {
           '0%': { transform: 'translateX(-5%)' },

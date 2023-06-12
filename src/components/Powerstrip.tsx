@@ -4,7 +4,6 @@ import {Link, matchRoutes, useLocation} from 'react-router-dom';
 import Wordmark from './Wordmark';
 import Icon from './Icon';
 import {A} from './controls';
-import Starfield from './Starfield';
 import {useVaultStatusUI} from './MobileNav/Sync';
 import {useVaults} from '../context/useVaults';
 import Lux from './Lux';
@@ -161,10 +160,9 @@ export default function Powerstrip({className}: {className?: string}) {
 						{MenuLinks.map(link => link)}
 					</div>
 					<div className={'pr-3 flex flex-col items-center justify-center'}>
-						<Lux className={'mb-16 p-4'} />
-						<div className={'relative w-[80%] h-16 flex items-start justify-end'}>
-							<Starfield className={'absolute z-1 inset'} />
-							<Icon className={'absolute z-10 w-1/4 top-1 right-2'} fill={'black'} />
+						<Lux className={'mb-20'} />
+						<div className={'relative w-[80%] h-16 flex items-start justify-center'}>
+							<Icon className={'w-1/2'} />
 						</div>
 						<Wordmark className={'text-3xl'} />
 						<div className={'mt-3 flex items-center justify-center gap-3 flex-wrap'}>
