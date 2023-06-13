@@ -3,7 +3,7 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import NestProviders from './context/NestProviders';
 import {RPCProviderContextApp} from './context/useRpcProvider';
 import AuthProvider from './context/useAuth';
-import VaultsProvider from './context/useVaults';
+import VaultsProvider, {useVaults} from './context/useVaults';
 import FavoritesProvider from './context/useFavorites';
 import SmsProvider from './context/useSms';
 import Chrome from './components/Chrome';
@@ -21,6 +21,7 @@ import SimulatorProvider from './context/useSimulator';
 import {PowertoolsProvider} from './components/Powertools';
 import {FilterProvider as VaultsFilterProvider} from './components/Vaults/Filter/useFilter';
 import {FilterProvider as RiskFilterProvider} from './components/Risk/Filter/Provider';
+import Loading from './components/Loading';
 
 const Providers = NestProviders([
 	[RPCProviderContextApp],
@@ -35,21 +36,30 @@ const Providers = NestProviders([
 	[ProbesProvider],
 	[SimulatorProvider],
 	[RiskFilterProvider],
-	[PowertoolsProvider],
-	[Chrome]
+	[PowertoolsProvider]
 ]);
+
+function Router() {
+	const {loading, vaults} = useVaults();
+
+	if(loading && vaults.length === 0) return <Loading />;
+
+	return <Routes>
+		<Route path={'/'} exact={true} element={<Vaults />} />
+		<Route path={'/vault/:address'} element={<Vault />} />
+		<Route path={'/risk/*'} element={<Risk />} />
+		<Route path={'/risk/:group'} element={<RiskGroup />} />
+		<Route path={'/sandbox/*'} element={<Sandbox />} />
+		<Route path={'/status/*'} element={<Status />} />
+		<Route path={'/github/callback'} exact={true} element={<GithubCallback />} />
+	</Routes>;
+}
 
 function App() {
 	return <Providers>
-		<Routes>
-			<Route path={'/'} exact={true} element={<Vaults />} />
-			<Route path={'/vault/:address'} element={<Vault />} />
-			<Route path={'/risk/*'} element={<Risk />} />
-			<Route path={'/risk/:group'} element={<RiskGroup />} />
-			<Route path={'/sandbox/*'} element={<Sandbox />} />
-			<Route path={'/status/*'} element={<Status />} />
-			<Route path={'/github/callback'} exact={true} element={<GithubCallback />} />
-		</Routes>
+		<Chrome>
+			<Router />
+		</Chrome>
 	</Providers>;
 }
 

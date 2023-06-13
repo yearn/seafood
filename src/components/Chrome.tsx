@@ -1,10 +1,11 @@
-import React, {ReactNode, createContext, useCallback, useContext, useEffect, useRef, useState} from 'react';
+import React, {ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import useLocalStorage from '../utils/useLocalStorage';
 import Dialog, {DialogContext} from './Dialog';
 import CheckForUpdates from './CheckForUpdates';
 import Powerstrip from './Powerstrip';
 import MobileNav from './MobileNav';
 import Powertools from './Powertools';
+import {useVaults} from '../context/useVaults';
 
 interface ChromeContext {
 	darkMode: boolean,
@@ -27,10 +28,15 @@ const	chromeContext = createContext({} as ChromeContext);
 export const useChrome = () => useContext(chromeContext);
 
 export default function ChromeProvider({children}: {children: ReactNode}) {
+	const {vaults} = useVaults();
 	const [dialog, setDialog] = useState<DialogContext | undefined>();
 	const [darkMode, setDarkMode] = useLocalStorage('darkMode', null);
 	const [overpassClassName, setOverpassClassName] = useState(overpass.hideClassName);
 	const scrollContainer = useRef<HTMLDivElement>(null);
+
+	const ready = useMemo(() => {
+		return vaults.length > 0;
+	}, [vaults]);
 
 	useEffect(() => {
 		if(darkMode === null) {
@@ -78,10 +84,12 @@ export default function ChromeProvider({children}: {children: ReactNode}) {
 				pl-0 sm:pl-6 flex sm:flex-col items-start
 				text-secondary-900 dark:text-secondary-200
 				overflow-x-hidden overflow-y-auto override-scroll`}>
-				<MobileNav className={'flex sm:hidden'} />
-				<Powerstrip className={'hidden sm:block fixed z-[100] top-0 left-0 w-6 h-full'} />
-				<Powertools className={'hidden sm:block sticky top-0 z-10 w-full'} />
-				<CheckForUpdates />
+				{ready && <>
+					<MobileNav className={'flex sm:hidden'} />
+					<Powerstrip className={'hidden sm:block fixed z-[100] top-0 left-0 w-6 h-full'} />
+					<Powertools className={'hidden sm:block sticky top-0 z-10 w-full'} />
+					<CheckForUpdates />
+				</>}
 				{children}
 			</div>
 			{dialog && <Dialog 
