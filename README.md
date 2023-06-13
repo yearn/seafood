@@ -1,8 +1,7 @@
 # Seafood
-Yearn dashboard for vault management and reporting
+Yearn vault dashboard and simulator
 
-![favicon-256](https://user-images.githubusercontent.com/89237203/209074891-16c56321-774e-411c-9ca0-ffa1a7068ed5.png)
-
+![mechafish-md](https://github.com/yearn/seafood/assets/89237203/194042b0-3637-432c-93b5-1a00629c2e92)
 
 - [Dev environment setup](#dev-environment-setup)
 - [Project structure](#project-structure)
