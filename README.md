@@ -11,16 +11,15 @@ Yearn vault dashboard and simulator
 
 
 ## Dev environment setup
-Seafood is a node app. For an easy way to install a particular node version in your dev environment, or multiple node versions on the same system, try Node Version Manager (NVM). See https://github.com/nvm-sh/nvm#install--update-script for install instructions.
+First get node installed. For an easy way to install a particular node version in your dev environment, or multiple node versions on the same system, try Node Version Manager (NVM). See https://github.com/nvm-sh/nvm#install--update-script for install instructions.
 
-1 - With NVM installed, install node 16 (or higher) and yarn:
+1 - With NVM installed, install node 16 (or higher) and yarn
 ```console
 nvm install 16
 npm install -g yarn
 ```
-* NVM is optional, feel free to install node however you like.
 
-2 - Clone this repo and install seafood's dependencies:
+2 - Clone this repo, install dependencies
 ```console
 git clone git@github.com:yearn/dashboard_ui.git
 cd dashboard_ui
@@ -32,7 +31,7 @@ cd dashboard_ui
 cp env.example .env
 ```
 
-  - For minimum functionality, set these envars:
+  - For minimum functionality, set these envars
   ```
   DB_USER=
   DB_PASS=
@@ -56,7 +55,7 @@ cp env.example .env
   You can use your own explorer and rpc urls, but without premium access you'll likely get rate limit errors in seafood. You can also ask someone at yearn for access to internal explorer and rpc urls.
 
 
-4 - Run the app:
+4 - Run the app
 ```console
 yarn start
 ```
