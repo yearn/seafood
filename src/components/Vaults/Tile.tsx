@@ -105,7 +105,7 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 	const vaultDebtRatio = computeVaultDr(vault);
 	const apyProbeResults = useApyProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
 	const apyDelta = useApyProbeDelta(vault, apyProbeResults, false);
-	const {tvl, freeAssets, deployed} = useAssetsProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
+	const {tvl, deployed} = useAssetsProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
 
 	const hasBlocks = useMemo(() => blocksForVault(vault).length > 0, [vault, blocksForVault]);
 
@@ -199,22 +199,22 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						value={deployed.value} />
 				</div>
 			</Row>
-			<Row label={'Free assets'} alt={true}>
-				<div className={'flex items-center gap-2'}>
-					{freeAssets.simulated && <Tokens
-						simulated={freeAssets.simulated}
-						value={freeAssets.delta}
-						decimals={vault.token.decimals || 18}
-						sign={true}
-						format={'(%s)'}
-						className={'text-xs'} />}
-					<Tokens 
-						simulated={freeAssets.simulated} 
-						value={freeAssets.value} 
-						decimals={vault.token.decimals || 18} />
-				</div>
+			<Row label={<div className={'w-1/3'}>{'Deposit limit'}</div>} alt={true}>
+				{vault.warnings?.some(w => w.key === 'noDepositLimit') && <div className={'w-1/3 text-xs text-center attention-text'}>
+					{'deposit limit = 0'}
+				</div>}
+				<Tokens 
+					value={vault.depositLimit} 
+					decimals={vault.token.decimals || 18}
+					className={'w-1/3'} />
 			</Row>
-			<Row label={'Rewards (USD)'}>
+			<Row label={<div className={'w-1/3'}>{'Strategies'}</div>}>
+				{vault.warnings?.some(w => w.key === 'noHealthCheck') && <div className={'w-1/3 text-xs text-center attention-text'}>
+					{'missing health check'}
+				</div>}
+				<Field value={vault.withdrawalQueue.length} className={'w-1/3'} />
+			</Row>
+			<Row label={'Rewards (USD)'} alt={true}>
 				<div className={'flex items-center gap-2'}>
 					<Number
 						simulated={false} 
@@ -222,9 +222,6 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						compact={true}
 						decimals={2} />
 				</div>
-			</Row>
-			<Row label={'Strategies'} alt={true}>
-				<Field value={vault.withdrawalQueue.length} />
 			</Row>
 		</TileButton>
 		<div className={'flex items-center gap-2'}>

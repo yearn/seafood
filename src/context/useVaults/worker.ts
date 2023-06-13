@@ -77,6 +77,7 @@ async function refresh(callbacks?: ICallbacks) {
 	const {result: tvlUpdates, status: tvlStatus} = await fetchTvlUpdates();
 
 	const vaults = merge(vaultverse, multicallUpdates, rewardsUpdates, tvlUpdates);
+	markupWarnings(vaults);
 	const status = [...vaultStatus, ...multicallStatus, ...rewardsStatus, tvlStatus];
 
 	const db = await openDb();
@@ -390,6 +391,20 @@ async function createStrategyMulticalls(vaults: yDaemon.Vault[], chain: ySeafood
 	})());
 
 	return result;
+}
+
+function markupWarnings(vaults: ySeafood.Vault[]) {
+	vaults.forEach(vault => {
+		if(vault.depositLimit.eq(0)) {
+			vault.warnings.push({key: 'noDepositLimit', message: 'This vault cannot take deposits until its limit is raised.'});
+		}
+
+		vault.withdrawalQueue.forEach(strategy => {
+			if(!strategy.healthCheck || strategy.healthCheck === ethers.constants.AddressZero) {
+				vault.warnings.push({key: 'noHealthCheck', message: `No health check set on ${strategy.name}`});
+			}
+		});
+	});
 }
 
 interface TVLUpdates {

@@ -41,6 +41,11 @@ export const defaultVault = {
 	} as TVLHistory
 };
 
+export interface Warning {
+	key: 'noHealthCheck' | 'noDepositLimit',
+	message: string
+}
+
 export interface Vault {
 	address: string,
 	name: string,
@@ -64,7 +69,8 @@ export interface Vault {
 	withdrawalQueue: Strategy[],
 	apy: Apy,
 	tvls: TVLHistory,
-	rewardsUsd: number
+	rewardsUsd: number,
+	warnings: Warning[]
 }
 
 export interface TVLHistory {
@@ -185,7 +191,8 @@ export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: TVLHistory)
 			inception: vault.apy.points.inception
 		},
 		tvls,
-		rewardsUsd: 0
+		rewardsUsd: 0,
+		warnings: []
 	};
 }
 

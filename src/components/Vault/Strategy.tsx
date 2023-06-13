@@ -244,9 +244,9 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 					</div>
 				</Row>
 
-				<Row label={<div className={'text-lg font-bold'}>{'Health Check'}</div>} alt={true}>
+				<Row label={<div className={'text-lg font-bold'}>{'Health Check'}</div>} alt={true} className={!healthCheck ? 'attention-box' : ''}>
 					<div className={'flex items-center gap-4'}>
-						{!healthCheck && <div className={'text-secondary-400'}>{'No health check'}</div>}
+						{!healthCheck && <div>{'No health check'}</div>}
 						{healthCheck && <A 
 							href={getAddressExplorer(strategy.network.chainId, healthCheck)} 
 							target={'_blank'} rel={'noreferrer'}>

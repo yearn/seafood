@@ -28,6 +28,10 @@ body {
   @apply underline underline-offset-2 hover:text-selected-400 active:text-selected-600;
 }
 
+.attention-text {
+  @apply text-attention-600 dark:text-attention-400 group-hover:text-current group-active:text-current;
+}
+
 .attention-box {
   @apply border border-attention-600 dark:border-attention-400 text-attention-600 dark:text-attention-400 bg-attention-100 dark:bg-attention-950;
 }
