@@ -15,6 +15,10 @@ export default function AssetsTab({vault}: {vault: Vault}) {
 	const vaultDebtRatio = computeVaultDr(vault);
 	const {totalAssets, freeAssets, deployed} = useAssetsProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
 
+	const noDepositLimit = useMemo(() => {
+		return vault.depositLimit.eq(0);
+	}, [vault]);
+
 	const utilization = useMemo(() => {
 		if(!vault) return 0;
 		if((vault.depositLimit || ethers.constants.Zero).eq(0)) return NaN;
@@ -82,7 +86,9 @@ export default function AssetsTab({vault}: {vault: Vault}) {
 						decimals={vault.token.decimals || 18} />
 				</div>
 			</Row>
-			<Row label={'Deposit limit'}>
+			<Row label={'Deposit limit'} 
+				className={noDepositLimit ? 'attention-box' : 'border border-transparent'}
+				title={noDepositLimit ? 'This vault cannot take deposits until its limit is raised.' : ''}>
 				<div className={'font-mono text-right'}>{formatTokens(vault.depositLimit, vault.token.decimals, 2, true)}</div>
 			</Row>
 			<Row label={'Utilization'} alt={true}>

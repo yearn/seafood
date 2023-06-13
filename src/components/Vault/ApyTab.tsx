@@ -103,11 +103,7 @@ export default function ApyTab({vault}: {vault: Vault}) {
 				{(apyDelta?.pps as number || 0) > 0 ? '+' : ''}{formatPercent(apyDelta?.pps, 2, '--')}
 			</div>
 		</Row>
-		{apyMismatch && <div className={`
-			p-2 border border-attention-600 dark:border-attention-400
-			text-attention-600 dark:text-attention-400
-			bg-attention-100 dark:bg-attention-950
-			`}>
+		{apyMismatch && <div className={'p-2 attention-box'}>
 			{`For this vault we should use the '${vault?.apy.type}' method to calculate apy, but Seafood doesn't support that yet. Using ${apyComputer.type} for Live and Future apy instead.`}
 		</div>}
 

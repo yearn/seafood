@@ -10,6 +10,8 @@ export default function Yearn({vault}: {vault?: Vault}) {
 	}, [vault]);
 
 	return <Pebble title={'Explore on Yearn Finance'} onClick={navigate}>
-		<img width={18} height={18} src={'/yearn.svg'} alt={'Yearn Finance'} className={'grayscale group-hover:brightness-0'} />
+		<img width={18} height={18} src={'/yearn.svg'} alt={'Yearn Finance'} className={`
+			brightness-0 group-hover:brightness-0
+			dark:filter-none`} />
 	</Pebble>;
 }
