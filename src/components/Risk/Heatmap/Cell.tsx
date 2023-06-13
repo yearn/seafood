@@ -32,7 +32,7 @@ export default function Cell({
 		{children}
 		{floatie.open && mediumBreakpoint && <FloatingFocusManager context={floatie.context} modal={false}>
 			<div ref={floatie.refs.setFloating} {...floatie.getFloatingProps()} className={`
-				z-[100] p-4
+				z-[100]
 				flex flex-col
 				bg-secondary-100 dark:bg-black
 				border border-selected-200 dark:border-selected-900

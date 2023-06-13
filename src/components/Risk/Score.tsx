@@ -206,13 +206,15 @@ export default function Score({
 	category,
 	score
 }: {
-	group: string, 
+	group?: string, 
 	category: string,
 	score: number
 }) {
 	const breakdown = breakdowns[category as keyof CategoryBreakdowns];
-	return <div className={'px-4 pt-5 sm:p-0'}>
-		<div className={'pl-4 text-sm'}>{group}</div>
+	if(!breakdown) return <div>{'!breakdown ' + category}</div>;
+
+	return <div className={'p-4'}>
+		{group && <div className={'pl-4 text-sm'}>{group}</div>}
 		<div className={'pl-4 font-bold text-lg capitalize'}>
 			{`${humanizeRiskCategory(category)}${category !== 'TVLImpact' ? ' Score' : ''}`}
 		</div>
