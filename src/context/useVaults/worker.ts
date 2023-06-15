@@ -29,7 +29,7 @@ interface ICallbacks {
 }
 
 export interface SyncStatus {
-	status: 'ok' | 'error'
+	status: 'ok' | 'warning'
 	stage: 'ydaemon' | 'multicall' | 'tvls' | 'rewards',
 	chain: number | 'all',
 	error?: unknown,
@@ -240,7 +240,7 @@ async function fetchVaultverse() : Promise<{result: yDaemon.Vault[][], status: S
 			result.push(await (await fetch(request)).json());
 			status.push({status: 'ok', stage: 'ydaemon', chain: chain.id, timestamp: Date.now()} as SyncStatus);
 		} catch(error) {
-			status.push({status: 'error', stage: 'ydaemon', chain: chain.id, error, timestamp: Date.now()} as SyncStatus);
+			status.push({status: 'warning', stage: 'ydaemon', chain: chain.id, error, timestamp: Date.now()} as SyncStatus);
 		}
 	}
 	return {result, status};
@@ -285,7 +285,7 @@ async function fetchMulticallUpdates(vaultverse: yDaemon.Vault[][]) {
 			result.push(...(await Promise.all(promises)).flat());
 			status.push({status: 'ok', stage: 'multicall', chain: chain.id, timestamp: Date.now()} as SyncStatus);
 		} catch(error) {
-			status.push({status: 'error', stage: 'multicall', chain: chain.id, error, timestamp: Date.now()} as SyncStatus);
+			status.push({status: 'warning', stage: 'multicall', chain: chain.id, error, timestamp: Date.now()} as SyncStatus);
 		}
 	}
 	return {result, status};
@@ -422,7 +422,7 @@ async function fetchTvlUpdates() : Promise<{result: TVLUpdates, status: SyncStat
 	} catch(error) {
 		return  {
 			result: [],
-			status: {status: 'error', stage: 'tvls', chain: 'all', error, timestamp: Date.now()}
+			status: {status: 'warning', stage: 'tvls', chain: 'all', error, timestamp: Date.now()}
 		};
 	}
 }
@@ -456,7 +456,7 @@ async function fetchRewardsUpdates(multicallUpdates: (VaultMulticallUpdate|Strat
 			status.push({status: 'ok', stage: 'rewards', chain: chain.id, timestamp: Date.now()} as SyncStatus);
 		} catch(error) {
 			result.push([]);
-			status.push({status: 'error', stage: 'rewards', chain: chain.id, error, timestamp: Date.now()} as SyncStatus);
+			status.push({status: 'warning', stage: 'rewards', chain: chain.id, error, timestamp: Date.now()} as SyncStatus);
 		}
 	}
 	return {result, status};

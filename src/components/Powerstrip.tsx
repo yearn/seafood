@@ -118,7 +118,7 @@ export default function Powerstrip({className}: {className?: string}) {
 		<MenuItem key={0}>
 			<MenuLink 
 				link={{...links[0], label: syncStatus.message}} 
-				className={`text-xs ${syncStatus.hasErrors ? syncStatus.colors.text : ''}`} />
+				className={`text-xs ${syncStatus.hasWarnings ? syncStatus.colors.text : ''}`} />
 		</MenuItem>,
 		<MenuItem key={1}><MenuLink link={links[1]} /></MenuItem>,
 		<MenuItem key={2}><MenuLink link={links[2]} /></MenuItem>,

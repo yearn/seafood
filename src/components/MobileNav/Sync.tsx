@@ -7,40 +7,40 @@ import TimeAgo from '../controls/TimeAgo';
 export function useVaultStatusUI() {
 	const {loading, cachetime, status} = useVaults();
 
-	const hasErrors = useMemo(() => {
-		return status.some(s => s.status === 'error');
+	const hasWarnings = useMemo(() => {
+		return status.some(s => s.status === 'warning');
 	}, [status]);
 
 	const colors = useMemo(() => {
 		return {
 			text: loading 
 				? 'text-selected-500' 
-				: hasErrors ? 'text-attention-600 dark:text-attention-400' : 'text-primary-600 dark:text-primary-400',
+				: hasWarnings ? 'text-attention-600 dark:text-attention-400' : 'text-primary-600 dark:text-primary-400',
 			bg: loading 
 				? 'bg-selected-500' 
-				: hasErrors ? 'bg-attention-600 dark:bg-attention-400' : 'bg-primary-600 dark:bg-primary-400',
+				: hasWarnings ? 'bg-attention-600 dark:bg-attention-400' : 'bg-primary-600 dark:bg-primary-400',
 			hover: loading 
 				? ''
-				: hasErrors ? 'hover:bg-attention-400/20 hover:dark:bg-attention-400/20' : 'hover:bg-primary-200 hover:dark:bg-primary-400/20'
+				: hasWarnings ? 'hover:bg-attention-400/20 hover:dark:bg-attention-400/20' : 'hover:bg-primary-200 hover:dark:bg-primary-400/20'
 		};
-	}, [loading, hasErrors]);
+	}, [loading, hasWarnings]);
 
 	const message = useMemo(() => {
 		if(loading) return 'Syncing';
 		if(cachetime.getTime() > 0) {
-			if(!hasErrors) return <div>{'Synced '}<TimeAgo date={cachetime} /></div>;
-			if(hasErrors) return 'Synced with errors';
+			if(!hasWarnings) return <div>{'Synced '}<TimeAgo date={cachetime} /></div>;
+			if(hasWarnings) return 'Synced with warnings';
 		}
 		return '';
-	}, [loading, cachetime, hasErrors]);
+	}, [loading, cachetime, hasWarnings]);
 
-	return {message, colors, hasErrors};
+	return {message, colors, hasWarnings};
 }
 
 export default function Sync() {
 	const navigate = useNavigate();
 	const {loading, refresh} = useVaults();
-	const {message, colors, hasErrors} = useVaultStatusUI();
+	const {message, colors, hasWarnings} = useVaultStatusUI();
 
 	const cursor = useMemo(() => {
 		return loading ? 'cursor-default' : 'cursor-pointer';
@@ -75,10 +75,10 @@ export default function Sync() {
 			</>}
 
 			{!loading && <div>
-				{!hasErrors && <div className={`
+				{!hasWarnings && <div className={`
 					h-2 w-2 m-1
 					${colors.bg}`} />}
-				{hasErrors && <TiWarning className={`${colors.text} -m-[2px]`} />}
+				{hasWarnings && <TiWarning className={`${colors.text} -m-[2px]`} />}
 			</div>}
 		</div>
 	</div>;
