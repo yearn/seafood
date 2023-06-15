@@ -1,7 +1,7 @@
 # Seafood
 Yearn vault dashboard and simulator
 
-![mechafish-md](https://github.com/yearn/seafood/assets/89237203/194042b0-3637-432c-93b5-1a00629c2e92)
+![mechafish-md](https://github.com/yearn/seafood/assets/89237203/794251a0-6ef6-407a-a890-467e9a7b8225)
 
 - [Dev environment setup](#dev-environment-setup)
 - [Project structure](#project-structure)
