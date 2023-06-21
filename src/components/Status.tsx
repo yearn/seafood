@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo} from 'react';
 import {useVaults} from '../context/useVaults';
-import {SyncStatus} from '../context/useVaults/worker';
+import {SyncStatus} from '../context/useVaults/worker/index';
 import {getChain} from '../utils/utils';
 import TimeAgo from './controls/TimeAgo';
 import {useVaultStatusUI} from './MobileNav/Sync';

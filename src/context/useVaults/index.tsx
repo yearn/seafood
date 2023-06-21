@@ -1,14 +1,14 @@
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import * as Comlink from 'comlink';
-import * as ySeafood from './types';
-import {api, SyncStatus} from './worker';
+import * as Seafood from './types';
+import {api, SyncStatus} from './worker/index';
 import {hydrateBigNumbersRecursively} from '../../utils/utils';
 import useLocalStorage from 'use-local-storage';
 
 interface IVaultsContext {
 	loading: boolean,
 	cachetime: Date,
-	vaults: ySeafood.Vault[],
+	vaults: Seafood.Vault[],
 	status: SyncStatus[],
 	ytvl: number,
 	refresh: () => void
@@ -23,11 +23,11 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 	const [cachetime, setCachetime] = useLocalStorage<Date>('context/usevaults/cachetime', new Date(0), {
 		parser: str => new Date(JSON.parse(str))
 	});
-	const [vaults, setVaults] = useState<ySeafood.Vault[]>([]);
+	const [vaults, setVaults] = useState<Seafood.Vault[]>([]);
 	const [status, setStatus] = useState<SyncStatus[]>([]);
 
 	const worker = useMemo(() => {
-		const worker = new Worker(new URL('./worker.ts', import.meta.url));
+		const worker = new Worker(new URL('./worker/index.ts', import.meta.url));
 		return Comlink.wrap<typeof api>(worker);
 	}, []);
 
@@ -36,7 +36,7 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 			startRefresh: () => {
 				setLoading(true);
 			},
-			cacheReady: (date: Date, vaults: ySeafood.Vault[], status: SyncStatus[]) => {
+			cacheReady: (date: Date, vaults: Seafood.Vault[], status: SyncStatus[]) => {
 				hydrateBigNumbersRecursively(vaults);
 				setCachetime(date);
 				setLoading(false);

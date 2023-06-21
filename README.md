@@ -100,7 +100,7 @@ To give a unified, cross-chain view of Yearn's products, Seafood's primary data 
 - Execute multicalls on each network for any data yDaemon doesn't have yet
 - Merge results into one data structure
 
-This process requires network and cpu bandwidth large enough that it caused jank in the UI. To de-jank, Seafood moved this aggregation logic into a [web worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) decoupling aggregation overhead from the UI's thread.
+This process requires network and cpu bandwidth large enough that it caused jank in the UI. To de-jank, Seafood moved this aggregation logic into a [web worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) moving the overhead out of the UI thread.
 
 The aggregated data structure is stored in the browser's IndexDB and made available to the app through a hook called [useVaults](/src/context/useVaults). 
 
