@@ -45,7 +45,9 @@ router.get('/', async function(req, res) {
   if(!chainId) res.status(400).send('!chainId');
   if(!tradeFactory) res.status(400).send('!tradeFactory');
 
-  const rpc = `${process.env[`RPC_URI_FOR_${chainId}`]}`;
+  const rpcenvar = `RPC_URI_FOR_${chainId}`;
+  const rpc = `${process.env[rpcenvar]}`;
+  console.log('rpcenvar', rpcenvar);
   console.log('rpc', rpc);
   const provider = new ethers.providers.JsonRpcProvider(rpc);
   try {
