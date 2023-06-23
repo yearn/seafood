@@ -7,10 +7,10 @@ import {useVaultStatusUI} from './MobileNav/Sync';
 import {usePowertools} from './Powertools';
 
 function StatusLight() {
-	const {loading, refresh} = useVaults();
+	const {refreshing, refresh} = useVaults();
 	const {colors} = useVaultStatusUI();
 
-	if(loading) {
+	if(refreshing) {
 		return <div className={`
 			flex items-center justify-center`}>
 			<div className={`
@@ -76,7 +76,7 @@ export default function Status() {
 		return () => setEnable(true);
 	}, [setEnable]);
 
-	return <div className={'w-full pt-6 sm:pt-0 pb-16 flex items-center justify-center'}>
+	return <div className={'w-full pt-6 sm:pt-0 pb-24 flex items-center justify-center'}>
 		<div className={'w-full sm:w-1/2 px-4 flex flex-col gap-8'}>
 			<div className={'w-full h-32 flex items-center justify-center'}>
 				<div className={'w-auto sm:w-1/2 pl-4 pr-6 sm:px-0 sm:pr-16 flex items-center justify-end'}>
@@ -88,9 +88,9 @@ export default function Status() {
 				</div>
 			</div>
 			<Stage title={'yDaemon'} status={ydaemon} />
+			<Stage title={'TVLs'} status={tvls} />
 			<Stage title={'Multicalls'} status={multicall} />
 			<Stage title={'Rewards'} status={rewards} />
-			<Stage title={'TVLs'} status={tvls} />
 		</div>
 	</div>;
 }

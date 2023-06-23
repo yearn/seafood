@@ -199,8 +199,8 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						value={deployed.value} />
 				</div>
 			</Row>
-			<Row label={<div className={'w-1/3'}>{'Deposit limit'}</div>} alt={true}>
-				{vault.warnings?.some(w => w.key === 'noDepositLimit') && <div className={'w-1/3 text-xs text-center attention-text'}>
+			<Row label={<div className={'w-1/3 whitespace-nowrap'}>{'Deposit limit'}</div>} alt={true}>
+				{vault.warnings?.some(w => w.key === 'noDepositLimit') && <div className={'w-1/3 text-xxs text-center attention-text'}>
 					{'deposit limit = 0'}
 				</div>}
 				<Tokens 
@@ -209,7 +209,7 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 					className={'w-1/3'} />
 			</Row>
 			<Row label={<div className={'w-1/3'}>{'Strategies'}</div>}>
-				{vault.warnings?.some(w => w.key === 'noHealthCheck') && <div className={'w-1/3 text-xs text-center attention-text'}>
+				{vault.warnings?.some(w => w.key === 'noHealthCheck') && <div className={'w-1/3 text-xxs text-center attention-text whitespace-nowrap'}>
 					{'missing health check'}
 				</div>}
 				<Field value={vault.withdrawalQueue.length} className={'w-1/3'} />
@@ -227,7 +227,7 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 		<div className={'flex items-center gap-2'}>
 			<FavoriteButton vault={vault} selected={hasBlocks} className={'w-1/4 h-10 py-3 flex items-center justify-center'} />
 			<TileButton selected={hasBlocks} onClick={() => window.open(getAddressExplorer(vault.network.chainId, vault.address), '_blank', 'noreferrer')} 
-				className={'w-1/2 h-10 py-3 flex items-center justify-center font-mono text-sm'}>
+				className={'w-1/2 h-10 py-3 flex items-center justify-center text-sm'}>
 				{truncateAddress(vault.address)}
 			</TileButton>
 			<CopyButton clip={vault.address} selected={hasBlocks} className={'w-1/4 h-10 py-3 flex items-center justify-center'} />

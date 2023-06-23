@@ -6,7 +6,7 @@ import {hydrateBigNumbersRecursively} from '../../utils/utils';
 import useLocalStorage from 'use-local-storage';
 
 interface IVaultsContext {
-	loading: boolean,
+	refreshing: boolean,
 	cachetime: Date,
 	vaults: Seafood.Vault[],
 	status: SyncStatus[],
@@ -19,7 +19,7 @@ const	VaultsContext = createContext<IVaultsContext>({} as IVaultsContext);
 export const useVaults = () => useContext(VaultsContext);
 
 export default function VaultsProvider({children}: {children: ReactNode}) {
-	const [loading, setLoading] = useState(false);
+	const [refreshing, setRefreshing] = useState(false);
 	const [cachetime, setCachetime] = useLocalStorage<Date>('context/usevaults/cachetime', new Date(0), {
 		parser: str => new Date(JSON.parse(str))
 	});
@@ -34,14 +34,16 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 	const callbacks = useMemo(() => {
 		return {
 			startRefresh: () => {
-				setLoading(true);
+				setRefreshing(true);
 			},
-			cacheReady: (date: Date, vaults: Seafood.Vault[], status: SyncStatus[]) => {
+			cacheUpdate: (date: Date, vaults: Seafood.Vault[], status: SyncStatus[]) => {
 				hydrateBigNumbersRecursively(vaults);
 				setCachetime(date);
-				setLoading(false);
 				setVaults(vaults);
 				setStatus(status);
+			},
+			onRefreshed: () => {
+				setRefreshing(false);
 			}
 		};
 	}, [setCachetime]);
@@ -64,7 +66,7 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 	}, [vaults]);
 
 	return <VaultsContext.Provider value={{
-		loading,
+		refreshing,
 		cachetime,
 		vaults,
 		status,

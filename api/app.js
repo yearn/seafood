@@ -5,8 +5,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var testAPIRouter = require('./routes/testAPI');
 var getVaultsRouter = require('./routes/getVaults');
 var githubRouter = require('./routes/github');
 var visionRouter = require('./routes/vision');
@@ -27,8 +25,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/', indexRouter);
-app.use('/api/users', usersRouter);
-app.use('/api/testAPI', testAPIRouter);
 app.use('/api/getVaults', getVaultsRouter);
 app.use('/api/github', githubRouter);
 app.use('/api/vision', visionRouter);

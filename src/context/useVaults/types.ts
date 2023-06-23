@@ -153,7 +153,7 @@ export interface RiskReport {
 	tvl: number
 }
 
-export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: TVLHistory) : Vault {
+export function parseVault(vault: yDaemon.Vault, chain: Chain) : Vault {
 	return {
 		address: vault.address,
 		name: vault.name,
@@ -190,7 +190,7 @@ export function parseVault(vault: yDaemon.Vault, chain: Chain, tvls: TVLHistory)
 			[-30]: vault.apy.points.month_ago,
 			inception: vault.apy.points.inception
 		},
-		tvls,
+		tvls: {} as TVLHistory,
 		rewardsUsd: 0,
 		warnings: []
 	};

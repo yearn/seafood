@@ -29,7 +29,12 @@ module.exports = {
         'error': colors.red
       },
       fontFamily: {
-        'wordmark': ['Goldman']
+        'wordmark': ['JetBrains Mono'],
+        'mono': ['JetBrains Mono'],
+        'sans': ['JetBrains Mono']
+      },
+      fontSize: {
+        'xxs': '.62rem'
       },
       keyframes: {
         'slide-in-x': {

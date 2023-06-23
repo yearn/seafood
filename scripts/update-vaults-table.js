@@ -13,7 +13,7 @@ const format = require('pg-format');
 const Pool = require('pg').Pool;
 const pool = new Pool({
 	user: process.env.DB_USER,
-	host: '34.205.72.180',
+	host: process.env.DB_HOST,
 	database: 'reports',
 	password: process.env.DB_PASS,
 	port: 5432,

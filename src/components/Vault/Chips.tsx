@@ -4,6 +4,7 @@ import {A} from '../controls';
 import {getAddressExplorer, truncateAddress} from '../../utils/utils';
 import CopyButton from './CopyButton';
 import Yearn from './Yearn';
+import ScrollContainer from 'react-indiana-drag-scroll';
 
 function Chip({className, children}: {className: string, children: ReactNode}) {
 	return <div className={`
@@ -16,19 +17,21 @@ function Chip({className, children}: {className: string, children: ReactNode}) {
 }
 
 export default function Chips({vault}: {vault: Vault}) {
-	return <div className={'w-fit flex items-center justify-between gap-4 sm:gap-3'}>
-		<Chip className={`
-				bg-neutral-200/40 dark:bg-neutral-800/40
-				border border-neutral-200 dark:border-neutral-800
-				`}>{vault.version}</Chip>
-		<Chip className={`
-				bg-${vault.network.name}-40
-				border border-${vault.network.name}
-				`}>{vault.network.name}</Chip>
-		<A target={'_blank'} href={getAddressExplorer(vault.network.chainId, vault.address)} rel={'noreferrer'}>
-			{truncateAddress(vault.address)}
-		</A>
-		<CopyButton clip={vault.address}></CopyButton>
-		<Yearn vault={vault} />
-	</div>;
+	return <ScrollContainer className={'flex items-center w-full'}>
+		<div className={'w-fit flex items-center justify-between gap-4 sm:gap-3'}>
+			<Chip className={`
+					bg-neutral-200/40 dark:bg-neutral-800/40
+					border border-neutral-200 dark:border-neutral-800
+					`}>{vault.version}</Chip>
+			<Chip className={`
+					bg-${vault.network.name}-40
+					border border-${vault.network.name}
+					`}>{vault.network.name}</Chip>
+			<A target={'_blank'} href={getAddressExplorer(vault.network.chainId, vault.address)} rel={'noreferrer'}>
+				{truncateAddress(vault.address)}
+			</A>
+			<CopyButton clip={vault.address}></CopyButton>
+			<Yearn vault={vault} />
+		</div>
+	</ScrollContainer>;
 }

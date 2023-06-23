@@ -32,10 +32,10 @@ function Light({link}: {link: LinkInfo}) {
 }
 
 function StatusLight() {
-	const {loading, refresh} = useVaults();
+	const {refreshing, refresh} = useVaults();
 	const {colors} = useVaultStatusUI();
 
-	if(loading) {
+	if(refreshing) {
 		return <div className={`
 			h-[40px] flex items-center justify-start`}>
 			<div className={`
@@ -98,7 +98,7 @@ export default function Powerstrip({className}: {className?: string}) {
 		{to: '/risk', label: 'Risk', altPathPatterns: ['/risk/:group']},
 		{
 			onClick: profile ? logout : login,
-			label: !profile ? 'Login with Github' : <div className={'relative w-full flex items-center justify-between'}>
+			label: !profile ? 'Github Login' : <div className={'relative w-full flex items-center justify-between'}>
 				{'Logout'}
 				<img className={'w-8 h-8 -m-2'}
 					src={profile.avatar_url} 

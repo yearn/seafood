@@ -27,7 +27,8 @@ interface IStartOptions {
 
 interface ICallbacks {
 	startRefresh?: () => void,
-	cacheReady?: (date: Date, vaults: Seafood.Vault[], status: SyncStatus[]) => void
+	cacheUpdate?: (date: Date, vaults: Seafood.Vault[], status: SyncStatus[]) => void,
+	onRefreshed?: () => void
 }
 
 export interface SyncStatus {
@@ -62,13 +63,14 @@ function resetCache() {
 
 async function start(options: IStartOptions, callbacks?: ICallbacks) {
 	const {vaults, status} = await getVaultsAndStatus();
-	if(vaults.length > 0 && callbacks?.cacheReady) callbacks.cacheReady(new Date(), vaults, status);
+	if(vaults.length > 0 && callbacks?.cacheUpdate) callbacks.cacheUpdate(new Date(), vaults, status);
 	await refresh(callbacks);
 	setInterval(async () => {
 		await refresh(callbacks);
 	}, options.refreshInterval);
 }
 
+// refactor me 😖 ? might be changing soon actually..
 async function refresh(callbacks?: ICallbacks) {
 	if(callbacks?.startRefresh) callbacks.startRefresh();
 	resetCache();
@@ -87,8 +89,9 @@ async function refresh(callbacks?: ICallbacks) {
 	for(const [index, chain] of config.chains.entries()) {
 		latest.push(...(vaultverse[index] || []).map(vault => {
 			const current = snapshot.vaults.find(v => v.network.chainId === chain.id && v.address === vault.address);
-			const fresh = Seafood.parseVault(vault, chain, tvlUpdates[chain.id][vault.address]);
-			const update = deepMerge(current || Seafood.defaultVault, fresh) as Seafood.Vault;
+			const fresh = Seafood.parseVault(vault, chain);
+			const update = deepMerge(fresh, current || Seafood.defaultVault) as Seafood.Vault;
+			update.tvls = tvlUpdates[chain.id][vault.address];
 			return update;
 		}));
 	}
@@ -115,8 +118,8 @@ async function refresh(callbacks?: ICallbacks) {
 	
 		store.status.put(tvlStatus);
 	
-		if(callbacks?.cacheReady) {
-			callbacks.cacheReady(new Date(), latest, await getStore<SyncStatus[]>(db, 'status'));
+		if(callbacks?.cacheUpdate) {
+			callbacks.cacheUpdate(new Date(), latest, await getStore<SyncStatus[]>(db, 'status'));
 		}
 	
 		db.close();
@@ -167,8 +170,8 @@ async function refresh(callbacks?: ICallbacks) {
 			store.status.put(status);
 		}
 	
-		if(callbacks?.cacheReady) {
-			callbacks.cacheReady(new Date(), latest, await getStore<SyncStatus[]>(db, 'status'));
+		if(callbacks?.cacheUpdate) {
+			callbacks.cacheUpdate(new Date(), latest, await getStore<SyncStatus[]>(db, 'status'));
 		}
 	
 		db.close();
@@ -208,12 +211,16 @@ async function refresh(callbacks?: ICallbacks) {
 			store.status.put(status);
 		}
 	
-		if(callbacks?.cacheReady) {
-			callbacks.cacheReady(new Date(), latest, await getStore<SyncStatus[]>(db, 'status'));
+		if(callbacks?.cacheUpdate) {
+			callbacks.cacheUpdate(new Date(), latest, await getStore<SyncStatus[]>(db, 'status'));
 		}
 	
 		db.close();
 		console.log('sync rewards done');
+	}
+
+	if(callbacks?.onRefreshed) {
+		callbacks.onRefreshed();
 	}
 }
 

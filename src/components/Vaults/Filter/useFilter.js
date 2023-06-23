@@ -70,7 +70,7 @@ export function defaultChips() {
 		favorites: false,
 		curve: false,
 		factory: false,
-		tvlgtzero: true,
+		tvlgtzero: false,
 		v1: false,
 		v2: true
 	};

@@ -15,14 +15,14 @@ First get node installed. For an easy way to install a particular node version i
 
 1 - With NVM installed, install node 16 (or higher) and yarn
 ```console
-nvm install 16
+nvm install 16 # or later
 npm install -g yarn
 ```
 
 2 - Clone this repo, install dependencies
 ```console
-git clone git@github.com:yearn/dashboard_ui.git
-cd dashboard_ui
+git clone git@github.com:yearn/seafood.git
+cd seafood
 (yarn && cd api && yarn)
 ```
 
@@ -31,8 +31,9 @@ cd dashboard_ui
 cp env.example .env
 ```
 
-  - For minimum functionality, set these envars
+  - For harvest reports, set these envars
   ```
+  DB_HOST=
   DB_USER=
   DB_PASS=
   ```
@@ -57,6 +58,7 @@ cp env.example .env
 
 4 - Run the app
 ```console
+cd ~/git/seafood # or wherever you cloned it
 yarn start
 ```
 Open a browser at http://localhost:3000
@@ -64,27 +66,26 @@ Open a browser at http://localhost:3000
 
 ## Project structure
 ### backend
-`/api` - Resources for serving Seafood's backend api.\
-`/api/routes/vision` - Facades over Yearn's vision api.\
-`/api/routes/abi` - Smart contract abis with a twist of cache.\
-`/api/routes/getVaults` - Vault and strategy related data. (obsoleting)\
-`/api/routes/github` - Generate GitHub bearer tokens for Seafood users.\
-`/api/routes/tenderly` - Generate Tenderly simulation forks.\
+`/api` - Resources for serving Seafood's backend api \
+`/api/routes/vision` - Facades over Yearn's vision api \
+`/api/routes/abi` - Smart contract abis with a twist of cache \
+`/api/routes/getVaults` - Vault and strategy related data. (obsoleting) \
+`/api/routes/github` - Generate GitHub bearer tokens for Seafood users \
+`/api/routes/tenderly` - Generate Tenderly simulation forks \
 `/api/routes/tradeables` - List tradeable erc20s for a given trade handler
 
 ### frontend
-`/public` - Static files.\
-`/scripts` - Various helper scripts used during dev. (obsoleting)\
-`/src` - Resources for building Seafood's frontend.\
-`/src/abi` - Some static abis that are needed by Seafood and some that..aren't 👀\
-`/src/math` - Logic for computing APY and APR on demand.\
-`/src/components` - Most of Seafood's React components go here\
-`/src/components/controls` - Specifically, common UI controls live here.\
-`/src/context` - Seafood's React hooks live here. So why call it `context`?\
-`/src/ethereum` - Various utilities for querying RPCs. (obsoleting)\
-`/src/pages` - Maybe this was a Nextjs project once? (obsoleting)\
-`/src/utils` - Various utilities that seemed happiest in a folder called `utils` 😁\
-`/src/config.json` - This was a more convenient way to configure previous versions of Seafood. It moves to envars eventually.
+`/public` - Static files \
+`/scripts` - Help scripts used in dev \
+`/src` - Resources for building Seafood's frontend \
+`/src/abi` - Some static abis that are needed by Seafood and some that..aren't 👀 \
+`/src/math` - Logic for computing APY and APR on demand \
+`/src/components` - Most of Seafood's React components go here \
+`/src/components/controls` - Specifically, common UI controls live here \
+`/src/context` - Seafood's React hooks live here. So why call it `context`? \
+`/src/ethereum` - Various utilities for querying RPCs. (obsoleting) \
+`/src/utils` - Various utilities that seemed happiest in a folder called `utils` 😁 \
+`/src/config.json` - This was a more convenient way to configure previous versions of Seafood. It moves to envars eventually
 
 
 ## Data access strategy

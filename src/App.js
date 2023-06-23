@@ -21,7 +21,7 @@ import SimulatorProvider from './context/useSimulator';
 import {PowertoolsProvider} from './components/Powertools';
 import {FilterProvider as VaultsFilterProvider} from './components/Vaults/Filter/useFilter';
 import {FilterProvider as RiskFilterProvider} from './components/Risk/Filter/Provider';
-import Loading from './components/Loading';
+import {Spinner} from './components/controls';
 
 const Providers = NestProviders([
 	[RPCProviderContextApp],
@@ -40,9 +40,11 @@ const Providers = NestProviders([
 ]);
 
 function Router() {
-	const {loading, vaults} = useVaults();
+	const {refreshing, vaults} = useVaults();
 
-	if(loading && vaults.length === 0) return <Loading />;
+	if(refreshing && vaults.length === 0) return <div className={'w-full h-full flex items-center justify-center'}>
+		<Spinner />
+	</div>;
 
 	return <Routes>
 		<Route path={'/'} exact={true} element={<Vaults />} />

@@ -1,7 +1,12 @@
 const Pool = require('pg').Pool;
+
+if(!process.env.DB_HOST) console.error('!DB_HOST')
+if(!process.env.DB_USER) console.error('!DB_USER')
+if(!process.env.DB_PASS) console.error('!DB_PASS')
+
 const pool = new Pool({
 	user: process.env.DB_USER,
-	host: '34.205.72.180',
+	host: process.env.DB_HOST,
 	database: 'reports',
 	password: process.env.DB_PASS,
 	port: 5432,
