@@ -40,10 +40,10 @@ const Providers = NestProviders([
 ]);
 
 function Router() {
-	const {refreshing, vaults} = useVaults();
+	const {vaults} = useVaults();
 
-	if(refreshing && vaults.length === 0) return <div className={'w-full h-full flex items-center justify-center'}>
-		<Spinner />
+	if(vaults.length === 0) return <div className={'w-full h-full flex items-center justify-center'}>
+		<Spinner size={16} bloom={20} />
 	</div>;
 
 	return <Routes>

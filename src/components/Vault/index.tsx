@@ -40,7 +40,7 @@ function Layout() {
 
 	if(!vault) return <div className={`
 		fixed inset-0 w-full h-screen flex items-center justify-center`}>
-		<Spinner />
+		<Spinner size={16} bloom={20} />
 	</div>;
 
 	if(mediumBreakpoint) return <div className={'relative w-full'}>

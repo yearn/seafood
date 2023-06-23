@@ -66,9 +66,7 @@ export default function Button({
 
 		{!busy && label}
 
-		{busy && <Spinner 
-			width={'1.5rem'}
-			height={'1.5rem'} />}
+		{busy && <Spinner size={2} bloom={4} />}
 
 		<AnimatePresence initial={false}>
 			{badge && <motion.div

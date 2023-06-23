@@ -1,12 +1,12 @@
 import React, {useEffect, useMemo} from 'react';
 import {useVaults} from '../context/useVaults';
-import {SyncStatus} from '../context/useVaults/worker/index';
+import {RefreshStatus} from '../context/useVaults/worker/index';
 import {getChain} from '../utils/utils';
 import TimeAgo from './controls/TimeAgo';
 import {useVaultStatusUI} from './MobileNav/Sync';
 import {usePowertools} from './Powertools';
 
-function StatusLight() {
+function StatusLight({size, bloom}: {size: number, bloom: number}) {
 	const {refreshing, refresh} = useVaults();
 	const {colors} = useVaultStatusUI();
 
@@ -14,46 +14,58 @@ function StatusLight() {
 		return <div className={`
 			flex items-center justify-center`}>
 			<div className={`
-				absolute h-24 w-24
+				absolute h-${bloom} w-${bloom}
 				opacity-75 animate-ping
 				${colors.bg}`} />
-			<div className={`
-				h-20 w-20
-				${colors.bg}`} />
+			<div className={`h-${size} w-${size} ${colors.bg}`} />
 		</div>;
 	}
 
 	return <div onClick={refresh} className={'flex items-center justify-center cursor-pointer'}>
-		<div className={`h-20 w-20 ${colors.bg}`}></div>
+		<div className={`h-${size} w-${size} ${colors.bg}`}></div>
 	</div>;
 }
 
-function ListItem({status, className} : {status: SyncStatus, className: string}) {
+function ListItem({status, className} : {status: RefreshStatus, className: string}) {
 	const chain = useMemo(() => {
 		if(status.chain === 'all') return 'all chains';
 		return getChain(status.chain).name;
 	}, [status]);
 
-	const colors = useMemo(() => ({
-		text: status.status === 'ok' ? 'text-primary-600 dark:text-primary-400' : 'text-attention-600 dark:text-attention-400',
-		bg: status.status === 'ok' ? 'bg-primary-400/20' : 'bg-attention-400/20'
-	}), [status]);
+	const colors = useMemo(() => {
+		switch(status.status) {
+		case 'refreshing': return {
+			text: 'text-selected-600 dark:text-selected-400',
+			bg: 'bg-selected-400/20'
+		};
+		case 'warning': return {
+			text: 'text-attention-600 dark:text-attention-400',
+			bg: 'bg-attention-400/20'
+		};
+		default: return {
+			text: 'text-primary-600 dark:text-primary-400',
+			bg: 'bg-primary-400/20'
+		};}
+	}, [status]);
 
 	return <li className={`w-full pl-2 py-1 flex flex-grid grid-cols-3 justify-between gap-4 ${className}`}>
 		<div className={`w-32 ${colors.text}`}>{chain}</div>
-		<div className={`w-48 ${colors.text}`}><TimeAgo date={status.timestamp} /></div>
+		<div className={`w-48 ${colors.text}`}>
+			{status.status === 'refreshing' ? <>{'syncing'}</> : <TimeAgo date={status.timestamp} />}
+			
+		</div>
 		<div 
-			title={status.status === 'ok' ? '' : (status.error as object).toString()} 
+			title={status.status === 'warning' ? (status.error as object).toString() : ''} 
 			onClick={() => {if(status.error) console.log(status.error);}}
 			className={`
 			w-24 flex items-center justify-center
 			${colors.bg} ${colors.text}`}>
-			{status.status}
+			{status.status === 'refreshing' ? <StatusLight size={2} bloom={4} /> : status.status}
 		</div>
 	</li>;
 }
 
-function Stage({title, status}: {title: string, status: SyncStatus[]}) {
+function Stage({title, status}: {title: string, status: RefreshStatus[]}) {
 	return <div>
 		<h2 className={'text-2xl'}>{title}</h2>
 		<ul className={'w-full flex flex-col gap-2'}>
@@ -80,7 +92,7 @@ export default function Status() {
 		<div className={'w-full sm:w-1/2 px-4 flex flex-col gap-8'}>
 			<div className={'w-full h-32 flex items-center justify-center'}>
 				<div className={'w-auto sm:w-1/2 pl-4 pr-6 sm:px-0 sm:pr-16 flex items-center justify-end'}>
-					<StatusLight />
+					<StatusLight size={20} bloom={24} />
 				</div>
 				<div className={'grow sm:w-1/2'}>
 					<div className={'font-bold'}>{'Seafood Data Sync'}</div>

@@ -1,7 +1,7 @@
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import * as Comlink from 'comlink';
 import * as Seafood from './types';
-import {api, SyncStatus} from './worker/index';
+import {api, RefreshStatus} from './worker/index';
 import {hydrateBigNumbersRecursively} from '../../utils/utils';
 import useLocalStorage from 'use-local-storage';
 
@@ -9,7 +9,7 @@ interface IVaultsContext {
 	refreshing: boolean,
 	cachetime: Date,
 	vaults: Seafood.Vault[],
-	status: SyncStatus[],
+	status: RefreshStatus[],
 	ytvl: number,
 	refresh: () => void
 }
@@ -24,7 +24,7 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 		parser: str => new Date(JSON.parse(str))
 	});
 	const [vaults, setVaults] = useState<Seafood.Vault[]>([]);
-	const [status, setStatus] = useState<SyncStatus[]>([]);
+	const [status, setStatus] = useState<RefreshStatus[]>([]);
 
 	const worker = useMemo(() => {
 		const worker = new Worker(new URL('./worker/index.ts', import.meta.url));
@@ -36,13 +36,15 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 			startRefresh: () => {
 				setRefreshing(true);
 			},
-			cacheUpdate: (date: Date, vaults: Seafood.Vault[], status: SyncStatus[]) => {
-				hydrateBigNumbersRecursively(vaults);
-				setCachetime(date);
-				setVaults(vaults);
+			statusUpdate: (status: RefreshStatus[]) => {
 				setStatus(status);
 			},
-			onRefreshed: () => {
+			cacheUpdate: (vaults: Seafood.Vault[]) => {
+				hydrateBigNumbersRecursively(vaults);
+				setVaults(vaults);
+			},
+			onRefreshed: (date: Date) => {
+				setCachetime(date);
 				setRefreshing(false);
 			}
 		};

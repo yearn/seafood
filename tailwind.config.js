@@ -11,6 +11,8 @@ function heightSafeList() {
 module.exports = {
   content: ['./src/**/*.{html,js,ts,tsx}'],
   safelist: [
+    'h-20', 'w-20',
+    'h-24', 'w-24',
     'sm:h-14',
     'bg-stripes',
     'bg-stripes-black',

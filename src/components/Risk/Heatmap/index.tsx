@@ -13,7 +13,7 @@ export default function Heatamp() {
 
 	if(!available) return <div className={`
 		absolute inset-0 flex items-center justify-center`}>
-		<Spinner />
+		<Spinner size={16} bloom={20} />
 	</div>;
 
 	return <>

@@ -25,16 +25,6 @@
 			]
 		},
 		{
-			"id": 250,
-			"name": "fantom",
-			"explorer": "https://ftmscan.com",
-			"explorerApi": "https://api.ftmscan.com",
-			"registry": "0x727fe1759430df13655ddb0731dE0D0FDE929b04",
-			"providers": [
-				"https://rpc.ankr.com/fantom"
-			]
-		},
-		{
 			"id": 10,
 			"name": "optimism",
 			"explorer": "https://optimistic.etherscan.io",
@@ -42,6 +32,16 @@
 			"registry": "0x1ba4eB0F44AB82541E56669e18972b0d6037dfE0",
 			"providers": [
 				"https://rpc.ankr.com/optimism"
+			]
+		},
+		{
+			"id": 250,
+			"name": "fantom",
+			"explorer": "https://ftmscan.com",
+			"explorerApi": "https://api.ftmscan.com",
+			"registry": "0x727fe1759430df13655ddb0731dE0D0FDE929b04",
+			"providers": [
+				"https://rpc.ankr.com/fantom"
 			]
 		},
 		{

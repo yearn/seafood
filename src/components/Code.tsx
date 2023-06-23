@@ -222,7 +222,7 @@ export default function Code({blocks}: {blocks: Block[]}) {
 	}, [gh, linesOfCode, sms, nextBranchName, commitMessage]);
 
 	if(busy) return <div className={'w-full h-full flex items-center justify-center'}>
-		<Spinner width={'3rem'} height={'3rem'}></Spinner>
+		<Spinner size={16} bloom={20}></Spinner>
 	</div>;
 
 	return <div className={'relative w-full h-full'}>

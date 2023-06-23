@@ -27,12 +27,13 @@ interface IStartOptions {
 
 interface ICallbacks {
 	startRefresh?: () => void,
-	cacheUpdate?: (date: Date, vaults: Seafood.Vault[], status: SyncStatus[]) => void,
-	onRefreshed?: () => void
+	statusUpdate?: (status: RefreshStatus[]) => void,
+	cacheUpdate?: (vaults: Seafood.Vault[]) => void,
+	onRefreshed?: (date: Date) => void
 }
 
-export interface SyncStatus {
-	status: 'ok' | 'warning'
+export interface RefreshStatus {
+	status: 'refreshing' | 'ok' | 'warning'
 	stage: 'ydaemon' | 'multicall' | 'tvls' | 'rewards',
 	chain: number | 'all',
 	error?: unknown,
@@ -63,8 +64,13 @@ function resetCache() {
 
 async function start(options: IStartOptions, callbacks?: ICallbacks) {
 	const {vaults, status} = await getVaultsAndStatus();
-	if(vaults.length > 0 && callbacks?.cacheUpdate) callbacks.cacheUpdate(new Date(), vaults, status);
+	if(vaults.length > 0 && callbacks) {
+		callbacks.statusUpdate && callbacks.statusUpdate(status);
+		callbacks.cacheUpdate && callbacks.cacheUpdate(vaults);
+	}
+
 	await refresh(callbacks);
+
 	setInterval(async () => {
 		await refresh(callbacks);
 	}, options.refreshInterval);
@@ -76,58 +82,30 @@ async function refresh(callbacks?: ICallbacks) {
 	resetCache();
 
 	const latest = [] as Seafood.Vault[];
-	let db = await openDb();
-	const snapshot = {
-		vaults: await getStore<Seafood.Vault[]>(db, 'vaults')
-	};
-	db.close();
+	const currentVaults = await getAll<Seafood.Vault[]>('vaults');
 
-	// get fast data from ydaemon and yvision
-	const {result: vaultverse, status: vaultStatus} = await fetchVaultverse();
-	const {result: tvlUpdates, status: tvlStatus} = await fetchTvlUpdates();
+	// fetch fast data
+	const vaultverse = await fetchVaultverse(callbacks);
+	const tvlUpdates = await fetchTvlUpdates(callbacks);
 
 	for(const [index, chain] of config.chains.entries()) {
 		latest.push(...(vaultverse[index] || []).map(vault => {
-			const current = snapshot.vaults.find(v => v.network.chainId === chain.id && v.address === vault.address);
+			const current = currentVaults.find(v => v.network.chainId === chain.id && v.address === vault.address);
 			const fresh = Seafood.parseVault(vault, chain);
 			const update = deepMerge(fresh, current || Seafood.defaultVault) as Seafood.Vault;
 			update.tvls = tvlUpdates[chain.id][vault.address];
 			return update;
 		}));
 	}
+
 	sort(latest);
 	hydrateBigNumbersRecursively(latest);
 	markupWarnings(latest);
 	aggregateRiskGroupTvls(latest);
+	await putVaults(latest);
 
-	{
-		db = await openDb();
-
-		const store = {
-			vaults: db.transaction('vaults', 'readwrite').objectStore('vaults'),
-			status: db.transaction('status', 'readwrite').objectStore('status')
-		};
-	
-		for(const vault of latest) {
-			store.vaults.put(vault);
-		}
-	
-		for(const status of vaultStatus) {
-			store.status.put(status);
-		}
-	
-		store.status.put(tvlStatus);
-	
-		if(callbacks?.cacheUpdate) {
-			callbacks.cacheUpdate(new Date(), latest, await getStore<SyncStatus[]>(db, 'status'));
-		}
-	
-		db.close();
-		console.log('sync fast sources done');
-	}
-
-	// get multicall data
-	const {result: multicallUpdates, status: multicallStatus} = await fetchMulticallUpdates(vaultverse);
+	// fetch multicalls
+	const multicallUpdates = await fetchMulticallUpdates(vaultverse, callbacks);
 	const strategies = latest.map(vault => vault.withdrawalQueue).flat();
 	for(const update of multicallUpdates) {
 		if(update.type === 'vault') {
@@ -153,33 +131,10 @@ async function refresh(callbacks?: ICallbacks) {
 			}
 		}
 	}
+	await putVaults(latest);
 
-	{
-		db = await openDb();
-
-		const store = {
-			vaults: db.transaction('vaults', 'readwrite').objectStore('vaults'),
-			status: db.transaction('status', 'readwrite').objectStore('status')
-		};
-	
-		for(const vault of latest) {
-			store.vaults.put(vault);
-		}
-	
-		for(const status of multicallStatus) {
-			store.status.put(status);
-		}
-	
-		if(callbacks?.cacheUpdate) {
-			callbacks.cacheUpdate(new Date(), latest, await getStore<SyncStatus[]>(db, 'status'));
-		}
-	
-		db.close();
-		console.log('sync multicalls done');
-	}
-
-	// get rewards data
-	const {result: strategyRewardsUpdates, status: rewardsStatus} = await fetchRewardsUpdates(multicallUpdates);
+	// fetch rewards
+	const strategyRewardsUpdates = await fetchRewardsUpdates(multicallUpdates, callbacks);
 	for(const [index, chain] of config.chains.entries()) {
 		const rewardsUpdates = strategyRewardsUpdates[index];
 		rewardsUpdates.forEach(update => {
@@ -194,49 +149,26 @@ async function refresh(callbacks?: ICallbacks) {
 				.reduce((acc, reward) => acc + reward?.amountUsd, 0);
 		});
 	}
-
-	{
-		db = await openDb();
-
-		const store = {
-			vaults: db.transaction('vaults', 'readwrite').objectStore('vaults'),
-			status: db.transaction('status', 'readwrite').objectStore('status')
-		};
-	
-		for(const vault of latest) {
-			store.vaults.put(vault);
-		}
-	
-		for(const status of rewardsStatus) {
-			store.status.put(status);
-		}
-	
-		if(callbacks?.cacheUpdate) {
-			callbacks.cacheUpdate(new Date(), latest, await getStore<SyncStatus[]>(db, 'status'));
-		}
-	
-		db.close();
-		console.log('sync rewards done');
-	}
+	await putVaults(latest);
 
 	if(callbacks?.onRefreshed) {
-		callbacks.onRefreshed();
+		callbacks.onRefreshed(new Date());
 	}
 }
 
 async function getVaultsAndStatus() {
 	const db = await openDb();
-	const vaults = await getStore<Seafood.Vault[]>(db, 'vaults');
-	const status = await getStore<SyncStatus[]>(db, 'status');
+	const vaults = await getAll<Seafood.Vault[]>('vaults', db);
+	const status = await getAll<RefreshStatus[]>('status', db);
 	db.close();
 	sort(vaults);
 	return {vaults, status};
 }
 
-async function getStore<T>(db: IDBDatabase | null, storeName: string) {
+async function getAll<T>(storeName: string, db?: IDBDatabase | undefined) {
 	return new Promise<T>(async (resolve, reject) => {
 		const closeDb = db === null ? true : false;
-		if(db === null) db = await openDb();
+		if(!db) db = await openDb();
 		const store = db.transaction(storeName, 'readonly').objectStore(storeName);
 		const request = store.getAll();
 		request.onerror = (e: Event) => reject(e);
@@ -245,6 +177,13 @@ async function getStore<T>(db: IDBDatabase | null, storeName: string) {
 			resolve(request.result as T);
 		};
 	});
+}
+
+async function putVaults(vaults: Seafood.Vault[]) {
+	const db = await openDb();
+	const store = db.transaction('vaults', 'readwrite').objectStore('vaults');
+	for(const vault of vaults) store.put(vault);
+	db.close();
 }
 
 async function sort(vaults: Seafood.Vault[]) {
@@ -294,18 +233,30 @@ function waitForAllTransactions(db: IDBDatabase): Promise<void> {
 	});
 }
 
-async function fetchVaultverse() : Promise<{result: yDaemon.Vault[][], status: SyncStatus[]}> {
-	const result = [], status = [];
+async function putStatus(status: RefreshStatus, callbacks?: ICallbacks) { 
+	const db = await openDb();
+	const store = db.transaction('status', 'readwrite').objectStore('status');
+	store.put(status);
+	if(callbacks?.statusUpdate) {
+		callbacks.statusUpdate(await getAll<RefreshStatus[]>('status', db));
+	}
+	db.close();
+}
+
+async function fetchVaultverse(callbacks?: ICallbacks) : Promise<yDaemon.Vault[][]> {
+	const result = [];
 	for(const chain of config.chains) {
+		const status = {status: 'refreshing', stage: 'ydaemon', chain: chain.id, timestamp: Date.now()} as RefreshStatus;
+		await putStatus(status, callbacks);
 		const request = `${config.ydaemon.url}/${chain.id}/vaults/all?strategiesCondition=all&strategiesDetails=withDetails&strategiesRisk=withRisk`;
 		try {
 			result.push(await (await fetch(request)).json());
-			status.push({status: 'ok', stage: 'ydaemon', chain: chain.id, timestamp: Date.now()} as SyncStatus);
+			await putStatus({...status, status: 'ok', timestamp: Date.now()}, callbacks);
 		} catch(error) {
-			status.push({status: 'warning', stage: 'ydaemon', chain: chain.id, error, timestamp: Date.now()} as SyncStatus);
+			await putStatus({...status, status: 'warning', error, timestamp: Date.now()}, callbacks);
 		}
 	}
-	return {result, status};
+	return result;
 }
 
 interface VaultMulticallUpdate {
@@ -335,22 +286,27 @@ interface StrategyRewardsUpdate {
 	rewards: Seafood.Reward[]
 }
 
-async function fetchMulticallUpdates(vaultverse: yDaemon.Vault[][]) {
-	const result = [], status = [];
+async function fetchMulticallUpdates(vaultverse: yDaemon.Vault[][], callbacks?: ICallbacks) {
+	const result = [];
 	for(const [index, chain] of config.chains.entries()) {
+		const status = {status: 'refreshing', stage: 'multicall', chain: chain.id, timestamp: Date.now()} as RefreshStatus;
+		await putStatus(status, callbacks);
+
 		const vaults = vaultverse[index];
 		const multicall = new Multicall({ethersProvider: providerFor(chain), tryAggregate: true});
 		const promises = [] as Promise<VaultMulticallUpdate[] | StrategyMulticallUpdate[]>[];
+
 		try {
 			promises.push(...await createVaultMulticalls(vaults, chain, multicall));
 			promises.push(...await createStrategyMulticalls(vaults, chain, multicall));
 			result.push(...(await Promise.all(promises)).flat());
-			status.push({status: 'ok', stage: 'multicall', chain: chain.id, timestamp: Date.now()} as SyncStatus);
+			await putStatus({...status, status: 'ok', timestamp: Date.now()}, callbacks);
 		} catch(error) {
-			status.push({status: 'warning', stage: 'multicall', chain: chain.id, error, timestamp: Date.now()} as SyncStatus);
+			await putStatus({...status, status: 'warning', error, timestamp: Date.now()}, callbacks);
 		}
 	}
-	return {result, status};
+
+	return result;
 }
 
 function providerFor(chain: Seafood.Chain) {
@@ -475,17 +431,16 @@ interface TVLUpdates {
 	}
 }
 
-async function fetchTvlUpdates() : Promise<{result: TVLUpdates, status: SyncStatus}> {
+async function fetchTvlUpdates(callbacks?: ICallbacks) : Promise<TVLUpdates> {
+	const status = {status: 'refreshing', stage: 'tvls', chain: 'all', timestamp: Date.now()} as RefreshStatus;
+	await putStatus(status, callbacks);
 	try {
-		return  {
-			result: await (await fetch('/api/vision/tvls')).json(),
-			status: {status: 'ok', stage: 'tvls', chain: 'all', timestamp: Date.now()}
-		};
+		const result = await (await fetch('/api/vision/tvls')).json() as TVLUpdates;
+		await putStatus({...status, status: 'ok', timestamp: Date.now()}, callbacks);
+		return result;
 	} catch(error) {
-		return  {
-			result: [],
-			status: {status: 'warning', stage: 'tvls', chain: 'all', error, timestamp: Date.now()}
-		};
+		await putStatus({...status, status: 'warning', error, timestamp: Date.now()}, callbacks);
+		return [];
 	}
 }
 
@@ -508,20 +463,22 @@ async function getPrice(token: string, chain: Seafood.Chain) {
 	return price;
 }
 
-async function fetchRewardsUpdates(multicallUpdates: (VaultMulticallUpdate|StrategyMulticallUpdate)[]) 
-: Promise<{result: StrategyRewardsUpdate[][], status: SyncStatus[]}> {
-	const result = [] as StrategyRewardsUpdate[][], status = [] as SyncStatus[];
+async function fetchRewardsUpdates(multicallUpdates: (VaultMulticallUpdate|StrategyMulticallUpdate)[], callbacks?: ICallbacks) 
+: Promise<StrategyRewardsUpdate[][]> {
+	const result = [] as StrategyRewardsUpdate[][];
 	for(const chain of config.chains) {
+		const status = {status: 'refreshing', stage: 'rewards', chain: chain.id, timestamp: Date.now()} as RefreshStatus;
+		await putStatus(status, callbacks);
 		try {
 			const updates = await fetchRewards(multicallUpdates, chain);
 			result.push(updates);
-			status.push({status: 'ok', stage: 'rewards', chain: chain.id, timestamp: Date.now()} as SyncStatus);
+			await putStatus({...status, status: 'ok', timestamp: Date.now()}, callbacks);
 		} catch(error) {
 			result.push([]);
-			status.push({status: 'warning', stage: 'rewards', chain: chain.id, error, timestamp: Date.now()} as SyncStatus);
+			await putStatus({...status, status: 'warning', error, timestamp: Date.now()}, callbacks);
 		}
 	}
-	return {result, status};
+	return result;
 }
 
 async function fetchRewards(multicallUpdates: (VaultMulticallUpdate|StrategyMulticallUpdate)[], chain: Seafood.Chain) {

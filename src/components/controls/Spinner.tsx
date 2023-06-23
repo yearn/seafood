@@ -1,14 +1,12 @@
 import React from 'react';
-import {Triangle} from 'react-loader-spinner';
-import colors from 'tailwindcss/colors';
-import {useChrome} from '../Chrome';
 
-export default function Spinner({width, height}: {width?: string, height?: string}) {
-	const {darkMode} = useChrome();
-	return <Triangle
-		width={width}
-		height={height}
-		color={darkMode ? colors.pink[400] : colors.pink[400]}
-		ariaLabel={'triangle-loading'}
-		visible={true} />;
+export default function Spinner({size, bloom}: {size: number, bloom: number}) {
+	return <div className={`
+		flex items-center justify-center`}>
+		<div className={`
+			absolute h-${bloom} w-${bloom}
+			opacity-75 animate-ping
+			bg-selected-500`} />
+		<div className={`h-${size} w-${size} bg-selected-500`} />
+	</div>;
 }
