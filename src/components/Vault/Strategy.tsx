@@ -292,7 +292,8 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 						<Tokens
 							simulated={estimatedTotalAssets.simulated}
 							value={estimatedTotalAssets.value} 
-							decimals={vault?.token.decimals} 
+							decimals={vault?.token.decimals}
+							animate={true}
 							className={'text-xl'} />
 					</div>
 				</Row>
@@ -305,7 +306,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 							sign={true}
 							format={'(%s)'}
 							className={'text-xs'} />}
-						<Percentage simulated={realRatio.simulated} value={realRatio.value} />
+						<Percentage simulated={realRatio.simulated} value={realRatio.value} animate={true} />
 					</div>
 				</Row>
 

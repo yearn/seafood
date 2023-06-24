@@ -14,7 +14,7 @@ export default function Risk() {
 	const footerContainer = useRef<HTMLDivElement>(null);
 	const {overpassClassName, showOverpassClassName} = useChrome();
 	const mediumBreakpoint = useMediumBreakpoint();
-	const {setLeftPanel, setBottomPanel, setShowSimulator} = usePowertools();
+	const {setLeftPanelKey, setLeftPanel, setBottomPanel, setShowSimulator} = usePowertools();
 
 	const onScrollHeatmap = useCallback(() => {
 		if(!headerContainer.current || !heatmapContainer.current || !footerContainer.current) return;
@@ -30,6 +30,7 @@ export default function Risk() {
 
 	useEffect(() => {
 		if(!mediumBreakpoint) return;
+		setLeftPanelKey('risk-filter');
 		setLeftPanel(<Filter />);
 		setBottomPanel(header);
 		setShowSimulator(false);
@@ -37,7 +38,7 @@ export default function Risk() {
 			setBottomPanel(undefined);
 			setShowSimulator(true);
 		};
-	}, [mediumBreakpoint, setLeftPanel, setBottomPanel, header, setShowSimulator]);
+	}, [mediumBreakpoint, setLeftPanelKey, setLeftPanel, setBottomPanel, header, setShowSimulator]);
 
 	if(mediumBreakpoint) return <div className={'relative w-full h-full pb-20'}>
 		<div className={'flex flex-col gap-1'}>

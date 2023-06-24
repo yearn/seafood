@@ -153,13 +153,15 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						compact={true}
 						sign={true}
 						format={'(%s)'}
+						animate={true}
 						className={'text-xs'} />}
 					<Number
 						value={tvl.value}
 						simulated={tvl.simulated}
 						decimals={2}
 						nonFinite={'No TVL'}
-						compact={true} />
+						compact={true} 
+						animate={true} />
 				</div>
 			</Row>
 			<Row label={'APY'}>
@@ -169,8 +171,9 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						value={apy.delta}
 						sign={true}
 						format={'(%s)'}
+						animate={true}
 						className={'text-xs'} />}
-					<Percentage simulated={apy.simulated} value={apy.value} />
+					<Percentage simulated={apy.simulated} value={apy.value} animate={true} />
 				</div>
 			</Row>
 			<Row label={'Allocated'} alt={true}>
@@ -180,10 +183,12 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						value={vaultDebtRatio.delta / 10_000}
 						sign={true}
 						format={'(%s)'}
+						animate={true}
 						className={'text-xs'} />}
 					<Percentage
 						simulated={vaultDebtRatio.simulated} 
-						value={vaultDebtRatio.value / 10_000} />
+						value={vaultDebtRatio.value / 10_000}
+						animate={true} />
 				</div>
 			</Row>
 			<Row label={'Deployed'}>
@@ -193,10 +198,12 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						value={deployed.delta}
 						sign={true}
 						format={'(%s)'}
-						className={'text-xs'} />}
+						className={'text-xs'}
+						animate={true} />}
 					<Percentage
 						simulated={deployed.simulated}
-						value={deployed.value} />
+						value={deployed.value}
+						animate={true} />
 				</div>
 			</Row>
 			<Row label={<div className={'w-1/3 whitespace-nowrap'}>{'Deposit limit'}</div>} alt={true}>
@@ -217,7 +224,8 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 			<Row label={'Rewards (USD)'} alt={true}>
 				<div className={'flex items-center gap-2'}>
 					<Number
-						simulated={false} 
+						simulated={false}
+						animate={true}
 						value={vault.rewardsUsd || 0}
 						compact={true}
 						decimals={2} />

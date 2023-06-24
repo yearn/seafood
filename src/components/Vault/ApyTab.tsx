@@ -9,9 +9,8 @@ import useLocalStorage from '../../utils/useLocalStorage';
 import {Row, Switch} from '../controls';
 import {BsLightningChargeFill} from 'react-icons/bs';
 import {BiBadgeCheck} from 'react-icons/bi';
-import {formatPercent} from '../../utils/utils';
 import {computeDegradationTime} from '../../utils/vaults';
-import {Bps} from '../controls/Fields';
+import {Bps, Percentage} from '../controls/Fields';
 
 dayjs.extend(duration);
 
@@ -59,53 +58,49 @@ export default function ApyTab({vault}: {vault: Vault}) {
 
 		<Row label={'Gross'} alt={true} heading={true}>
 			<div className={'w-3/4 grid grid-cols-3'}>
-				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy.gross, 4, '--')}</div>}
-				{!liveApy && <div className={'font-mono text-right'}>{formatPercent(vault?.apy.gross, 4)}</div>}
-				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy.gross, 4, '--')}</div>
-				<Bps value={apyDelta?.gross || 0} simulated={true} sign={true} />
+				{liveApy && <Percentage value={apyProbeResults.start?.apy.gross || NaN} decimals={4} nonFinite={'--'} simulated={true} animate={true} />}
+				{!liveApy && <Percentage value={vault.apy.gross} decimals={4} />}
+				<Percentage value={apyProbeResults.stop?.apy.gross || NaN}  decimals={4} nonFinite={'--'} simulated={true} animate={true} />
+				<Bps value={apyDelta?.gross || 0} simulated={true} sign={true} animate={true} />
 			</div>
 		</Row>
 		<Row label={'Net'}>
 			<div className={'w-3/4 grid grid-cols-3'}>
-				{liveApy && <div className={'font-bold font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy.net, 4, '--')}</div>}
-				{!liveApy && <div className={'font-bold font-mono text-right'}>{formatPercent(vault?.apy.net, 4)}</div>}
-				<div className={'font-bold font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy.net, 4, '--')}</div>
-				<Bps value={apyDelta?.net || 0} simulated={true} sign={true} />
+				{liveApy && <Percentage value={apyProbeResults.start?.apy.net || NaN} decimals={4} nonFinite={'--'} simulated={true} animate={true} />}
+				{!liveApy && <Percentage value={vault.apy.net} decimals={4} />}
+				<Percentage value={apyProbeResults.stop?.apy.net || NaN}  decimals={4} nonFinite={'--'} simulated={true} animate={true} />
+				<Bps value={apyDelta?.net || 0} simulated={true} sign={true} animate={true} />
 			</div>
 		</Row>
 		<Row label={'Weekly'} alt={true}>
 			<div className={'w-3/4 grid grid-cols-3'}>
-				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy[-7], 4, '--')}</div>}
-				{!liveApy && <div className={'font-mono text-right'}>{formatPercent(vault?.apy[-7], 4)}</div>}
-				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy[-7], 4, '--')}</div>
-				<Bps value={apyDelta?.[-7] || 0} simulated={true} sign={true} />
+				{liveApy && <Percentage value={apyProbeResults.start?.apy[-7] || NaN} decimals={4} nonFinite={'--'} simulated={true} animate={true} />}
+				{!liveApy && <Percentage value={vault.apy[-7]} decimals={4} />}
+				<Percentage value={apyProbeResults.stop?.apy[-7] || NaN}  decimals={4} nonFinite={'--'} simulated={true} animate={true} />
+				<Bps value={apyDelta?.[-7] || 0} simulated={true} sign={true} animate={true} />
 			</div>
 		</Row>
 		<Row label={'Monthly'}>
 			<div className={'w-3/4 grid grid-cols-3'}>
-				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy[-30], 4, '--')}</div>}
-				{!liveApy && <div className={'font-mono text-right'}>{formatPercent(vault?.apy[-30], 4)}</div>}
-				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy[-30], 4, '--')}</div>
-				<Bps value={apyDelta?.[-30] || 0} simulated={true} sign={true} />
+				{liveApy && <Percentage value={apyProbeResults.start?.apy[-30] || NaN} decimals={4} nonFinite={'--'} simulated={true} animate={true} />}
+				{!liveApy && <Percentage value={vault.apy[-30]} decimals={4} />}
+				<Percentage value={apyProbeResults.stop?.apy[-30] || NaN}  decimals={4} nonFinite={'--'} simulated={true} animate={true} />
+				<Bps value={apyDelta?.[-30] || 0} simulated={true} sign={true} animate={true} />
 			</div>
 		</Row>
 		<Row label={'Inception'} alt={true}>
 			<div className={'w-3/4 grid grid-cols-3'}>
-				{liveApy && <div className={'font-mono text-right text-primary-600 dark:text-primary-400'}>{formatPercent(apyProbeResults.start?.apy.inception, 4, '--')}</div>}
-				{!liveApy && <div className={'font-mono text-right'}>{formatPercent(vault?.apy.inception, 4)}</div>}
-				<div className={'font-mono text-primary-600 dark:text-primary-400 text-right'}>{formatPercent(apyProbeResults.stop?.apy.inception, 4, '--')}</div>
-				<Bps value={apyDelta?.inception || 0} simulated={true} sign={true} />
+				{liveApy && <Percentage value={apyProbeResults.start?.apy.inception || NaN} decimals={4} nonFinite={'--'} simulated={true} animate={true} />}
+				{!liveApy && <Percentage value={vault.apy.inception} decimals={4} />}
+				<Percentage value={apyProbeResults.stop?.apy.inception || NaN}  decimals={4} nonFinite={'--'} simulated={true} animate={true} />
+				<Bps value={apyDelta?.inception || 0} simulated={true} sign={true} animate={true} />
 			</div>
 		</Row>
 		<Row label={'PPS (x1000)'}>
-			<div className={`font-mono
-				${(apyDelta?.pps as number || 0) < 0 ? 'text-red-400' : 'text-primary-600 dark:text-primary-400 text-right'}`}>
-				{(apyDelta?.pps as number || 0) > 0 ? '+' : ''}{formatPercent(apyDelta?.pps, 2, '--')}
-			</div>
+			<Percentage value={apyDelta?.pps || NaN}  decimals={4} sign={true} nonFinite={'--'} simulated={true} />
 		</Row>
 		{apyMismatch && <div className={'p-2 attention-box'}>
 			{`For this vault we should use the '${vault?.apy.type}' method to calculate apy, but Seafood doesn't support that yet. Using ${apyComputer.type} for Live and Future apy instead.`}
 		</div>}
-
 	</div>;
 }

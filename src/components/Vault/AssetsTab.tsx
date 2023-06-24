@@ -37,11 +37,13 @@ export default function AssetsTab({vault}: {vault: Vault}) {
 						decimals={vault.token.decimals || 18}
 						sign={true}
 						format={'(%s)'}
+						animate={true}
 						className={'text-base'} />}
 					<Tokens
 						simulated={totalAssets.simulated}
 						value={totalAssets.value}
 						decimals={vault.token.decimals || 18}
+						animate={true}
 						className={'text-3xl'} />
 				</div>
 			</Row>
@@ -52,10 +54,12 @@ export default function AssetsTab({vault}: {vault: Vault}) {
 						value={vaultDebtRatio.delta / 10_000}
 						sign={true}
 						format={'(%s)'}
+						animate={true}
 						className={'text-xs'} />}
 					<Percentage
 						simulated={vaultDebtRatio.simulated} 
-						value={vaultDebtRatio.value / 10_000} />
+						value={vaultDebtRatio.value / 10_000}
+						animate={true} />
 				</div>
 			</Row>
 			<Row label={'Deployed'}>
@@ -65,10 +69,12 @@ export default function AssetsTab({vault}: {vault: Vault}) {
 						value={deployed.delta}
 						sign={true}
 						format={'(%s)'}
+						animate={true}
 						className={'text-xs'} />}
 					<Percentage
 						simulated={deployed.simulated}
-						value={deployed.value} />
+						value={deployed.value}
+						animate={true} />
 				</div>
 			</Row>
 			<Row label={'Free assets'} alt={true}>
@@ -79,11 +85,13 @@ export default function AssetsTab({vault}: {vault: Vault}) {
 						decimals={vault.token.decimals || 18}
 						sign={true}
 						format={'(%s)'}
+						animate={true}
 						className={'text-xs'} />}
 					<Tokens 
 						simulated={freeAssets.simulated} 
 						value={freeAssets.value} 
-						decimals={vault.token.decimals || 18} />
+						decimals={vault.token.decimals || 18}
+						animate={true} />
 				</div>
 			</Row>
 			<Row label={'Deposit limit'} 

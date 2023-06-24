@@ -60,7 +60,7 @@ function ListItem({status, className} : {status: RefreshStatus, className: strin
 			className={`
 			w-24 flex items-center justify-center
 			${colors.bg} ${colors.text}`}>
-			{status.status === 'refreshing' ? 'syncing' : status.status}
+			{status.status === 'refreshing' ? 'sync' : status.status}
 		</div>
 	</li>;
 }
@@ -72,7 +72,7 @@ function Stage({title, status}: {title: string, status: RefreshStatus[]}) {
 			{status.map((s, index) => 
 				<motion.div key={`${s.stage}-${s.chain}-${s.status}}`}
 					transition={{type: 'spring', stiffness: 2200, damping: 32}}
-					initial={{y: -4, opacity: 0}}
+					initial={{y: 4, opacity: 0}}
 					animate={{y: 0, opacity: 1}}>
 					<ListItem key={s.chain} status={s} className={index % 2 === 0 ? '' : 'bg-selected-400/5'} />
 				</motion.div>
