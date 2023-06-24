@@ -1,10 +1,10 @@
 import React, {useEffect, useMemo} from 'react';
 import {useVaults} from '../context/useVaults';
-import {RefreshStatus} from '../context/useVaults/worker/index';
 import {getChain} from '../utils/utils';
 import TimeAgo from './controls/TimeAgo';
 import {useVaultStatusUI} from './MobileNav/Sync';
 import {usePowertools} from './Powertools';
+import {RefreshStatus} from '../context/useVaults/worker/types';
 
 function StatusLight({size, bloom}: {size: number, bloom: number}) {
 	const {refreshing, refresh} = useVaults();

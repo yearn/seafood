@@ -92,7 +92,7 @@ export default function RiskGroup() {
 
 	if(!group.riskDetails) return <div className={`
 		absolute w-full h-screen flex items-center justify-center`}>
-		<Spinner size={16} bloom={20} />
+		<Spinner size={16} bloom={18} />
 	</div>;
 
 	return <div className={'w-full pb-20 sm:pt-2 flex flex-col gap-2'}>

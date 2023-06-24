@@ -43,7 +43,7 @@ function Router() {
 	const {vaults} = useVaults();
 
 	if(vaults.length === 0) return <div className={'w-full h-full flex items-center justify-center'}>
-		<Spinner size={16} bloom={20} />
+		<Spinner size={16} bloom={18} />
 	</div>;
 
 	return <Routes>
