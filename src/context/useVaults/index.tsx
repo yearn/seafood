@@ -21,7 +21,7 @@ function useWorker() {
 			const worker = new SharedWorker(new URL('./worker/shared.ts', import.meta.url));
 			return Comlink.wrap<typeof api>(worker.port);
 		} else {
-			const worker = new Worker(new URL('./worker/private.ts', import.meta.url));
+			const worker = new Worker(new URL('./worker/isolated.ts', import.meta.url));
 			return Comlink.wrap<typeof api>(worker);
 		}
 	}, []);

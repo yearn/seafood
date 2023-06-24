@@ -27,6 +27,8 @@ export const api = {
 const callbacks: Callback[] = [];
 let running = false;
 let refreshing = false;
+let nextRefresh: number | undefined;
+let refreshHandle: NodeJS.Timeout | undefined;
 
 function pushCallback(callback: Callback) {
 	const index = callbacks.indexOf(callback);
@@ -66,13 +68,13 @@ async function requestVaults() {
 async function start(options: StartOptions) {
 	await resetStatus();
 	running = true;
+	nextRefresh = options.refreshInterval;
 	await refresh();
-	setInterval(async () => {
-		await refresh();
-	}, options.refreshInterval);
 }
 
 async function refresh() {
+	if(refreshHandle) clearTimeout(refreshHandle);
+
 	refreshing = true;
 	callbacks.forEach(callback => callback.onRefresh());
 	resetWorkerCache();
@@ -154,6 +156,7 @@ async function refresh() {
 
 	refreshing = false;
 	callbacks.forEach(callback => callback.onRefreshed(new Date()));
+	refreshHandle = setTimeout(() => refresh(), nextRefresh);
 }
 
 async function getAll<T>(storeName: string) {
