@@ -144,7 +144,6 @@ export default function Powerstrip({className}: {className?: string}) {
 				transition={{type: 'spring', stiffness: 2000, damping: 32}}
 				initial={{x: -6}}
 				animate={{x: 0}}
-				exit={{x: -10, opacity: 0}}
 				className={`
 				fixed top-0 left-6 
 				w-48 h-full`}>

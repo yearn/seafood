@@ -1,4 +1,5 @@
 import React, {useEffect, useMemo} from 'react';
+import {motion} from 'framer-motion';
 import {useVaults} from '../context/useVaults';
 import {getChain} from '../utils/utils';
 import TimeAgo from './controls/TimeAgo';
@@ -51,8 +52,7 @@ function ListItem({status, className} : {status: RefreshStatus, className: strin
 	return <li className={`w-full pl-2 py-1 flex flex-grid grid-cols-3 justify-between gap-4 ${className}`}>
 		<div className={`w-32 ${colors.text}`}>{chain}</div>
 		<div className={`w-48 ${colors.text}`}>
-			{status.status === 'refreshing' ? <>{'syncing'}</> : <TimeAgo date={status.timestamp} />}
-			
+			{status.status === 'refreshing' ? <>{'~~~~~~~~'}</> : <TimeAgo date={status.timestamp} />}
 		</div>
 		<div 
 			title={status.status === 'warning' ? (status.error as object).toString() : ''} 
@@ -60,7 +60,7 @@ function ListItem({status, className} : {status: RefreshStatus, className: strin
 			className={`
 			w-24 flex items-center justify-center
 			${colors.bg} ${colors.text}`}>
-			{status.status === 'refreshing' ? <StatusLight size={2} bloom={4} /> : status.status}
+			{status.status === 'refreshing' ? 'syncing' : status.status}
 		</div>
 	</li>;
 }
@@ -69,7 +69,14 @@ function Stage({title, status}: {title: string, status: RefreshStatus[]}) {
 	return <div>
 		<h2 className={'text-2xl'}>{title}</h2>
 		<ul className={'w-full flex flex-col gap-2'}>
-			{status.map((s, index) => <ListItem key={s.chain} status={s} className={index % 2 === 0 ? '' : 'bg-selected-400/5'} />)}
+			{status.map((s, index) => 
+				<motion.div key={`${s.stage}-${s.chain}-${s.status}}`}
+					transition={{type: 'spring', stiffness: 2200, damping: 32}}
+					initial={{y: -4, opacity: 0}}
+					animate={{y: 0, opacity: 1}}>
+					<ListItem key={s.chain} status={s} className={index % 2 === 0 ? '' : 'bg-selected-400/5'} />
+				</motion.div>
+			)}
 		</ul>
 	</div>;
 }
