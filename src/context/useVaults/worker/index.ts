@@ -138,16 +138,16 @@ async function refresh() {
 	const strategyRewardsUpdates = await fetchRewardsUpdates(multicallUpdates);
 	for(const [index, chain] of config.chains.entries()) {
 		const rewardsUpdates = strategyRewardsUpdates[index];
-		rewardsUpdates.forEach(update => {
-			const strategy = strategies.find(s => 
-				s.network.chainId === chain.id 
-				&& s.address === update.address);
-			if(strategy) strategy.rewards = update.rewards;
-		});
 
 		latest.forEach(vault => {
+			vault.withdrawalQueue.forEach(strategy => {
+				const update = rewardsUpdates.find(update => update.chainId === chain.id && update.address === strategy.address);
+				strategy.rewards = update?.rewards || [];
+			});
+
 			vault.rewardsUsd = vault.withdrawalQueue.map(s => s.rewards).flat()
-				.reduce((acc, reward) => acc + reward?.amountUsd, 0);
+				.reduce((acc, reward) => acc + reward?.amountUsd, 0)
+				|| 0;
 		});
 	}
 
