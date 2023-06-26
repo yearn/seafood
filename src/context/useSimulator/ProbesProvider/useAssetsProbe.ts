@@ -2,7 +2,6 @@ import {useMemo} from 'react';
 import {useSimulatorStatus} from '../SimulatorStatusProvider';
 import {SimulationResult} from '../../../tenderly';
 import {BigNumber, FixedNumber, ethers, providers} from 'ethers';
-import {useBlocks} from '../BlocksProvider';
 import {Probe, ProbeResults} from './useProbes';
 import {GetVaultContract} from '../../../ethereum/EthHelpers';
 import {Vault} from '../../useVaults/types';
@@ -116,17 +115,16 @@ export function useAssetsProbeResults(vault: Vault | undefined, startResults: Pr
 }
 
 export default function useAssetsProbe() {
-	const {referencedVaults} = useBlocks();
 	const {setStatus} = useSimulatorStatus();
 
 	const probe = useMemo(() => {
 		return {
 			name: 'assets',
 
-			start: async (provider: providers.JsonRpcProvider) => {
+			start: async (vaults: Vault[], provider: providers.JsonRpcProvider) => {
 				setStatus('Measure assets');
 				const results = [] as AssetsOutput[];
-				for(const vault of referencedVaults) {
+				for(const vault of vaults) {
 					const contract = await GetVaultContract(vault.address, provider, vault.version);
 					const totalAssets = await contract.totalAssets();
 					const totalDebt = await contract.totalDebt();
@@ -139,10 +137,10 @@ export default function useAssetsProbe() {
 				return {name: 'assets', output: results};
 			},
 
-			stop: async (_results: SimulationResult[], provider: providers.JsonRpcProvider) => {
+			stop: async (_results: SimulationResult[], vaults: Vault[], provider: providers.JsonRpcProvider) => {
 				setStatus('Measure asset flows');
 				const results = [] as AssetsOutput[];
-				for(const vault of referencedVaults) {
+				for(const vault of vaults) {
 					const contract = await GetVaultContract(vault.address, provider, vault.version);
 					const totalAssets = await contract.totalAssets();
 					const totalDebt = await contract.totalDebt();
@@ -155,7 +153,7 @@ export default function useAssetsProbe() {
 				return {name: 'assets', output: results};
 			}
 		} as Probe;
-	}, [referencedVaults, setStatus]);
+	}, [setStatus]);
 
 	return probe;
 }

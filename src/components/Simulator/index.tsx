@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useMemo} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {Button} from '../controls';
 import {BsCode} from 'react-icons/bs';
@@ -8,11 +8,13 @@ import {useBlocks} from '../../context/useSimulator/BlocksProvider';
 import {useSimulator} from '../../context/useSimulator';
 import {useChrome} from '../Chrome';
 import Code from '../Code';
+import {useVaults} from '../../context/useVaults';
 
 export default function Simulator({className}: {className?: string}) {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const {setDialog} = useChrome();
+	const {vaults} = useVaults();
 	const {blocks, reset: resetBlocks} = useBlocks();
 	const {simulating, reset: resetSimulator, initializeAndSimulate} = useSimulator();
 
@@ -23,10 +25,19 @@ export default function Simulator({className}: {className?: string}) {
 		});
 	}, [location, setDialog, blocks]);
 
+	const vaultsWithSimBlocks = useMemo(() => {
+		return vaults.filter(vault => {
+			const addresses = [vault.address, ...vault.strategies.map(s => s.address)];
+			return blocks.some(block => {
+				return block.chain == vault.network.chainId && addresses.includes(block.contract);
+			});
+		});
+	}, [vaults, blocks]);
+
 	const onStart = useCallback(async () => {
 		if(!blocks.length) return;
-		await initializeAndSimulate();
-	}, [blocks, initializeAndSimulate]);
+		await initializeAndSimulate(vaultsWithSimBlocks);
+	}, [blocks, vaultsWithSimBlocks, initializeAndSimulate]);
 
 	const onReset = useCallback(() => {
 		resetBlocks();

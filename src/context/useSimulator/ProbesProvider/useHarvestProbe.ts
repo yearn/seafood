@@ -1,12 +1,12 @@
 import {BigNumber, providers} from 'ethers';
 import {useMemo} from 'react';
-import {useVaults} from '../../useVaults';
 import {Probe} from './useProbes';
 import {functions, parseEvents, RawEvent} from '../Blocks';
 import {SimulationResult} from '../../../tenderly';
 import {computeHarvestApr} from '../../../math/apr';
 import {useSimulatorStatus} from '../SimulatorStatusProvider';
 import {GetStrategyContract} from '../../../ethereum/EthHelpers';
+import {Vault} from '../../useVaults/types';
 
 export interface HarvestOutput {
 	strategy: string,
@@ -23,14 +23,13 @@ export interface HarvestOutput {
 }
 
 export default function useHarvestProbe() {
-	const {vaults} = useVaults();
 	const {setStatus} = useSimulatorStatus();
 
 	const probe = useMemo(() => {
 		return {
 			name: 'harvest',
 
-			stop: async (_results: SimulationResult[], provider: providers.JsonRpcProvider) => {
+			stop: async (_results: SimulationResult[], vaults: Vault[], provider: providers.JsonRpcProvider) => {
 				const harvestResults = _results.filter(result => 
 					result.block.call.signature === functions.strategies.harvest.signature
 				);
@@ -69,7 +68,7 @@ export default function useHarvestProbe() {
 				return {name: 'harvest', output: results};
 			}
 		} as Probe;
-	}, [vaults, setStatus]);
+	}, [setStatus]);
 
 	return probe;
 }

@@ -1,13 +1,16 @@
-import {providers} from 'ethers';
+import {ethers, providers} from 'ethers';
 import React, {createContext, ReactNode, useCallback, useContext, useState} from 'react';
 import tenderly, {SimulationResult} from '../../tenderly';
 import {Block} from './Blocks';
 import {useBlocks} from './BlocksProvider';
 import {Probe, ProbeResults, useProbes} from './ProbesProvider/useProbes';
 import {DEFAULT_STATUS, useSimulatorStatus} from './SimulatorStatusProvider';
+import {Vault} from '../useVaults/types';
+import {computeDegradationTime} from '../../utils/vaults';
+import {getEstimatedBlockSamples} from '../../math/apy';
 
 export interface Simulator {
-	simulate: (provider: providers.JsonRpcProvider) => void,
+	simulate: (vaults: Vault[], provider: providers.JsonRpcProvider) => void,
 	simulating: boolean,
 	blockPointer: Block | null,
 	results: SimulationResult[],
@@ -15,7 +18,7 @@ export interface Simulator {
 	probeStartResults: ProbeResults[],
 	probeStopResults: ProbeResults[],
 	reset: () => void,
-	initializeAndSimulate: () => void
+	initializeAndSimulate: (vaults: Vault[]) => void
 }
 
 export const	SimulatorContext = createContext<Simulator>({} as Simulator);
@@ -32,13 +35,18 @@ export default function SimulatorProvider({children}: {children: ReactNode}) {
 	const [probeStopResults, setProbeStopResults] = useState<ProbeResults[]>([]);
 	const [simulating, setSimulating] = useState(false);
 
-	const simulate = useCallback(async (provider: providers.JsonRpcProvider) => {
+	const getBlocksPerDay = useCallback(async (provider: providers.JsonRpcProvider) => {
+		const samples = await getEstimatedBlockSamples(provider, 0);
+		return Math.floor((samples[0] - samples[-7]) / 7);
+	}, []);
+
+	const simulate = useCallback(async (vaults: Vault[], provider: providers.JsonRpcProvider) => {
 		try {
 			setSimulating(true);
 
 			for(const probe of probes) {
 				if(probe.start) {
-					const result = await probe.start(provider) as ProbeResults;
+					const result = await probe.start(vaults, provider) as ProbeResults;
 					setProbeStartResults(current => [...current, result]);
 				}
 			}
@@ -52,10 +60,19 @@ export default function SimulatorProvider({children}: {children: ReactNode}) {
 				results.push(result);
 				setResults([...results]);
 			}
-	
+
+			const longestDegradation = vaults
+				.map(v => computeDegradationTime(v))
+				.reduce((a, b) => a.gt(b) ? a : b, ethers.constants.Zero);
+			const blocksPerDay = await getBlocksPerDay(provider);
+			const blocksToDegradation = Math.floor(longestDegradation.toNumber() * blocksPerDay / (24 * 60 * 60));
+			await provider.send('evm_increaseTime', [ethers.utils.hexValue(longestDegradation)]);
+			await provider.send('evm_increaseBlocks', [ethers.utils.hexValue(blocksToDegradation)]);
+			await provider.send('evm_mine', []);
+
 			setBlockPointer(null);
 			for(const probe of probes) {
-				const result = await probe.stop(results, provider) as ProbeResults;
+				const result = await probe.stop(results, vaults, provider) as ProbeResults;
 				setProbeStopResults(current => [...current, result]);
 			}
 	
@@ -70,7 +87,7 @@ export default function SimulatorProvider({children}: {children: ReactNode}) {
 			setError(true);
 			return;
 		}
-	}, [setSimulating, setBlockPointer, setStatus, setTenderlyUrl, setError, setResults, probes, blocks]);
+	}, [setSimulating, setBlockPointer, setStatus, setTenderlyUrl, setError, setResults, probes, blocks, getBlocksPerDay]);
 
 	const reset = useCallback((resetStatus = true) => {
 		setBlockPointer(null);
@@ -84,13 +101,13 @@ export default function SimulatorProvider({children}: {children: ReactNode}) {
 		}
 	}, [setBlockPointer, setResults, setProbeStartResults, setProbeStopResults, setStatus, setTenderlyUrl, setError]);
 
-	const initializeAndSimulate = useCallback(async () => {
+	const initializeAndSimulate = useCallback(async (vaults: Vault[]) => {
 		setSimulating(true);
 		setStatus('Initialize simulator');
 		reset(false);
 		const provider = await tenderly.createProvider(blocks[0].chain);
 		setTimeout(async () => {
-			await simulate(provider);
+			await simulate(vaults, provider);
 		}, 1500);
 	}, [setSimulating, setStatus, reset, blocks, simulate]);
 
