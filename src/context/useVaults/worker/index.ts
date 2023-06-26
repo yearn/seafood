@@ -139,7 +139,7 @@ async function refresh() {
 	for(const [index, chain] of config.chains.entries()) {
 		const rewardsUpdates = strategyRewardsUpdates[index];
 
-		latest.forEach(vault => {
+		latest.filter(vault => vault.network.chainId === chain.id).forEach(vault => {
 			vault.withdrawalQueue.forEach(strategy => {
 				const update = rewardsUpdates.find(update => update.chainId === chain.id && update.address === strategy.address);
 				strategy.rewards = update?.rewards || [];
