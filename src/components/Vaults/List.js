@@ -1,14 +1,11 @@
 import React, {useMemo} from 'react';
-import {useVaults} from '../../context/useVaults';
 import {useFilter} from './Filter/useFilter';
 import {useNavigate} from 'react-router-dom';
-import Spinner from '../controls/Spinner';
 import Tile from './Tile';
 import {formatNumber} from '../../utils/utils';
 
 export default function List() {
 	const navigate = useNavigate();
-	const {loading, vaults} = useVaults();
 	const {filter, ready} = useFilter();
 
 	const totalTvl = useMemo(() => {
@@ -18,11 +15,6 @@ export default function List() {
 			return series[series.length - 1];
 		}).reduce((a, b) => a + b, 0);
 	}, [filter]);
-
-	if(loading && vaults.length === 0) return <div className={`
-		absolute inset-0 flex items-center justify-center`}>
-		<Spinner />
-	</div>;
 
 	if(!ready) return <></>;
 

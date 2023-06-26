@@ -1,7 +1,6 @@
 import React, {createContext, ReactNode, useCallback, useContext, useMemo, useState} from 'react';
 import {Strategy, Vault} from '../useVaults/types';
 import {Block, functions, makeDebtRatioUpdateBlock, makeHarvestBlock, makeSetDoHealthCheckBlock} from './Blocks';
-import {useVaults} from '../useVaults';
 
 export interface Simulated {
 	simulated: boolean,
@@ -20,8 +19,7 @@ export interface BlocksContext {
 	removeDebtRatioUpdate: (vault: Vault, strategy: Strategy) => void,
 	extractDrUpdates: (vault: Vault) => {[address: string]: number},
 	computeVaultDr: (vault: Vault | null | undefined) => Simulated,
-	reset: () => void,
-	referencedVaults: Vault[]
+	reset: () => void
 }
 
 function findSetDoHealthCheckIndex(blocks: Block[], strategy: Strategy) {
@@ -66,7 +64,6 @@ export const blocksContext = createContext<BlocksContext>({} as BlocksContext);
 export const useBlocks = () => useContext(blocksContext);
 
 export default function BlocksProvider({children}: {children: ReactNode}) {
-	const {vaults} = useVaults();
 	const [blocksByVault, setBlocksByVault] = useState<{[key: string]: Block[]}>({});
 
 	const blocks = useMemo(() => {
@@ -213,15 +210,6 @@ export default function BlocksProvider({children}: {children: ReactNode}) {
 		setBlocksByVault({});
 	}, [setBlocksByVault]);
 
-	const referencedVaults = useMemo(() => {
-		return vaults.filter(vault => {
-			const addresses = [vault.address, ...vault.strategies.map(s => s.address)];
-			return blocks.some(block => {
-				return block.chain == vault.network.chainId && addresses.includes(block.contract);
-			});
-		});
-	}, [blocks, vaults]);
-
 	return <blocksContext.Provider value={{
 		blocks,
 		blocksForVault,
@@ -233,8 +221,7 @@ export default function BlocksProvider({children}: {children: ReactNode}) {
 		removeDebtRatioUpdate,
 		extractDrUpdates,
 		computeVaultDr,
-		reset,
-		referencedVaults
+		reset
 	}}>
 		{children}
 	</blocksContext.Provider>;

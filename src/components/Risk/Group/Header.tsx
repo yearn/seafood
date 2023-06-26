@@ -11,13 +11,13 @@ export default function Header({group}: {group: RiskReportWithVaults}) {
 		return group.vaults.map(v => v.strategies.length).reduce((a, b) => a + b, 0);
 	}, [group]);
 
-	if(mediumBreakpoint) return <div className={'pt-0'}>
-		<div className={'flex flex-col px-4 pt-3 gap-2'}>
+	if(mediumBreakpoint) return <div className={'-mt-[80px] pt-0'}>
+		<div className={'flex flex-col px-16 pt-3 gap-2'}>
 			<h1 className={`
 				flex flex-col
 				font-bold text-4xl`}>{group.riskGroup}</h1>
 			<div className={'text-sm'}>
-				{`risk group with ${strategyCount} strategies`}
+				{`risk group covering ${strategyCount} strategies`}
 			</div>
 		</div>
 	</div>;
@@ -30,7 +30,7 @@ export default function Header({group}: {group: RiskReportWithVaults}) {
 				flex flex-col
 				font-bold text-4xl`}>{group.riskGroup}</h1>
 			<div className={'text-sm'}>
-				{`risk group with ${strategyCount} strategies`}
+				{`risk group covering ${strategyCount} strategies`}
 			</div>
 		</div>
 	</div>;

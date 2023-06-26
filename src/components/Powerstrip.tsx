@@ -4,7 +4,6 @@ import {Link, matchRoutes, useLocation} from 'react-router-dom';
 import Wordmark from './Wordmark';
 import Icon from './Icon';
 import {A} from './controls';
-import Starfield from './Starfield';
 import {useVaultStatusUI} from './MobileNav/Sync';
 import {useVaults} from '../context/useVaults';
 import Lux from './Lux';
@@ -33,10 +32,10 @@ function Light({link}: {link: LinkInfo}) {
 }
 
 function StatusLight() {
-	const {loading, refresh} = useVaults();
+	const {refreshing, refresh} = useVaults();
 	const {colors} = useVaultStatusUI();
 
-	if(loading) {
+	if(refreshing) {
 		return <div className={`
 			h-[40px] flex items-center justify-start`}>
 			<div className={`
@@ -99,7 +98,7 @@ export default function Powerstrip({className}: {className?: string}) {
 		{to: '/risk', label: 'Risk', altPathPatterns: ['/risk/:group']},
 		{
 			onClick: profile ? logout : login,
-			label: !profile ? 'Login with Github' : <div className={'relative w-full flex items-center justify-between'}>
+			label: !profile ? 'Github Login' : <div className={'relative w-full flex items-center justify-between'}>
 				{'Logout'}
 				<img className={'w-8 h-8 -m-2'}
 					src={profile.avatar_url} 
@@ -119,7 +118,7 @@ export default function Powerstrip({className}: {className?: string}) {
 		<MenuItem key={0}>
 			<MenuLink 
 				link={{...links[0], label: syncStatus.message}} 
-				className={`text-xs ${syncStatus.hasErrors ? syncStatus.colors.text : ''}`} />
+				className={`text-xs ${syncStatus.hasWarnings ? syncStatus.colors.text : ''}`} />
 		</MenuItem>,
 		<MenuItem key={1}><MenuLink link={links[1]} /></MenuItem>,
 		<MenuItem key={2}><MenuLink link={links[2]} /></MenuItem>,
@@ -145,7 +144,6 @@ export default function Powerstrip({className}: {className?: string}) {
 				transition={{type: 'spring', stiffness: 2000, damping: 32}}
 				initial={{x: -6}}
 				animate={{x: 0}}
-				exit={{x: -10, opacity: 0}}
 				className={`
 				fixed top-0 left-6 
 				w-48 h-full`}>
@@ -161,10 +159,9 @@ export default function Powerstrip({className}: {className?: string}) {
 						{MenuLinks.map(link => link)}
 					</div>
 					<div className={'pr-3 flex flex-col items-center justify-center'}>
-						<Lux className={'mb-16 p-4'} />
-						<div className={'relative w-[80%] h-16 flex items-start justify-end'}>
-							<Starfield className={'absolute z-1 inset'} />
-							<Icon className={'absolute z-10 w-1/4 top-1 right-2'} fill={'black'} />
+						<Lux className={'mb-20'} />
+						<div className={'relative w-[80%] h-16 flex items-start justify-center'}>
+							<Icon className={'w-1/2'} />
 						</div>
 						<Wordmark className={'text-3xl'} />
 						<div className={'mt-3 flex items-center justify-center gap-3 flex-wrap'}>

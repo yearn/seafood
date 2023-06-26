@@ -1,4 +1,4 @@
-import * as ySeafood from './types';
+import * as Seafood from './types';
 
 export function riskGroupNameToId(name: string) {
 	return name
@@ -16,11 +16,11 @@ export function median(numbers: number[]) {
 	return sorted[middle];
 }
 
-export function medianExlcudingTvlImpact(scores: ySeafood.RiskCategories) {
+export function medianExlcudingTvlImpact(scores: Seafood.RiskCategories) {
 	const keys = Object.keys(scores);
 	keys.splice(keys.indexOf('TVLImpact'), 1);
 	keys.splice(keys.indexOf('median'), 1);
-	const values = keys.map(key => scores[key as keyof ySeafood.RiskCategories]);
+	const values = keys.map(key => scores[key as keyof Seafood.RiskCategories]);
 	return median(values);
 }
 
@@ -36,7 +36,7 @@ export function scoreTvlImpact(tvl: number): number {
 	return 5;
 }
 
-export function aggregateRiskGroupTvls(vaults: ySeafood.Vault[]) {
+export function aggregateRiskGroupTvls(vaults: Seafood.Vault[]) {
 	const debts = vaults.map(v => v.strategies.map(s => ({
 		group: s.risk.riskGroupId,
 		debt: s.totalDebtUSD

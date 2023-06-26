@@ -27,6 +27,6 @@ export default function GithubCallback() {
 	}, [query, navigate, setToken]);
 
 	return <div className={'w-full h-screen flex items-center justify-center'}>
-		<Spinner />
+		<Spinner size={16} bloom={18} />
 	</div>;
 }

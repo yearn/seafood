@@ -39,6 +39,16 @@ export default function VaultOptions() {
 			label: 'TVL>0',
 			long: 'TVL > 0',
 			flag: Boolean(chips['tvlgtzero'])
+		}, {
+			key: 'rewardsgtzero',
+			label: 'Rwds>0',
+			long: 'Rewards > 0',
+			flag: Boolean(chips['rewardsgtzero'])
+		}, {
+			key: 'warnings',
+			label: 'Warnings',
+			long: 'Warnings Only',
+			flag: Boolean(chips['warnings'])
 		}] as Option [];
 	}, [chips]);
 

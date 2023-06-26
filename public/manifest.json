@@ -2,7 +2,7 @@
   "name": "Seafood",
   "short_name": "Seafood",
   "description": "Yearn's dashboard for vault management and reporting",
-  "iconPath": "./favicon.svg",
+  "iconPath": "./favicon.png",
   "locale": "en-US",
   "uri": "https://seafood.yearn.watch/",
   "twitter": "@iearnfinance",
@@ -33,7 +33,7 @@
       "purpose": "maskable"
     },
     {
-      "src": "/favicon.svg",
+      "src": "/favicon.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/svg"
     }

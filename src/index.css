@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Goldman:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,800;1,300&display=swap');
 
 html {
   @apply w-full max-h-screen overflow-hidden;
@@ -26,4 +26,12 @@ body {
 
 .a {
   @apply underline underline-offset-2 hover:text-selected-400 active:text-selected-600;
+}
+
+.attention-text {
+  @apply text-attention-600 dark:text-attention-400 group-hover:text-current group-active:text-current;
+}
+
+.attention-box {
+  @apply border border-attention-600 dark:border-attention-400 text-attention-600 dark:text-attention-400 bg-attention-100 dark:bg-attention-950;
 }

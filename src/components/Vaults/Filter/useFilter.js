@@ -42,6 +42,8 @@ export function FilterProvider({children}) {
 			if(!chips.v2 && version >= .4 && version < 3) return false;
 
 			if(chips.tvlgtzero && getLatestTvl(vault) <= 0) return false;
+			if(chips.warnings && vault.warnings.length === 0) return false;
+			if(chips.rewardsgtzero && vault.rewardsUsd <= 0) return false;
 			if(chips.curve && chips.factory) return true;
 			if(chips.curve && !chips.factory) return !factoryRe.test(vault.name);
 			if(!chips.curve && chips.factory) return factoryRe.test(vault.name);
@@ -68,7 +70,7 @@ export function defaultChips() {
 		favorites: false,
 		curve: false,
 		factory: false,
-		tvlgtzero: true,
+		tvlgtzero: false,
 		v1: false,
 		v2: true
 	};

@@ -11,6 +11,9 @@ function heightSafeList() {
 module.exports = {
   content: ['./src/**/*.{html,js,ts,tsx}'],
   safelist: [
+    'h-18', 'w-18',
+    'h-20', 'w-20',
+    'h-24', 'w-24',
     'sm:h-14',
     'bg-stripes',
     'bg-stripes-black',
@@ -27,6 +30,20 @@ module.exports = {
         'ok': colors.green,
         'attention': colors.yellow,
         'error': colors.red
+      },
+      fontFamily: {
+        'wordmark': ['JetBrains Mono'],
+        'mono': ['JetBrains Mono'],
+        'sans': ['JetBrains Mono']
+      },
+      fontSize: {
+        'xxs': '.62rem'
+      },
+      height: {
+        '18': '4.5rem'
+      },
+      width: {
+        '18': '4.5rem'
       },
       keyframes: {
         'slide-in-x': {

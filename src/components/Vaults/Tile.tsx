@@ -105,7 +105,7 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 	const vaultDebtRatio = computeVaultDr(vault);
 	const apyProbeResults = useApyProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
 	const apyDelta = useApyProbeDelta(vault, apyProbeResults, false);
-	const {tvl, freeAssets, deployed} = useAssetsProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
+	const {tvl, deployed} = useAssetsProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
 
 	const hasBlocks = useMemo(() => blocksForVault(vault).length > 0, [vault, blocksForVault]);
 
@@ -153,13 +153,15 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						compact={true}
 						sign={true}
 						format={'(%s)'}
+						animate={true}
 						className={'text-xs'} />}
 					<Number
 						value={tvl.value}
 						simulated={tvl.simulated}
 						decimals={2}
 						nonFinite={'No TVL'}
-						compact={true} />
+						compact={true} 
+						animate={true} />
 				</div>
 			</Row>
 			<Row label={'APY'}>
@@ -169,8 +171,9 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						value={apy.delta}
 						sign={true}
 						format={'(%s)'}
+						animate={true}
 						className={'text-xs'} />}
-					<Percentage simulated={apy.simulated} value={apy.value} />
+					<Percentage simulated={apy.simulated} value={apy.value} animate={true} />
 				</div>
 			</Row>
 			<Row label={'Allocated'} alt={true}>
@@ -180,10 +183,12 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						value={vaultDebtRatio.delta / 10_000}
 						sign={true}
 						format={'(%s)'}
+						animate={true}
 						className={'text-xs'} />}
 					<Percentage
 						simulated={vaultDebtRatio.simulated} 
-						value={vaultDebtRatio.value / 10_000} />
+						value={vaultDebtRatio.value / 10_000}
+						animate={true} />
 				</div>
 			</Row>
 			<Row label={'Deployed'}>
@@ -193,35 +198,44 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: () => voi
 						value={deployed.delta}
 						sign={true}
 						format={'(%s)'}
-						className={'text-xs'} />}
+						className={'text-xs'}
+						animate={true} />}
 					<Percentage
 						simulated={deployed.simulated}
-						value={deployed.value} />
+						value={deployed.value}
+						animate={true} />
 				</div>
 			</Row>
-			<Row label={'Free assets'} alt={true}>
+			<Row label={<div className={'w-1/3 whitespace-nowrap'}>{'Deposit limit'}</div>} alt={true}>
+				{vault.warnings?.some(w => w.key === 'noDepositLimit') && <div className={'w-1/3 text-xxs text-center attention-text'}>
+					{'deposit limit = 0'}
+				</div>}
+				<Tokens 
+					value={vault.depositLimit} 
+					decimals={vault.token.decimals || 18}
+					className={'w-1/3'} />
+			</Row>
+			<Row label={<div className={'w-1/3'}>{'Strategies'}</div>}>
+				{vault.warnings?.some(w => w.key === 'noHealthCheck') && <div className={'w-1/3 text-xxs text-center attention-text whitespace-nowrap'}>
+					{'missing health check'}
+				</div>}
+				<Field value={vault.withdrawalQueue.length} className={'w-1/3'} />
+			</Row>
+			<Row label={'Rewards (USD)'} alt={true}>
 				<div className={'flex items-center gap-2'}>
-					{freeAssets.simulated && <Tokens
-						simulated={freeAssets.simulated}
-						value={freeAssets.delta}
-						decimals={vault.token.decimals || 18}
-						sign={true}
-						format={'(%s)'}
-						className={'text-xs'} />}
-					<Tokens 
-						simulated={freeAssets.simulated} 
-						value={freeAssets.value} 
-						decimals={vault.token.decimals || 18} />
+					<Number
+						simulated={false}
+						animate={true}
+						value={vault.rewardsUsd || 0}
+						compact={true}
+						decimals={2} />
 				</div>
-			</Row>
-			<Row label={'Strategies in queue'}>
-				<Field value={vault.withdrawalQueue.length} />
 			</Row>
 		</TileButton>
 		<div className={'flex items-center gap-2'}>
 			<FavoriteButton vault={vault} selected={hasBlocks} className={'w-1/4 h-10 py-3 flex items-center justify-center'} />
 			<TileButton selected={hasBlocks} onClick={() => window.open(getAddressExplorer(vault.network.chainId, vault.address), '_blank', 'noreferrer')} 
-				className={'w-1/2 h-10 py-3 flex items-center justify-center font-mono text-sm'}>
+				className={'w-1/2 h-10 py-3 flex items-center justify-center text-sm'}>
 				{truncateAddress(vault.address)}
 			</TileButton>
 			<CopyButton clip={vault.address} selected={hasBlocks} className={'w-1/4 h-10 py-3 flex items-center justify-center'} />

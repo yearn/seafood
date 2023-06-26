@@ -16,7 +16,8 @@ export interface Strategy {
     totalLoss: BigNumber,
     withdrawalQueuePosition: number,
     healthCheck: string,
-    doHealthCheck: boolean
+    doHealthCheck: boolean,
+    keeper: string
   },
   risk: {
     riskGroup: string,

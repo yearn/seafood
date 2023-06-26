@@ -1,61 +1,85 @@
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import * as Comlink from 'comlink';
-import * as ySeafood from './types';
-import {api, SyncStatus} from './worker';
+import * as Seafood from './types';
+import {api} from './worker/index';
 import {hydrateBigNumbersRecursively} from '../../utils/utils';
 import useLocalStorage from 'use-local-storage';
+import {RefreshStatus} from './worker/types';
 
-interface IVaultsContext {
-	loading: boolean,
+interface VaultsContext {
+	refreshing: boolean,
 	cachetime: Date,
-	vaults: ySeafood.Vault[],
-	status: SyncStatus[],
+	vaults: Seafood.Vault[],
+	status: RefreshStatus[],
 	ytvl: number,
 	refresh: () => void
 }
 
-const	VaultsContext = createContext<IVaultsContext>({} as IVaultsContext);
+function useWorker() {
+	return useMemo(() => {
+		if(typeof SharedWorker !== 'undefined') {
+			const worker = new SharedWorker(new URL('./worker/shared.ts', import.meta.url));
+			return Comlink.wrap<typeof api>(worker.port);
+		} else {
+			const worker = new Worker(new URL('./worker/isolated.ts', import.meta.url));
+			return Comlink.wrap<typeof api>(worker);
+		}
+	}, []);
+}
 
-export const useVaults = () => useContext(VaultsContext);
-
+const	vaultsContext = createContext<VaultsContext>({} as VaultsContext);
+export const useVaults = () => useContext(vaultsContext);
 export default function VaultsProvider({children}: {children: ReactNode}) {
-	const [loading, setLoading] = useState(false);
+	const [refreshing, setRefreshing] = useState(false);
 	const [cachetime, setCachetime] = useLocalStorage<Date>('context/usevaults/cachetime', new Date(0), {
 		parser: str => new Date(JSON.parse(str))
 	});
-	const [vaults, setVaults] = useState<ySeafood.Vault[]>([]);
-	const [status, setStatus] = useState<SyncStatus[]>([]);
+	const [vaults, setVaults] = useState<Seafood.Vault[]>([]);
+	const [status, setStatus] = useState<RefreshStatus[]>([]);
+	const worker = useWorker();
 
-	const worker = useMemo(() => {
-		const worker = new Worker(new URL('./worker.ts', import.meta.url));
-		return Comlink.wrap<typeof api>(worker);
-	}, []);
-
-	const callbacks = useMemo(() => {
+	const callback = useMemo(() => {
 		return {
-			startRefresh: () => {
-				setLoading(true);
+			onRefresh: () => {
+				setRefreshing(true);
 			},
-			cacheReady: (date: Date, vaults: ySeafood.Vault[], status: SyncStatus[]) => {
-				hydrateBigNumbersRecursively(vaults);
-				setCachetime(date);
-				setLoading(false);
-				setVaults(vaults);
+			onStatus: (status: RefreshStatus[]) => {
 				setStatus(status);
+			},
+			onVaults: (vaults: Seafood.Vault[]) => {
+				hydrateBigNumbersRecursively(vaults);
+				setVaults(vaults);
+			},
+			onRefreshed: (date: Date) => {
+				setCachetime(date);
+				setRefreshing(false);
 			}
 		};
 	}, [setCachetime]);
 
 	useEffect(() => {
+		const callbackProxy = Comlink.proxy(callback);
+		worker.pushCallback(callbackProxy);
+
 		if(process.env.NODE_ENV === 'development') {
 			worker.ahoy().then(result => console.log(result));
 		}
-		worker.start({refreshInterval: 5 * 60 * 1000}, Comlink.proxy(callbacks));
-	}, [worker, callbacks]);
+
+		worker.requestStatus();
+		worker.requestVaults();
+		worker.isRefreshing().then(result => setRefreshing(result));
+		worker.isRunning().then(result => {
+			if(!result) worker.start({refreshInterval: 5 * 60 * 1000});
+		});
+
+		return () => {
+			worker.removeCallback(callbackProxy);
+		};
+	}, [worker, callback]);
 
 	const refresh = useCallback(() => {
-		worker.refresh(Comlink.proxy(callbacks));
-	}, [worker, callbacks]);
+		worker.refresh();
+	}, [worker]);
 
 	const ytvl = useMemo(() => {
 		return vaults
@@ -63,12 +87,12 @@ export default function VaultsProvider({children}: {children: ReactNode}) {
 			.reduce((a, b) => a + b, 0);
 	}, [vaults]);
 
-	return <VaultsContext.Provider value={{
-		loading,
+	return <vaultsContext.Provider value={{
+		refreshing,
 		cachetime,
 		vaults,
 		status,
 		ytvl,
 		refresh
-	}}>{children}</VaultsContext.Provider>;
+	}}>{children}</vaultsContext.Provider>;
 }

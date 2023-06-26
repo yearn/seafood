@@ -1,9 +1,10 @@
 import React from 'react';
 import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
-import {formatNumber, formatPercent, formatCurrency, getTxExplorer} from '../../utils/utils';
+import {formatPercent, getTxExplorer} from '../../utils/utils';
 import {A} from '../controls';
 import dayjs from 'dayjs';
 import EigenPhi from './EigenPhi';
+import {Number} from '../controls/Fields';
 
 function ColumnHeader({children}) {
 	return <th className={'text-right first:text-left'}>{children}</th>;
@@ -37,8 +38,8 @@ function HarvestHistory({history}){
 										<EigenPhi tx={e.txn_hash} />
 									</div>
 								</Cell>
-								<Cell>{formatNumber(parseFloat(e.gain), 5)}</Cell>
-								<Cell>{formatCurrency(parseFloat(e.want_gain_usd))}</Cell>
+								<Cell><Number value={parseFloat(e.gain)} decimals={4} compact={true} /></Cell>
+								<Cell><Number value={parseFloat(e.want_gain_usd)} decimals={4} compact={true} /></Cell>
 								<Cell>{formatPercent(parseFloat(e.rough_apr_pre_fee))}</Cell>
 							</tr>;
 						})}
@@ -67,8 +68,8 @@ function HarvestHistory({history}){
 									<EigenPhi tx={e.txn_hash} />
 								</div>
 							</Cell>
-							<Cell>{formatNumber(parseFloat(e.gain), 5)}</Cell>
-							<Cell>{formatCurrency(parseFloat(e.want_gain_usd))}</Cell>
+							<Cell><Number value={parseFloat(e.gain)} decimals={4} compact={true} /></Cell>
+							<Cell><Number value={parseFloat(e.want_gain_usd)} decimals={4} compact={true} /></Cell>
 							<Cell>{formatPercent(parseFloat(e.rough_apr_pre_fee))}</Cell>
 						</tr>;
 					})}

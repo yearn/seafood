@@ -6,11 +6,12 @@ import {usePowertools} from '../Powertools';
 
 export default function Vaults() {
 	const {overpassClassName} = useChrome();
-	const {setLeftPanel} = usePowertools();
+	const {setLeftPanelKey, setLeftPanel} = usePowertools();
 
 	useEffect(() => {
+		setLeftPanelKey('vaults-filter');
 		setLeftPanel(<Filter />);
-	}, [setLeftPanel]);
+	}, [setLeftPanelKey, setLeftPanel]);
 
 	return <>
 		<div className={'sm:hidden w-full flex flex-col'}>

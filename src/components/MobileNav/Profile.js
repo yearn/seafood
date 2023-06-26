@@ -24,7 +24,7 @@ export default function Profile() {
 		group relative flex flex-col items-center justify-center`}>
 		<div className={`
 		aspect-square w-28
-		flex items-center justify-center`} title={'Sign in using Github'}>
+		flex items-center justify-center`} title={'Github Login'}>
 			<TbBrandGithub className={`
 				text-4xl sm:text-2xl
 				text-selected-900 group-hover:text-selected-900
@@ -36,7 +36,7 @@ export default function Profile() {
       flex items-center justify-center`}>
 			<div className={'w-fit h-fit flex flex-col'}>
 				<Button onClick={login}>
-					{'Sign in with Github'}
+					{'Github Login'}
 				</Button>
 				<Lux className={`
 					w-full h-fit px-16 py-6

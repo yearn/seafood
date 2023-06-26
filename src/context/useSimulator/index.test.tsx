@@ -11,32 +11,32 @@ import BlocksProvider, { BlocksContext, useBlocks } from './BlocksProvider';
 import SimulatorStatusProvider from './SimulatorStatusProvider';
 
 const mocks = {
-	vault: {
+	vaults: [{
 		address: '0xdA816459F1AB5631232FE5e97a05BBBb94970c95',
 		governance: '0xFEB4acf3df3cDEA7399794D0869ef76A6EfAff52',
 		performanceFee: BigNumber.from(2000),
 		managementFee: ethers.constants.Zero,
 		version: '0.4.3',
-		network: {chainId: 1}
-	} as Vault,
-	strategy: {
-		a: { 
-			address: '0x1676055fE954EE6fc388F9096210E5EbE0A9070c',
-			totalDebt: BigNumber.from(ethers.utils.parseEther('100')),
-			estimatedTotalAssets: BigNumber.from(ethers.utils.parseEther('102')),
-			totalGain: BigNumber.from(ethers.utils.parseEther('2')),
-			totalLoss: BigNumber.from(ethers.utils.parseEther('0')),
-			lastReport: BigNumber.from((Math.round(Date.now() / 1000) - (7 * 24 * 60 * 60))),
-			delegatedAssets: ethers.constants.Zero,
-			network: {chainId: 1}
-		} as Strategy,
-	}
+		network: {chainId: 1},
+		withdrawalQueue: [
+			{ 
+				address: '0x1676055fE954EE6fc388F9096210E5EbE0A9070c',
+				totalDebt: BigNumber.from(ethers.utils.parseEther('100')),
+				estimatedTotalAssets: BigNumber.from(ethers.utils.parseEther('102')),
+				totalGain: BigNumber.from(ethers.utils.parseEther('2')),
+				totalLoss: BigNumber.from(ethers.utils.parseEther('0')),
+				lastReport: BigNumber.from((Math.round(Date.now() / 1000) - (7 * 24 * 60 * 60))),
+				delegatedAssets: ethers.constants.Zero,
+				network: {chainId: 1}
+			} as Strategy
+		]
+	} as Vault]
 };
 
 const probe = {
 	name: 'mock' as 'mock',
-	start: jest.fn(async (provider: providers.JsonRpcProvider) => {}),
-	stop: jest.fn(async (results, provider: providers.JsonRpcProvider) => {}),
+	start: jest.fn(async (vaults: Vault[], provider: providers.JsonRpcProvider) => {}),
+	stop: jest.fn(async (results, vaults: Vault[], provider: providers.JsonRpcProvider) => {}),
 };
 
 export default function MockProbesProvider({children}: {children: ReactNode}) {
@@ -97,7 +97,7 @@ describe('<SimulatorProvider />', () => {
 
 	test('Simulates nothing', async () => {
 		await act(async () => {
-			await render.result.current.simulator.simulate(provider);
+			await render.result.current.simulator.simulate(mocks.vaults, provider);
 		});
 
 		const {simulator} = render.result.current;
@@ -110,11 +110,11 @@ describe('<SimulatorProvider />', () => {
 
 	test('Simulates blocks and gives results', async () => {
 		await act(async () => {
-			await render.result.current.blocks.addHarvest(mocks.vault, mocks.strategy.a);
+			await render.result.current.blocks.addHarvest(mocks.vaults[0], mocks.vaults[0].withdrawalQueue[0]);
 		});
 
 		await act(async () => {
-			await render.result.current.simulator.simulate(provider);
+			await render.result.current.simulator.simulate(mocks.vaults, provider);
 		});
 
 		const {simulator} = render.result.current;
@@ -129,11 +129,11 @@ describe('<SimulatorProvider />', () => {
 
 	test('Simulates blocks failing', async () => {
 		await act(async () => {
-			await render.result.current.blocks.addDebtRatioUpdate(mocks.vault, mocks.strategy.a, 1_000_000_000);
+			await render.result.current.blocks.addDebtRatioUpdate(mocks.vaults[0], mocks.vaults[0].withdrawalQueue[0], 1_000_000_000);
 		});
 
 		await act(async () => {
-			await render.result.current.simulator.simulate(provider);
+			await render.result.current.simulator.simulate(mocks.vaults, provider);
 		});
 
 		const {simulator} = render.result.current;
@@ -148,11 +148,11 @@ describe('<SimulatorProvider />', () => {
 
 	test('Resets the simulator', async () => {
 		await act(async () => {
-			await render.result.current.blocks.addHarvest(mocks.vault, mocks.strategy.a);
+			await render.result.current.blocks.addHarvest(mocks.vaults[0], mocks.vaults[0].withdrawalQueue[0]);
 		});
 
 		await act(async () => {
-			await render.result.current.simulator.simulate(provider);
+			await render.result.current.simulator.simulate(mocks.vaults, provider);
 			await render.result.current.simulator.reset();
 		});
 

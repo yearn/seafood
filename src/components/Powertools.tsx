@@ -1,4 +1,4 @@
-import React, {ReactNode, createContext, useCallback, useContext, useState} from 'react';
+import React, {ReactNode, createContext, useContext, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import {useChrome} from './Chrome';
 import Simulator from './Simulator';
@@ -9,9 +9,10 @@ interface PowertoolsContext {
 	setEnable: (enable: boolean) => void,
 	showSimulator: boolean,
 	setShowSimulator: (show: boolean) => void,
+	leftPanelKey: string,
+	setLeftPanelKey: (key: string) => void,
 	leftPanel: ReactNode | undefined,
 	setLeftPanel: (Component: ReactNode | undefined) => void,
-	leftPanelNonce: number,
 	bottomPanel: ReactNode | undefined,
 	setBottomPanel: (Component: ReactNode | undefined) => void
 }
@@ -21,21 +22,15 @@ export const usePowertools = () => useContext(powertoolsContext);
 export function PowertoolsProvider({children}: {children: ReactNode}) {
 	const [enable, setEnable] = useState(true);
 	const [showSimulator, setShowSimulator] = useState(true);
+	const [leftPanelKey, setLeftPanelKey] = useState<string>('');
 	const [leftPanel, setLeftPanel] = useState<ReactNode | undefined>();
-	const [leftPanelNonce, setLeftPanelNonce] = useState(0);
 	const [bottomPanel, setBottomPanel] = useState<ReactNode | undefined>();
-
-	const setLeftPaneAndIncrementNonce = useCallback((panel: ReactNode | undefined) => {
-		setLeftPanel(panel);
-		setLeftPanelNonce(current => current + 1);
-	}, [setLeftPanel, setLeftPanelNonce]);
 
 	return <powertoolsContext.Provider value={{
 		enable, setEnable,
 		showSimulator, setShowSimulator,
-		leftPanel, 
-		setLeftPanel: setLeftPaneAndIncrementNonce,
-		leftPanelNonce,
+		leftPanelKey, setLeftPanelKey,
+		leftPanel, setLeftPanel,
 		bottomPanel, 
 		setBottomPanel}}>
 		{children}
@@ -45,8 +40,9 @@ export function PowertoolsProvider({children}: {children: ReactNode}) {
 export default function Powertools({className}: {className: string}) {
 	const {
 		enable, 
-		showSimulator, 
-		leftPanel, leftPanelNonce,
+		showSimulator,
+		leftPanelKey,
+		leftPanel,
 		bottomPanel
 	} = usePowertools();
 	const {overpassClassName} = useChrome();
@@ -59,7 +55,7 @@ export default function Powertools({className}: {className: string}) {
 				<div className={`relative h-full ${showSimulator ? 'w-[50%]' : 'w-full'}`}>
 					<AnimatePresence initial={false}>
 						{leftPanel && <motion.div
-							key={leftPanelNonce}
+							key={leftPanelKey}
 							transition={{type: 'spring', stiffness: 2000, damping: 32}}
 							initial={{y: 4, opacity: 0}}
 							animate={{y: 0, opacity: 1}}

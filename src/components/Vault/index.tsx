@@ -20,12 +20,13 @@ function Layout() {
 	const {blocks} = useBlocks();
 	const {results: simulatorResults} = useSimulator();
 	const mediumBreakpoint = useMediumBreakpoint();
-	const {setLeftPanel} = usePowertools();
+	const {setLeftPanelKey, setLeftPanel} = usePowertools();
 
 	useEffect(() => {
 		if(!(mediumBreakpoint && vault)) return;
+		setLeftPanelKey(vault.name);
 		setLeftPanel(<Name vault={vault} className={'pl-20 pr-24'} />);
-	}, [mediumBreakpoint, vault, setLeftPanel]);
+	}, [mediumBreakpoint, vault, setLeftPanelKey, setLeftPanel]);
 
 	useEffect(() => {
 		scrollToTop();
@@ -40,7 +41,7 @@ function Layout() {
 
 	if(!vault) return <div className={`
 		fixed inset-0 w-full h-screen flex items-center justify-center`}>
-		<Spinner />
+		<Spinner size={16} bloom={18} />
 	</div>;
 
 	if(mediumBreakpoint) return <div className={'relative w-full'}>
