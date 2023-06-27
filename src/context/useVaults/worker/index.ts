@@ -97,7 +97,6 @@ async function refresh() {
 
 	sort(latest);
 	hydrateBigNumbersRecursively(latest);
-	markupWarnings(latest);
 	aggregateRiskGroupTvls(latest);
 	await putVaults(latest);
 	await requestVaults();
@@ -150,6 +149,7 @@ async function refresh() {
 		});
 	}
 
+	markupWarnings(latest);
 	await putVaults(latest);
 	await requestVaults();
 
@@ -399,6 +399,8 @@ async function createStrategyMulticalls(vaults: yDaemon.Vault[], chain: Seafood.
 
 function markupWarnings(vaults: Seafood.Vault[]) {
 	vaults.forEach(vault => {
+		vault.warnings = [];
+
 		if(vault.depositLimit.eq(0)) {
 			vault.warnings.push({key: 'noDepositLimit', message: 'This vault cannot take deposits until its limit is raised.'});
 		}
