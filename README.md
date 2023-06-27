@@ -46,10 +46,10 @@ cp env.example .env
   EXPLORER_API_FOR_250=
   EXPLORER_API_FOR_10=
   EXPLORER_API_FOR_42161=
-  RPC_FOR_1=
-  RPC_FOR_250=
-  RPC_FOR_10=
-  RPC_FOR_42161=
+  RPC_URI_FOR_1=
+  RPC_URI_FOR_250=
+  RPC_URI_FOR_10=
+  RPC_URI_FOR_42161=
   ```
   To get a token, first create an account on https://tenderly.co. Then from your tenderly dashboard go to Settings, Authorization, Generate Access Token. Your tenderly account also needs access to yearn's tenderly organization account. To get access, ask someone at yearn for an invite.
 
