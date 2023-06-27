@@ -1,6 +1,4 @@
 import {BigNumber} from 'ethers';
-import {medianExlcudingTvlImpact, riskGroupNameToId} from './risk';
-import * as yDaemon from './types.ydaemon';
 
 export interface Chain {
 	id: number,
@@ -29,17 +27,6 @@ export interface Apy {
 	[-30]: number,
 	inception: number
 }
-
-export const defaultVault = {
-	...({} as Vault),
-	network: {} as Network,
-	token: {} as Token,
-	apy: {} as Apy,
-	tvls: {
-		dates: [],
-		tvls: []
-	} as TVLHistory
-};
 
 export interface Warning {
 	key: 'noHealthCheck' | 'noDepositLimit',
@@ -77,6 +64,20 @@ export interface TVLHistory {
 	dates: number[],
 	tvls: number[]
 }
+
+export const defaultVault = {
+	...({} as Vault),
+	network: {} as Network,
+	token: {} as Token,
+	apy: {} as Apy,
+	strategies: [],
+	withdrawalQueue: [],
+	warnings: [],
+	tvls: {
+		dates: [],
+		tvls: []
+	} as TVLHistory
+};
 
 export interface Strategy {
 	address: string,
@@ -119,6 +120,14 @@ export interface Reward {
 	amountUsd: number,
 }
 
+export const defaultStrategy = {
+	...({} as Strategy),
+	risk: {} as RiskReport,
+	network: {} as Network,
+	lendStatuses: [],
+	rewards: []
+};
+
 export interface RiskCategories {
 	TVLImpact: number,
 	auditScore: number,
@@ -151,91 +160,4 @@ export interface RiskReport {
 	},
 	riskDetails: RiskCategories,
 	tvl: number
-}
-
-export function parseVault(vault: yDaemon.Vault, chain: Chain) : Vault {
-	return {
-		address: vault.address,
-		name: vault.name,
-		price: vault.tvl.price,
-		network: {
-			chainId: chain.id,
-			name: chain.name
-		},
-		version: vault.version,
-		want: vault.token.address,
-		token: {...vault.token},
-		governance: vault.details.governance,
-		totalAssets: undefined,
-		availableDepositLimit: undefined,
-		lockedProfitDegradation: undefined,
-		totalDebt: undefined,
-		decimals: vault.decimals,
-		debtRatio: undefined,
-		managementFee: BigNumber.from(vault.details.managementFee),
-		performanceFee: BigNumber.from(vault.details.performanceFee),
-		depositLimit: BigNumber.from(vault.details.depositLimit),
-		activation: BigNumber.from(vault.inception),
-		strategies: vault.strategies
-			.map(strategy => parseStrategy(vault, strategy, chain)),
-		withdrawalQueue: vault.strategies
-			.filter(s => s.details.withdrawalQueuePosition > -1)
-			.sort((a, b) => a.details.withdrawalQueuePosition - b.details.withdrawalQueuePosition)
-			.map(strategy => parseStrategy(vault, strategy, chain)),
-		apy: {
-			type: vault.apy.type,
-			gross: vault.apy.gross_apr,
-			net: vault.apy.net_apy,
-			[-7]: vault.apy.points.week_ago,
-			[-30]: vault.apy.points.month_ago,
-			inception: vault.apy.points.inception
-		},
-		tvls: {} as TVLHistory,
-		rewardsUsd: 0,
-		warnings: []
-	};
-}
-
-export function parseStrategy(vault: yDaemon.Vault, strategy: yDaemon.Strategy, chain: Chain) : Strategy {
-	return {
-		address: strategy.address,
-		name: strategy.name,
-		description: strategy.description,
-		risk: {
-			...strategy.risk, 
-			riskGroupId: riskGroupNameToId(strategy.risk.riskGroup),
-			tvl: 0,
-			riskDetails: {
-				...strategy.risk.riskDetails,
-				median: medianExlcudingTvlImpact({...strategy.risk.riskDetails, median: 0})
-			}
-		},
-		network: {
-			chainId: chain.id,
-			name: chain.name
-		},
-		delegatedAssets: BigNumber.from(strategy.details.delegatedAssets || 0),
-		estimatedTotalAssets: BigNumber.from(strategy.details.estimatedTotalAssets || 0),
-		performanceFee: strategy.details.performanceFee,
-		activation: strategy.details.activation,
-		debtRatio: BigNumber.from(strategy.details.debtRatio || 0),
-		lastReport: strategy.details.lastReport,
-		totalDebt: BigNumber.from(strategy.details.totalDebt || 0),
-		totalDebtUSD: totalDebtUSD(vault, strategy),
-		totalGain: BigNumber.from(strategy.details.totalGain || 0),
-		totalLoss: BigNumber.from(strategy.details.totalLoss || 0),
-		withdrawalQueuePosition: strategy.details.withdrawalQueuePosition,
-		lendStatuses: undefined,
-		healthCheck: strategy.details.healthCheck,
-		doHealthCheck: strategy.details.doHealthCheck,
-		tradeFactory: undefined,
-		keeper: strategy.details.keeper || undefined,
-		rewards: []
-	};
-}
-
-function totalDebtUSD(vault: yDaemon.Vault, strategy: yDaemon.Strategy) {
-	if(!strategy.details.totalDebt) return 0;
-	const debt = BigNumber.from(strategy.details.totalDebt || 0);
-	return vault.tvl.price * debt.div(BigNumber.from('10').pow(vault.decimals)).toNumber();
 }

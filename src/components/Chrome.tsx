@@ -73,7 +73,7 @@ export default function ChromeProvider({children}: {children: ReactNode}) {
 				sm:bg-gradient-radial-to-br sm:from-secondary-100 sm:via-secondary-50 sm:to-secondary-50
 				dark:bg-gradient-to-t dark:from-indigo-950 dark:to-black
 				dark:sm:bg-gradient-radial-to-tl dark:sm:from-indigo-950 dark:sm:via-secondary-950 dark:sm:to-black`} />
-			<div ref={scrollContainer} className={`
+			<div id={'scrollcontainer'} ref={scrollContainer} className={`
 				absolute z-10 w-full h-screen
 				pl-0 sm:pl-6 flex sm:flex-col items-start
 				text-secondary-900 dark:text-secondary-200
