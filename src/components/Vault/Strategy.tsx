@@ -55,7 +55,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 
 	const latestHarvest = useMemo(() => {
 		return {
-			date: new Date(BigNumber.from(strategy.lastReport).mul(1000).toNumber()),
+			date: new Date(strategy.lastReport.mul(1000).toNumber()),
 			tx: reports.length > 0 ? reports[0].txn_hash : undefined
 		};
 	}, [strategy, reports]);
@@ -190,11 +190,11 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 	}, [blocks, vault, strategy, addSetDoHealthCheck, removeSetDoHealthCheck]);
 
 	const nonZeroRewards = useMemo(() => {
-		return strategy.rewards.filter(r => r.amount.gt(DUST)) || 0;
+		return strategy.rewards?.filter(r => r.amount.gt(DUST)) || 0;
 	}, [strategy]);
 
 	const totalRewardsUsd = useMemo(() => {
-		return strategy.rewards.map(r => r.amountUsd).reduce((acc, reward) => acc + reward, 0) || 0;
+		return strategy.rewards?.map(r => r.amountUsd).reduce((acc, reward) => acc + reward, 0) || 0;
 	}, [strategy]);
 
 	return <Accordian

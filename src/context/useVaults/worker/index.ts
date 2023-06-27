@@ -6,9 +6,9 @@ import config from '../../../config.json';
 import * as abi from '../../../abi';
 import * as yDaemon from '../types.ydaemon';
 import * as Seafood from '../types';
-import deepMerge from '../../../utils/deepMerge';
 import {hydrateBigNumbersRecursively} from '../../../utils/utils';
 import {Callback, StartOptions, RefreshStatus, StrategyMulticallUpdate, StrategyRewardsUpdate, TVLUpdates, Tradeable, VaultMulticallUpdate} from './types';
+import merge from './merge';
 
 
 export const api = {
@@ -89,8 +89,7 @@ async function refresh() {
 	for(const [index, chain] of config.chains.entries()) {
 		latest.push(...(vaultverse[index] || []).map(vault => {
 			const current = currentVaults.find(v => v.network.chainId === chain.id && v.address === vault.address);
-			const fresh = Seafood.parseVault(vault, chain);
-			const update = deepMerge(fresh, current || Seafood.defaultVault) as Seafood.Vault;
+			const update = merge(current || Seafood.defaultVault, vault, chain) as Seafood.Vault;
 			update.tvls = tvlUpdates[chain.id][vault.address];
 			return update;
 		}));
