@@ -1,5 +1,5 @@
 # Seafood
-Yearn vault dashboard and simulator
+Seafood is a vault monitoring dashboard that simulates operations like harvests and allocation changes while tracking asset flows and APY changes.
 
 ![mechafish-md](https://github.com/yearn/seafood/assets/89237203/794251a0-6ef6-407a-a890-467e9a7b8225)
 
