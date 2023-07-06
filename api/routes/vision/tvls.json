@@ -45,7 +45,7 @@
 				"type": "prometheus"
 			},
 			"editorMode": "code",
-			"expr": "yearn_vault{param=\"tvl\", experimental=\"false\", network=\"OPT\"}",
+			"expr": "yearn_vault{param=\"tvl\", experimental=\"false\", network=\"OPTI\"}",
 			"hide": false,
 			"interval": "1w",
 			"legendFormat": "{{vault}} - {{network}}",
@@ -65,7 +65,7 @@
 				"type": "prometheus"
 			},
 			"editorMode": "code",
-			"expr": "yearn_vault{param=\"tvl\", experimental=\"false\", network=\"ARRB\"}",
+			"expr": "yearn_vault{param=\"tvl\", experimental=\"false\", network=\"ARB\"}",
 			"hide": false,
 			"interval": "1w",
 			"legendFormat": "{{vault}} - {{network}}",
