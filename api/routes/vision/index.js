@@ -8,7 +8,7 @@ const router = express.Router();
 const networkLabels = {
   ETH: 1,
   FTM: 250,
-  OPT: 10,
+  OPTI: 10,
   ARB: 42161
 };
 
