@@ -8,8 +8,8 @@ const router = express.Router();
 const networkLabels = {
   ETH: 1,
   FTM: 250,
-  OPT: 10,
-  ARRB: 42161
+  OPTI: 10,
+  ARB: 42161
 };
 
 router.get('/tvls', function(req, res, next) {
