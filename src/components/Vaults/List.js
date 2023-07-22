@@ -1,6 +1,7 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {useFilter} from './Filter/useFilter';
 import {useNavigate} from 'react-router-dom';
+import useKeypress from 'react-use-keypress';
 import Tile from './Tile';
 import {formatNumber} from '../../utils/utils';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -12,6 +13,14 @@ export default function List() {
 	const {filter, ready} = useFilter();
 	const frameCount = useMemo(() => Math.ceil(filter.length / FRAME_SIZE), [filter]);
 	const [framePointer, setFramePointer] = useState(0);
+
+	useKeypress(['Enter'], () => {
+		setTimeout(() => {
+			if(filter.length === 1){
+				navigate(`/vault/${filter[0].address}`);
+			}
+		}, 0);
+	});
 
 	const hasMoreFrames = useMemo(() => framePointer < frameCount - 1, [framePointer, frameCount]);
 
