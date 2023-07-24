@@ -33,7 +33,11 @@ export function FilterProvider({children}) {
 		if(!vaults.length) return [];
 
 		const result = vaults.filter(vault => {
-			if(query && !queryRe.test(vault.name)) return false;
+			const strategyFilter = vault.strategies.reduce((accumulatedTest, strategy) => {
+				return queryRe.test(strategy.address) || accumulatedTest;
+			}, false);
+			
+			if(query && !queryRe.test(vault.name) && !queryRe.test(vault.address) && !strategyFilter) return false;
 			if(chips.favorites && !favorites.vaults?.includes(vault.address)) return false;
 			if(!chips[vault.network.name]) return false;
 
