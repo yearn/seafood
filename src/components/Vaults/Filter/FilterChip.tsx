@@ -14,6 +14,7 @@ import {
 } from '@floating-ui/react';
 import {useChrome} from '../../Chrome';
 import {useMediumBreakpoint} from '../../../utils/breakpoints';
+import {elipsify} from '../../../utils/utils';
 
 export default function FilterChip({
 	hash,
@@ -85,7 +86,7 @@ export default function FilterChip({
 
 		text-sm capitalize outline-none
 		whitespace-nowrap`}>
-		{label}
+		{!mediumBreakpoint ? label : elipsify(label,6)}
 		{open && mediumBreakpoint && <FloatingFocusManager context={context} modal={false}>
 			<div ref={refs.setFloating} {...getFloatingProps()} className={`
 				z-[100] w-max p-8 ml-[32px]

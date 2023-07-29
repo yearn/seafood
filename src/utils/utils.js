@@ -165,6 +165,11 @@ function isEthAddress(string) {
 	return /0x[a-fA-F0-9]{40}/.test(string);
 }
 
+function elipsify(string, length) {
+	if(string.length <= length) return string;
+	return `${string.substring(0, length)}...`;
+}
+
 export {
 	chainId,
 	getChain,
@@ -185,5 +190,6 @@ export {
 	hydrateBigNumbersRecursively,
 	escapeRegex,
 	humanizeRiskCategory,
-	isEthAddress
+	isEthAddress,
+	elipsify
 };
