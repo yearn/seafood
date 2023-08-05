@@ -43,7 +43,7 @@ function TileButton({
 	className,
 	children
 }: {
-	onClick: () => void,
+	onClick: (event?: React.MouseEvent<HTMLDivElement>) => void,
 	selected?: boolean,
 	className: string,
 	children?: ReactNode
@@ -98,7 +98,7 @@ function CopyButton({clip, selected, className}: {clip: string, selected: boolea
 	</TileButton>;
 }
 
-export default function Tile({vault, onClick}: {vault: Vault, onClick: () => void}) {
+export default function Tile({vault, onClick}: {vault: Vault, onClick: (event?: React.MouseEvent<HTMLDivElement>) => void}) {
 	const {queryRe} = useFilter();
 	const {blocksForVault, computeVaultDr} = useBlocks();
 	const simulator = useSimulator();

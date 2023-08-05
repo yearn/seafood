@@ -13,6 +13,8 @@ import Vaults from './components/Vaults';
 import Vault from './components/Vault';
 import Risk from './components/Risk';
 import RiskGroup from './components/Risk/Group';
+import VyperExposure from './components/VyperExposure';
+import VyperVersionExposure from './components/VyperExposure/VyperVersionExposure';
 import Status from './components/Status';
 import SimulatorStatusProvider from './context/useSimulator/SimulatorStatusProvider';
 import BlocksProvider from './context/useSimulator/BlocksProvider';
@@ -51,6 +53,8 @@ function Router() {
 		<Route path={'/vault/:address'} element={<Vault />} />
 		<Route path={'/risk/*'} element={<Risk />} />
 		<Route path={'/risk/:group'} element={<RiskGroup />} />
+		<Route path={'/vyper-exposure/*'} element={<VyperExposure />} />
+		<Route path={'/vyper-exposure/:version'} element={<VyperVersionExposure />} />
 		<Route path={'/sandbox/*'} element={<Sandbox />} />
 		<Route path={'/status/*'} element={<Status />} />
 		<Route path={'/github/callback'} exact={true} element={<GithubCallback />} />

@@ -50,7 +50,7 @@ function ListItem({status, className} : {status: RefreshStatus, className: strin
 	}, [status]);
 
 	return <li className={`w-full pl-2 py-1 flex flex-grid grid-cols-3 justify-between gap-4 ${className}`}>
-		<div className={`w-32 ${colors.text}`}>{chain}</div>
+		<div className={`w-32 ${colors.text} whitespace-nowrap`}>{chain}</div>
 		<div className={`w-48 ${colors.text}`}>
 			{status.status === 'refreshing' ? <>{'~~~~~~~~'}</> : <TimeAgo date={status.timestamp} />}
 		</div>
@@ -66,7 +66,7 @@ function ListItem({status, className} : {status: RefreshStatus, className: strin
 }
 
 function Stage({title, status}: {title: string, status: RefreshStatus[]}) {
-	return <div>
+	return <div className={'p-6 bg-secondary-100 dark:bg-black'}>
 		<h2 className={'text-2xl'}>{title}</h2>
 		<ul className={'w-full flex flex-col gap-2'}>
 			{status.map((s, index) => 
@@ -96,7 +96,7 @@ export default function Status() {
 	}, [setEnable]);
 
 	return <div className={'w-full pt-6 sm:pt-0 pb-24 flex items-center justify-center'}>
-		<div className={'w-full sm:w-1/2 px-4 flex flex-col gap-8'}>
+		<div className={'w-full sm:w-3/4 px-2 sm:px-4 flex flex-col gap-8'}>
 			<div className={'w-full h-32 flex items-center justify-center'}>
 				<div className={'w-auto sm:w-1/2 pl-4 pr-6 sm:px-0 sm:pr-16 flex items-center justify-end'}>
 					<StatusLight size={20} bloom={24} />
@@ -106,10 +106,14 @@ export default function Status() {
 					<div className={'text-2xl'}>{message}</div>
 				</div>
 			</div>
-			<Stage title={'yDaemon'} status={ydaemon} />
-			<Stage title={'TVLs'} status={tvls} />
-			<Stage title={'Multicalls'} status={multicall} />
-			<Stage title={'Rewards'} status={rewards} />
+			<div className={`sm:px-6
+				grid grid-flow-row gap-2 grid-cols-1 
+				sm:gap-8 sm:grid-cols-2`}>
+				<Stage title={'yDaemon'} status={ydaemon} />
+				<Stage title={'TVLs'} status={tvls} />
+				<Stage title={'Multicalls'} status={multicall} />
+				<Stage title={'Rewards'} status={rewards} />
+			</div>
 		</div>
 	</div>;
 }

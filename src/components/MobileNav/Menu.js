@@ -51,6 +51,9 @@ export default function Menu({action}) {
 			<MenuItem>
 				<MenuLink to={'/risk'} label={'Risk'} altPathPatterns={['/risk/:group']}></MenuLink>
 			</MenuItem>
+			<MenuItem>
+				<MenuLink to={'/vyper-exposure'} label={'Vyper Expsoure'}></MenuLink>
+			</MenuItem>
 			<MenuItem />
 			<MenuItem>
 				<Profile />

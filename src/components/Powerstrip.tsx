@@ -96,6 +96,7 @@ export default function Powerstrip({className}: {className?: string}) {
 		{to: '/status', label: 'Status', altPathPatterns: []},
 		{to: '/', label: 'Vaults', altPathPatterns: ['/vault/:address']},
 		{to: '/risk', label: 'Risk', altPathPatterns: ['/risk/:group']},
+		{to: '/vyper-exposure', label: 'Vyper Exposure', altPathPatterns: ['/vyper-exposure/:version']},
 		{
 			onClick: profile ? logout : login,
 			label: !profile ? 'Github Login' : <div className={'relative w-full flex items-center justify-between'}>
@@ -111,7 +112,8 @@ export default function Powerstrip({className}: {className?: string}) {
 		<StatusLight key={0} />,
 		<Light key={1} link={links[1]} />,
 		<Light key={2} link={links[2]} />,
-		<LoginLight key={3} />
+		<Light key={3} link={links[3]} />,
+		<LoginLight key={4} />
 	];
 	
 	const MenuLinks = [
@@ -122,8 +124,9 @@ export default function Powerstrip({className}: {className?: string}) {
 		</MenuItem>,
 		<MenuItem key={1}><MenuLink link={links[1]} /></MenuItem>,
 		<MenuItem key={2}><MenuLink link={links[2]} /></MenuItem>,
-		<MenuItem key={3}>
-			<MenuLink link={{...links[3]}} />
+		<MenuItem key={3}><MenuLink link={links[3]} /></MenuItem>,
+		<MenuItem key={4}>
+			<MenuLink link={{...links[4]}} />
 		</MenuItem>
 	];
 
