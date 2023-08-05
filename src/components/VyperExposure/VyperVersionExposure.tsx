@@ -40,6 +40,7 @@ export default function VyperVersionExposure() {
 			setLeftPanel(<Header version={exposure.vyperVersion} vaults={exposure.vaults.length} tvl={exposure.tvl} />);
 		}
 		setShowSimulator(false);
+		return () => setShowSimulator(true);
 	}, [params, setLeftPanelKey, setLeftPanel, setShowSimulator, exposure]);
 
 	const frameCount = useMemo(() => Math.ceil((exposure?.vaults.length || 0) / FRAME_SIZE), [exposure]);
