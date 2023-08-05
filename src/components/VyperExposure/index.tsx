@@ -42,6 +42,10 @@ export function useExposureByVyperVersion() {
 			});
 		}
 
+		results.sort((a, b) => {
+			return b.tvl - a.tvl;
+		});
+
 		return results;
 	}, [mainnetVaults, vyperVersionToApiVersionMap]);
 }
