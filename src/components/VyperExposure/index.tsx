@@ -29,14 +29,13 @@ function useProgramVaults() {
 			const response = await fetch('/api/programs');
 			setPrograms(await response.json());
 		})();
-	}, []);
+	}, [setPrograms]);
 	return programs;
 }
 
 export function useExposureByVyperVersion() {
 	const {vaults} = useVaults();
 	const programs = useProgramVaults();
-	const mainnetVaults = useMemo(() => vaults.filter(v => v.network.chainId === 1), [vaults]);
 	const vyperVersionToApiVersionMap = useMemo(() => {
 		return Object.entries(apiToVyperVersionMap).map(([apiVersion, vyperVersion]) => ({
 			vyperVersion,
@@ -50,7 +49,7 @@ export function useExposureByVyperVersion() {
 		const _results = [] as Exposure[];
 
 		for(const vyperVersion of vyperVersionToApiVersionMap) {
-			const vaultsOfThisVersion = mainnetVaults.filter(v => v.version === vyperVersion.apiVersion);
+			const vaultsOfThisVersion = vaults.filter(v => v.version === vyperVersion.apiVersion);
 			const tvl = vaultsOfThisVersion.reduce((acc, v) => acc + (v.tvls?.tvls.slice(-1)[0] || 0), 0);
 			const result = _results.find(e => e.vyperVersion === vyperVersion.vyperVersion);
 			if(result) {
@@ -94,7 +93,7 @@ export function useExposureByVyperVersion() {
 		});
 
 		setResults(_results);
-	}, [mainnetVaults, vyperVersionToApiVersionMap, programs, setResults]);
+	}, [vaults, vyperVersionToApiVersionMap, programs, setResults]);
 
 	return results;
 }
