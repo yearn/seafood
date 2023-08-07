@@ -78,12 +78,12 @@ export function Bps(
 }
 
 export function Tokens(
-	{value, simulated, decimals, accuracy, sign, format, animate, className}
-	: {value: BigNumber, simulated?: boolean, decimals?: number, accuracy?: number, sign?: boolean, format?: string, animate?: boolean, className?: string}) {
+	{value, simulated, decimals, accuracy, sign, nonFinite, format, animate, className}
+	: {value: BigNumber, simulated?: boolean, decimals?: number, accuracy?: number, sign?: boolean, nonFinite?: string, format?: string, animate?: boolean, className?: string}) {
 	const result = useMemo(() => {
-		const _ = `${sign ? (value.lt(0) ? '' : '+') : ''}${formatTokens(value, decimals, accuracy || 2, true)}`;
+		const _ = `${sign ? (value.lt(0) ? '' : '+') : ''}${formatTokens(value, decimals, accuracy || 2, true, nonFinite)}`;
 		return format ? format.replace('%s', _) : _;
-	}, [value, decimals, accuracy, sign, format]);
+	}, [value, decimals, accuracy, sign, nonFinite, format]);
 	return <Field value={value} simulated={simulated} animate={animate} className={className}>
 		{result}
 	</Field>;

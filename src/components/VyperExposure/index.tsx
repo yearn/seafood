@@ -1,13 +1,41 @@
-import React, {useEffect, useMemo} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {usePowertools} from '../Powertools';
 import {useVaults} from '../../context/useVaults';
 import apiToVyperVersionMap from './api-to-vyper-version-map.json';
 import {Number} from '../controls/Fields';
 import {useNavigate} from 'react-router-dom';
+import {Vault, defaultVault} from '../../context/useVaults/types';
+import useLocalStorage from 'use-local-storage';
+
+interface Exposure {
+	vyperVersion: string, 
+	vaults: Vault[],
+	tvl: number
+}
+
+interface Program {
+	address: string;
+	name: string;
+	tvl: number;
+}
+
+function useProgramVaults() {
+	const [programs, setPrograms] = useLocalStorage<Program[]>(
+		'src/components/vyperexposure/programs', []
+	);
+
+	useEffect(() => {
+		(async () => {
+			const response = await fetch('/api/programs');
+			setPrograms(await response.json());
+		})();
+	}, [setPrograms]);
+	return programs;
+}
 
 export function useExposureByVyperVersion() {
 	const {vaults} = useVaults();
-	const mainnetVaults = useMemo(() => vaults.filter(v => v.network.chainId === 1), [vaults]);
+	const programs = useProgramVaults();
 	const vyperVersionToApiVersionMap = useMemo(() => {
 		return Object.entries(apiToVyperVersionMap).map(([apiVersion, vyperVersion]) => ({
 			vyperVersion,
@@ -15,18 +43,20 @@ export function useExposureByVyperVersion() {
 		})) as {vyperVersion: string, apiVersion: string}[];
 	}, []);
 
-	return useMemo(() => {
-		const results = [] as {vyperVersion: string, vaults: typeof mainnetVaults, tvl: number}[];
+	const [results, setResults] = useState<Exposure[]>([]);
+
+	useEffect(() => {
+		const _results = [] as Exposure[];
 
 		for(const vyperVersion of vyperVersionToApiVersionMap) {
-			const vaultsOfThisVersion = mainnetVaults.filter(v => v.version === vyperVersion.apiVersion);
+			const vaultsOfThisVersion = vaults.filter(v => v.version === vyperVersion.apiVersion);
 			const tvl = vaultsOfThisVersion.reduce((acc, v) => acc + (v.tvls?.tvls.slice(-1)[0] || 0), 0);
-			const result = results.find(e => e.vyperVersion === vyperVersion.vyperVersion);
+			const result = _results.find(e => e.vyperVersion === vyperVersion.vyperVersion);
 			if(result) {
 				result.vaults.push(...vaultsOfThisVersion);
 				result.tvl += tvl;
 			} else {
-				results.push({
+				_results.push({
 					vyperVersion: vyperVersion.vyperVersion,
 					vaults: vaultsOfThisVersion,
 					tvl
@@ -34,7 +64,23 @@ export function useExposureByVyperVersion() {
 			}
 		}
 
-		for(const result of results) {
+		if(programs.length > 0) {
+			const asVaults = programs.map(p => ({
+				...defaultVault, 
+				network: {chainId: 1, name: 'Ethereum'},
+				version: 'program',
+				address: p.address,
+				name: p.name,
+				tvls: {tvls: [p.tvl, p.tvl, p.tvl], dates: []}
+			}));
+			_results.push({
+				vyperVersion: '0.3.7',
+				vaults: asVaults,
+				tvl: programs.reduce((acc, p) => acc + p.tvl, 0)
+			});
+		}
+
+		for(const result of _results) {
 			result.vaults.sort((a, b) => {
 				const aTvl = a.tvls ? a.tvls.tvls.slice(-1)[0] : 0;
 				const bTvl = b.tvls ? b.tvls.tvls.slice(-1)[0] : 0;
@@ -42,12 +88,14 @@ export function useExposureByVyperVersion() {
 			});
 		}
 
-		results.sort((a, b) => {
+		_results.sort((a, b) => {
 			return b.tvl - a.tvl;
 		});
 
-		return results;
-	}, [mainnetVaults, vyperVersionToApiVersionMap]);
+		setResults(_results);
+	}, [vaults, vyperVersionToApiVersionMap, programs, setResults]);
+
+	return results;
 }
 
 export default function VyperExposure() {

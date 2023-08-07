@@ -173,7 +173,7 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: (event?: 
 						format={'(%s)'}
 						animate={true}
 						className={'text-xs'} />}
-					<Percentage simulated={apy.simulated} value={apy.value} animate={true} />
+					<Percentage simulated={apy.simulated} value={apy.value} animate={true} nonFinite={'na'} />
 				</div>
 			</Row>
 			<Row label={'Allocated'} alt={true}>
@@ -213,6 +213,7 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: (event?: 
 				<Tokens 
 					value={vault.depositLimit} 
 					decimals={vault.token.decimals || 18}
+					nonFinite={'na'}
 					className={'w-1/3'} />
 			</Row>
 			<Row label={<div className={'w-1/3'}>{'Strategies'}</div>}>
