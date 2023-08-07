@@ -68,7 +68,7 @@ Open a browser at http://localhost:3000
 ### backend
 `/api` - Resources for serving Seafood's backend api \
 `/api/routes/vision` - Facades over Yearn's vision api \
-`/api/routes/abi` - Smart contract abis with a twist of cache \
+`/api/routes/abi` - Smart contract abis \
 `/api/routes/getVaults` - Vault and strategy related data. (obsoleting) \
 `/api/routes/github` - Generate GitHub bearer tokens for Seafood users \
 `/api/routes/tenderly` - Generate Tenderly simulation forks \

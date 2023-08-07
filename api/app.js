@@ -11,6 +11,7 @@ var visionRouter = require('./routes/vision');
 var tenderlyRouter = require('./routes/tenderly');
 var abiRouter = require('./routes/abi');
 var tradeablesRouter = require('./routes/tradeables');
+var programsRouter = require('./routes/programs');
 
 var app = express();
 
@@ -31,6 +32,7 @@ app.use('/api/vision', visionRouter);
 app.use('/api/tenderly', tenderlyRouter);
 app.use('/api/abi', abiRouter);
 app.use('/api/tradeables', tradeablesRouter);
+app.use('/api/programs', programsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -57,6 +57,7 @@ export default function VyperVersionExposure() {
 		const frame = exposure.vaults.slice(0, (framePointer + 1) * FRAME_SIZE);
 		const result = frame.map((vault, index) => {
 			return <Tile key={index} vault={vault} onClick={(event?: React.MouseEvent<HTMLDivElement>) => {
+				if(vault.version === 'program') return;
 				if(event && (event.ctrlKey || event.shiftKey || event.metaKey)) {
 					window.open(`/vault/${vault.address}`, '_blank');
 				} else {

@@ -102,8 +102,8 @@ function formatCurrency(number, currency = 'USD', nonFinite = '∞') {
 		return nonFinite;
 }
 
-function formatTokens(tokens, tokenDecimals, decimals = 2, compact = false) {
-	return formatNumber(tokens / 10 ** tokenDecimals, decimals, '∞', compact);
+function formatTokens(tokens, tokenDecimals, decimals = 2, compact = false, nonFinite = '∞') {
+	return formatNumber(tokens / 10 ** tokenDecimals, decimals, nonFinite, compact);
 }
 
 function highlightString(string, highlightRe) {
