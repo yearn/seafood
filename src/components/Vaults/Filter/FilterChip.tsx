@@ -73,7 +73,9 @@ export default function FilterChip({
 		{...getReferenceProps()} 
 		onClick={onClick}
 		className={`
-		h-10 flex items-center px-4 cursor-default border
+		h-10 items-center px-4 cursor-default border 
+
+		${ mediumBreakpoint ? 'max-w-[45%] block text-ellipsis overflow-hidden' : 'flex'}
 
 		${open && mediumBreakpoint
 		? `bg-selected-300 text-selected-800
