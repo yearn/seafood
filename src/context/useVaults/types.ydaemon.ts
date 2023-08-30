@@ -45,6 +45,7 @@ export interface Vault {
 	address: string,
   name: string,
   version: string,
+  endorsed: boolean,
   token: {
     address: string,
     name: string,
