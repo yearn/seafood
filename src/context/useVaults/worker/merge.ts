@@ -73,6 +73,7 @@ export default function merge(target: Seafood.Vault, source: yDaemon.Vault, chai
 		version: source.version,
 		want: source.token.address,
 		token: {...source.token},
+		endorsed: source.endorsed,
 		governance: source.details.governance,
 		decimals: source.decimals,
 		managementFee: BigNumber.from(source.details.managementFee),

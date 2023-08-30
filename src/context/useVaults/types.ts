@@ -41,6 +41,7 @@ export interface Vault {
 	version: string,
 	want: string,
 	token: Token,
+	endorsed: boolean,
 	governance: string,
 	totalAssets: BigNumber | undefined,
 	availableDepositLimit: BigNumber | undefined,
