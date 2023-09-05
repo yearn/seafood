@@ -28,7 +28,7 @@ function getEigenTxExplorer(hash) {
 }
 
 function getYearnExplorer(vault) {
-	return `https://yearn.finance/vaults/${vault.network.chainId}/${vault.address}`;
+	return `https://yearn.fi/vaults/${vault.network.chainId}/${vault.address}`;
 }
 
 function truncateAddress(address) {
