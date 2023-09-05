@@ -173,7 +173,7 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: (event?: 
 						format={'(%s)'}
 						animate={true}
 						className={'text-xs'} />}
-					<Percentage simulated={apy.simulated} value={apy.value} animate={true} nonFinite={'na'} />
+					<Percentage simulated={apy.simulated} value={apy.value} animate={true} nonFinite={'∞'} />
 				</div>
 			</Row>
 			<Row label={'Allocated'} alt={true}>
