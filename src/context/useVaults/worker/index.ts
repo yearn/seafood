@@ -422,7 +422,9 @@ async function fetchTvlUpdates() : Promise<TVLUpdates> {
 		return result;
 	} catch(error) {
 		await putStatus({...status, status: 'warning', error, timestamp: Date.now()});
-		return [];
+		const result = {} as TVLUpdates;
+		config.chains.forEach(chain => result[chain.id] = {});
+		return result;
 	}
 }
 

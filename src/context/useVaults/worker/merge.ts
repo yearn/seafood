@@ -3,8 +3,13 @@ import * as Seafood from '../types';
 import {BigNumber} from 'ethers';
 import {medianExlcudingTvlImpact, riskGroupNameToId} from '../risk';
 
+const borked = [
+	'0x718AbE90777F5B778B52D553a5aBaa148DD0dc5D'.toLowerCase()
+];
+
 function totalDebtUSD(vault: yDaemon.Vault, strategy: yDaemon.Strategy) {
 	if(!strategy.details.totalDebt) return 0;
+	if(borked.includes(vault.address.toLowerCase())) return 0;
 	const debt = BigNumber.from(strategy.details.totalDebt || 0);
 	return vault.tvl.price * debt.div(BigNumber.from('10').pow(vault.decimals)).toNumber();
 }
@@ -56,6 +61,10 @@ function mergeStrategies(target: Seafood.Strategy[], source: yDaemon.Strategy[],
 	return result;
 }
 
+function healthCheckApy(apy: number) {
+	return (apy > 100) ? NaN : apy;	// ie, yDaemon is returning 10_000% apy
+}
+
 export default function merge(target: Seafood.Vault, source: yDaemon.Vault, chain: Seafood.Chain) : Seafood.Vault {
 	const sourceWithdrawalQueue = source.strategies
 		.filter(s => s.details.withdrawalQueuePosition > -1)
@@ -84,8 +93,8 @@ export default function merge(target: Seafood.Vault, source: yDaemon.Vault, chai
 		withdrawalQueue: mergeStrategies(target.withdrawalQueue, sourceWithdrawalQueue, source, chain),
 		apy: {
 			type: source.apy.type,
-			gross: source.apy.gross_apr,
-			net: source.apy.net_apy,
+			gross: healthCheckApy(source.apy.gross_apr),
+			net: healthCheckApy(source.apy.net_apy),
 			[-7]: source.apy.points.week_ago,
 			[-30]: source.apy.points.month_ago,
 			inception: source.apy.points.inception

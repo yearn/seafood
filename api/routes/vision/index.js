@@ -12,7 +12,7 @@ const networkLabels = {
   ARB: 42161
 };
 
-router.get('/tvls', function(req, res, next) {
+router.get('/tvls', async function(req, res, next) {
   const now = Date.now();
   const hour = 60 * 60 * 1000;
   const day = 24 * hour;
@@ -30,15 +30,18 @@ router.get('/tvls', function(req, res, next) {
     }
   };
 
-	axios({
-		method: 'post',
-		headers: {
-			['Accept']: 'application/json',
-			['Content-Type']: 'application/json'
-		},
-		url: 'https://yearn.vision/api/ds/query',
-		data: query
-	}).then(response => {
+	try {
+		console.log('try???');
+		const response = await axios({
+			method: 'post',
+			headers: {
+				['Accept']: 'application/json',
+				['Content-Type']: 'application/json'
+			},
+			url: 'https://yearn.vision/api/ds/query',
+			data: query
+		});
+
 		if(response.data.error) {
 			res.status(500).send(response.data.error);
 		} else {
@@ -60,7 +63,10 @@ router.get('/tvls', function(req, res, next) {
 
 			res.status(200).send(result);
 		}
-	});
+
+	} catch(error) {
+		res.status(500).send('axios request failed');
+	}
 });
 
 module.exports = router;

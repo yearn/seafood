@@ -175,8 +175,8 @@ export default function Powerstrip({className}: {className?: string}) {
 								className={'text-xs'}>
 								{'github'}
 							</A>
-							<A href={'https://yearn.finance'}
-								title={'https://yearn.finance'}
+							<A href={'https://yearn.fi'}
+								title={'https://yearn.fi'}
 								target={'_blank'}
 								rel={'noreferrer'}
 								className={'text-xs'}>

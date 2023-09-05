@@ -69,7 +69,7 @@ export const breakdowns = {
 		[2]: 'Code has been running for 4+ months',
 		[3]: 'Code has been running between 1-4 months',
 		[4]: 'Code has been running for less than one month',
-		[5]: 'Code is new and did not go to ape tax before going live on yearn.finance'
+		[5]: 'Code is new and did not go to ape tax before going live on yearn.fi'
 	},
 	protocolSafetyScore: {
 		[1]: 'Protocols involved in contracts are trusted blue chip protocols with a good track record of security. For example: Maker, Uniswap, Curve, AAVE, and Compound. These protocols meet all the criteria specified in item 2 and more.',
