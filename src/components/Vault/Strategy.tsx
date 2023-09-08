@@ -55,10 +55,10 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 
 	const latestHarvest = useMemo(() => {
 		return {
-			date: new Date(strategy.lastReport.mul(1000).toNumber()),
+			date: reports.length > 0 ? new Date(parseInt(reports[0].timestamp) * 1000) : new Date(0),
 			tx: reports.length > 0 ? reports[0].txn_hash : undefined
 		};
-	}, [strategy, reports]);
+	}, [reports]);
 
 	const drUpdate = useMemo(() => {
 		if(!vault) return;
