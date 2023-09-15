@@ -279,7 +279,8 @@ async function fetchMulticallUpdates(vaultverse: yDaemon.Vault[][]) {
 		await putStatus(status);
 
 		const vaults = vaultverse[index];
-		const multicall = new Multicall({ethersProvider: providerFor(chain), tryAggregate: true});
+		const multicallAddress = config.chains.find(c => c.id === chain.id)?.multicall;
+		const multicall = new Multicall({ethersProvider: providerFor(chain), tryAggregate: true, multicallCustomContractAddress: multicallAddress});
 		const promises = [] as Promise<VaultMulticallUpdate[] | StrategyMulticallUpdate[]>[];
 
 		try {
@@ -467,7 +468,8 @@ async function fetchRewardsUpdates(multicallUpdates: (VaultMulticallUpdate|Strat
 
 async function fetchRewards(multicallUpdates: (VaultMulticallUpdate|StrategyMulticallUpdate)[], chain: Seafood.Chain) {
 	const strategyUpdates = multicallUpdates.filter(u => u.chainId === chain.id && u.type === 'strategy' && u.tradeFactory) as StrategyMulticallUpdate[];
-	const multicall = new Multicall({ethersProvider: providerFor(chain), tryAggregate: true});
+	const multicallAddress = config.chains.find(c => c.id === chain.id)?.multicall;
+	const multicall = new Multicall({ethersProvider: providerFor(chain), tryAggregate: true, multicallCustomContractAddress: multicallAddress});
 	const balanceMulticalls = [];
 
 	for(const strategyUpdate of strategyUpdates) {

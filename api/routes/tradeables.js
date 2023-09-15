@@ -1,6 +1,7 @@
 const ethers = require('ethers');
 const {Multicall} = require('ethereum-multicall');
 const express = require('express');
+const config = require('../../src/config.json');
 
 const tradeFactoryAbi = [
   'event TradeEnabled(address indexed seller, address indexed tokenIn, address indexed tokenOut)'
@@ -13,7 +14,8 @@ const erc20Abi = [
 ];
 
 async function fetchErc20s(provider, erc20Addresses) {
-  const multicall = new Multicall({ ethersProvider: provider });
+  const multicallAddress = config.chains.find(c => c.id === provider.network.chainId)?.multicall;
+  const multicall = new Multicall({ ethersProvider: provider, multicallCustomContractAddress: multicallAddress });
 
   const calls = erc20Addresses.map(address => ({
     reference: address,

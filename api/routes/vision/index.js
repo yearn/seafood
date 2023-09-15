@@ -7,8 +7,9 @@ const router = express.Router();
 
 const networkLabels = {
   ETH: 1,
-  FTM: 250,
   OPTI: 10,
+	FTM: 250,
+	BASE: 8453,
   ARB: 42161
 };
 
@@ -31,7 +32,6 @@ router.get('/tvls', async function(req, res, next) {
   };
 
 	try {
-		console.log('try???');
 		const response = await axios({
 			method: 'post',
 			headers: {
