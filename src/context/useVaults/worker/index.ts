@@ -419,14 +419,49 @@ function markupWarnings(vaults: Seafood.Vault[]) {
 	});
 }
 
+const TVL_QUERY = `
+query Vaults {
+  vaults {
+    tvlSparkline {
+      chainId
+      address
+      value
+      time
+    }
+  }
+}`;
+
 async function fetchTvlUpdates() : Promise<TVLUpdates> {
 	const status = {status: 'refreshing', stage: 'tvls', chain: 'all', timestamp: Date.now()} as RefreshStatus;
 	await putStatus(status);
 	try {
-		const result = await (await fetch('/api/vision/tvls')).json() as TVLUpdates;
+		if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
+		const response = await fetch(process.env.REACT_APP_KONG_API_URL, {
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify({query: TVL_QUERY})
+		});
+
+		if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+		const json = await response.json();
+		if (json.error) throw new Error(json.error);
+
+		const result = {} as TVLUpdates;
+		for(const vault of json.data.vaults) {
+			const chainId = vault.tvlSparkline[0].chainId;
+			const address = vault.tvlSparkline[0].address;
+			result[chainId] = result[chainId] || {};
+			result[chainId][address] = {
+				dates: vault.tvlSparkline.map((o: {time: string}) => (new Date(o.time)).getTime()),
+				tvls: vault.tvlSparkline.map((o: {value: number}) => o.value)
+			} as Seafood.TVLHistory;
+		}
+
 		await putStatus({...status, status: 'ok', timestamp: Date.now()});
 		return result;
 	} catch(error) {
+		console.warn(error);
 		await putStatus({...status, status: 'warning', error, timestamp: Date.now()});
 		const result = {} as TVLUpdates;
 		config.chains.forEach(chain => result[chain.id] = {});
