@@ -90,7 +90,12 @@ async function refresh() {
 		latest.push(...(vaultverse[index] || []).map(vault => {
 			const current = currentVaults.find(v => v.network.chainId === chain.id && v.address === vault.address);
 			const update = merge(current || Seafood.defaultVault, vault, chain) as Seafood.Vault;
-			update.tvls = tvlUpdates[chain.id][vault.address];
+			const tvls = tvlUpdates[chain.id][vault.address] || {tvls: [], dates: []};
+			if(!tvls.tvls.length) {
+				tvls.tvls = [0, 0, vault.tvl?.tvl || 0];
+				tvls.dates = [0, 0, new Date().getTime()];
+			}
+			update.tvls = tvls;
 			return update;
 		}));
 	}
