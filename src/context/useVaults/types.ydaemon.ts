@@ -71,7 +71,8 @@ export interface Vault {
       inception: number
     }
   }, tvl: {
-    price: number
+    price: number,
+    tvl: number
   },
 	strategies: Strategy[]
 }
