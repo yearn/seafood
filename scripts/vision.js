@@ -6,7 +6,7 @@ const dayjs = require('dayjs');
 const networkLabels = {
   ETH: 1,
   FTM: 250,
-  OPT: 10,
+  OPTI: 10,
   ARRB: 42161
 }
 
@@ -45,7 +45,7 @@ async function main() {
 
     for(const r in response.data.results) {
       for(const frame of response.data.results[r].frames) {
-        if(frame.schema.fields[1].labels.address !== 'n/a') {
+        if(frame.schema.fields.length > 0 && frame.schema.fields[1].labels.address !== 'n/a') {
           const chainId = networkLabels[frame.schema.fields[1].labels.network];
           result[chainId][frame.schema.fields[1].labels.address] = frame.data.values;
         }
