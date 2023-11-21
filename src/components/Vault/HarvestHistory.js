@@ -4,7 +4,8 @@ import {formatPercent, getTxExplorer} from '../../utils/utils';
 import {A} from '../controls';
 import dayjs from 'dayjs';
 import EigenPhi from './EigenPhi';
-import {Number} from '../controls/Fields';
+import {Number, Tokens} from '../controls/Fields';
+import {useVault} from './VaultProvider';
 
 function ColumnHeader({children}) {
 	return <th className={'text-right first:text-left'}>{children}</th>;
@@ -15,6 +16,8 @@ function Cell({textAlign = 'text-right', children}) {
 }
 
 function HarvestHistory({history}){
+	const {vault} = useVault();
+
 	return <>
 		<SmallScreen>
 			<div className={'w-full overflow-x-auto'}>
@@ -38,8 +41,10 @@ function HarvestHistory({history}){
 										<EigenPhi tx={e.txn_hash} />
 									</div>
 								</Cell>
-								<Cell><Number value={parseFloat(e.gain)} decimals={4} compact={true} /></Cell>
-								<Cell><Number value={parseFloat(e.want_gain_usd)} decimals={4} compact={true} /></Cell>
+								<Cell>
+									<Tokens value={e.gain} decimals={vault.decimals} accuracy={2} compact={true} />
+								</Cell>
+								<Cell><Number value={parseFloat(e.want_gain_usd)} decimals={2} compact={true} /></Cell>
 								<Cell>{formatPercent(parseFloat(e.rough_apr_pre_fee))}</Cell>
 							</tr>;
 						})}
@@ -60,7 +65,7 @@ function HarvestHistory({history}){
 				</thead>
 				<tbody>
 					{history.map((e, i) => {
-						const time = new Date(e.timestamp * 1000);
+						const time = new Date(parseInt(e.timestamp));
 						return <tr key={e.txn_hash} className={i % 2 === 0 ? 'bg-selected-400/5' : ''}>
 							<Cell textAlign={'text-left'}>
 								<div className={'flex items-center gap-3'}>
@@ -68,7 +73,9 @@ function HarvestHistory({history}){
 									<EigenPhi tx={e.txn_hash} />
 								</div>
 							</Cell>
-							<Cell><Number value={parseFloat(e.gain)} decimals={4} compact={true} /></Cell>
+							<Cell>
+								<Tokens value={e.gain} decimals={vault.decimals} accuracy={4} compact={true} />
+							</Cell>
 							<Cell><Number value={parseFloat(e.want_gain_usd)} decimals={4} compact={true} /></Cell>
 							<Cell>{formatPercent(parseFloat(e.rough_apr_pre_fee))}</Cell>
 						</tr>;

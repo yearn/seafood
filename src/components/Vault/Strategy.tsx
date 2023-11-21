@@ -55,7 +55,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 
 	const latestHarvest = useMemo(() => {
 		return {
-			date: reports.length > 0 ? new Date(parseInt(reports[0].timestamp) * 1000) : new Date(0),
+			date: reports.length > 0 ? new Date(parseInt(reports[0].timestamp)) : new Date(0),
 			tx: reports.length > 0 ? reports[0].txn_hash : undefined
 		};
 	}, [reports]);

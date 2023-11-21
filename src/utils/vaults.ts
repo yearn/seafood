@@ -24,17 +24,55 @@ export interface HarvestReport {
 	rough_apr_pre_fee: string
 }
 
+const KONG_QUERY = `
+query Harvest($chainId: Int, $address: String, $limit: Int) {
+  harvests(chainId: $chainId, address: $address, limit: $limit) {
+    chainId
+    blockNumber
+    blockTime
+    transactionHash
+    profit
+    profitUsd
+    loss
+    lossUsd
+    aprGross
+    aprNet
+  }
+}
+`;
+
 async function fetchHarvestReports(vault: Vault) {
+	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
+
+	const harvests = [] as HarvestReport[];
 	const strategies = vault.strategies.map(strategy => strategy.address);
-	const response = await fetch('/api/getVaults/AllStrategyReports', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'Accept': 'application/json'
-		},
-		body: JSON.stringify({chainId: vault.network.chainId, strategies})
-	});
-	return await response.json() as HarvestReport[];
+	for(const strategy of strategies) {
+		const response = await fetch(process.env.REACT_APP_KONG_API_URL, {
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify({
+				query: KONG_QUERY,
+				variables: {chainId: vault.network.chainId, address: strategy, limit: 1000}
+			})
+		});
+	
+		const json = await response.json();
+		harvests.push(...json.data.harvests.map((harvest: any) => ({
+			chain_id: harvest.chainId,
+			block: harvest.blockNumber,
+			timestamp: harvest.blockTime,
+			date_string: '',
+			txn_hash: harvest.transactionHash,
+			vault_address: vault.address,
+			strategy_address: strategy,
+			gain: harvest.profit,
+			loss: harvest.loss,
+			want_gain_usd: harvest.profitUsd,
+			rough_apr_pre_fee: harvest.aprGross
+		} as HarvestReport)));
+	}
+
+	return harvests;
 }
 
 async function fetchMeta(vault: Vault) {
