@@ -1,14 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import {BigNumber, ethers} from 'ethers';
 import {ContractCallContext, ContractCallReturnContext, Multicall} from 'ethereum-multicall';
-import {GetVaultAbi, LockedProfitDegradationField} from '../../../ethereum/EthHelpers';
-import {aggregateRiskGroupTvls} from '../risk';
+import {aggregateRiskGroupTvls, computeLongevityScore, medianExlcudingTvlImpact} from '../risk';
 import config from '../../../config.json';
 import * as abi from '../../../abi';
 import * as Kong from '../types.kong';
 import * as Seafood from '../types';
-import {getChain, hydrateBigNumbersRecursively} from '../../../utils/utils';
+import {getChain, hydrateBigNumbersRecursively, kabobCase} from '../../../utils/utils';
 import {Callback, StartOptions, RefreshStatus, StrategyRewardsUpdate, TVLUpdates, Tradeable} from './types';
 
 
@@ -103,7 +100,7 @@ async function refresh() {
 
 	sort(latest);
 	hydrateBigNumbersRecursively(latest);
-	// aggregateRiskGroupTvls(latest);
+	aggregateRiskGroupTvls(latest);
 	await putVaults(latest);
 	await requestVaults();
 
@@ -263,7 +260,7 @@ function markupWarnings(vaults: Seafood.Vault[]) {
 }
 
 const KONG_QUERY = `
-query Vaults {
+query Query {
   vaults {
 		chainId
 		address
@@ -284,7 +281,7 @@ query Vaults {
     performanceFee
 		registryStatus
 		governance
-		activationBlockNumber
+		activationBlockTime
 		withdrawalQueue {
       address
       healthCheck
@@ -303,6 +300,7 @@ query Vaults {
       totalDebtUsd
       withdrawalQueueIndex
 			tradeFactory
+			activationBlockTime
     }
     tvlUsd
     tvlSparkline {
@@ -318,6 +316,17 @@ query Vaults {
       time
       value
     }
+  }
+
+  riskGroups {
+    chainId
+    name
+    auditScore
+    codeReviewScore
+    complexityScore
+    protocolSafetyScore
+    teamKnowledgeScore
+    testingScore
   }
 }
 `;
@@ -363,7 +372,7 @@ async function fetchKongUpdates(): Promise<Seafood.Vault[][]> {
 		managementFee: BigNumber.from(kongVault.managementFee || 0),
 		performanceFee: BigNumber.from(kongVault.performanceFee || 0),
 		depositLimit: BigNumber.from(kongVault.availableDepositLimit || 0),
-		activation: BigNumber.from(kongVault.activationBlockNumber || 0),
+		activation: BigNumber.from(kongVault.activationBlockTime || 0),
 		apy: {
 			type: 'v2:averaged',
 			gross: kongVault.aprGross,
@@ -382,19 +391,19 @@ async function fetchKongUpdates(): Promise<Seafood.Vault[][]> {
 			description: '',
 			risk: {
 				tvl: 0,
-				riskGroupId: kongStrategy.riskGroup || '',
-				riskGroup: kongStrategy.riskGroup || '',
+				riskGroupId: kongStrategy.riskGroup ? kabobCase(kongStrategy.riskGroup) : 'no-group',
+				riskGroup: kongStrategy.riskGroup || 'No Group',
 				riskScore: 0,
 				riskDetails: {
-					TVLImpact: 0,
-					auditScore: 0,
-					codeReviewScore: 0,
-					complexityScore: 0,
-					longevityImpact: 0,
-					protocolSafetyScore: 0,
-					teamKnowledgeScore: 0,
-					testingScore: 0,
-					median: 0
+					TVLImpact: 1,
+					auditScore: 5,
+					codeReviewScore: 5,
+					complexityScore: 5,
+					longevityImpact: 5,
+					protocolSafetyScore: 5,
+					teamKnowledgeScore: 5,
+					testingScore: 5,
+					median: 5
 				},
 				allocation: {
 					availableAmount: '0',
@@ -418,12 +427,39 @@ async function fetchKongUpdates(): Promise<Seafood.Vault[][]> {
 			doHealthCheck: kongStrategy.doHealthCheck,
 			tradeFactory: kongStrategy.tradeFactory,
 			keeper: kongStrategy.keeper,
+			activation: BigNumber.from(kongStrategy.activationBlockTime || 0),
 			rewards: [] as Seafood.Reward[],
 		})),
 	} as Seafood.Vault));
 
+	const riskGroups = json.data.riskGroups as {
+		chainId: number,
+		name: string,
+		auditScore: number,
+		codeReviewScore: number,
+		complexityScore: number,
+		longevityImpact: number,
+		protocolSafetyScore: number,
+		teamKnowledgeScore: number,
+		testingScore: number
+	} [];
+
 	flat.forEach((vault: Seafood.Vault) => {
 		vault.strategies = [...vault.withdrawalQueue];
+		vault.strategies.forEach(strategy => {
+			const riskGroup = riskGroups.find(group => 
+				group.chainId === strategy.network.chainId 
+				&& kabobCase(group.name) === strategy.risk.riskGroupId
+			);
+			strategy.risk.riskDetails.auditScore = riskGroup?.auditScore || 5;
+			strategy.risk.riskDetails.codeReviewScore = riskGroup?.codeReviewScore || 5;
+			strategy.risk.riskDetails.complexityScore = riskGroup?.complexityScore || 5;
+			strategy.risk.riskDetails.longevityImpact = computeLongevityScore(strategy);
+			strategy.risk.riskDetails.protocolSafetyScore = riskGroup?.protocolSafetyScore || 5;
+			strategy.risk.riskDetails.teamKnowledgeScore = riskGroup?.teamKnowledgeScore || 5;
+			strategy.risk.riskDetails.testingScore = riskGroup?.testingScore || 5;
+			strategy.risk.riskDetails.median = medianExlcudingTvlImpact(strategy.risk.riskDetails);
+		});
 	});
 
 	const result = [];

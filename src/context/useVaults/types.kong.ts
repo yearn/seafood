@@ -20,7 +20,7 @@ export type Vault = {
   performanceFee: number;
   registryStatus: string;
   governance: string;
-  activationBlockNumber: BigNumber;
+  activationBlockTime: BigNumber;
   withdrawalQueue: Strategy[];
   tvlUsd: number;
   tvlSparkline: SparklinePoint[];
@@ -49,7 +49,7 @@ export type Strategy = {
   totalDebt: BigNumber;
   totalDebtUsd: number;
   withdrawalQueueIndex: number;
-  activationBlockNumber: number;
+  activationBlockTime: BigNumber;
   tradeFactory: string;
 }
 
