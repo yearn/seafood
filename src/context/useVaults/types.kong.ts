@@ -50,6 +50,7 @@ export type Strategy = {
   totalDebtUsd: number;
   withdrawalQueueIndex: number;
   activationBlockNumber: number;
+  tradeFactory: string;
 }
 
 export type SparklinePoint = {
