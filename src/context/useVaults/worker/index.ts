@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import {BigNumber, ethers} from 'ethers';
 import {ContractCallContext, ContractCallReturnContext, Multicall} from 'ethereum-multicall';
 import {GetVaultAbi, LockedProfitDegradationField} from '../../../ethereum/EthHelpers';

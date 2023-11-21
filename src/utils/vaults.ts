@@ -55,9 +55,10 @@ async function fetchHarvestReports(vault: Vault) {
 				variables: {chainId: vault.network.chainId, address: strategy, limit: 1000}
 			})
 		});
-	
-		const json = await response.json();
-		harvests.push(...json.data.harvests.map((harvest: any) => ({
+
+		const json = await response.json(); 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		harvests.push(...(json.data.harvests as any[]).map(harvest => ({
 			chain_id: harvest.chainId,
 			block: harvest.blockNumber,
 			timestamp: harvest.blockTime,
