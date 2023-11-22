@@ -3,10 +3,14 @@ import {ContractCallContext, ContractCallReturnContext, Multicall} from 'ethereu
 import {aggregateRiskGroupTvls, computeLongevityScore, medianExlcudingTvlImpact} from '../risk';
 import config from '../../../config.json';
 import * as abi from '../../../abi';
+import * as yDaemon from '../types.ydaemon';
 import * as Kong from '../types.kong';
 import * as Seafood from '../types';
 import {getChain, hydrateBigNumbersRecursively, kabobCase} from '../../../utils/utils';
-import {Callback, StartOptions, RefreshStatus, StrategyRewardsUpdate, TVLUpdates, Tradeable} from './types';
+import {Callback, StartOptions, RefreshStatus, StrategyRewardsUpdate, TVLUpdates, Tradeable, VaultMulticallUpdate, StrategyMulticallUpdate} from './types';
+import {GetVaultAbi, LockedProfitDegradationField} from '../../../ethereum/EthHelpers';
+import merge from './merge';
+const USE_KONG = process.env.REACT_APP_USE_KONG === 'true';
 
 
 export const api = {
@@ -80,14 +84,20 @@ async function refresh() {
 	const latest = [] as Seafood.Vault[];
 	const currentVaults = await getAll<Seafood.Vault[]>('vaults');
 
-	// fetch fast data
-	const vaultverse = await fetchKongUpdates();
+	const vaultverse = USE_KONG
+		? await fetchKongVaults()
+		: await fetchYDaemonVaults();
+
 	const tvlUpdates = await fetchTvlUpdates();
 
 	for(const [index, chain] of config.chains.entries()) {
 		latest.push(...(vaultverse[index] || []).map(vault => {
 			const current = currentVaults.find(v => v.network.chainId === chain.id && v.address === vault.address);
-			const update = {...current, ...vault} as Seafood.Vault;
+
+			const update = USE_KONG
+				? {...current, ...vault} as Seafood.Vault
+				: merge(current || Seafood.defaultVault, vault as yDaemon.Vault, chain) as Seafood.Vault;
+			
 			const tvls = tvlUpdates[chain.id][vault.address] || {tvls: [], dates: []};
 			if(!tvls.tvls.length) {
 				tvls.tvls = [0, 0, 0];
@@ -101,8 +111,42 @@ async function refresh() {
 	sort(latest);
 	hydrateBigNumbersRecursively(latest);
 	aggregateRiskGroupTvls(latest);
+	await clearVaults();
 	await putVaults(latest);
 	await requestVaults();
+
+	// fetch multicalls
+	if(!USE_KONG) {
+		const multicallUpdates = await fetchMulticallUpdates(vaultverse as yDaemon.Vault[][]);
+		const strategies = latest.map(vault => vault.withdrawalQueue).flat();
+		for(const update of multicallUpdates) {
+			if(update.type === 'vault') {
+				const vault = latest.find(v =>
+					v.network.chainId === update.chainId 
+					&& v.address === update.address);
+				if(vault) {
+					vault.totalDebt = update.totalDebt;
+					vault.debtRatio = update.debtRatio;
+					vault.totalAssets = update.totalAssets;
+					vault.availableDepositLimit = update.availableDepositLimit;
+					vault.lockedProfitDegradation = update.lockedProfitDegradation;
+				}
+	
+			} else if(update.type === 'strategy') {
+				const strategy = strategies.find(s => 
+					s.network.chainId === update.chainId
+					&& s.address === update.address);
+				if(strategy) {
+					strategy.lendStatuses = update.lendStatuses;
+					strategy.name = update.name;
+					strategy.tradeFactory = update.tradeFactory;
+				}
+			}
+		}
+	
+		await putVaults(latest);
+		await requestVaults();
+	}
 
 	// fetch rewards
 	const strategyRewardsUpdates = await fetchRewardsUpdates(latest);
@@ -181,6 +225,19 @@ async function putVault(vault: Seafood.Vault) {
 	});
 }
 
+async function clearVaults() {
+	return new Promise<void>(async (resolve, reject) => {
+		const db = await openDb();
+		const store = db.transaction('vaults', 'readwrite').objectStore('vaults');
+		const request = store.clear();
+		request.onerror = (e: Event) => reject(e);
+		request.onsuccess = async () => {
+			db.close();
+			resolve();
+		};
+	});
+}
+
 async function sort(vaults: Seafood.Vault[]) {
 	vaults.sort((a, b) => {
 		const aTvl = a.tvls ? a.tvls.tvls.slice(-1)[0] : 0;
@@ -228,6 +285,46 @@ function waitForAllTransactions(db: IDBDatabase): Promise<void> {
 	});
 }
 
+async function fetchYDaemonVaults() : Promise<yDaemon.Vault[][]> {
+	const result = [];
+	for(const chain of config.chains) {
+		const status = {status: 'refreshing', stage: 'ydaemon', chain: chain.id, timestamp: Date.now()} as RefreshStatus;
+		await putStatus(status);
+		const request = `${config.ydaemon.url}/${chain.id}/vaults/all?strategiesCondition=all&strategiesDetails=withDetails&strategiesRisk=withRisk`;
+		try {
+			result.push(await (await fetch(request)).json());
+			await putStatus({...status, status: 'ok', timestamp: Date.now()});
+		} catch(error) {
+			await putStatus({...status, status: 'warning', error, timestamp: Date.now()});
+		}
+	}
+	return result;
+}
+
+async function fetchMulticallUpdates(vaultverse: yDaemon.Vault[][]) {
+	const result = [];
+	for(const [index, chain] of config.chains.entries()) {
+		const status = {status: 'refreshing', stage: 'multicall', chain: chain.id, timestamp: Date.now()} as RefreshStatus;
+		await putStatus(status);
+
+		const vaults = vaultverse[index];
+		const multicallAddress = config.chains.find(c => c.id === chain.id)?.multicall;
+		const multicall = new Multicall({ethersProvider: providerFor(chain), tryAggregate: true, multicallCustomContractAddress: multicallAddress});
+		const promises = [] as Promise<VaultMulticallUpdate[] | StrategyMulticallUpdate[]>[];
+
+		try {
+			promises.push(...await createVaultMulticalls(vaults, chain, multicall));
+			promises.push(...await createStrategyMulticalls(vaults, chain, multicall));
+			result.push(...(await Promise.all(promises)).flat());
+			await putStatus({...status, status: 'ok', timestamp: Date.now()});
+		} catch(error) {
+			await putStatus({...status, status: 'warning', error, timestamp: Date.now()});
+		}
+	}
+
+	return result;
+}
+
 function providerFor(chain: Seafood.Chain) {
 	return new ethers.providers.JsonRpcProvider(chain.providers[0], {name: chain.name, chainId: chain.id});
 }
@@ -240,6 +337,93 @@ async function batchMulticalls(multicall: Multicall, calls: ContractCallContext[
 		const results = (await multicall.call(calls.slice(start, end))).results;
 		result = {...result, ...results};
 	}
+	return result;
+}
+
+async function createVaultMulticalls(vaults: yDaemon.Vault[], chain: Seafood.Chain, multicall: Multicall) {
+	const result = [];
+	const vaultMulticalls = vaults.map(vault => ({
+		reference: vault.address,
+		contractAddress: vault.address,
+		abi: GetVaultAbi(vault.version),
+		calls: [
+			{reference: 'totalDebt', methodName: 'totalDebt', methodParameters: []},
+			{reference: 'debtRatio', methodName: 'debtRatio', methodParameters: []},
+			{reference: 'totalAssets', methodName: 'totalAssets', methodParameters: []},
+			{reference: 'availableDepositLimit', methodName: 'availableDepositLimit', methodParameters: []},
+			{reference: 'lockedProfitDegradation', methodName: LockedProfitDegradationField(vault.version), methodParameters: []}
+		]
+	}));
+
+	result.push((async () : Promise<VaultMulticallUpdate[]> => {
+		const parsed = [] as VaultMulticallUpdate[];
+		const multiresults = await batchMulticalls(multicall, vaultMulticalls);
+		vaults.forEach(vault => {
+			const results = multiresults[vault.address].callsReturnContext;
+			const lockedProfitDegradation = results[4].returnValues[0] && results[4].returnValues[0].type === 'BigNumber'
+				? BigNumber.from(results[4].returnValues[0])
+				: ethers.constants.Zero;
+			parsed.push({
+				type: 'vault',
+				chainId: chain.id,
+				address: vault.address,
+				totalDebt: BigNumber.from(results[0].returnValues[0]),
+				debtRatio: results[1].returnValues[0] ? BigNumber.from(results[1].returnValues[0]) : undefined,
+				totalAssets: results[2].returnValues[0] ? BigNumber.from(results[2].returnValues[0]) : undefined,
+				availableDepositLimit: BigNumber.from(results[3].returnValues[0]),
+				lockedProfitDegradation
+			});
+		});
+		return parsed;
+	})());
+
+	return result;
+}
+
+async function createStrategyMulticalls(vaults: yDaemon.Vault[], chain: Seafood.Chain, multicall: Multicall) {
+	const result = [];
+	const strategies = vaults.map(vault => vault.strategies).flat();
+
+	const strategyMulticalls = strategies.map(strategy => ({
+		reference: strategy.address,
+		contractAddress: strategy.address,
+		abi: abi.strategy,
+		calls: [
+			{reference: 'lendStatuses', methodName: 'lendStatuses', methodParameters: []},
+			{reference: 'name', methodName: 'name', methodParameters: []},
+			{reference: 'tradeFactory', methodName: 'tradeFactory', methodParameters: []}
+		]
+	}));
+
+	result.push((async () => {
+		const parsed = [] as StrategyMulticallUpdate[];
+		const multiresults = await batchMulticalls(multicall, strategyMulticalls);
+		strategies.forEach(strategy => {
+			const results = multiresults[strategy.address].callsReturnContext;
+
+			const lendStatuses = results[0].returnValues?.length > 0 
+				? results[0].returnValues.map(tuple => ({
+					name: tuple[0],
+					deposits: BigNumber.from(tuple[1]),
+					apr: BigNumber.from(tuple[2]),
+					address: tuple[3]
+				})) : undefined;
+
+			const tradeFactory = results[2].returnValues[0] === ethers.constants.AddressZero 
+				? undefined : results[2].returnValues[0];
+
+			parsed.push({
+				type: 'strategy',
+				chainId: chain.id,
+				address: strategy.address,
+				lendStatuses,
+				name: results[1].returnValues[0] || strategy.name,
+				tradeFactory
+			});
+		});
+		return parsed;
+	})());
+
 	return result;
 }
 
@@ -331,7 +515,7 @@ query Query {
 }
 `;
 
-async function fetchKongUpdates(): Promise<Seafood.Vault[][]> {
+async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
 
 	const response = await fetch(process.env.REACT_APP_KONG_API_URL, {
