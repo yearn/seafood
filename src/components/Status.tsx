@@ -6,6 +6,7 @@ import TimeAgo from './controls/TimeAgo';
 import {useVaultStatusUI} from './MobileNav/Sync';
 import {usePowertools} from './Powertools';
 import {RefreshStatus} from '../context/useVaults/worker/types';
+const USE_KONG = process.env.REACT_APP_USE_KONG === 'true';
 
 function StatusLight({size, bloom}: {size: number, bloom: number}) {
 	const {refreshing, refresh} = useVaults();
@@ -84,6 +85,7 @@ function Stage({title, status}: {title: string, status: RefreshStatus[]}) {
 export default function Status() {
 	const {status} = useVaults();
 	const {message} = useVaultStatusUI();
+	const kong = useMemo(() => status.filter(s => s.stage === 'kong'), [status]);
 	const ydaemon = useMemo(() => status.filter(s => s.stage === 'ydaemon'), [status]);
 	const multicall = useMemo(() => status.filter(s => s.stage === 'multicall'), [status]);
 	const rewards = useMemo(() => status.filter(s => s.stage === 'rewards'), [status]);
@@ -109,10 +111,18 @@ export default function Status() {
 			<div className={`sm:px-6
 				grid grid-flow-row gap-2 grid-cols-1 
 				sm:gap-8 sm:grid-cols-2`}>
-				<Stage title={'yDaemon'} status={ydaemon} />
-				<Stage title={'TVLs'} status={tvls} />
-				<Stage title={'Multicalls'} status={multicall} />
-				<Stage title={'Rewards'} status={rewards} />
+				{USE_KONG && <>
+					<Stage title={'Kong'} status={kong} />
+					<Stage title={'TVLs'} status={tvls} />
+					<Stage title={'Rewards'} status={rewards} />
+				</>}
+
+				{!USE_KONG && <>
+					<Stage title={'yDaemon'} status={ydaemon} />
+					<Stage title={'TVLs'} status={tvls} />
+					<Stage title={'Multicalls'} status={multicall} />
+					<Stage title={'Rewards'} status={rewards} />
+				</>}
 			</div>
 		</div>
 	</div>;

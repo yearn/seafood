@@ -150,21 +150,21 @@ async function refresh() {
 	}
 
 	// fetch rewards
-	// const strategyRewardsUpdates = await fetchRewardsUpdates(latest);
-	// for(const [index, chain] of config.chains.entries()) {
-	// 	const rewardsUpdates = strategyRewardsUpdates[index];
+	const strategyRewardsUpdates = await fetchRewardsUpdates(latest);
+	for(const [index, chain] of config.chains.entries()) {
+		const rewardsUpdates = strategyRewardsUpdates[index];
 
-	// 	latest.filter(vault => vault.network.chainId === chain.id).forEach(vault => {
-	// 		vault.withdrawalQueue.forEach(strategy => {
-	// 			const update = rewardsUpdates.find(update => update.chainId === chain.id && update.address === strategy.address);
-	// 			strategy.rewards = update?.rewards || [];
-	// 		});
+		latest.filter(vault => vault.network.chainId === chain.id).forEach(vault => {
+			vault.withdrawalQueue.forEach(strategy => {
+				const update = rewardsUpdates.find(update => update.chainId === chain.id && update.address === strategy.address);
+				strategy.rewards = update?.rewards || [];
+			});
 
-	// 		vault.rewardsUsd = vault.withdrawalQueue.map(s => s.rewards).flat()
-	// 			.reduce((acc, reward) => acc + reward?.amountUsd, 0)
-	// 			|| 0;
-	// 	});
-	// }
+			vault.rewardsUsd = vault.withdrawalQueue.map(s => s.rewards).flat()
+				.reduce((acc, reward) => acc + reward?.amountUsd, 0)
+				|| 0;
+		});
+	}
 
 	markupWarnings(latest);
 	await putVaults(latest);
@@ -455,6 +455,7 @@ query Query {
     apiVersion
     symbol
     decimals
+		depositLimit
     availableDepositLimit
     lockedProfitDegradation
     debtRatio
@@ -525,147 +526,155 @@ query Query {
 async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
 
-	const response = await fetch(process.env.REACT_APP_KONG_API_URL, {
-		method: 'POST',
-		headers: {'Content-Type': 'application/json'},
-		body: JSON.stringify({query: KONG_QUERY})
-	});
+	const status = {status: 'refreshing', stage: 'kong', chain: 'all', timestamp: Date.now()} as RefreshStatus;
+	await putStatus(status);
 
-	if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-	const json = await response.json();
-	if (json.error) throw new Error(json.error);
-
-	const flat = json.data.vaults.map((kongVault: Kong.Vault) => ({
-		address: kongVault.address,
-		name: kongVault.name,
-		price: kongVault.priceUsd,
-		network: {
-			chainId: kongVault.chainId,
-			name: getChain(kongVault.chainId).name
-		},
-		version: kongVault.apiVersion,
-		want: kongVault.assetAddress,
-		token: {
-			address: kongVault.assetAddress,
-			name: kongVault.assetName,
-			symbol: kongVault.assetSymbol,
-			decimals: kongVault.decimals
-		},
-		endorsed: kongVault.registryStatus === 'endorsed',
-		governance: kongVault.governance,
-		totalAssets: BigNumber.from(kongVault.totalAssets),
-		availableDepositLimit: kongVault.availableDepositLimit,
-		lockedProfitDegradation: BigNumber.from(kongVault.lockedProfitDegradation || 0),
-		totalDebt: kongVault.totalDebt,
-		decimals: BigNumber.from(kongVault.decimals || 0),
-		debtRatio: BigNumber.from(kongVault.debtRatio || 0),
-		managementFee: BigNumber.from(kongVault.managementFee || 0),
-		performanceFee: BigNumber.from(kongVault.performanceFee || 0),
-		depositLimit: BigNumber.from(kongVault.availableDepositLimit || 0),
-		activation: BigNumber.from(kongVault.activationBlockTime || 0),
-		apy: {
-			type: 'v2:averaged',
-			gross: kongVault.aprGross,
-			net: kongVault.apyNet,
-			[-7]: kongVault.apyWeeklyNet,
-			[-30]: kongVault.apyMonthlyNet,
-			inception: kongVault.apyInceptionNet
-		},
-		withdrawalQueue: kongVault.withdrawalQueue.map((kongStrategy: Kong.Strategy) => ({
+	try {
+		const response = await fetch(process.env.REACT_APP_KONG_API_URL, {
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify({query: KONG_QUERY})
+		});
+	
+		if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+	
+		const json = await response.json();
+		if (json.error) throw new Error(json.error);
+	
+		const flat = json.data.vaults.map((kongVault: Kong.Vault) => ({
+			address: kongVault.address,
+			name: kongVault.name,
+			price: kongVault.priceUsd,
 			network: {
 				chainId: kongVault.chainId,
 				name: getChain(kongVault.chainId).name
 			},
-			address: kongStrategy.address,
-			name: kongStrategy.name,
-			description: '',
-			risk: {
-				tvl: 0,
-				riskGroupId: kongStrategy.riskGroup ? kabobCase(kongStrategy.riskGroup) : 'no-group',
-				riskGroup: kongStrategy.riskGroup || 'No Group',
-				riskScore: 0,
-				riskDetails: {
-					TVLImpact: 1,
-					auditScore: 5,
-					codeReviewScore: 5,
-					complexityScore: 5,
-					longevityImpact: 5,
-					protocolSafetyScore: 5,
-					teamKnowledgeScore: 5,
-					testingScore: 5,
-					median: 5
-				},
-				allocation: {
-					availableAmount: '0',
-					availableTVL: '0',
-					currentAmount: '0',
-					currentTVL: '0'
-				}
+			version: kongVault.apiVersion,
+			want: kongVault.assetAddress,
+			token: {
+				address: kongVault.assetAddress,
+				name: kongVault.assetName,
+				symbol: kongVault.assetSymbol,
+				decimals: kongVault.decimals
 			},
-			debtRatio: BigNumber.from(kongStrategy.debtRatio || 0),
-			performanceFee: BigNumber.from(kongStrategy.performanceFee || 0),
-			estimatedTotalAssets: BigNumber.from(kongStrategy.estimatedTotalAssets || 0),
-			delegatedAssets: BigNumber.from(kongStrategy.delegatedAssets || 0),
-			lastReport: BigNumber.from(kongStrategy.lastReportBlockTime || 0),
-			totalDebt: BigNumber.from(kongStrategy.totalDebt || 0),
-			totalDebtUSD: kongStrategy.totalDebtUsd,
-			totalGain: BigNumber.from(0),
-			totalLoss: BigNumber.from(0),
-			withdrawalQueuePosition: kongStrategy.withdrawalQueueIndex,
-			lendStatuses: kongStrategy.lenderStatuses.map((status: Kong.LenderStatus) => {
-				console.log('status', status);
-				return {
+			endorsed: kongVault.registryStatus === 'endorsed',
+			governance: kongVault.governance,
+			totalAssets: BigNumber.from(kongVault.totalAssets),
+			availableDepositLimit: kongVault.availableDepositLimit,
+			lockedProfitDegradation: BigNumber.from(kongVault.lockedProfitDegradation || 0),
+			totalDebt: kongVault.totalDebt,
+			decimals: BigNumber.from(kongVault.decimals || 0),
+			debtRatio: BigNumber.from(kongVault.debtRatio || 0),
+			managementFee: BigNumber.from(kongVault.managementFee || 0),
+			performanceFee: BigNumber.from(kongVault.performanceFee || 0),
+			depositLimit: BigNumber.from(kongVault.depositLimit || 0),
+			activation: BigNumber.from(kongVault.activationBlockTime || 0),
+			apy: {
+				type: 'v2:averaged',
+				gross: kongVault.aprGross,
+				net: kongVault.apyNet,
+				[-7]: kongVault.apyWeeklyNet,
+				[-30]: kongVault.apyMonthlyNet,
+				inception: kongVault.apyInceptionNet
+			},
+			withdrawalQueue: kongVault.withdrawalQueue.map((kongStrategy: Kong.Strategy) => ({
+				network: {
+					chainId: kongVault.chainId,
+					name: getChain(kongVault.chainId).name
+				},
+				address: kongStrategy.address,
+				name: kongStrategy.name,
+				description: '',
+				risk: {
+					tvl: 0,
+					riskGroupId: kongStrategy.riskGroup ? kabobCase(kongStrategy.riskGroup) : 'no-group',
+					riskGroup: kongStrategy.riskGroup || 'No Group',
+					riskScore: 0,
+					riskDetails: {
+						TVLImpact: 1,
+						auditScore: 5,
+						codeReviewScore: 5,
+						complexityScore: 5,
+						longevityImpact: 5,
+						protocolSafetyScore: 5,
+						teamKnowledgeScore: 5,
+						testingScore: 5,
+						median: 5
+					},
+					allocation: {
+						availableAmount: '0',
+						availableTVL: '0',
+						currentAmount: '0',
+						currentTVL: '0'
+					}
+				},
+				debtRatio: BigNumber.from(kongStrategy.debtRatio || 0),
+				performanceFee: BigNumber.from(kongStrategy.performanceFee || 0),
+				estimatedTotalAssets: BigNumber.from(kongStrategy.estimatedTotalAssets || 0),
+				delegatedAssets: BigNumber.from(kongStrategy.delegatedAssets || 0),
+				lastReport: BigNumber.from(kongStrategy.lastReportBlockTime || 0),
+				totalDebt: BigNumber.from(kongStrategy.totalDebt || 0),
+				totalDebtUSD: kongStrategy.totalDebtUsd,
+				totalGain: BigNumber.from(0),
+				totalLoss: BigNumber.from(0),
+				withdrawalQueuePosition: kongStrategy.withdrawalQueueIndex,
+				lendStatuses: kongStrategy.lenderStatuses.map((status: Kong.LenderStatus) => ({
 					name: status.name,
 					address: status.address,
 					deposits: status.assets,
 					apr: status.rate
-				} as Seafood.LendStatus;
-			}),
-			healthCheck: kongStrategy.healthCheck,
-			doHealthCheck: kongStrategy.doHealthCheck,
-			tradeFactory: kongStrategy.tradeFactory,
-			keeper: kongStrategy.keeper,
-			activation: BigNumber.from(kongStrategy.activationBlockTime || 0),
-			rewards: [] as Seafood.Reward[],
-		})),
-	} as Seafood.Vault));
-
-	const riskGroups = json.data.riskGroups as {
-		chainId: number,
-		name: string,
-		auditScore: number,
-		codeReviewScore: number,
-		complexityScore: number,
-		longevityImpact: number,
-		protocolSafetyScore: number,
-		teamKnowledgeScore: number,
-		testingScore: number
-	} [];
-
-	flat.forEach((vault: Seafood.Vault) => {
-		vault.strategies = [...vault.withdrawalQueue];
-		vault.strategies.forEach(strategy => {
-			const riskGroup = riskGroups.find(group => 
-				group.chainId === strategy.network.chainId 
-				&& kabobCase(group.name) === strategy.risk.riskGroupId
-			);
-			strategy.risk.riskDetails.auditScore = riskGroup?.auditScore || 5;
-			strategy.risk.riskDetails.codeReviewScore = riskGroup?.codeReviewScore || 5;
-			strategy.risk.riskDetails.complexityScore = riskGroup?.complexityScore || 5;
-			strategy.risk.riskDetails.longevityImpact = computeLongevityScore(strategy);
-			strategy.risk.riskDetails.protocolSafetyScore = riskGroup?.protocolSafetyScore || 5;
-			strategy.risk.riskDetails.teamKnowledgeScore = riskGroup?.teamKnowledgeScore || 5;
-			strategy.risk.riskDetails.testingScore = riskGroup?.testingScore || 5;
-			strategy.risk.riskDetails.median = medianExlcudingTvlImpact(strategy.risk.riskDetails);
+				} as Seafood.LendStatus)),
+				healthCheck: kongStrategy.healthCheck,
+				doHealthCheck: kongStrategy.doHealthCheck,
+				tradeFactory: kongStrategy.tradeFactory,
+				keeper: kongStrategy.keeper,
+				activation: BigNumber.from(kongStrategy.activationBlockTime || 0),
+				rewards: [] as Seafood.Reward[],
+			})),
+		} as Seafood.Vault));
+	
+		const riskGroups = json.data.riskGroups as {
+			chainId: number,
+			name: string,
+			auditScore: number,
+			codeReviewScore: number,
+			complexityScore: number,
+			longevityImpact: number,
+			protocolSafetyScore: number,
+			teamKnowledgeScore: number,
+			testingScore: number
+		} [];
+	
+		flat.forEach((vault: Seafood.Vault) => {
+			vault.strategies = [...vault.withdrawalQueue];
+			vault.strategies.forEach(strategy => {
+				const riskGroup = riskGroups.find(group => 
+					group.chainId === strategy.network.chainId 
+					&& kabobCase(group.name) === strategy.risk.riskGroupId
+				);
+				strategy.risk.riskDetails.auditScore = riskGroup?.auditScore || 5;
+				strategy.risk.riskDetails.codeReviewScore = riskGroup?.codeReviewScore || 5;
+				strategy.risk.riskDetails.complexityScore = riskGroup?.complexityScore || 5;
+				strategy.risk.riskDetails.longevityImpact = computeLongevityScore(strategy);
+				strategy.risk.riskDetails.protocolSafetyScore = riskGroup?.protocolSafetyScore || 5;
+				strategy.risk.riskDetails.teamKnowledgeScore = riskGroup?.teamKnowledgeScore || 5;
+				strategy.risk.riskDetails.testingScore = riskGroup?.testingScore || 5;
+				strategy.risk.riskDetails.median = medianExlcudingTvlImpact(strategy.risk.riskDetails);
+			});
 		});
-	});
+	
+		const result = [];
+		for(const chain of config.chains) {
+			result.push(flat.filter((vault: Seafood.Vault) => vault.network.chainId === chain.id));
+		}
 
-	const result = [];
-	for(const chain of config.chains) {
-		result.push(flat.filter((vault: Seafood.Vault) => vault.network.chainId === chain.id));
+		await putStatus({...status, status: 'ok', timestamp: Date.now()});
+		return result;
+
+	} catch(error) {
+		await putStatus({...status, status: 'warning', error, timestamp: Date.now()});
+		return [];
 	}
-	return result;
 }
 
 async function fetchTvlUpdates() : Promise<TVLUpdates> {

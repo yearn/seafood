@@ -9,6 +9,7 @@ export type Vault = {
   apiVersion: string;
   symbol: string;
   decimals: number;
+  depositLimit: BigNumber;
   availableDepositLimit: BigNumber;
   lockedProfitDegradation: number;
   debtRatio: number;
