@@ -32,11 +32,20 @@ export type Vault = {
   apySparkline: SparklinePoint[];
 }
 
+export type LenderStatus = {
+  chainId: number;
+  address: string;
+  name: string;
+  assets: BigNumber;
+  rate: BigNumber;
+}
+
 export type Strategy = {
   address: string;
   healthCheck: string;
   debtRatio: number;
   delegatedAssets: BigNumber;
+  lenderStatuses: LenderStatus[];
   doHealthCheck: boolean;
   estimatedTotalAssets: BigNumber;
   grossApr: number;

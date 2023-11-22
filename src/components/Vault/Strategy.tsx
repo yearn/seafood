@@ -332,7 +332,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 						<Row key={index} label={<A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(strategy.network.chainId, lender.address)}>{lender.name}</A>}>
 							<div className={'w-1/2 flex items-center justify-between'}>
 								<Tokens value={lender.deposits} decimals={vault?.token.decimals} />
-								<Percentage value={FixedNumber.from(lender.apr).divUnsafe(FixedNumber.from(BigNumber.from(10).pow(18))).toUnsafeFloat()} />
+								<Percentage value={FixedNumber.from(lender.apr.toString()).divUnsafe(FixedNumber.from(BigNumber.from(10).pow(18))).toUnsafeFloat()} />
 							</div>
 						</Row>)}
 				</>}

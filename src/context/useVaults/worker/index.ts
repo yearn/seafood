@@ -141,6 +141,7 @@ async function refresh() {
 					strategy.name = update.name;
 					strategy.tradeFactory = update.tradeFactory;
 				}
+
 			}
 		}
 	
@@ -149,21 +150,21 @@ async function refresh() {
 	}
 
 	// fetch rewards
-	const strategyRewardsUpdates = await fetchRewardsUpdates(latest);
-	for(const [index, chain] of config.chains.entries()) {
-		const rewardsUpdates = strategyRewardsUpdates[index];
+	// const strategyRewardsUpdates = await fetchRewardsUpdates(latest);
+	// for(const [index, chain] of config.chains.entries()) {
+	// 	const rewardsUpdates = strategyRewardsUpdates[index];
 
-		latest.filter(vault => vault.network.chainId === chain.id).forEach(vault => {
-			vault.withdrawalQueue.forEach(strategy => {
-				const update = rewardsUpdates.find(update => update.chainId === chain.id && update.address === strategy.address);
-				strategy.rewards = update?.rewards || [];
-			});
+	// 	latest.filter(vault => vault.network.chainId === chain.id).forEach(vault => {
+	// 		vault.withdrawalQueue.forEach(strategy => {
+	// 			const update = rewardsUpdates.find(update => update.chainId === chain.id && update.address === strategy.address);
+	// 			strategy.rewards = update?.rewards || [];
+	// 		});
 
-			vault.rewardsUsd = vault.withdrawalQueue.map(s => s.rewards).flat()
-				.reduce((acc, reward) => acc + reward?.amountUsd, 0)
-				|| 0;
-		});
-	}
+	// 		vault.rewardsUsd = vault.withdrawalQueue.map(s => s.rewards).flat()
+	// 			.reduce((acc, reward) => acc + reward?.amountUsd, 0)
+	// 			|| 0;
+	// 	});
+	// }
 
 	markupWarnings(latest);
 	await putVaults(latest);
@@ -485,7 +486,13 @@ query Query {
       withdrawalQueueIndex
 			tradeFactory
 			activationBlockTime
-    }
+      lenderStatuses {
+        name
+        address
+        assets
+        rate
+      }
+		}
     tvlUsd
     tvlSparkline {
       time
@@ -606,7 +613,15 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 			totalGain: BigNumber.from(0),
 			totalLoss: BigNumber.from(0),
 			withdrawalQueuePosition: kongStrategy.withdrawalQueueIndex,
-			lendStatuses: [] as Seafood.LendStatus[],
+			lendStatuses: kongStrategy.lenderStatuses.map((status: Kong.LenderStatus) => {
+				console.log('status', status);
+				return {
+					name: status.name,
+					address: status.address,
+					deposits: status.assets,
+					apr: status.rate
+				} as Seafood.LendStatus;
+			}),
 			healthCheck: kongStrategy.healthCheck,
 			doHealthCheck: kongStrategy.doHealthCheck,
 			tradeFactory: kongStrategy.tradeFactory,
