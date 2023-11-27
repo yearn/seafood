@@ -97,13 +97,16 @@ async function refresh() {
 			const update = USE_KONG
 				? {...current, ...vault} as Seafood.Vault
 				: merge(current || Seafood.defaultVault, vault as yDaemon.Vault, chain) as Seafood.Vault;
-			
-			const tvls = tvlUpdates[chain.id][vault.address] || {tvls: [], dates: []};
-			if(!tvls.tvls.length) {
-				tvls.tvls = [0, 0, 0];
-				tvls.dates = [0, 0, 0];
+
+			if(!USE_KONG) {
+				const tvls = tvlUpdates[chain.id][vault.address] || {tvls: [], dates: []};
+				if(!tvls.tvls.length) {
+					tvls.tvls = [0, 0, 0];
+					tvls.dates = [0, 0, 0];
+				}
+				update.tvls = tvls;
 			}
-			update.tvls = tvls;
+
 			return update;
 		}));
 	}
@@ -462,7 +465,8 @@ query Query {
     assetAddress
     assetSymbol
     assetName
-    priceUsd
+    assetPriceUsd
+		assetPriceSource
     managementFee
     performanceFee
 		registryStatus
@@ -544,7 +548,8 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 		const flat = json.data.vaults.map((kongVault: Kong.Vault) => ({
 			address: kongVault.address,
 			name: kongVault.name,
-			price: kongVault.priceUsd,
+			price: kongVault.assetPriceUsd,
+			priceSource: kongVault.assetPriceSource,
 			network: {
 				chainId: kongVault.chainId,
 				name: getChain(kongVault.chainId).name
@@ -569,6 +574,10 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 			performanceFee: BigNumber.from(kongVault.performanceFee || 0),
 			depositLimit: BigNumber.from(kongVault.depositLimit || 0),
 			activation: BigNumber.from(kongVault.activationBlockTime || 0),
+			tvls: {
+				dates: kongVault.tvlSparkline.map(point => point.time),
+				tvls: kongVault.tvlSparkline.map(point => point.value)
+			},
 			apy: {
 				type: 'v2:averaged',
 				gross: kongVault.aprGross,

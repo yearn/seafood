@@ -16,7 +16,8 @@ export type Vault = {
   assetAddress: string;
   assetSymbol: string;
   assetName: string;
-  priceUsd: number;
+  assetPriceUsd: number;
+  assetPriceSource: string;
   managementFee: number;
   performanceFee: number;
   registryStatus: string;

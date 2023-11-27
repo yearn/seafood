@@ -37,6 +37,7 @@ export interface Vault {
 	address: string,
 	name: string,
 	price: number,
+	priceSource: string,
 	network: Network,
 	version: string,
 	want: string,
