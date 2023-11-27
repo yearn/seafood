@@ -1,7 +1,8 @@
-import React, {useMemo} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {Vault} from '../../context/useVaults/types';
 import {formatPercent, getAddressExplorer} from '../../utils/utils';
 import {A} from '../controls';
+import {useVault} from './VaultProvider';
 
 // adapted from yearn/web-ui
 function parseMarkdown(markdownText: string) {
@@ -14,10 +15,16 @@ function parseMarkdown(markdownText: string) {
 }
 
 export default function InfoTab({vault}: {vault: Vault}) {
+	const {metas} = useVault();
+
 	const activeStrategies = useMemo(() => {
 		if(vault.withdrawalQueue.length === 1) return vault.withdrawalQueue;
 		return vault.withdrawalQueue.filter(v => v.debtRatio?.gt(0));
 	}, [vault]);
+
+	const getDescription = useCallback((address: string) => {
+		return metas.withdrawalQueue.find(v => v.address === address)?.description || 'No description found.';
+	}, [metas]);
 
 	return <div className={'px-2 pb-16 flex flex-col gap-3'}>
 		<div>
@@ -27,7 +34,7 @@ export default function InfoTab({vault}: {vault: Vault}) {
 				</A>
 			</div>
 			<div className={'sm:text-sm'} 
-				dangerouslySetInnerHTML={{__html: parseMarkdown((vault.token.description || 'No description found.').replaceAll('{{token}}', vault.token.symbol))}} />
+				dangerouslySetInnerHTML={{__html: parseMarkdown((metas.assetDescription || 'No description found.').replaceAll('{{token}}', vault.token.symbol))}} />
 		</div>
 		{activeStrategies.map(strategy => <div key={strategy.address}>
 			<div className={'flex items-center gap-2'}>
@@ -35,7 +42,7 @@ export default function InfoTab({vault}: {vault: Vault}) {
 				<div className={'font-bold'}>{`~ ${strategy.name}`}</div>
 			</div>
 			<div className={'sm:text-sm'} 
-				dangerouslySetInnerHTML={{__html: parseMarkdown((strategy.description || 'No description found.').replaceAll('{{token}}', vault.token.symbol))}} />
+				dangerouslySetInnerHTML={{__html: parseMarkdown(getDescription(strategy.address).replaceAll('{{token}}', vault.token.symbol))}} />
 		</div>)}
 	</div>;
 }

@@ -8,6 +8,34 @@ function computeDegradationTime(vault: Vault) {
 	return coefficient.div(vault.lockedProfitDegradation as BigNumber);
 }
 
+export async function fetchMetas(vault: Vault) {
+	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
+
+	const response = await fetch(process.env.REACT_APP_KONG_API_URL, {
+		method: 'POST',
+		headers: {'Content-Type': 'application/json'},
+		body: JSON.stringify({
+			query: `query Vault($chainId: Int!, $address: String!) {
+				vault(chainId: $chainId, address: $address) {
+					withdrawalQueue {
+						address
+						description
+					}
+					assetDescription
+				}
+			}
+			`,
+			variables: {chainId: vault.network.chainId, address: vault.address}
+		})
+	});
+
+	const json = await response.json();
+	return json.data.vault as {
+		assetDescription: string,
+		withdrawalQueue: {address: string, description: string}[]
+	};
+}
+
 export interface HarvestReport {
 	chain_id: string,
 	block: string,
@@ -24,23 +52,6 @@ export interface HarvestReport {
 	rough_apr_pre_fee: string
 }
 
-const KONG_QUERY = `
-query Harvest($chainId: Int, $address: String, $limit: Int) {
-  harvests(chainId: $chainId, address: $address, limit: $limit) {
-    chainId
-    blockNumber
-    blockTime
-    transactionHash
-    profit
-    profitUsd
-    loss
-    lossUsd
-    aprGross
-    aprNet
-  }
-}
-`;
-
 async function fetchHarvestReports(vault: Vault) {
 	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
 
@@ -51,7 +62,20 @@ async function fetchHarvestReports(vault: Vault) {
 			method: 'POST',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify({
-				query: KONG_QUERY,
+				query: `query Harvest($chainId: Int, $address: String, $limit: Int) {
+					harvests(chainId: $chainId, address: $address, limit: $limit) {
+						chainId
+						blockNumber
+						blockTime
+						transactionHash
+						profit
+						profitUsd
+						loss
+						lossUsd
+						aprGross
+						aprNet
+					}
+				}`,
 				variables: {chainId: vault.network.chainId, address: strategy, limit: 1000}
 			})
 		});

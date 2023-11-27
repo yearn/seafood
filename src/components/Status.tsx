@@ -98,7 +98,7 @@ export default function Status() {
 	}, [setEnable]);
 
 	return <div className={'w-full pt-6 sm:pt-0 pb-24 flex items-center justify-center'}>
-		<div className={'w-full sm:w-3/4 px-2 sm:px-4 flex flex-col gap-8'}>
+		<div className={'w-full sm:w-1/2 px-2 sm:px-4 flex flex-col gap-8'}>
 			<div className={'w-full h-32 flex items-center justify-center'}>
 				<div className={'w-auto sm:w-1/2 pl-4 pr-6 sm:px-0 sm:pr-16 flex items-center justify-end'}>
 					<StatusLight size={20} bloom={24} />
@@ -110,7 +110,7 @@ export default function Status() {
 			</div>
 			<div className={`sm:px-6
 				grid grid-flow-row gap-2 grid-cols-1 
-				sm:gap-8 sm:grid-cols-2`}>
+				sm:gap-8 sm:grid-cols-1`}>
 				{USE_KONG && <>
 					<Stage title={'Kong'} status={kong} />
 					<Stage title={'TVLs'} status={tvls} />
