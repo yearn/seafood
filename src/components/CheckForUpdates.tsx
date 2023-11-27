@@ -13,7 +13,7 @@ export default function CheckForUpdates() {
 	return <Notification>
 		<SpeechBubble text={'Fresh Seafood is here!'} />
 		<div className={'w-full sm:w-fit flex items-center justify-end gap-2 sm:gap-4 text-sm'}>
-			<Button label={'Install'} onClick={skipWaiting}></Button>
+			<Button label={'Update'} onClick={skipWaiting}></Button>
 			<Button label={'Dismiss'} onClick={() => setDismissed(true)}></Button>
 		</div>
 	</Notification>;
