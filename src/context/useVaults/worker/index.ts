@@ -88,7 +88,7 @@ async function refresh() {
 		? await fetchKongVaults()
 		: await fetchYDaemonVaults();
 
-	const tvlUpdates = await fetchTvlUpdates();
+	const tvlUpdates = USE_KONG ? undefined : await fetchTvlUpdates();
 
 	for(const [index, chain] of config.chains.entries()) {
 		latest.push(...(vaultverse[index] || []).map(vault => {
@@ -98,7 +98,7 @@ async function refresh() {
 				? {...current, ...vault} as Seafood.Vault
 				: merge(current || Seafood.defaultVault, vault as yDaemon.Vault, chain) as Seafood.Vault;
 
-			if(!USE_KONG) {
+			if(!USE_KONG && tvlUpdates) {
 				const tvls = tvlUpdates[chain.id][vault.address] || {tvls: [], dates: []};
 				if(!tvls.tvls.length) {
 					tvls.tvls = [0, 0, 0];

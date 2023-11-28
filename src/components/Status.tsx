@@ -113,7 +113,6 @@ export default function Status() {
 				sm:gap-8 sm:grid-cols-1`}>
 				{USE_KONG && <>
 					<Stage title={'Kong'} status={kong} />
-					<Stage title={'TVLs'} status={tvls} />
 					<Stage title={'Rewards'} status={rewards} />
 				</>}
 
