@@ -1,5 +1,4 @@
-import {BigNumber} from 'ethers';
-import React, {ReactNode, useCallback, useMemo} from 'react';
+import React, {ReactNode, useMemo} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Strategy, Vault} from '../../../context/useVaults/types';
 import {Row} from '../../controls';
@@ -16,10 +15,6 @@ export default function VaultSummary({vault, strategies}: {vault: Vault, strateg
 
 	const tvl = useMemo(() => {
 		return vault.tvls?.tvls.slice(-1)[0] || 0;
-	}, [vault]);
-
-	const calculateDebtUsd = useCallback((strategy: Strategy) => {
-		return vault.price * strategy.totalDebt.div(BigNumber.from('10').pow(vault.decimals)).toNumber();
 	}, [vault]);
 
 	return <div onClick={() => navigate(`/vault/${vault.address}`)} className={`
@@ -57,7 +52,7 @@ export default function VaultSummary({vault, strategies}: {vault: Vault, strateg
 				alt={index % 2 === 1}
 				label={<div className={'w-2/3 break-words truncate'}>{strategy.name}</div>}>
 				<Number
-					value={calculateDebtUsd(strategy)}
+					value={strategy.totalDebtUSD}
 					decimals={2}
 					nonFinite={'0'}
 					compact={true} />

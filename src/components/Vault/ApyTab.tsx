@@ -18,7 +18,6 @@ export default function ApyTab({vault}: {vault: Vault}) {
 	const [apyComputer] = useState(getApyComputer(vault?.apy.type || 'v2:averaged'));
 	const simulator = useSimulator();
 	const [liveApy, setLiveApy] = useLocalStorage('vault.liveApy', false);
-	const apyMismatch = useMemo(() => apyComputer.type !== vault?.apy.type, [apyComputer, vault]);
 
 	const apyProbeResults = useApyProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
 	const apyDelta = useApyProbeDelta(vault, apyProbeResults, liveApy);
@@ -34,14 +33,14 @@ export default function ApyTab({vault}: {vault: Vault}) {
 	return <div className={'mb-4 flex flex-col gap-4'}>
 		<div className={'w-full px-2 pt-1 flex items-center justify-between'}>
 			<div>
-				{liveApy ? 'Live APY' : 'Exporter APY'}
-				<div className={`text-xs ${apyMismatch && liveApy ? 'text-attention-600 dark:text-attention-400' : ''}`}>
+				{liveApy ? 'Live APY' : 'Kong APY'}
+				<div className={'text-xs'}>
 					{liveApy ? apyComputer.type : vault.apy.type}
 				</div>
 			</div>
 			<div className={'w-[60%] flex items-center justify-between'}>
 				<div className={'flex justify-end'}>
-					<div title={liveApy ? 'Switch to exporter APY' : 'Switch to live APY'}>
+					<div title={liveApy ? 'Switch to kong APY' : 'Switch to live APY'}>
 						<Switch
 							onChange={() => setLiveApy((current: boolean) => !current)}
 							checkedIcon={<BsLightningChargeFill className={'w-full h-full p-1'} />}
@@ -99,8 +98,5 @@ export default function ApyTab({vault}: {vault: Vault}) {
 		<Row label={'PPS (x1000)'}>
 			<Percentage value={apyDelta?.pps || NaN}  decimals={4} sign={true} nonFinite={'--'} simulated={true} />
 		</Row>
-		{apyMismatch && <div className={'p-2 attention-box'}>
-			{`For this vault we should use the '${vault?.apy.type}' method to calculate apy, but Seafood doesn't support that yet. Using ${apyComputer.type} for Live and Future apy instead.`}
-		</div>}
 	</div>;
 }

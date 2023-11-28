@@ -14,7 +14,7 @@ export interface Callback {
 
 export interface RefreshStatus {
 	status: 'refreshing' | 'ok' | 'warning'
-	stage: 'ydaemon' | 'multicall' | 'tvls' | 'rewards',
+	stage: 'ydaemon' | 'multicall' | 'tvls' | 'rewards' | 'kong',
 	chain: number | 'all',
 	error?: unknown,
 	timestamp: number

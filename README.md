@@ -5,7 +5,6 @@ Seafood is a vault monitoring dashboard that simulates operations like harvests 
 
 - [Dev environment setup](#dev-environment-setup)
 - [Project structure](#project-structure)
-- [Data access strategy](#data-access-strategy)
 - [Tests](#tests)
 - [Contributing](#contributing)
 
@@ -31,13 +30,17 @@ cd seafood
 cp env.example .env
 ```
 
-  - For harvest reports, set these envars
+  - For data
   ```
-  DB_HOST=
-  DB_USER=
-  DB_PASS=
+  REACT_APP_USE_KONG=true
+  REACT_APP_KONG_API_URL=https://kong-one.vercel.app/api/gql
   ```
-  If you don't have these credentials, ask someone at yearn.
+
+  Or if you like, setup and run [kong](https://github.com/murderteeth/kong) in your local environment and use:
+  ```
+  REACT_APP_USE_KONG=true
+  REACT_APP_KONG_API_URL=http://localhost:3000/api/gql
+  ```
 
   - To run vault and strategy simulations, set a token for tenderly, explorer urls, and rps urls for each supported chain:
   ```
@@ -74,6 +77,7 @@ Open a browser at http://localhost:3000
 `/api/routes/tenderly` - Generate Tenderly simulation forks \
 `/api/routes/tradeables` - List tradeable erc20s for a given trade handler
 
+
 ### frontend
 `/public` - Static files \
 `/scripts` - Help scripts used in dev \
@@ -86,24 +90,6 @@ Open a browser at http://localhost:3000
 `/src/ethereum` - Various utilities for querying RPCs. (obsoleting) \
 `/src/utils` - Various utilities that seemed happiest in a folder called `utils` 😁 \
 `/src/config.json` - This was a more convenient way to configure previous versions of Seafood. It moves to envars eventually
-
-
-## Data access strategy
-Seafood sources data from these providers:
-- [yDaemon](https://github.com/yearn/ydaemon), the primary source
-- Public blockchain RPC gateways, to fill in data yDaemon doesn't have yet
-- Block explorer apis, to get contract abis
-- Tenderly, for simulated contract states
-- An internal Yearn database for strategy harvest histories
-
-To give a unified, cross-chain view of Yearn's products, Seafood's primary data structure is aggregated from all networks into one view like this:
-- Query yDaemon's vaults endpoint for each network
-- Execute multicalls on each network for any data yDaemon doesn't have yet
-- Merge results into one data structure
-
-This process requires network and cpu bandwidth large enough that it caused jank in the UI. To de-jank, Seafood moved this aggregation logic into a [web worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) moving the overhead out of the UI thread.
-
-The aggregated data structure is stored in the browser's IndexDB and made available to the app through a hook called [useVaults](/src/context/useVaults). 
 
 
 ## Tests

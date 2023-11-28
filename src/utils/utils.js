@@ -165,6 +165,10 @@ function isEthAddress(string) {
 	return /0x[a-fA-F0-9]{40}/.test(string);
 }
 
+function kabobCase(str) {
+	return str.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/\s+/g, '-').toLowerCase();
+}
+
 export {
 	chainId,
 	getChain,
@@ -185,5 +189,6 @@ export {
 	hydrateBigNumbersRecursively,
 	escapeRegex,
 	humanizeRiskCategory,
-	isEthAddress
+	isEthAddress,
+	kabobCase
 };

@@ -3,7 +3,7 @@ import {useParams} from 'react-router-dom';
 import {useVaults} from '../../context/useVaults';
 import useRpcProvider from '../../context/useRpcProvider';
 import {GetVaultContract} from '../../ethereum/EthHelpers';
-import {fetchHarvestReports, HarvestReport} from '../../utils/vaults';
+import {fetchHarvestReports, fetchMetas, HarvestReport} from '../../utils/vaults';
 import {Vault} from '../../context/useVaults/types';
 import {Contract, providers} from 'ethers';
 
@@ -13,7 +13,11 @@ export interface VaultContext {
 	contract: Contract | undefined,
 	provider: providers.JsonRpcProvider | undefined,
 	reports: HarvestReport[],
-	reportBlocks: number[]
+	reportBlocks: number[],
+	metas: {
+		assetDescription: string,
+		withdrawalQueue: {address: string, description: string}[]
+	}
 }
 
 const	vaultContext = createContext<VaultContext>({} as VaultContext);
@@ -28,6 +32,13 @@ export default function VaultProvider({children}: {children: ReactNode}) {
 	const [provider, setProvider] = useState<providers.JsonRpcProvider>();
 	const [reports, setReports] = useState<HarvestReport[]>([] as HarvestReport[]);
 	const [reportBlocks, setReportBlocks] = useState<number[]>([]);
+	const [metas, setMetas] = useState<{
+		assetDescription: string,
+		withdrawalQueue: {address: string, description: string}[]
+	}>({
+		assetDescription: '',
+		withdrawalQueue: []
+	});
 
 	const vault = useMemo(() => {
 		return vaults.find(v => v.address === params.address);
@@ -46,7 +57,11 @@ export default function VaultProvider({children}: {children: ReactNode}) {
 				GetVaultContract(vault.address, provider, vault.version).then(contract => {
 					setVaultRpc(contract);
 				});
-	
+
+				fetchMetas(vault).then(metas => {
+					setMetas(metas);
+				});
+
 				fetchHarvestReports(vault).then(reports => {
 					setReports(reports);
 					setReportBlocks(reports.map(r => parseInt(r.block)).sort());
@@ -61,7 +76,8 @@ export default function VaultProvider({children}: {children: ReactNode}) {
 		contract,
 		provider,
 		reports,
-		reportBlocks
+		reportBlocks,
+		metas
 	}}>
 		{children}
 	</vaultContext.Provider>;

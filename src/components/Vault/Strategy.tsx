@@ -55,10 +55,10 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 
 	const latestHarvest = useMemo(() => {
 		return {
-			date: reports.length > 0 ? new Date(parseInt(reports[0].timestamp) * 1000) : new Date(0),
-			tx: reports.length > 0 ? reports[0].txn_hash : undefined
+			date: strategyHarvestHistory.length > 0 ? new Date(parseInt(strategyHarvestHistory[0].timestamp)) : new Date(0),
+			tx: strategyHarvestHistory.length > 0 ? strategyHarvestHistory[0].txn_hash : undefined
 		};
-	}, [reports]);
+	}, [strategyHarvestHistory]);
 
 	const drUpdate = useMemo(() => {
 		if(!vault) return;
@@ -332,7 +332,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 						<Row key={index} label={<A target={'_blank'} rel={'noreferrer'} href={getAddressExplorer(strategy.network.chainId, lender.address)}>{lender.name}</A>}>
 							<div className={'w-1/2 flex items-center justify-between'}>
 								<Tokens value={lender.deposits} decimals={vault?.token.decimals} />
-								<Percentage value={FixedNumber.from(lender.apr).divUnsafe(FixedNumber.from(BigNumber.from(10).pow(18))).toUnsafeFloat()} />
+								<Percentage value={FixedNumber.from(lender.apr.toString()).divUnsafe(FixedNumber.from(BigNumber.from(10).pow(18))).toUnsafeFloat()} />
 							</div>
 						</Row>)}
 				</>}
