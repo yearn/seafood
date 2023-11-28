@@ -55,10 +55,10 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 
 	const latestHarvest = useMemo(() => {
 		return {
-			date: reports.length > 0 ? new Date(parseInt(reports[0].timestamp)) : new Date(0),
-			tx: reports.length > 0 ? reports[0].txn_hash : undefined
+			date: strategyHarvestHistory.length > 0 ? new Date(parseInt(strategyHarvestHistory[0].timestamp)) : new Date(0),
+			tx: strategyHarvestHistory.length > 0 ? strategyHarvestHistory[0].txn_hash : undefined
 		};
-	}, [reports]);
+	}, [strategyHarvestHistory]);
 
 	const drUpdate = useMemo(() => {
 		if(!vault) return;
