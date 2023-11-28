@@ -182,27 +182,16 @@ export default function Powerstrip({className}: {className?: string}) {
 								className={'text-xs'}>
 								{'yearn.fi'}
 							</A>
-							<A href={'https://yearn.watch'}
-								title={'https://yearn.watch'}
-								target={'_blank'}
-								rel={'noreferrer'}
-								className={'text-xs'}>
-								{'yWatch'}
-							</A>
-							<A href={'https://yearn.vision'}
-								title={'https://yearn.vision'}
-								target={'_blank'}
-								rel={'noreferrer'}
-								className={'text-xs'}>
-								{'yVision'}
-							</A>
-							<A href={'https://github.com/yearn/ydaemon'}
-								title={'https://github.com/yearn/ydaemon'}
-								target={'_blank'}
-								rel={'noreferrer'}
-								className={'text-xs'}>
-								{'yDaemon'}
-							</A>
+							<div className={'flex gap-2 text-xs'}>
+								<div>{'powered by'}</div>
+								<A href={'https://github.com/murderteeth/kong'}
+									title={'https://github.com/murderteeth/kong'}
+									target={'_blank'}
+									rel={'noreferrer'}
+									className={'text-xs'}>
+									{'kong'}
+								</A>
+							</div>
 						</div>
 					</div>
 				</div>

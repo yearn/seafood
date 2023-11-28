@@ -71,7 +71,7 @@
   "scripts": {
     "start": "run-p start:**",
     "start:server": "cd api && yarn start",
-    "start:app": "PORT=3001 react-scripts start",
+    "start:app": "react-scripts start",
     "build": "react-scripts build",
     "test": "DOTENV_CONFIG_PATH=.env react-scripts test",
     "eject": "react-scripts eject",
