@@ -574,7 +574,6 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 			performanceFee: BigNumber.from(kongVault.performanceFee || 0),
 			depositLimit: BigNumber.from(kongVault.depositLimit || 0),
 			activation: BigNumber.from(kongVault.activationBlockTime || 0),
-			warnings: [] as Seafood.Warning[],
 			tvls: {
 				dates: kongVault.tvlSparkline.map(point => point.time),
 				tvls: kongVault.tvlSparkline.map(point => point.value)
