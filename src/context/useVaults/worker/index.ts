@@ -638,7 +638,7 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 				tradeFactory: kongStrategy.tradeFactory,
 				keeper: kongStrategy.keeper,
 				activation: BigNumber.from(kongStrategy.activationBlockTime || 0),
-				rewards: [] as Seafood.Reward[],
+				rewards: [] as Seafood.Reward[]
 			})),
 		} as Seafood.Vault));
 	
