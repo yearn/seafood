@@ -28,6 +28,21 @@
   dark:border-red-600;
 }
 
+.bg-polygon {
+  @apply bg-violet-400
+  dark:bg-violet-600;
+}
+
+.bg-polygon-40 {
+  @apply bg-violet-400/40
+  dark:bg-violet-600/40;
+}
+
+.border-polygon {
+  @apply border-violet-400
+  dark:border-violet-600;
+}
+
 .bg-fantom {
   @apply bg-indigo-400
   dark:bg-indigo-600;

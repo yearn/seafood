@@ -35,6 +35,16 @@
 			]
 		},
 		{
+			"id": 137,
+			"name": "polygon",
+			"explorer": "https://polygonscan.com",
+			"explorerApi": "https://api.polygonscan.com",
+			"registry": "0xfF5e3A7C4cBfA9Dd361385c24C3a0A4eE63CE500",
+			"providers": [
+				"https://rpc.ankr.com/polygon"
+			]
+		},
+		{
 			"id": 250,
 			"name": "fantom",
 			"explorer": "https://ftmscan.com",
