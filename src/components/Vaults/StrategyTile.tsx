@@ -2,7 +2,7 @@ import React, {ReactNode, useCallback, useMemo, useState} from 'react';
 import {Vault} from '../../context/useVaults/types';
 import {useFilter} from './Filter/useFilter';
 import {Row} from '../controls';
-import {Bps, Field, Number, Percentage, Tokens} from '../controls/Fields';
+import {Bps, Number, Percentage} from '../controls/Fields';
 import {getAddressExplorer, highlightString, truncateAddress} from '../../utils/utils';
 import {BsStar, BsStarFill} from 'react-icons/bs';
 import {TbCheck, TbCopy} from 'react-icons/tb';
@@ -101,7 +101,7 @@ function CopyButton({clip, selected, className}: {clip: string, selected: boolea
 
 export default function StrategyTile({vault, onClick}: {vault: Vault, onClick: (event?: React.MouseEvent<HTMLDivElement>) => void}) {
 	const {queryRe} = useFilter();
-	const {blocksForVault, computeVaultDr} = useBlocks();
+	const {blocksForVault} = useBlocks();
 	const simulator = useSimulator();
 	const apyProbeResults = useApyProbeResults(vault, simulator.probeStartResults, simulator.probeStopResults);
 	const apyDelta = useApyProbeDelta(vault, apyProbeResults, false);

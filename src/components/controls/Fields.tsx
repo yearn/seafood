@@ -99,7 +99,7 @@ export function Percentage(
 	const result = useMemo(() => {
 		const _ = `${(sign && !isNaN(limited)) ? (limited < 0 ? '' : '+') : ''}${formatPercent(bps ? limited / 10_000 : limited, decimals, nonFinite)}`;
 		return format ? format.replace('%s', _) : _;
-	}, [limited, bps, decimals, sign, nonFinite, finiteLimit, format]);
+	}, [limited, bps, decimals, sign, nonFinite, format]);
 	return <Field value={limited} simulated={simulated} animate={animate} className={className}>
 		{result}
 	</Field>;
