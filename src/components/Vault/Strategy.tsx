@@ -227,7 +227,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 					</div>
 				</Row>
 
-				<Row label={<div className={'text-lg font-bold'}>{'Debt Ratio'}</div>}>
+				<Row label={<div className={'text-lg font-bold'}>{'Debt ratio'}</div>}>
 					<div className={'flex items-center gap-2 sm:gap-4'}>
 						<div className={'relative flex items-center'}>
 							<div className={'absolute top-[6px] left-[10px] sm:right-[8px] max-w-fit text-xl'}>{'%'}</div>
@@ -246,14 +246,14 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 							shadow-inner`}
 								defaultValue={debtRatioDefaultValue}
 								onChange={onChangeDebtRatio}
-								disabled={simulating}
+								disabled={gte3 || simulating}
 								min={0} max={100 * maxDebtRatio / 10_000} step={0.01} />
 						</div>
 						<Button icon={TbTractor}
 							title={`Add harvest block for ${strategy.name}`}
 							onClick={toggleHarvest}
 							ping={simulatingStrategy}
-							disabled={simulating}
+							disabled={gte3 || simulating}
 							hot={hasHarvestBlock}
 							iconClassName={'text-2xl'} />
 					</div>
