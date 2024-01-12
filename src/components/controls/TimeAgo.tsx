@@ -9,6 +9,8 @@ function timeAgoFormatter (value: number, unit: Unit, suffix: Suffix, epochMilis
 	}
 }
 
-export default function TimeAgo({date}: {date: Date | number}) {
-	return <_TimeAgo key={date as Key} date={date} minPeriod={60} formatter={timeAgoFormatter as Formatter} />;
+export default function TimeAgo({date}: {date?: Date | number}) {
+	const _date = React.useMemo(() => new Date(new Date(date || 0).toUTCString()), [date]);
+	if(!date) return <></>;
+	return <_TimeAgo key={date as Key} date={new Date(_date)} minPeriod={60} formatter={timeAgoFormatter as Formatter} />;
 }

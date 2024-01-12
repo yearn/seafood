@@ -152,7 +152,7 @@ export function FilterProvider({children}: {children: ReactNode}) {
 
 				totalTvlUsd += strategy.totalDebtUSD;
 
-				let report = risk.find(r => r.riskGroup === strategy.risk.riskGroup);
+				let report = risk.find(r => r.riskGroup === strategy.risk?.riskGroup);
 				if(!report) {
 					report = {
 						...strategy.risk,

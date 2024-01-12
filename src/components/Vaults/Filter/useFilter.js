@@ -44,6 +44,7 @@ export function FilterProvider({children}) {
 			const version = parseFloat(vault.version);
 			if(!chips.v1 && version < .4) return false;
 			if(!chips.v2 && version >= .4 && version < 3) return false;
+			if(!chips.v3 && version >= 3) return false;
 
 			if(chips.tvlgtzero && getLatestTvl(vault) <= 0) return false;
 			if(chips.warnings && vault.warnings?.length === 0) return false;
@@ -76,7 +77,8 @@ export function defaultChips() {
 		factory: false,
 		tvlgtzero: false,
 		v1: false,
-		v2: true
+		v2: true,
+		v3: true,
 	};
 	config.chains.forEach(chain => result[chain.name] = true);
 	return result;

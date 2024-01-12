@@ -3,7 +3,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {usePowertools} from '../Powertools';
 import {Number} from '../controls/Fields';
 import {useExposureByVyperVersion} from '.';
-import Tile from '../Vaults/Tile';
+import Tile from '../Vaults/VaultTile';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 const FRAME_SIZE = 20;

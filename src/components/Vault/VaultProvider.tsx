@@ -4,12 +4,12 @@ import {useVaults} from '../../context/useVaults';
 import useRpcProvider from '../../context/useRpcProvider';
 import {GetVaultContract} from '../../ethereum/EthHelpers';
 import {fetchHarvestReports, fetchMetas, HarvestReport} from '../../utils/vaults';
-import {Vault} from '../../context/useVaults/types';
+import {defaultVault, Vault} from '../../context/useVaults/types';
 import {Contract, providers} from 'ethers';
 
 export interface VaultContext {
 	loading: boolean,
-	vault: Vault | undefined,
+	vault: Vault,
 	contract: Contract | undefined,
 	provider: providers.JsonRpcProvider | undefined,
 	reports: HarvestReport[],
@@ -41,7 +41,9 @@ export default function VaultProvider({children}: {children: ReactNode}) {
 	});
 
 	const vault = useMemo(() => {
-		return vaults.find(v => v.address === params.address);
+		const result = vaults.find(v => v.address === params.address);
+		if(result) return result;
+		return defaultVault as Vault;
 	}, [params, vaults]);
 
 	const loading = useMemo(() => {

@@ -98,7 +98,7 @@ function CopyButton({clip, selected, className}: {clip: string, selected: boolea
 	</TileButton>;
 }
 
-export default function Tile({vault, onClick}: {vault: Vault, onClick: (event?: React.MouseEvent<HTMLDivElement>) => void}) {
+export default function VaultTile({vault, onClick}: {vault: Vault, onClick: (event?: React.MouseEvent<HTMLDivElement>) => void}) {
 	const {queryRe} = useFilter();
 	const {blocksForVault, computeVaultDr} = useBlocks();
 	const simulator = useSimulator();
@@ -131,6 +131,11 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: (event?: 
 				<div className={`
 					flex items-center gap-2
 					text-xs`}>
+					<Chip className={`
+						bg-neutral-200/40 dark:bg-neutral-800/40
+						border border-neutral-200 dark:border-neutral-800
+						${vault.type === 'vault' ? '' : 'border-dashed text-neutral-600 dark:text-neutral-400'}
+						`}>{vault.type === 'vault' ? 'v' : 's'}</Chip>
 					<Chip className={`
 						bg-neutral-200/40 dark:bg-neutral-800/40
 						border border-neutral-200 dark:border-neutral-800
@@ -176,22 +181,7 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: (event?: 
 					<Percentage simulated={apy.simulated} value={apy.value} animate={true} nonFinite={'∞'} />
 				</div>
 			</Row>
-			<Row label={'Allocated'} alt={true}>
-				<div className={'flex items-center gap-2'}>
-					{vaultDebtRatio.simulated && <Bps
-						simulated={vaultDebtRatio.simulated}
-						value={vaultDebtRatio.delta / 10_000}
-						sign={true}
-						format={'(%s)'}
-						animate={true}
-						className={'text-xs'} />}
-					<Percentage
-						simulated={vaultDebtRatio.simulated} 
-						value={vaultDebtRatio.value / 10_000}
-						animate={true} />
-				</div>
-			</Row>
-			<Row label={'Deployed'}>
+			<Row label={'Deployed'} alt={true}>
 				<div className={'flex items-center gap-2'}>
 					{deployed.simulated && <Percentage
 						simulated={deployed.simulated}
@@ -203,6 +193,21 @@ export default function Tile({vault, onClick}: {vault: Vault, onClick: (event?: 
 					<Percentage
 						simulated={deployed.simulated}
 						value={deployed.value}
+						animate={true} />
+				</div>
+			</Row>
+			<Row label={'Allocated'}>
+				<div className={'flex items-center gap-2'}>
+					{vaultDebtRatio.simulated && <Bps
+						simulated={vaultDebtRatio.simulated}
+						value={vaultDebtRatio.delta / 10_000}
+						sign={true}
+						format={'(%s)'}
+						animate={true}
+						className={'text-xs'} />}
+					<Percentage
+						simulated={vaultDebtRatio.simulated} 
+						value={vaultDebtRatio.value / 10_000}
 						animate={true} />
 				</div>
 			</Row>

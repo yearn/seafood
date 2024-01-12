@@ -90,13 +90,17 @@ export function Tokens(
 }
 
 export function Percentage(
-	{value, simulated, bps, decimals, sign, nonFinite, format, animate, className}
-	: {value: number, simulated?: boolean, bps?: boolean, decimals?: number, sign?: boolean, nonFinite?: string, format?: string, animate?: boolean, className?: string}) {
+	{value, simulated, bps, decimals, sign, nonFinite, finiteLimit = 10_000, format, animate, className}
+	: {value: number, simulated?: boolean, bps?: boolean, decimals?: number, sign?: boolean, nonFinite?: string, finiteLimit?: number, format?: string, animate?: boolean, className?: string}) {
+	const limited = useMemo(() => {
+		if(!finiteLimit) return value;
+		return (value < finiteLimit) ? value : Infinity;
+	}, [value, finiteLimit]);
 	const result = useMemo(() => {
-		const _ = `${(sign && !isNaN(value)) ? (value < 0 ? '' : '+') : ''}${formatPercent(bps ? value / 10_000 : value, decimals, nonFinite)}`;
+		const _ = `${(sign && !isNaN(limited)) ? (limited < 0 ? '' : '+') : ''}${formatPercent(bps ? limited / 10_000 : limited, decimals, nonFinite)}`;
 		return format ? format.replace('%s', _) : _;
-	}, [value, bps, decimals, sign, nonFinite, format]);
-	return <Field value={value} simulated={simulated} animate={animate} className={className}>
+	}, [limited, bps, decimals, sign, nonFinite, format]);
+	return <Field value={limited} simulated={simulated} animate={animate} className={className}>
 		{result}
 	</Field>;
 }

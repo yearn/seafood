@@ -1,5 +1,4 @@
 import React, {useCallback, useMemo} from 'react';
-import {Vault} from '../../context/useVaults/types';
 import {formatPercent, getAddressExplorer} from '../../utils/utils';
 import {A} from '../controls';
 import {useVault} from './VaultProvider';
@@ -14,7 +13,8 @@ function parseMarkdown(markdownText: string) {
 	return htmlText.trim();
 }
 
-export default function InfoTab({vault}: {vault: Vault}) {
+export default function InfoTab() {
+	const {vault} = useVault();
 	const {metas} = useVault();
 
 	const activeStrategies = useMemo(() => {

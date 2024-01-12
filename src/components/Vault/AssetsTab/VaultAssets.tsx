@@ -1,15 +1,15 @@
 import React, {useMemo} from 'react';
-import {Vault} from '../../context/useVaults/types';
+import {Vault} from '../../../context/useVaults/types';
 import {FixedNumber, ethers} from 'ethers';
-import {Row} from '../controls';
-import {formatPercent, formatTokens} from '../../utils/utils';
-import TvlBars from './TvlBars';
-import {useAssetsProbeResults} from '../../context/useSimulator/ProbesProvider/useAssetsProbe';
-import {useSimulator} from '../../context/useSimulator';
-import {Bps, Number, Percentage, Tokens} from '../controls/Fields';
-import {useBlocks} from '../../context/useSimulator/BlocksProvider';
+import {Row} from '../../controls';
+import {formatPercent, formatTokens} from '../../../utils/utils';
+import TvlBars from '../TvlBars';
+import {useAssetsProbeResults} from '../../../context/useSimulator/ProbesProvider/useAssetsProbe';
+import {useSimulator} from '../../../context/useSimulator';
+import {Bps, Number, Percentage, Tokens} from '../../controls/Fields';
+import {useBlocks} from '../../../context/useSimulator/BlocksProvider';
 
-export default function AssetsTab({vault}: {vault: Vault}) {
+export default function VaultAssets({vault}: {vault: Vault}) {
 	const {computeVaultDr} = useBlocks();
 	const simulator = useSimulator();
 	const vaultDebtRatio = computeVaultDr(vault);
@@ -77,7 +77,7 @@ export default function AssetsTab({vault}: {vault: Vault}) {
 						animate={true} />
 				</div>
 			</Row>
-			<Row label={'Free assets'} alt={true}>
+			<Row label={'Idle assets'} alt={true}>
 				<div className={'flex items-center gap-2'}>
 					{freeAssets.simulated && <Tokens
 						simulated={freeAssets.simulated}

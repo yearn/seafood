@@ -2,7 +2,8 @@ import React, {useCallback, useMemo, useState} from 'react';
 import {useFilter} from './Filter/useFilter';
 import {useNavigate} from 'react-router-dom';
 import useKeypress from 'react-use-keypress';
-import Tile from './Tile';
+import VaultTile from './VaultTile';
+import StrategyTile from './StrategyTile';
 import {formatNumber} from '../../utils/utils';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -51,7 +52,15 @@ export default function List() {
 	const items = useMemo(() => {
 		const frame = filter.slice(0, (framePointer + 1) * FRAME_SIZE);
 		const result = frame.map((vault, index) => {
-			return <Tile key={index} vault={vault} onClick={(event) => {
+			if(vault.type === 'vault') return <VaultTile key={index} vault={vault} onClick={(event) => {
+				if (event.ctrlKey || event.shiftKey || event.metaKey) {
+					window.open(`/vault/${vault.address}`, '_blank');
+				}else{
+					navigate(`/vault/${vault.address}`);
+				}
+			}} />;
+
+			if(vault.type === 'strategy') return <StrategyTile key={index} vault={vault} onClick={(event) => {
 				if (event.ctrlKey || event.shiftKey || event.metaKey) {
 					window.open(`/vault/${vault.address}`, '_blank');
 				}else{

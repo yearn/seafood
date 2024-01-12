@@ -11,7 +11,8 @@ function Chip({className, children}: {className: string, children: ReactNode}) {
 		px-2 py-1 ${className}
 		group-hover:border-selected-500 group-hover:bg-selected-500
 		dark:group-hover:border-selected-400 dark:group-hover:bg-selected-400
-		group-hover:text-black`}>
+		group-hover:text-black
+		whitespace-nowrap`}>
 		{children}
 	</div>;
 }
@@ -19,6 +20,11 @@ function Chip({className, children}: {className: string, children: ReactNode}) {
 export default function Chips({vault}: {vault: Vault}) {
 	return <ScrollContainer className={'flex items-center w-full'}>
 		<div className={'w-fit flex items-center justify-between gap-4 sm:gap-3'}>
+			<Chip className={`
+				bg-neutral-200/40 dark:bg-neutral-800/40
+				border border-neutral-200 dark:border-neutral-800
+				${vault.type === 'vault' ? '' : 'border-dashed text-neutral-600 dark:text-neutral-400'}
+				`}>{vault.type === 'vault' ? 'vault' : 'tokenized strategy'}</Chip>
 			<Chip className={`
 					bg-neutral-200/40 dark:bg-neutral-800/40
 					border border-neutral-200 dark:border-neutral-800

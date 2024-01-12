@@ -108,7 +108,7 @@ async function fetchHarvestReports(vault: Vault) {
 	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
 
 	const harvests = [] as HarvestReport[];
-	const strategies = vault.strategies.map(strategy => strategy.address);
+	const strategies = vault.withdrawalQueue.map(strategy => strategy.address);
 	for(const strategy of strategies) {
 		harvests.push(...await fetchHarvestReportsForStrategy(vault.network.chainId, vault.address, strategy));
 	}

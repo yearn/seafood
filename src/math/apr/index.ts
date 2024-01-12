@@ -14,7 +14,6 @@ export function computeHarvestApr(vault: Vault, strategy: Strategy, latestReport
 		}
 	}
 
-	
 	const profit = snapshot.totalGain.sub(latestReport.total_gain);
 	const loss = snapshot.totalLoss.sub(latestReport.total_loss);
 
@@ -22,7 +21,7 @@ export function computeHarvestApr(vault: Vault, strategy: Strategy, latestReport
 		? FixedNumber.from(loss.mul(-1)).divUnsafe(FixedNumber.from(strategy.totalDebt))
 		: FixedNumber.from(profit).divUnsafe(FixedNumber.from(strategy.totalDebt));
 
-	const period = BigNumber.from(Math.round(Date.now() / 1000)).sub(parseInt(latestReport.timestamp) / 1000).div(60).div(60).toNumber() || 1;
+	const period = BigNumber.from(Math.floor(Date.now() / 1000)).sub(Math.floor(parseInt(latestReport.timestamp))).div(60).div(60).toNumber() || 1;
 	const gross = performance.mulUnsafe(HOURS_IN_A_YEAR.divUnsafe(FixedNumber.from(period)));
 
 	const performanceFee = FixedNumber.from(vault.performanceFee).divUnsafe(BPS);

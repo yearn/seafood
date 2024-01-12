@@ -3,7 +3,7 @@ import ScrollContainer from 'react-indiana-drag-scroll';
 
 interface TabProps {
 	label: string
-	content: React.ReactNode
+	content: () => JSX.Element
 	onClick?: () => void,
 	className?: string
 }
@@ -39,12 +39,18 @@ const Tabbed: React.FC<TabbedProps> = ({tabs, className, tabClassName, activeTab
 			{tabs.map(({label}, index) => <Tab
 				key={label}
 				label={label}
-				content={null}
+				content={() => <></>}
 				onClick={() => setActiveTabIndex(index)}
 				className={index === activeTabIndex ? activeTabClassName : tabClassName}
 			/>)}
 		</ScrollContainer>
-		<div className={contentClassName}>{tabs.length && tabs[activeTabIndex].content}</div>
+		{tabs.map((tab, index) => (
+			<div
+				key={tab.label}
+				className={`${contentClassName} ${index === activeTabIndex ? 'active' : 'hidden'}`}>
+				{tab.content()}
+			</div>
+		))}
 	</div>;
 };
 

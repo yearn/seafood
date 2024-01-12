@@ -4,8 +4,10 @@ export type Vault = {
   chainId: number;
   address: string;
   name: string;
+  type: string;
   totalAssets: BigNumber;
   totalDebt: BigNumber;
+  totalIdle: BigNumber;
   apiVersion: string;
   symbol: string;
   decimals: number;
@@ -13,6 +15,8 @@ export type Vault = {
   availableDepositLimit: BigNumber;
   lockedProfitDegradation: number;
   debtRatio: number;
+  currentDebt: BigNumber;
+  currentDebtRatio: number;
   assetAddress: string;
   assetSymbol: string;
   assetName: string;
@@ -23,7 +27,12 @@ export type Vault = {
   registryStatus: string;
   governance: string;
   activationBlockTime: BigNumber;
+  latestReportBlockTime: BigNumber;
+  keeper: string;
+  doHealthCheck: boolean;
   withdrawalQueue: Strategy[];
+  defaultQueue: Omit<Vault, 'defaultQueue' | 'withdrawalQueue'>[];
+  queueIndex: number;
   tvlUsd: number;
   tvlSparkline: SparklinePoint[];
   apyNet: number;

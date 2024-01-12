@@ -1,21 +1,19 @@
-import React, {useMemo, useState} from 'react';
+import React, {useMemo} from 'react';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import {Vault} from '../../context/useVaults/types';
-import {getApyComputer} from '../../math/apy';
 import {useSimulator} from '../../context/useSimulator';
 import {useApyProbeDelta, useApyProbeResults} from '../../context/useSimulator/ProbesProvider/useApyProbe';
 import useLocalStorage from '../../utils/useLocalStorage';
 import {Row, Switch} from '../controls';
 import {BsLightningChargeFill} from 'react-icons/bs';
-import {BiBadgeCheck} from 'react-icons/bi';
 import {computeDegradationTime} from '../../utils/vaults';
 import {Bps, Percentage} from '../controls/Fields';
+import {useVault} from './VaultProvider';
 
 dayjs.extend(duration);
 
-export default function ApyTab({vault}: {vault: Vault}) {
-	const [apyComputer] = useState(getApyComputer(vault?.apy.type || 'v2:averaged'));
+export default function ApyTab() {
+	const {vault} = useVault();
 	const simulator = useSimulator();
 	const [liveApy, setLiveApy] = useLocalStorage('vault.liveApy', false);
 
@@ -33,18 +31,17 @@ export default function ApyTab({vault}: {vault: Vault}) {
 	return <div className={'mb-4 flex flex-col gap-4'}>
 		<div className={'w-full px-2 pt-1 flex items-center justify-between'}>
 			<div>
-				{liveApy ? 'Live APY' : 'Kong APY'}
+				{'ΔPPS APY'}
 				<div className={'text-xs'}>
-					{liveApy ? apyComputer.type : vault.apy.type}
+					{liveApy ? '⚡ live' : '📋 last reported'}
 				</div>
 			</div>
 			<div className={'w-[60%] flex items-center justify-between'}>
 				<div className={'flex justify-end'}>
-					<div title={liveApy ? 'Switch to kong APY' : 'Switch to live APY'}>
+					<div title={liveApy ? 'Switch to last reported APY' : 'Switch to live APY'}>
 						<Switch
 							onChange={() => setLiveApy((current: boolean) => !current)}
 							checkedIcon={<BsLightningChargeFill className={'w-full h-full p-1'} />}
-							uncheckedIcon={<BiBadgeCheck className={'w-full h-full p-1'} />}
 							checked={liveApy} />
 					</div>
 				</div>

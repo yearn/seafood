@@ -52,7 +52,7 @@ function Layout() {
 			</div>
 			<div className={'w-1/2'}></div>
 			<div className={'w-1/2'}>
-				<StrategiesTab vault={vault} />
+				{vault.type === 'vault' && <StrategiesTab />}
 			</div>
 		</div>
 	</div>;
