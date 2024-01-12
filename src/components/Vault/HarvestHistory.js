@@ -1,6 +1,6 @@
 import React from 'react';
 import {BiggerThanSmallScreen, SmallScreen} from '../../utils/breakpoints';
-import {formatPercent, getTxExplorer} from '../../utils/utils';
+import {formatPercent, getTxExplorer, blocktimeToDate} from '../../utils/utils';
 import {A} from '../controls';
 import dayjs from 'dayjs';
 import EigenPhi from './EigenPhi';
@@ -36,7 +36,7 @@ function HarvestHistory({history}){
 								<Cell textAlign={'text-left'}>
 									<div className={'flex items-center gap-2'}>
 										<A href={getTxExplorer(e.chain_id, e.txn_hash)} target={'_blank'} rel={'noreferrer'}>
-											{dayjs(new Date(e.timestamp * 1000)).format('YYYY-MM-DD')}
+											{dayjs(blocktimeToDate(e.timestamp)).format('YYYY-MM-DD')}
 										</A>
 										<EigenPhi tx={e.txn_hash} />
 									</div>
@@ -65,7 +65,7 @@ function HarvestHistory({history}){
 				</thead>
 				<tbody>
 					{history.map((e, i) => {
-						const time = new Date(parseInt(e.timestamp));
+						const time = blocktimeToDate(e.timestamp);
 						return <tr key={e.txn_hash} className={i % 2 === 0 ? 'bg-selected-400/5' : ''}>
 							<Cell textAlign={'text-left'}>
 								<div className={'flex items-center gap-3'}>
