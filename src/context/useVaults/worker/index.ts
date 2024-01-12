@@ -365,16 +365,16 @@ async function createVaultMulticalls(vaults: yDaemon.Vault[], chain: Seafood.Cha
 		vaults.forEach(vault => {
 			const results = multiresults[vault.address].callsReturnContext;
 			const lockedProfitDegradation = results[4].returnValues[0] && results[4].returnValues[0].type === 'BigNumber'
-				? BigNumber.from(results[4].returnValues[0])
+				? toBigNumber(results[4].returnValues[0])
 				: ethers.constants.Zero;
 			parsed.push({
 				type: 'vault',
 				chainId: chain.id,
 				address: vault.address,
-				totalDebt: BigNumber.from(results[0].returnValues[0]),
-				debtRatio: results[1].returnValues[0] ? BigNumber.from(results[1].returnValues[0]) : undefined,
-				totalAssets: results[2].returnValues[0] ? BigNumber.from(results[2].returnValues[0]) : undefined,
-				availableDepositLimit: BigNumber.from(results[3].returnValues[0]),
+				totalDebt: toBigNumber(results[0].returnValues[0]),
+				debtRatio: results[1].returnValues[0] ? toBigNumber(results[1].returnValues[0]) : undefined,
+				totalAssets: results[2].returnValues[0] ? toBigNumber(results[2].returnValues[0]) : undefined,
+				availableDepositLimit: toBigNumber(results[3].returnValues[0]),
 				lockedProfitDegradation
 			});
 		});
@@ -408,8 +408,8 @@ async function createStrategyMulticalls(vaults: yDaemon.Vault[], chain: Seafood.
 			const lendStatuses = results[0].returnValues?.length > 0 
 				? results[0].returnValues.map(tuple => ({
 					name: tuple[0],
-					deposits: BigNumber.from(tuple[1]),
-					apr: BigNumber.from(tuple[2]),
+					deposits: toBigNumber(tuple[1]),
+					apr: toBigNumber(tuple[2]),
 					address: tuple[3]
 				})) : undefined;
 
@@ -435,7 +435,7 @@ function markupWarnings(vaults: Seafood.Vault[]) {
 	vaults.forEach(vault => {
 		vault.warnings = [];
 
-		if(vault.depositLimit.eq(0)) {
+		if(vault.depositLimit.eq(0) && vault.type === 'vault') {
 			vault.warnings.push({key: 'noDepositLimit', message: 'This vault cannot take deposits until its limit is raised.'});
 		}
 
@@ -453,8 +453,10 @@ query Query {
 		chainId
 		address
     name
+		type
 		totalAssets
     totalDebt
+		totalIdle
     apiVersion
     symbol
     decimals
@@ -498,6 +500,21 @@ query Query {
         rate
       }
 		}
+		defaultQueue {
+      address
+      name
+			apiVersion
+      debtRatio
+			currentDebt
+			currentDebtRatio
+      totalAssets
+      performanceFee
+      totalDebt
+			activationBlockTime
+      keeper
+      latestReportBlockTime
+      doHealthCheck
+  	}
     tvlUsd
     tvlSparkline {
       time
@@ -527,6 +544,19 @@ query Query {
 }
 `;
 
+const toBigNumberEx = /^\d+[n]?$/;
+function toBigNumber(value: string | BigNumber | { type: string, hex: string } |  number) {
+	if (typeof value === 'object' && value !== null && 'type' in value && value.type === 'BigNumber') {
+		return BigNumber.from(value.hex);
+	}
+
+	if(toBigNumberEx.test(value.toString())) {
+		return BigNumber.from(value.toString().replace('n', ''));
+	} else {
+		throw new Error(`!toBigNumberEx.test, ${value}`);
+	}
+}
+
 async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
 
@@ -539,15 +569,16 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify({query: KONG_QUERY})
 		});
-	
+
 		if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-	
+
 		const json = await response.json();
 		if (json.error) throw new Error(json.error);
-	
+
 		const flat = json.data.vaults.map((kongVault: Kong.Vault) => ({
 			address: kongVault.address,
 			name: kongVault.name,
+			type: kongVault.type,
 			price: kongVault.assetPriceUsd,
 			priceSource: kongVault.assetPriceSource,
 			network: {
@@ -564,16 +595,17 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 			},
 			endorsed: kongVault.registryStatus === 'endorsed',
 			governance: kongVault.governance,
-			totalAssets: BigNumber.from(kongVault.totalAssets),
+			totalAssets: toBigNumber(kongVault.totalAssets),
+			totalIdle: kongVault.totalIdle ? toBigNumber(kongVault.totalIdle) : undefined,
 			availableDepositLimit: kongVault.availableDepositLimit,
-			lockedProfitDegradation: BigNumber.from(kongVault.lockedProfitDegradation || 0),
+			lockedProfitDegradation: toBigNumber(kongVault.lockedProfitDegradation || 0),
 			totalDebt: kongVault.totalDebt,
-			decimals: BigNumber.from(kongVault.decimals || 0),
-			debtRatio: BigNumber.from(kongVault.debtRatio || 0),
-			managementFee: BigNumber.from(kongVault.managementFee || 0),
-			performanceFee: BigNumber.from(kongVault.performanceFee || 0),
-			depositLimit: BigNumber.from(kongVault.depositLimit || 0),
-			activation: BigNumber.from(kongVault.activationBlockTime || 0),
+			decimals: toBigNumber(kongVault.decimals || 0),
+			debtRatio: toBigNumber(kongVault.debtRatio || 0),
+			managementFee: toBigNumber(kongVault.managementFee || 0),
+			performanceFee: toBigNumber(kongVault.performanceFee || 0),
+			depositLimit: toBigNumber(kongVault.depositLimit || 0),
+			activation: toBigNumber(kongVault.activationBlockTime || 0),
 			tvls: {
 				dates: kongVault.tvlSparkline.map(point => point.time),
 				tvls: kongVault.tvlSparkline.map(point => point.value)
@@ -586,62 +618,9 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 				[-30]: kongVault.apyMonthlyNet,
 				inception: kongVault.apyInceptionNet
 			},
-			withdrawalQueue: kongVault.withdrawalQueue.map((kongStrategy: Kong.Strategy) => ({
-				network: {
-					chainId: kongVault.chainId,
-					name: getChain(kongVault.chainId).name
-				},
-				address: kongStrategy.address,
-				name: kongStrategy.name,
-				description: '',
-				risk: {
-					tvl: 0,
-					riskGroupId: kongStrategy.riskGroup ? kabobCase(kongStrategy.riskGroup) : 'no-group',
-					riskGroup: kongStrategy.riskGroup || 'No Group',
-					riskScore: 0,
-					riskDetails: {
-						TVLImpact: 1,
-						auditScore: 5,
-						codeReviewScore: 5,
-						complexityScore: 5,
-						longevityImpact: 5,
-						protocolSafetyScore: 5,
-						teamKnowledgeScore: 5,
-						testingScore: 5,
-						median: 5
-					},
-					allocation: {
-						availableAmount: '0',
-						availableTVL: '0',
-						currentAmount: '0',
-						currentTVL: '0'
-					}
-				},
-				debtRatio: BigNumber.from(kongStrategy.debtRatio || 0),
-				performanceFee: BigNumber.from(kongStrategy.performanceFee || 0),
-				estimatedTotalAssets: BigNumber.from(kongStrategy.estimatedTotalAssets || 0),
-				delegatedAssets: BigNumber.from(kongStrategy.delegatedAssets || 0),
-				lastReport: BigNumber.from(kongStrategy.lastReportBlockTime || 0),
-				totalDebt: BigNumber.from(kongStrategy.totalDebt || 0),
-				totalDebtUSD: kongStrategy.totalDebtUsd,
-				totalGain: BigNumber.from(0),
-				totalLoss: BigNumber.from(0),
-				withdrawalQueuePosition: kongStrategy.withdrawalQueueIndex,
-				lendStatuses: kongStrategy.lenderStatuses.map((status: Kong.LenderStatus) => ({
-					name: status.name,
-					address: status.address,
-					deposits: status.assets,
-					apr: status.rate
-				} as Seafood.LendStatus)),
-				healthCheck: kongStrategy.healthCheck,
-				doHealthCheck: kongStrategy.doHealthCheck,
-				tradeFactory: kongStrategy.tradeFactory,
-				keeper: kongStrategy.keeper,
-				activation: BigNumber.from(kongStrategy.activationBlockTime || 0),
-				rewards: [] as Seafood.Reward[]
-			})),
+			withdrawalQueue: getWithdrawalQueue(kongVault),
 		} as Seafood.Vault));
-	
+
 		const riskGroups = json.data.riskGroups as {
 			chainId: number,
 			name: string,
@@ -683,6 +662,111 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 	} catch(error) {
 		await putStatus({...status, status: 'warning', error, timestamp: Date.now()});
 		return [];
+	}
+}
+
+function getWithdrawalQueue(kongVault: Kong.Vault) {
+	if(kongVault.defaultQueue.length > 0) {
+		return kongVault.defaultQueue.map((tokenizedStrategy: Omit<Kong.Vault, 'defaultQueue' | 'withdrawalQueue'>) => ({
+			network: {
+				chainId: kongVault.chainId,
+				name: getChain(kongVault.chainId).name
+			},
+			address: tokenizedStrategy.address,
+			name: tokenizedStrategy.name,
+			apiVersion: tokenizedStrategy.apiVersion,
+			description: '',
+			debtRatio: toBigNumber(tokenizedStrategy.debtRatio || 0),
+			currentDebt: toBigNumber(tokenizedStrategy.currentDebt || 0),
+			currentDebtRatio: toBigNumber(tokenizedStrategy.currentDebtRatio || 0),
+			performanceFee: toBigNumber(tokenizedStrategy.performanceFee || 0),
+			estimatedTotalAssets: toBigNumber(tokenizedStrategy.totalAssets || 0),
+			totalIdle: toBigNumber(tokenizedStrategy.totalIdle || 0),
+			delegatedAssets: toBigNumber(0),
+			lastReport: toBigNumber(tokenizedStrategy.latestReportBlockTime || 0),
+			totalDebt: toBigNumber(tokenizedStrategy.totalDebt || 0),
+			totalDebtUSD: 0,
+			totalGain: toBigNumber(0),
+			totalLoss: toBigNumber(0),
+			withdrawalQueuePosition: tokenizedStrategy.queueIndex,
+			doHealthCheck: tokenizedStrategy.doHealthCheck,
+			keeper: tokenizedStrategy.keeper,
+			activation: toBigNumber(tokenizedStrategy.activationBlockTime || 0),
+			rewards: [] as Seafood.Reward[],
+			risk: {
+				tvl: 0,
+				riskGroupId: 'no-group',
+				riskGroup: 'No Group',
+				riskScore: 0,
+				riskDetails: {
+					TVLImpact: 1,
+					auditScore: 5,
+					codeReviewScore: 5,
+					complexityScore: 5,
+					longevityImpact: 5,
+					protocolSafetyScore: 5,
+					teamKnowledgeScore: 5,
+					testingScore: 5,
+					median: 5
+				},
+			}
+		})) as Seafood.Strategy[];
+	} else {
+		return kongVault.withdrawalQueue.map((kongStrategy: Kong.Strategy) => ({
+			network: {
+				chainId: kongVault.chainId,
+				name: getChain(kongVault.chainId).name
+			},
+			address: kongStrategy.address,
+			name: kongStrategy.name,
+			apiVersion: kongVault.apiVersion,
+			description: '',
+			risk: {
+				tvl: 0,
+				riskGroupId: kongStrategy.riskGroup ? kabobCase(kongStrategy.riskGroup) : 'no-group',
+				riskGroup: kongStrategy.riskGroup || 'No Group',
+				riskScore: 0,
+				riskDetails: {
+					TVLImpact: 1,
+					auditScore: 5,
+					codeReviewScore: 5,
+					complexityScore: 5,
+					longevityImpact: 5,
+					protocolSafetyScore: 5,
+					teamKnowledgeScore: 5,
+					testingScore: 5,
+					median: 5
+				},
+				allocation: {
+					availableAmount: '0',
+					availableTVL: '0',
+					currentAmount: '0',
+					currentTVL: '0'
+				}
+			},
+			debtRatio: toBigNumber(kongStrategy.debtRatio || 0),
+			performanceFee: toBigNumber(kongStrategy.performanceFee || 0),
+			estimatedTotalAssets: toBigNumber(kongStrategy.estimatedTotalAssets || 0),
+			delegatedAssets: toBigNumber(kongStrategy.delegatedAssets || 0),
+			lastReport: toBigNumber(kongStrategy.lastReportBlockTime || 0),
+			totalDebt: toBigNumber(kongStrategy.totalDebt || 0),
+			totalDebtUSD: kongStrategy.totalDebtUsd,
+			totalGain: toBigNumber(0),
+			totalLoss: toBigNumber(0),
+			withdrawalQueuePosition: kongStrategy.withdrawalQueueIndex,
+			lendStatuses: kongStrategy.lenderStatuses.map((status: Kong.LenderStatus) => ({
+				name: status.name,
+				address: status.address,
+				deposits: status.assets,
+				apr: status.rate
+			} as Seafood.LendStatus)),
+			healthCheck: kongStrategy.healthCheck,
+			doHealthCheck: kongStrategy.doHealthCheck,
+			tradeFactory: kongStrategy.tradeFactory,
+			keeper: kongStrategy.keeper,
+			activation: toBigNumber(kongStrategy.activationBlockTime || 0),
+			rewards: [] as Seafood.Reward[]
+		}));
 	}
 }
 
@@ -763,7 +847,7 @@ async function fetchRewards(vaults: Seafood.Vault[], chain: Seafood.Chain) {
 
 		const rewards = [] as Seafood.Reward[];
 		for(const tradeable of tradeables) {
-			const amount = BigNumber.from(balanceResults[`${tradeable.token}/${strategy.address}`].callsReturnContext[0].returnValues[0]);
+			const amount = toBigNumber(balanceResults[`${tradeable.token}/${strategy.address}`].callsReturnContext[0].returnValues[0]);
 			let amountUsd = 0;
 
 			if(amount.gt(0)) {
@@ -772,7 +856,7 @@ async function fetchRewards(vaults: Seafood.Vault[], chain: Seafood.Chain) {
 					console.warn('price NaN', chain.id, strategy, tradeable.token, tradeable.name, tradeable.symbol);
 					price = 0;
 				}
-				amountUsd = price * (amount.mul(10_000).div(BigNumber.from(10).pow(tradeable.decimals)).toNumber() / 10_000);
+				amountUsd = price * (amount.mul(10_000).div(toBigNumber(10).pow(tradeable.decimals)).toNumber() / 10_000);
 			}
 
 			rewards.push({

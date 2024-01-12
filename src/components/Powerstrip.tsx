@@ -183,7 +183,7 @@ export default function Powerstrip({className}: {className?: string}) {
 								{'yearn.fi'}
 							</A>
 							<div className={'flex gap-2 text-xs'}>
-								<div>{'powered by'}</div>
+								<div>{'indexed by'}</div>
 								<A href={'https://github.com/murderteeth/kong'}
 									title={'https://github.com/murderteeth/kong'}
 									target={'_blank'}

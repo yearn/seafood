@@ -109,8 +109,8 @@ export default function RiskGroup() {
 				contentClassName={'py-6'}
 				storageKey={'src/risk/group/tabs'}
 				tabs={[
-					{label: 'Scores', content: <Scores />},
-					{label: 'Vaults', content: <Vaults />}
+					{label: 'Scores', content: Scores},
+					{label: 'Vaults', content: Vaults}
 				]} />
 		</div>
 	</div>;

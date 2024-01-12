@@ -1,9 +1,10 @@
 import React, {useMemo} from 'react';
 import Strategy from './Strategy';
 import EmptySlot from './EmptySlot';
-import {Vault} from '../../context/useVaults/types';
+import {useVault} from './VaultProvider';
 
-export default function StrategiesTab({vault}: {vault: Vault}) {
+export default function StrategiesTab() {
+	const {vault} = useVault();
 	const queue = useMemo(() => {
 		if(!vault) return [];
 		const result = Array(20).fill(null).map((empty, index) => {

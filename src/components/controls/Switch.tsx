@@ -10,7 +10,7 @@ export default function Switch({
 	uncheckedIcon,
 	disabled,
 } : {
-	checked: boolean,
+	checked?: boolean,
 	onChange: (checked: boolean) => void,
 	checkedIcon?: boolean | JSX.Element | undefined,
 	uncheckedIcon?: boolean | JSX.Element | undefined,
@@ -29,7 +29,7 @@ export default function Switch({
 	return <ReactSwitch
 		borderRadius={0}
 		onChange={onChange}
-		checked={checked}
+		checked={checked || false}
 		offColor={offColor} onColor={onColor}
 		checkedIcon={checkedIcon || false}
 		uncheckedIcon={uncheckedIcon || false}

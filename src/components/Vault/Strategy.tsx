@@ -1,9 +1,9 @@
 import React, {ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {TbTractor} from 'react-icons/tb';
 import {BsChevronCompactDown, BsChevronCompactUp} from 'react-icons/bs';
-import TimeAgo from 'react-timeago';
 import {formatNumber, getAddressExplorer, getTxExplorer, truncateAddress} from '../../utils/utils';
 import {A, Button, Input, LinkButton, Row, Switch} from '../controls';
+import {MdOutlineClose, MdCheck} from 'react-icons/md';
 import InfoChart from './InfoChart';
 import CopyButton from './CopyButton';
 import {useVault} from './VaultProvider';
@@ -23,6 +23,8 @@ import EigenPhi from './EigenPhi';
 import Tenderly from './Tenderly';
 import {useAssetsProbeResults} from '../../context/useSimulator/ProbesProvider/useAssetsProbe';
 import {DUST} from '../../constants';
+import {compare} from 'compare-versions';
+import TimeAgo from '../controls/TimeAgo';
 
 function AccordianTitle({index, strategy}: {index: number, strategy: TStrategy}) {
 	return <div className={`flex items-center gap-2
@@ -43,6 +45,9 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 	const {simulating, blockPointer, results: simulatorResults, probeStartResults, probeStopResults} = useSimulator();
 	const {stop: assetsProbeOutput} = useAssetsProbeResults(vault, probeStartResults, probeStopResults);
 
+	const gte3 = useMemo(() => compare(strategy.apiVersion || '0.0.0', '3.0.0', '>='), [strategy]);
+	const totalAssetsLabel = useMemo(() => gte3 ? 'Total assets' : 'Estimated assets', [gte3]);
+
 	const simulatingStrategy = useMemo(() => {
 		if(!blockPointer) return false;
 		return blockPointer.primitive === 'strategy' && blockPointer.contract === strategy.address
@@ -55,7 +60,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 
 	const latestHarvest = useMemo(() => {
 		return {
-			date: strategyHarvestHistory.length > 0 ? new Date(parseInt(strategyHarvestHistory[0].timestamp)) : new Date(0),
+			date: strategyHarvestHistory.length > 0 ? (parseInt(strategyHarvestHistory[0].timestamp) * 1000) : undefined,
 			tx: strategyHarvestHistory.length > 0 ? strategyHarvestHistory[0].txn_hash : undefined
 		};
 	}, [strategyHarvestHistory]);
@@ -153,6 +158,12 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 	}, [strategy, harvestProbeOutput]);
 
 	const realRatio = useMemo(() => {
+		if(gte3) return {
+			simulated: false,
+			value: (strategy.currentDebtRatio?.toNumber() || 0) / 10_000,
+			delta: 0
+		};
+
 		if(!vault?.totalAssets?.gt(0)) return {simulated: false, value: 0, delta: 0};
 		const actual = strategy.totalDebt.mul(10_000).div(vault?.totalAssets || ethers.constants.Zero).toNumber() / 10_000;
 		if(harvestProbeOutput && assetsProbeOutput) {
@@ -169,7 +180,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 				delta: 0
 			};
 		}
-	}, [strategy, vault, harvestProbeOutput, assetsProbeOutput]);
+	}, [gte3, strategy, vault, harvestProbeOutput, assetsProbeOutput]);
 
 	const healthCheck = useMemo(() => {
 		if(!strategy.healthCheck || strategy.healthCheck === ethers.constants.AddressZero) return undefined;
@@ -196,6 +207,10 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 	const totalRewardsUsd = useMemo(() => {
 		return strategy.rewards?.map(r => r.amountUsd).reduce((acc, reward) => acc + reward, 0) || 0;
 	}, [strategy]);
+
+	const healthCheckWarning = useMemo(() => {
+		return (gte3 && !doHealthCheck.checked) || !(healthCheck || gte3);
+	}, [gte3, healthCheck, doHealthCheck]);
 
 	return <Accordian
 		title={<AccordianTitle index={index} strategy={strategy} />}
@@ -244,9 +259,9 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 					</div>
 				</Row>
 
-				<Row label={<div className={'text-lg font-bold'}>{'Health Check'}</div>} alt={true} className={!healthCheck ? 'attention-box' : ''}>
+				<Row label={<div className={'text-lg font-bold'}>{gte3 ? 'Do health check' : 'Health Check'}</div>} alt={true} className={healthCheckWarning ? 'attention-box' : ''}>
 					<div className={'flex items-center gap-4'}>
-						{!healthCheck && <div>{'No health check'}</div>}
+						{!(healthCheck || gte3) && <div>{'No health check'}</div>}
 						{healthCheck && <A 
 							href={getAddressExplorer(strategy.network.chainId, healthCheck)} 
 							target={'_blank'} rel={'noreferrer'}>
@@ -255,7 +270,12 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 						<div className={`
 							p-1 flex items-center justify-center
 							border ${doHealthCheck.simulated ? 'border-primary-400' : 'border-transparent'}`}>
-							<Switch disabled={!healthCheck || simulating} checked={doHealthCheck.checked} onChange={toggleHealthCheck}></Switch>
+							<Switch 
+								disabled={!healthCheck || simulating} 
+								checked={doHealthCheck.checked} 
+								onChange={toggleHealthCheck} 
+								checkedIcon={<MdCheck className={'w-full h-full p-1'} />}
+								uncheckedIcon={<MdOutlineClose className={'w-full h-full p-1'} />} />
 						</div>
 					</div>
 				</Row>
@@ -280,7 +300,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 					</div>
 				</Row>}
 
-				<Row label={'Estimated assets'}>
+				<Row label={totalAssetsLabel}>
 					<div className={'flex items-center gap-2'}>
 						{estimatedTotalAssets.simulated && <Tokens
 							simulated={estimatedTotalAssets.simulated}
@@ -310,7 +330,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 					</div>
 				</Row>
 
-				<Row label={'Last harvest'}>
+				{latestHarvest.tx && <Row label={'Last harvest'}>
 					<div className={'flex items-center gap-3'}>	
 						<A href={getTxExplorer(strategy.network.chainId, latestHarvest.tx)}
 							target={'_blank'} rel={'noreferrer'}>
@@ -318,7 +338,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 						</A>
 						<EigenPhi tx={latestHarvest.tx} />
 					</div>
-				</Row>
+				</Row>}
 
 				{(strategy.lendStatuses?.length || 0) > 0 && <>
 					<Row label={'Lenders'} alt={true} heading={true}>
@@ -354,14 +374,14 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 						</Row>)}
 				</>}
 
-				<Row label={'Risk group'} alt={true} heading={true}>
+				{!gte3 && <Row label={'Risk group'} alt={true} heading={true}>
 					<div className={'w-1/2 flex items-center justify-between'}>
 						<div>{'Impact'}</div>
 						<div>{'Median'}</div>
 					</div>
-				</Row>
+				</Row>}
 
-				<Row label={<div className={'break-words truncate'}><LinkButton to={`/risk/${strategy.risk.riskGroupId}`}>{strategy.risk.riskGroup}</LinkButton></div>}>
+				{!gte3 && <Row label={<div className={'break-words truncate'}><LinkButton to={`/risk/${strategy.risk.riskGroupId}`}>{strategy.risk.riskGroup}</LinkButton></div>}>
 					<div className={'w-1/2 flex items-center justify-between'}>
 						<div className={`
 							px-2 flex items-center justify-center text-sm border
@@ -376,7 +396,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 							{translateRiskScore(strategy.risk.riskDetails.median as 1 | 2 | 3 | 4 | 5)}
 						</div>
 					</div>
-				</Row>
+				</Row>}
 
 				{harvestProbeOutput && <>
 					<Row label={'Harvest simulation'} alt={true} heading={true}>

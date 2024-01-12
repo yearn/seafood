@@ -15,6 +15,11 @@ export default function VaultOptions() {
 
 	const options = useMemo(() => {
 		return [{
+			key: 'v3',
+			label: 'v3',
+			long: 'v3',
+			flag: Boolean(chips['v3'])
+		},{
 			key: 'v2',
 			label: 'v2',
 			long: 'v2',

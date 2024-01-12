@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {useVault} from './VaultProvider';
 import Tabbed from '../controls/Tabbed';
 import StrategiesTab from './StrategiesTab';
@@ -10,6 +10,25 @@ import InfoTab from './InfoTab';
 export default function Tabs({className}: {className?: string}) {
 	const mediumBreakpoint = useMediumBreakpoint();
 	const {vault} = useVault();
+
+	const tabs = useMemo(() => {
+		if(!vault) return [];
+		if(!mediumBreakpoint && vault.type === 'vault') {
+			return [
+				{label: 'Assets', content: AssetsTab},
+				{label: 'APY', content: ApyTab},
+				{label: 'Strategies', content: StrategiesTab},
+				{label: 'Info', content: InfoTab}
+			];
+		} else {
+			return [
+				{label: 'Assets', content: AssetsTab},
+				{label: 'APY', content: ApyTab},
+				{label: 'Info', content: InfoTab}
+			];
+		}
+	}, [vault, mediumBreakpoint]);
+
 	if(!vault) return <></>;
 
 	if(mediumBreakpoint) return <div className={`
@@ -25,11 +44,7 @@ export default function Tabs({className}: {className?: string}) {
 				border-b-4 border-primary-400`}
 			contentClassName={'py-6'}
 			storageKey={'src/vault/tabs'}
-			tabs={[
-				{label: 'Assets', content: AssetsTab({vault})},
-				{label: 'APY', content: ApyTab({vault})},
-				{label: 'Info', content: InfoTab({vault})}
-			]} />
+			tabs={tabs} />
 	</div>;
 
 	return <div className={`
@@ -45,11 +60,6 @@ export default function Tabs({className}: {className?: string}) {
 				border-b-4 border-primary-400`}
 			contentClassName={'py-6'}
 			storageKey={'src/vault/tabs'}
-			tabs={[
-				{label: 'Assets', content: AssetsTab({vault})},
-				{label: 'APY', content: ApyTab({vault})},
-				{label: 'Strategies', content: StrategiesTab({vault})},
-				{label: 'Info', content: InfoTab({vault})}
-			]} />
+			tabs={tabs} />
 	</div>;
 }
