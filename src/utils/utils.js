@@ -169,6 +169,13 @@ function kabobCase(str) {
 	return str.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/\s+/g, '-').toLowerCase();
 }
 
+function blocktimeToDate(blocktime) {
+	if(typeof blocktime === 'string') {
+		blocktime = parseInt(blocktime.replace('n', ''));
+	}
+	return new Date(parseInt(blocktime) * 1000);
+}
+
 export {
 	chainId,
 	getChain,
@@ -190,5 +197,6 @@ export {
 	escapeRegex,
 	humanizeRiskCategory,
 	isEthAddress,
-	kabobCase
+	kabobCase,
+	blocktimeToDate
 };
