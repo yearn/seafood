@@ -1,5 +1,6 @@
 export function scoreToBgColor(score: number, alpha = false) {
 	switch(Math.ceil(score)) {
+	case 0 : return alpha ? 'bg-red-950/40' : 'bg-red-950';
 	case 1 : return alpha ? 'bg-green-900/40' : 'bg-green-900';
 	case 2 : return alpha ? 'bg-green-600/40': 'bg-green-600';
 	case 3 : return alpha ? 'bg-yellow-500/40' : 'bg-yellow-500';

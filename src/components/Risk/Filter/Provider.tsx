@@ -3,7 +3,7 @@ import config from '../../../config.json';
 import {useVaults} from '../../../context/useVaults';
 import {curveRe, escapeRegex, isEthAddress} from '../../../utils/utils';
 import {defaultRiskCategories, RiskCategories, RiskReport} from '../../../context/useVaults/types';
-import {median} from '../../../context/useVaults/risk';
+import {computeLongevityScore, median} from '../../../context/useVaults/risk';
 
 interface SummarizedRiskReport extends RiskReport {
 	strategies: number
@@ -130,41 +130,47 @@ export function FilterProvider({children}: {children: ReactNode}) {
 		let totalStrategies = 0;
 		const risk = [] as SummarizedRiskReport[];
 
-		vaults
-			.filter(vault => networks.includes(vault.network.chainId))
-			.forEach(vault => vault.strategies.forEach(strategy => {
-				if(!strategy.risk) return;
-				if(query) {
-					if(isEthAddress(query)) {
-						if(vault.address !== query) return;
-					} else if(!queryRe.test(strategy.risk.riskGroup)) return;
-				}
-				if(strategies.hideInactive && strategy.risk.riskGroup === 'Inactive') return;
-				if(strategies.hideCurve && curveRe.test(vault.name)) return;
+		const allStrategies = vaults
+			.filter(vault => 
+				networks.includes(vault.network.chainId)
+				&& (!isEthAddress(query) || vault.address === query)
+				&& (!(strategies.hideCurve && curveRe.test(vault.name)))
+			).map(vault => vault.strategies)
+			.flat();
 
-				if(strategies.gtZeroDebt && strategy.totalDebtUSD <= 0) return;
+		allStrategies.forEach(strategy => {
+			if(!strategy.risk) return;
+			if(!queryRe.test(strategy.risk.riskGroup)) return;
+			if(strategies.hideInactive && strategy.risk.riskGroup === 'Inactive') return;
+			if(strategies.gtZeroDebt && strategy.totalDebtUSD <= 0) return;
 
-				for(const key of Object.keys(scores)) {
-					const range = scores[key as keyof ScoresFilter];
-					const score = strategy.risk.riskDetails[key as keyof RiskCategories];
-					if(!inRange(score, range)) return;
-				}
+			for(const key of Object.keys(scores)) {
+				const range = scores[key as keyof ScoresFilter];
+				const score = strategy.risk.riskDetails[key as keyof RiskCategories];
+				if(!inRange(score, range)) return;
+			}
 
-				totalTvlUsd += strategy.totalDebtUSD;
+			totalTvlUsd += strategy.totalDebtUSD;
 
-				let report = risk.find(r => r.riskGroup === strategy.risk?.riskGroup);
-				if(!report) {
-					report = {
-						...strategy.risk,
-						strategies: 1
-					};
-					risk.push(report);
-				} else {
-					report.strategies++;
-				}
+			let report = risk.find(r => r.riskGroup === strategy.risk?.riskGroup);
+			if(!report) {
+				const worstLongevityScoreInGroup = allStrategies
+					.filter(s => s.risk?.riskGroup === strategy.risk?.riskGroup)
+					.map(s => computeLongevityScore(s))
+					.reduce((max, score) => score > max ? score : max, 1);
+				const _risk = {...strategy.risk};
+				_risk.riskDetails = {..._risk.riskDetails, longevityImpact: worstLongevityScoreInGroup};
+				report = {
+					..._risk,
+					strategies: 1
+				};
+				risk.push(report);
+			} else {
+				report.strategies++;
+			}
 
-				totalStrategies++;
-			}));
+			totalStrategies++;
+		});
 
 		risk.sort((a, b) => {
 			if(sort.key !== 'TVLImpact') {

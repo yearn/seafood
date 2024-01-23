@@ -38,7 +38,7 @@ export function scoreTvlImpact(tvl: number): number {
 
 export function computeLongevityScore(strategy: Seafood.Strategy) {
 	if(!strategy.activation || strategy.activation.isZero()) return 5;
-	const activationUnix = strategy.activation.toNumber();
+	const activationUnix = strategy.activation.toNumber() * 1000;
 	const longevity = Date.now() - activationUnix;
 	const days = 24 * 60 * 60 * 1000;
 	switch (true) {
@@ -56,7 +56,7 @@ export function computeLongevityScore(strategy: Seafood.Strategy) {
 }
 
 export function aggregateRiskGroupTvls(vaults: Seafood.Vault[]) {
-	const debts = vaults.map(v => v.strategies.map(s => ({
+	const debts = vaults.map(v => v.withdrawalQueue.map(s => ({
 		group: s.risk.riskGroupId,
 		debt: s.totalDebtUSD
 	}))).flat();
@@ -70,7 +70,7 @@ export function aggregateRiskGroupTvls(vaults: Seafood.Vault[]) {
 			: debt.debt;
 	});
 
-	vaults.forEach(v => v.strategies.forEach(s => {
+	vaults.forEach(v => v.withdrawalQueue.forEach(s => {
 		s.risk.tvl = groupTvls[s.risk.riskGroupId];
 		s.risk.riskDetails.TVLImpact = scoreTvlImpact(groupTvls[s.risk.riskGroupId]);
 		const queued = v.withdrawalQueue.find(q => q.address === s.address);
