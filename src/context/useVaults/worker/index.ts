@@ -632,23 +632,28 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 			teamKnowledgeScore: number,
 			testingScore: number
 		} [];
-	
-		flat.forEach((vault: Seafood.Vault) => {
-			vault.strategies = [...vault.withdrawalQueue];
-			vault.strategies.forEach(strategy => {
-				const riskGroup = riskGroups.find(group => 
-					group.chainId === strategy.network.chainId 
-					&& kabobCase(group.name) === strategy.risk.riskGroupId
-				);
-				strategy.risk.riskDetails.auditScore = riskGroup?.auditScore || 5;
-				strategy.risk.riskDetails.codeReviewScore = riskGroup?.codeReviewScore || 5;
-				strategy.risk.riskDetails.complexityScore = riskGroup?.complexityScore || 5;
+
+		const strategies = flat.map((vault: Seafood.Vault) => vault.withdrawalQueue).flat();
+		riskGroups.forEach(group => {
+			const strategiesInGroup = strategies.filter((strategy: Seafood.Strategy) => strategy.risk.riskGroupId === kabobCase(group.name));
+			const worstLongevityScoreInGroup = strategiesInGroup
+				.map((strategy: Seafood.Strategy) => computeLongevityScore(strategy))
+				.reduce((max: number, score: number) => score > max ? score : max, 1);
+			group.longevityImpact = worstLongevityScoreInGroup;
+			strategiesInGroup.forEach((strategy: Seafood.Strategy) => {
+				strategy.risk.riskDetails.auditScore = group.auditScore;
+				strategy.risk.riskDetails.codeReviewScore = group.codeReviewScore;
+				strategy.risk.riskDetails.complexityScore = group.complexityScore;
 				strategy.risk.riskDetails.longevityImpact = computeLongevityScore(strategy);
-				strategy.risk.riskDetails.protocolSafetyScore = riskGroup?.protocolSafetyScore || 5;
-				strategy.risk.riskDetails.teamKnowledgeScore = riskGroup?.teamKnowledgeScore || 5;
-				strategy.risk.riskDetails.testingScore = riskGroup?.testingScore || 5;
+				strategy.risk.riskDetails.protocolSafetyScore = group.protocolSafetyScore;
+				strategy.risk.riskDetails.teamKnowledgeScore = group.teamKnowledgeScore;
+				strategy.risk.riskDetails.testingScore = group.testingScore;
 				strategy.risk.riskDetails.median = medianExlcudingTvlImpact(strategy.risk.riskDetails);
 			});
+		});
+
+		flat.forEach((vault: Seafood.Vault) => {
+			vault.strategies = [...vault.withdrawalQueue];
 		});
 	
 		const result = [];
