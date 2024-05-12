@@ -3,7 +3,7 @@ import {Strategy, Vault} from '../../context/useVaults/types';
 import {HOURS_IN_A_YEAR, BPS, ONE} from '../../constants';
 import {HarvestReport} from '../../utils/vaults';
 
-export function computeHarvestApr(vault: Vault, strategy: Strategy, latestReport: HarvestReport, snapshot: {totalGain: BigNumber, totalLoss: BigNumber}){
+export function computeHarvestApr(vault: Vault, strategy: Strategy, latestReport: HarvestReport, snapshot: {gain: BigNumber, loss: BigNumber}){
 	if(!snapshot) return {gross: 0, net: 0};
 
 	if(strategy.totalDebt.eq(0)) {
@@ -14,8 +14,8 @@ export function computeHarvestApr(vault: Vault, strategy: Strategy, latestReport
 		}
 	}
 
-	const profit = snapshot.totalGain.sub(latestReport.total_gain);
-	const loss = snapshot.totalLoss.sub(latestReport.total_loss);
+	const profit = snapshot.gain;
+	const loss = snapshot.loss;
 
 	const performance = (loss > profit)
 		? FixedNumber.from(loss.mul(-1)).divUnsafe(FixedNumber.from(strategy.totalDebt))

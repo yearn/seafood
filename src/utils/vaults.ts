@@ -55,37 +55,37 @@ export interface HarvestReport {
 }
 
 async function fetchHarvestReportsForStrategy(chainId: number, vault: string, strategy: string) {
-	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
+	if(!process.env.REACT_APP_KONG_2_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
 
 	const harvests = [] as HarvestReport[];
-	const response = await fetch(process.env.REACT_APP_KONG_API_URL, {
+	const response = await fetch(process.env.REACT_APP_KONG_2_API_URL, {
 		method: 'POST',
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify({
-			query: `query Harvest($chainId: Int, $address: String, $limit: Int) {
-				harvests(chainId: $chainId, address: $address, limit: $limit) {
+			query: `query Reports($chainId: Int, $address: String) {
+				strategyReports(chainId: $chainId, address: $address) {
 					chainId
 					blockNumber
 					blockTime
 					transactionHash
 					profit
 					profitUsd
-					totalProfit
 					loss
 					lossUsd
-					totalLoss
-					aprGross
-					aprNet
+					apr {
+						gross
+						net
+					}
 				}
 			}`,
-			variables: {chainId, address: strategy, limit: 1000}
+			variables: {chainId, address: strategy}
 		})
 	});
 
 	const json = await response.json();
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	harvests.push(...(json.data.harvests as any[]).map(harvest => ({
+	harvests.push(...(json.data.strategyReports as any[]).map(harvest => ({
 		chain_id: harvest.chainId,
 		block: harvest.blockNumber,
 		timestamp: harvest.blockTime,
@@ -94,18 +94,16 @@ async function fetchHarvestReportsForStrategy(chainId: number, vault: string, st
 		vault_address: vault,
 		strategy_address: strategy,
 		gain: harvest.profit,
-		total_gain: harvest.totalProfit,
 		loss: harvest.loss,
-		total_loss: harvest.totalLoss,
 		want_gain_usd: harvest.profitUsd,
-		rough_apr_pre_fee: harvest.aprGross
+		rough_apr_pre_fee: harvest.apr.gross
 	} as HarvestReport)));
 
 	return harvests;
 }
 
 async function fetchHarvestReports(vault: Vault) {
-	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
+	if(!process.env.REACT_APP_KONG_2_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
 
 	const harvests = [] as HarvestReport[];
 	const strategies = vault.withdrawalQueue.map(strategy => strategy.address);
