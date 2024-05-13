@@ -1,13 +1,11 @@
 import {BigNumber, ethers} from 'ethers';
-import {ContractCallContext, ContractCallReturnContext, Multicall} from 'ethereum-multicall';
 import {aggregateRiskGroupTvls, computeLongevityScore, medianExlcudingTvlImpact} from '../risk';
 import config from '../../../config.json';
-import * as abi from '../../../abi';
 import * as Kong from '../types.kong';
 import * as Kong2 from '../types.kong.2';
 import * as Seafood from '../types';
 import {getChain, hydrateBigNumbersRecursively, kabobCase} from '../../../utils/utils';
-import {Callback, StartOptions, RefreshStatus, StrategyRewardsUpdate, Tradeable} from './types';
+import {Callback, StartOptions, RefreshStatus, Tradeable} from './types';
 
 
 export const api = {
@@ -98,43 +96,14 @@ async function refresh() {
 	await putVaults(latest);
 	await requestVaults();
 
-	// fetch rewards
-	// const strategyRewardsUpdates = await fetchRewardsUpdates(latest);
-	// for(const [index, chain] of config.chains.entries()) {
-	// 	const rewardsUpdates = strategyRewardsUpdates[index];
-
-	// 	latest.filter(vault => vault.network.chainId === chain.id).forEach(vault => {
-	// 		vault.withdrawalQueue.forEach(strategy => {
-	// 			const update = rewardsUpdates.find(update => update.chainId === chain.id && update.address === strategy.address);
-	// 			strategy.rewards = update?.rewards || [];
-	// 		});
-
-	// 		vault.rewardsUsd = vault.withdrawalQueue.map(s => s.rewards).flat()
-	// 			.reduce((acc, reward) => acc + reward?.amountUsd, 0)
-	// 			|| 0;
-	// 	});
-	// }
-
+	// eslint-disable-next-line
 	for(const [index, chain] of config.chains.entries()) {
 		latest.filter(vault => vault.network.chainId === chain.id).forEach(vault => {
-			vault.withdrawalQueue.forEach(strategy => {
-				if (strategy.rewards?.length > 0 && strategy.rewards.some(r => r.amount > BigNumber.from(0))) {
-					console.log('strategy.rewards', strategy.rewards);
-				}
-			});
 			vault.rewardsUsd = vault.withdrawalQueue.map(s => s.rewards).flat()
 				.reduce((acc, reward) => acc + reward?.amountUsd, 0)
 				|| 0;
 		});
 	}
-
-
-	//
-	// still need this =)
-	//
-	// 		vault.rewardsUsd = vault.withdrawalQueue.map(s => s.rewards).flat()
-	// 			.reduce((acc, reward) => acc + reward?.amountUsd, 0)
-	// 			|| 0;
 
 	markupWarnings(latest);
 	await putVaults(latest);
@@ -256,21 +225,6 @@ function waitForAllTransactions(db: IDBDatabase): Promise<void> {
 	});
 }
 
-function providerFor(chain: Seafood.Chain) {
-	return new ethers.providers.JsonRpcProvider(chain.providers[0], {name: chain.name, chainId: chain.id});
-}
-
-async function batchMulticalls(multicall: Multicall, calls: ContractCallContext[]) {
-	const size = 100;
-	let result = {} as { [key: string]: ContractCallReturnContext };
-	for(let start = 0; start < calls.length; start = start + size) {
-		const end = calls.length > start + size ? start + size : undefined;
-		const results = (await multicall.call(calls.slice(start, end))).results;
-		result = {...result, ...results};
-	}
-	return result;
-}
-
 function markupWarnings(vaults: Seafood.Vault[]) {
 	vaults.forEach(vault => {
 		vault.warnings = [];
@@ -314,6 +268,8 @@ query Query {
 		deposit_limit
 		withdrawalQueue
 		get_default_queue
+		inceptTime
+		inceptBlock
 		debts {
 			strategy
 			debtRatio
@@ -323,6 +279,23 @@ query Query {
 			currentDebt
 			currentDebtUsd
 			targetDebtRatio
+		}
+    sparklines {
+      tvl {
+        blockTime
+        close
+      }
+      apy {
+        blockTime
+        close
+      }
+    }
+		apy {
+			net
+			weeklyNet
+			monthlyNet
+			inceptionNet
+			grossApr
 		}
   }
 
@@ -523,18 +496,15 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 					chainId: vault2.chainId,
 					name: getChain(vault2.chainId).name
 				},
-				type: kongVault.type,
-				price: kongVault.assetPriceUsd,
-				priceSource: kongVault.assetPriceSource,
 				version: vault2.apiVersion,
 				want: vault2.asset.address,
+				type: 'vault',
 				token: {
 					address: vault2.asset.address,
 					name: vault2.asset.name,
 					symbol: vault2.asset.symbol,
 					decimals: vault2.asset.decimals
 				},
-				endorsed: kongVault.registryStatus === 'endorsed',
 				governance: vault2.governance,
 				totalIdle: toBigNumber(vault2.totalIdle),
 				totalAssets: toBigNumber(vault2.totalAssets),
@@ -546,20 +516,20 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 				managementFee: toBigNumber(vault2.managementFee),
 				performanceFee: toBigNumber(vault2.performanceFee),
 				depositLimit: toBigNumber(vault2.depositLimit || vault2.deposit_limit),
-				activation: toBigNumber(kongVault.activationBlockTime || 0),
+				activation: toBigNumber(vault2.inceptTime || 0),
 				tvls: {
-					dates: kongVault.tvlSparkline.map(point => point.time),
-					tvls: kongVault.tvlSparkline.map(point => point.value)
+					dates: vault2.sparklines['tvl'].map(point => Number(point.blockTime)).reverse(),
+					tvls: vault2.sparklines['tvl'].map(point => Number(point.close)).reverse()
 				},
 				apy: {
 					type: 'v2:averaged',
-					gross: kongVault.aprGross,
-					net: kongVault.apyNet,
-					[-7]: kongVault.apyWeeklyNet,
-					[-30]: kongVault.apyMonthlyNet,
-					inception: kongVault.apyInceptionNet
+					gross: vault2.apy?.grossApr,
+					net: vault2.apy?.net,
+					[-7]: vault2.apy?.weeklyNet,
+					[-30]: vault2.apy?.monthlyNet,
+					inception: vault2.apy?.inceptionNet
 				},
-				withdrawalQueue: getWithdrawalQueue(vault2, json2.data.strategies),
+				withdrawalQueue: getWithdrawalQueue(vault2, json2.data.vaults, json2.data.strategies),
 			} as Seafood.Vault;
 		});
 
@@ -599,10 +569,11 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 		flat.forEach((vault: Seafood.Vault) => {
 			vault.strategies = [...vault.withdrawalQueue];
 		});
-	
+
 		const result = [];
 		for(const chain of config.chains) {
-			result.push(flat.filter((vault: Seafood.Vault) => vault.network.chainId === chain.id));
+			const vaults = flat.filter((vault: Seafood.Vault) => vault.network.chainId === chain.id);
+			result.push(vaults);
 		}
 
 		await putStatus({...status, status: 'ok', timestamp: Date.now()});
@@ -614,12 +585,17 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 	}
 }
 
-function getWithdrawalQueue(vault2: Kong2.Vault, strategies: Kong2.Strategy[]) {
+function getWithdrawalQueue(vault2: Kong2.Vault, vaults: Kong2.Vault[], strategies: Kong2.Strategy[]) {
 	const addresses: `0x${string}`[] = vault2.withdrawalQueue || vault2.get_default_queue || [];
 	const result = addresses.map((address: `0x${string}`, index: number) => {
-		const strategy = strategies.find((s: Kong2.Strategy) => s.address === address);
+		let strategy = strategies.find((s: Kong2.Strategy) => s.address === address);
+		if (!strategy) strategy = Kong2.toStrategy(vaults.find((v: Kong2.Vault) => v.address === address));
 		if (!strategy) return null;
 		const debt = vault2.debts.find((debt: Kong2.Debt) => debt.strategy === address);
+
+		const currentDebtRatio = toBigNumber(vault2.totalDebt ?? 0).gt(0)
+			? (toBigNumber(debt?.currentDebt ?? debt?.totalDebt ?? 0).mul(10_000)).div(toBigNumber(vault2.totalDebt))
+			: 0;
 
 		return {
 			network: {
@@ -632,7 +608,7 @@ function getWithdrawalQueue(vault2: Kong2.Vault, strategies: Kong2.Strategy[]) {
 			description: '',
 			debtRatio: toBigNumber(debt?.debtRatio ?? debt?.targetDebtRatio),
 			currentDebt: toBigNumber(debt?.currentDebt ?? debt?.totalDebt),
-			currentDebtRatio: toBigNumber(0),
+			currentDebtRatio,
 			performanceFee: toBigNumber(strategy.performanceFee),
 			estimatedTotalAssets: toBigNumber(strategy.estimatedTotalAssets ?? strategy.totalAssets),
 			totalIdle: toBigNumber(0),
@@ -682,204 +658,6 @@ function getWithdrawalQueue(vault2: Kong2.Vault, strategies: Kong2.Strategy[]) {
 	});
 
 	return result.filter((s: Seafood.Strategy | null) => s !== null) as Seafood.Strategy[];
-
-	// if((vault2.get_default_queue?.length ?? 0) > 0) {
-	// 	return kongVault.defaultQueue.map((tokenizedStrategy: Omit<Kong.Vault, 'defaultQueue' | 'withdrawalQueue'>) => ({
-	// 		network: {
-	// 			chainId: kongVault.chainId,
-	// 			name: getChain(kongVault.chainId).name
-	// 		},
-	// 		address: tokenizedStrategy.address,
-	// 		name: tokenizedStrategy.name,
-	// 		apiVersion: tokenizedStrategy.apiVersion,
-	// 		description: '',
-	// 		debtRatio: toBigNumber(tokenizedStrategy.debtRatio || 0),
-	// 		currentDebt: toBigNumber(tokenizedStrategy.currentDebt || 0),
-	// 		currentDebtRatio: toBigNumber(tokenizedStrategy.currentDebtRatio || 0),
-	// 		performanceFee: toBigNumber(tokenizedStrategy.performanceFee || 0),
-	// 		estimatedTotalAssets: toBigNumber(tokenizedStrategy.totalAssets || 0),
-	// 		totalIdle: toBigNumber(tokenizedStrategy.totalIdle || 0),
-	// 		delegatedAssets: toBigNumber(0),
-	// 		lastReport: toBigNumber(tokenizedStrategy.latestReportBlockTime || 0),
-	// 		totalDebt: toBigNumber(tokenizedStrategy.totalDebt || 0),
-	// 		totalDebtUSD: 0,
-	// 		totalGain: toBigNumber(0),
-	// 		totalLoss: toBigNumber(0),
-	// 		withdrawalQueuePosition: tokenizedStrategy.queueIndex,
-	// 		doHealthCheck: tokenizedStrategy.doHealthCheck,
-	// 		keeper: tokenizedStrategy.keeper,
-	// 		activation: toBigNumber(tokenizedStrategy.activationBlockTime || 0),
-	// 		rewards: [] as Seafood.Reward[],
-	// 		risk: {
-	// 			tvl: 0,
-	// 			riskGroupId: 'no-group',
-	// 			riskGroup: 'No Group',
-	// 			riskScore: 0,
-	// 			riskDetails: {
-	// 				TVLImpact: 1,
-	// 				auditScore: 5,
-	// 				codeReviewScore: 5,
-	// 				complexityScore: 5,
-	// 				longevityImpact: 5,
-	// 				protocolSafetyScore: 5,
-	// 				teamKnowledgeScore: 5,
-	// 				testingScore: 5,
-	// 				median: 5
-	// 			},
-	// 		}
-	// 	})) as Seafood.Strategy[];
-	// } else {
-	// 	return kongVault.withdrawalQueue.map((kongStrategy: Kong.Strategy) => ({
-	// 		network: {
-	// 			chainId: kongVault.chainId,
-	// 			name: getChain(kongVault.chainId).name
-	// 		},
-	// 		address: kongStrategy.address,
-	// 		name: kongStrategy.name,
-	// 		apiVersion: kongVault.apiVersion,
-	// 		description: '',
-	// 		risk: {
-	// 			tvl: 0,
-	// 			riskGroupId: kongStrategy.riskGroup ? kabobCase(kongStrategy.riskGroup) : 'no-group',
-	// 			riskGroup: kongStrategy.riskGroup || 'No Group',
-	// 			riskScore: 0,
-	// 			riskDetails: {
-	// 				TVLImpact: 1,
-	// 				auditScore: 5,
-	// 				codeReviewScore: 5,
-	// 				complexityScore: 5,
-	// 				longevityImpact: 5,
-	// 				protocolSafetyScore: 5,
-	// 				teamKnowledgeScore: 5,
-	// 				testingScore: 5,
-	// 				median: 5
-	// 			},
-	// 			allocation: {
-	// 				availableAmount: '0',
-	// 				availableTVL: '0',
-	// 				currentAmount: '0',
-	// 				currentTVL: '0'
-	// 			}
-	// 		},
-	// 		debtRatio: toBigNumber(kongStrategy.debtRatio || 0),
-	// 		performanceFee: toBigNumber(kongStrategy.performanceFee || 0),
-	// 		estimatedTotalAssets: toBigNumber(kongStrategy.estimatedTotalAssets || 0),
-	// 		delegatedAssets: toBigNumber(kongStrategy.delegatedAssets || 0),
-	// 		lastReport: toBigNumber(kongStrategy.lastReportBlockTime || 0),
-	// 		totalDebt: toBigNumber(kongStrategy.totalDebt || 0),
-	// 		totalDebtUSD: kongStrategy.totalDebtUsd,
-	// 		totalGain: toBigNumber(0),
-	// 		totalLoss: toBigNumber(0),
-	// 		withdrawalQueuePosition: kongStrategy.withdrawalQueueIndex,
-	// 		lendStatuses: kongStrategy.lenderStatuses.map((status: Kong.LenderStatus) => ({
-	// 			name: status.name,
-	// 			address: status.address,
-	// 			deposits: status.assets,
-	// 			apr: status.rate
-	// 		} as Seafood.LendStatus)),
-	// 		healthCheck: kongStrategy.healthCheck,
-	// 		doHealthCheck: kongStrategy.doHealthCheck,
-	// 		tradeFactory: kongStrategy.tradeFactory,
-	// 		keeper: kongStrategy.keeper,
-	// 		activation: toBigNumber(kongStrategy.activationBlockTime || 0),
-	// 		rewards: [] as Seafood.Reward[]
-	// 	}));
-	// }
-}
-
-async function getTradeables(strategy: string, tradeFactory: string, chain: Seafood.Chain) {
-	let tradeables = workerCache.tradeFactories.find(t => t.chainId === chain.id && t.tradeFactory === tradeFactory)?.tradeables;
-	if(!tradeables) {
-		tradeables = await (await fetch(`/api/tradeables/?chainId=${chain.id}&tradeFactory=${tradeFactory}`)).json() as Tradeable[];
-		workerCache.tradeFactories.push({chainId: chain.id, tradeFactory, tradeables});
-	}
-	return tradeables.filter(t => t.strategy === strategy) as Tradeable[];
-}
-
-async function getPrice(token: string, chain: Seafood.Chain) {
-	let price = workerCache.prices.find(p => p.chainId === chain.id && p.token === token)?.price;
-	if(!price) {
-		const request = `${config.ydaemon.url}/${chain.id}/prices/${token}?humanized=true`;
-		price = parseFloat(await (await fetch(request)).text());
-		workerCache.prices.push({chainId: chain.id, token, price});
-	}
-	return price;
-}
-
-async function fetchRewardsUpdates(vaults: Seafood.Vault[])
-: Promise<StrategyRewardsUpdate[][]> {
-	const result = [] as StrategyRewardsUpdate[][];
-	for(const chain of config.chains) {
-		const status = {status: 'refreshing', stage: 'rewards', chain: chain.id, timestamp: Date.now()} as RefreshStatus;
-		await putStatus(status);
-		try {
-			const updates = await fetchRewards(vaults.filter(v => v.network.chainId === chain.id), chain);
-			result.push(updates);
-			await putStatus({...status, status: 'ok', timestamp: Date.now()});
-		} catch(error) {
-			result.push([]);
-			await putStatus({...status, status: 'warning', error, timestamp: Date.now()});
-		}
-	}
-	return result;
-}
-
-async function fetchRewards(vaults: Seafood.Vault[], chain: Seafood.Chain) {
-	const strategies = vaults.map(vault => vault.strategies).flat().filter(s => s.tradeFactory && s.tradeFactory !== ethers.constants.AddressZero);
-	const multicallAddress = config.chains.find(c => c.id === chain.id)?.multicall;
-	const multicall = new Multicall({ethersProvider: providerFor(chain), tryAggregate: true, multicallCustomContractAddress: multicallAddress});
-	const balanceMulticalls = [];
-
-	for(const strategy of strategies) {
-		const tradeables = await getTradeables(strategy.address, strategy.tradeFactory as string, chain);
-		balanceMulticalls.push(...tradeables.map(tradeable => ({
-			reference: `${tradeable.token}/${strategy.address}`,
-			contractAddress: tradeable.token,
-			abi: abi.erc20,
-			calls: [{reference: 'balanceOf', methodName: 'balanceOf', methodParameters: [strategy.address]}]
-		})));
-	}
-
-	const balanceResults = await batchMulticalls(multicall, balanceMulticalls);
-
-	const udpates = [] as StrategyRewardsUpdate[];
-	for(const strategy of strategies) {
-		const tradeFactory = strategy.tradeFactory;
-		const tradeables = await getTradeables(strategy.address, tradeFactory as string, chain);
-
-		const rewards = [] as Seafood.Reward[];
-		for(const tradeable of tradeables) {
-			const amount = toBigNumber(balanceResults[`${tradeable.token}/${strategy.address}`].callsReturnContext[0].returnValues[0]);
-			let amountUsd = 0;
-
-			if(amount.gt(0)) {
-				let price = await getPrice(tradeable.token, chain);
-				if(Number.isNaN(price)) {
-					console.warn('price NaN', chain.id, strategy, tradeable.token, tradeable.name, tradeable.symbol);
-					price = 0;
-				}
-				amountUsd = price * (amount.mul(10_000).div(toBigNumber(10).pow(tradeable.decimals)).toNumber() / 10_000);
-			}
-
-			rewards.push({
-				token: tradeable.token,
-				name: tradeable.name,
-				symbol: tradeable.symbol,
-				decimals: tradeable.decimals,
-				amount,
-				amountUsd
-			});
-		}
-
-		udpates.push({
-			type: 'rewards',
-			chainId: chain.id,
-			address: strategy.address,
-			rewards
-		});
-	}
-
-	return udpates;
 }
 
 export default {} as typeof Worker & { new (): Worker };

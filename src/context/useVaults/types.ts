@@ -2,8 +2,7 @@ import {BigNumber} from 'ethers';
 
 export interface Chain {
 	id: number,
-	name: string,
-	providers: string[]
+	name: string
 }
 
 export interface Network {
