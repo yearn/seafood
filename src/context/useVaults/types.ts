@@ -60,7 +60,16 @@ export interface Vault {
 	apy: Apy,
 	tvls: TVLHistory,
 	rewardsUsd: number,
-	warnings: Warning[]
+	warnings: Warning[],
+	meta: {
+		description: string;
+		token: {
+			displayName: string;
+			displaySymbol: string;
+			description: string;
+			icon: string;
+		}
+	}
 }
 
 export interface TVLHistory {
@@ -109,6 +118,9 @@ export interface Strategy {
 	tradeFactory: string | undefined,
 	keeper: string | undefined,
 	rewards: Reward[],
+	meta: {
+		description: string;
+	}
 }
 
 export interface LendStatus {

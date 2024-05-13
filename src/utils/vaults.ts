@@ -8,34 +8,6 @@ function computeDegradationTime(vault: Vault) {
 	return coefficient.div(vault.lockedProfitDegradation as BigNumber);
 }
 
-export async function fetchMetas(vault: Vault) {
-	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
-
-	const response = await fetch(process.env.REACT_APP_KONG_API_URL, {
-		method: 'POST',
-		headers: {'Content-Type': 'application/json'},
-		body: JSON.stringify({
-			query: `query Vault($chainId: Int!, $address: String!) {
-				vault(chainId: $chainId, address: $address) {
-					withdrawalQueue {
-						address
-						description
-					}
-					assetDescription
-				}
-			}
-			`,
-			variables: {chainId: vault.network.chainId, address: vault.address}
-		})
-	});
-
-	const json = await response.json();
-	return json.data.vault as {
-		assetDescription: string,
-		withdrawalQueue: {address: string, description: string}[]
-	};
-}
-
 export interface HarvestReport {
 	chain_id: string,
 	block: string,
@@ -55,10 +27,10 @@ export interface HarvestReport {
 }
 
 async function fetchHarvestReportsForStrategy(chainId: number, vault: string, strategy: string) {
-	if(!process.env.REACT_APP_KONG_2_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
+	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
 
 	const harvests = [] as HarvestReport[];
-	const response = await fetch(process.env.REACT_APP_KONG_2_API_URL, {
+	const response = await fetch(process.env.REACT_APP_KONG_API_URL, {
 		method: 'POST',
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify({
@@ -103,7 +75,7 @@ async function fetchHarvestReportsForStrategy(chainId: number, vault: string, st
 }
 
 async function fetchHarvestReports(vault: Vault) {
-	if(!process.env.REACT_APP_KONG_2_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
+	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
 
 	const harvests = [] as HarvestReport[];
 	const strategies = vault.withdrawalQueue.map(strategy => strategy.address);

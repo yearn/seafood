@@ -2,7 +2,6 @@ import {BigNumber, ethers} from 'ethers';
 import {aggregateRiskGroupTvls, computeLongevityScore, medianExlcudingTvlImpact} from '../risk';
 import config from '../../../config.json';
 import * as Kong from '../types.kong';
-import * as Kong2 from '../types.kong.2';
 import * as Seafood from '../types';
 import {getChain, hydrateBigNumbersRecursively, kabobCase} from '../../../utils/utils';
 import {Callback, StartOptions, RefreshStatus, Tradeable} from './types';
@@ -241,7 +240,7 @@ function markupWarnings(vaults: Seafood.Vault[]) {
 	});
 }
 
-const KONG_QUERY_2 = `
+const KONG_QUERY = `
 query Query {
   vaults {
     chainId
@@ -297,6 +296,24 @@ query Query {
 			inceptionNet
 			grossApr
 		}
+		risk {
+			label
+      auditScore
+      codeReviewScore
+      complexityScore
+      protocolSafetyScore
+      teamKnowledgeScore
+      testingScore
+		}
+		meta {
+			description
+			token {
+				displayName
+				displaySymbol
+				description
+				icon
+			}
+		}
   }
 
 	strategies {
@@ -335,97 +352,13 @@ query Query {
       teamKnowledgeScore
       testingScore
 		}
-	}
-}
-`;
-
-const KONG_QUERY = `
-query Query {
-  vaults {
-		chainId
-		address
-    name
-		type
-		totalAssets
-    totalDebt
-		totalIdle
-    apiVersion
-    symbol
-    decimals
-		depositLimit
-    availableDepositLimit
-    lockedProfitDegradation
-    debtRatio
-    assetAddress
-    assetSymbol
-    assetName
-    assetPriceUsd
-		assetPriceSource
-    managementFee
-    performanceFee
-		registryStatus
-		governance
-		activationBlockTime
-		withdrawalQueue {
-      address
-      healthCheck
-      debtRatio
-      delegatedAssets
-      doHealthCheck
-      estimatedTotalAssets
-      grossApr
-      keeper
-      lastReportBlockTime
-      netApr
-      name
-      performanceFee
-      riskGroup
-      totalDebt
-      totalDebtUsd
-      withdrawalQueueIndex
-			tradeFactory
-			activationBlockTime
-      lenderStatuses {
-        name
-        address
-        assets
-        rate
-      }
+		meta {
+			description
 		}
-		defaultQueue {
-      address
-      name
-			apiVersion
-      debtRatio
-			currentDebt
-			currentDebtRatio
-      totalAssets
-      performanceFee
-      totalDebt
-			activationBlockTime
-      keeper
-      latestReportBlockTime
-      doHealthCheck
-  	}
-    tvlUsd
-    tvlSparkline {
-      time
-      value
-    }
-		apyNet
-		apyWeeklyNet
-		apyMonthlyNet
-		apyInceptionNet
-		aprGross
-    apySparkline {
-      time
-      value
-    }
-  }
+	}
 
-  riskGroups {
-    chainId
-    name
+	riskScores {
+    label
     auditScore
     codeReviewScore
     complexityScore
@@ -453,7 +386,6 @@ function toBigNumber(value: string | BigNumber | { type: string, hex: string } |
 
 async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
-	if(!process.env.REACT_APP_KONG_2_API_URL) throw new Error('!process.env.REACT_APP_KONG_2_API_URL');
 	const status = {status: 'refreshing', stage: 'kong', chain: 'all', timestamp: Date.now()} as RefreshStatus;
 	await putStatus(status);
 
@@ -464,86 +396,62 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 			body: JSON.stringify({query: KONG_QUERY})
 		});
 
-		const response2 = await fetch(process.env.REACT_APP_KONG_2_API_URL, {
-			method: 'POST',
-			headers: {'Content-Type': 'application/json'},
-			body: JSON.stringify({query: KONG_QUERY_2})
-		});
-
 		if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
 		const json = await response.json();
 		if (json.error) throw new Error(json.error);
 
-		const json2 = await response2.json();
-		if (json2.error) throw new Error(json2.error);
-
-		let flat: Seafood.Vault[] = json2.data.vaults.map((vault2: Kong2.Vault) => {
+		let flat: Seafood.Vault[] = json.data.vaults.map((vault: Kong.Vault) => {
 			return {
-				address: vault2.address,
-				name: vault2.name,
+				address: vault.address,
+				name: vault.name,
 				network: {
-					chainId: vault2.chainId,
-					name: getChain(vault2.chainId).name
+					chainId: vault.chainId,
+					name: getChain(vault.chainId).name
 				},
-				version: vault2.apiVersion,
-				want: vault2.asset.address,
+				version: vault.apiVersion,
+				want: vault.asset.address,
 				type: 'vault',
 				token: {
-					address: vault2.asset.address,
-					name: vault2.asset.name,
-					symbol: vault2.asset.symbol,
-					decimals: vault2.asset.decimals
+					address: vault.asset.address,
+					name: vault.asset.name,
+					symbol: vault.asset.symbol,
+					decimals: vault.asset.decimals
 				},
-				governance: vault2.governance,
-				totalIdle: toBigNumber(vault2.totalIdle),
-				totalAssets: toBigNumber(vault2.totalAssets),
-				availableDepositLimit: toBigNumber(vault2.availableDepositLimit),
-				lockedProfitDegradation: toBigNumber(vault2.lockedProfitDegradation),
-				totalDebt: toBigNumber(vault2.totalDebt),
-				decimals: toBigNumber(vault2.decimals),
-				debtRatio: toBigNumber(vault2.debtRatio),
-				managementFee: toBigNumber(vault2.managementFee),
-				performanceFee: toBigNumber(vault2.performanceFee),
-				depositLimit: toBigNumber(vault2.depositLimit || vault2.deposit_limit),
-				activation: toBigNumber(vault2.inceptTime || 0),
+				governance: vault.governance,
+				totalIdle: toBigNumber(vault.totalIdle),
+				totalAssets: toBigNumber(vault.totalAssets),
+				availableDepositLimit: toBigNumber(vault.availableDepositLimit),
+				lockedProfitDegradation: toBigNumber(vault.lockedProfitDegradation),
+				totalDebt: toBigNumber(vault.totalDebt),
+				decimals: toBigNumber(vault.decimals),
+				debtRatio: toBigNumber(vault.debtRatio),
+				managementFee: toBigNumber(vault.managementFee),
+				performanceFee: toBigNumber(vault.performanceFee),
+				depositLimit: toBigNumber(vault.depositLimit || vault.deposit_limit),
+				activation: toBigNumber(vault.inceptTime || 0),
 				tvls: {
-					dates: vault2.sparklines['tvl'].map(point => Number(point.blockTime)).reverse(),
-					tvls: vault2.sparklines['tvl'].map(point => Number(point.close)).reverse()
+					dates: vault.sparklines['tvl'].map(point => Number(point.blockTime)).reverse(),
+					tvls: vault.sparklines['tvl'].map(point => Number(point.close)).reverse()
 				},
 				apy: {
 					type: 'v2:averaged',
-					gross: vault2.apy?.grossApr,
-					net: vault2.apy?.net,
-					[-7]: vault2.apy?.weeklyNet,
-					[-30]: vault2.apy?.monthlyNet,
-					inception: vault2.apy?.inceptionNet
+					gross: vault.apy?.grossApr,
+					net: vault.apy?.net,
+					[-7]: vault.apy?.weeklyNet,
+					[-30]: vault.apy?.monthlyNet,
+					inception: vault.apy?.inceptionNet
 				},
-				withdrawalQueue: getWithdrawalQueue(vault2, json2.data.vaults, json2.data.strategies),
+				withdrawalQueue: getWithdrawalQueue(vault, json.data.vaults, json.data.strategies),
+				meta: vault.meta
 			} as Seafood.Vault;
 		});
 
 		flat = flat.filter(vault => vault !== null) as Seafood.Vault[];
 
-		const riskGroups = json.data.riskGroups as {
-			chainId: number,
-			name: string,
-			auditScore: number,
-			codeReviewScore: number,
-			complexityScore: number,
-			longevityImpact: number,
-			protocolSafetyScore: number,
-			teamKnowledgeScore: number,
-			testingScore: number
-		} [];
-
 		const strategies = flat.map((vault: Seafood.Vault) => vault.withdrawalQueue).flat();
-		riskGroups.forEach(group => {
-			const strategiesInGroup = strategies.filter((strategy: Seafood.Strategy) => strategy.risk.riskGroupId === kabobCase(group.name));
-			const worstLongevityScoreInGroup = strategiesInGroup
-				.map((strategy: Seafood.Strategy) => computeLongevityScore(strategy))
-				.reduce((max: number, score: number) => score > max ? score : max, 1);
-			group.longevityImpact = worstLongevityScoreInGroup;
+		json.data.riskScores.forEach((group: Kong.RiskScore) => {
+			const strategiesInGroup = strategies.filter((strategy: Seafood.Strategy) => strategy.risk.riskGroupId === kabobCase(group.label));
 			strategiesInGroup.forEach((strategy: Seafood.Strategy) => {
 				strategy.risk.riskDetails.auditScore = group.auditScore;
 				strategy.risk.riskDetails.codeReviewScore = group.codeReviewScore;
@@ -575,13 +483,13 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 	}
 }
 
-function getWithdrawalQueue(vault2: Kong2.Vault, vaults: Kong2.Vault[], strategies: Kong2.Strategy[]) {
+function getWithdrawalQueue(vault2: Kong.Vault, vaults: Kong.Vault[], strategies: Kong.Strategy[]) {
 	const addresses: `0x${string}`[] = vault2.withdrawalQueue || vault2.get_default_queue || [];
 	const result = addresses.map((address: `0x${string}`, index: number) => {
-		let strategy = strategies.find((s: Kong2.Strategy) => s.address === address);
-		if (!strategy) strategy = Kong2.toStrategy(vaults.find((v: Kong2.Vault) => v.address === address));
+		let strategy = strategies.find((s: Kong.Strategy) => s.address === address);
+		if (!strategy) strategy = Kong.toStrategy(vaults.find((v: Kong.Vault) => v.address === address));
 		if (!strategy) return null;
-		const debt = vault2.debts.find((debt: Kong2.Debt) => debt.strategy === address);
+		const debt = vault2.debts.find((debt: Kong.Debt) => debt.strategy === address);
 
 		const currentDebtRatio = toBigNumber(vault2.totalDebt ?? 0).gt(0)
 			? (toBigNumber(debt?.currentDebt ?? debt?.totalDebt ?? 0).mul(10_000)).div(toBigNumber(vault2.totalDebt))
@@ -643,7 +551,8 @@ function getWithdrawalQueue(vault2: Kong2.Vault, vaults: Kong2.Vault[], strategi
 					testingScore: strategy.risk?.testingScore ?? 5,
 					median: 5
 				}
-			}
+			},
+			meta: strategy.meta
 		} as Seafood.Strategy;
 	});
 

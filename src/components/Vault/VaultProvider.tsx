@@ -3,7 +3,7 @@ import {useParams} from 'react-router-dom';
 import {useVaults} from '../../context/useVaults';
 import useRpcProvider from '../../context/useRpcProvider';
 import {GetVaultContract} from '../../ethereum/EthHelpers';
-import {fetchHarvestReports, fetchMetas, HarvestReport} from '../../utils/vaults';
+import {fetchHarvestReports, HarvestReport} from '../../utils/vaults';
 import {defaultVault, Vault} from '../../context/useVaults/types';
 import {Contract, providers} from 'ethers';
 
@@ -60,8 +60,12 @@ export default function VaultProvider({children}: {children: ReactNode}) {
 					setVaultRpc(contract);
 				});
 
-				fetchMetas(vault).then(metas => {
-					setMetas(metas);
+				setMetas({
+					assetDescription: vault.meta.token.description,
+					withdrawalQueue: vault.withdrawalQueue.map(strategy => ({
+						address: strategy.address,
+						description: strategy.meta.description
+					}))
 				});
 
 				fetchHarvestReports(vault).then(reports => {
