@@ -478,17 +478,7 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 		const json2 = await response2.json();
 		if (json2.error) throw new Error(json2.error);
 
-		let flat: Seafood.Vault[] = json.data.vaults.map((kongVault: Kong.Vault) => {
-			const vault2: Kong2.Vault = json2.data.vaults.find((v: Kong2.Vault) => 
-				v.chainId === kongVault.chainId 
-				&& v.address === kongVault.address
-			);
-
-			if (!vault2) {
-				console.warn('!vault2', kongVault.chainId, kongVault.address);
-				return null;
-			}
-
+		let flat: Seafood.Vault[] = json2.data.vaults.map((vault2: Kong2.Vault) => {
 			return {
 				address: vault2.address,
 				name: vault2.name,
