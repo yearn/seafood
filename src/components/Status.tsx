@@ -85,7 +85,6 @@ export default function Status() {
 	const {status} = useVaults();
 	const {message} = useVaultStatusUI();
 	const kong = useMemo(() => status.filter(s => s.stage === 'kong'), [status]);
-	const rewards = useMemo(() => status.filter(s => s.stage === 'rewards'), [status]);
 	const {setEnable} = usePowertools();
 
 	useEffect(() => {
