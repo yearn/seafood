@@ -74,13 +74,64 @@ async function fetchHarvestReportsForStrategy(chainId: number, vault: string, st
 	return harvests;
 }
 
+async function fetchHarvestReportsForVault(chainId: number, vault: string, strategy: string) {
+	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
+
+	const harvests = [] as HarvestReport[];
+	const response = await fetch(process.env.REACT_APP_KONG_API_URL, {
+		method: 'POST',
+		headers: {'Content-Type': 'application/json'},
+		body: JSON.stringify({
+			query: `query Reports($chainId: Int, $address: String) {
+				vaultReports(chainId: $chainId, address: $address) {
+					chainId
+					blockNumber
+					blockTime
+					transactionHash
+					profit: gain
+					profitUsd: gainUsd
+					loss
+					lossUsd
+					apr {
+						gross
+						net
+					}
+				}
+			}`,
+			variables: {chainId, address: strategy}
+		})
+	});
+
+	const json = await response.json();
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	harvests.push(...(json.data.vaultReports as any[]).map(harvest => ({
+		chain_id: harvest.chainId,
+		block: harvest.blockNumber,
+		timestamp: harvest.blockTime,
+		date_string: '',
+		txn_hash: harvest.transactionHash,
+		vault_address: vault,
+		strategy_address: strategy,
+		gain: harvest.profit,
+		loss: harvest.loss,
+		want_gain_usd: harvest.profitUsd,
+		rough_apr_pre_fee: harvest.apr.gross
+	} as HarvestReport)));
+
+	return harvests;	
+}
+
 async function fetchHarvestReports(vault: Vault) {
 	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
 
 	const harvests = [] as HarvestReport[];
-	const strategies = vault.withdrawalQueue.map(strategy => strategy.address);
-	for(const strategy of strategies) {
-		harvests.push(...await fetchHarvestReportsForStrategy(vault.network.chainId, vault.address, strategy));
+	for(const strategy of vault.withdrawalQueue) {
+		if (strategy.type === 'strategy') {
+			harvests.push(...await fetchHarvestReportsForStrategy(vault.network.chainId, vault.address, strategy.address));
+		} else if (strategy.type === 'vault') {
+			harvests.push(...await fetchHarvestReportsForVault(vault.network.chainId, vault.address, strategy.address));
+		}
 	}
 
 	return harvests;

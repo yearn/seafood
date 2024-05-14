@@ -61,10 +61,10 @@ export default function VaultProvider({children}: {children: ReactNode}) {
 				});
 
 				setMetas({
-					assetDescription: vault.meta.token.description,
+					assetDescription: vault.meta?.token?.description,
 					withdrawalQueue: vault.withdrawalQueue.map(strategy => ({
 						address: strategy.address,
-						description: strategy.meta.description
+						description: strategy.meta?.description
 					}))
 				});
 

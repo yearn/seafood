@@ -107,8 +107,7 @@ export default function Status() {
 			<div className={`sm:px-6
 				grid grid-flow-row gap-2 grid-cols-1 
 				sm:gap-8 sm:grid-cols-1`}>
-				<Stage title={'Kong'} status={kong} />
-				<Stage title={'Rewards'} status={rewards} />
+				<Stage title={''} status={kong} />
 			</div>
 		</div>
 	</div>;

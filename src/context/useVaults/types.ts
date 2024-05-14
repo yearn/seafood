@@ -92,6 +92,7 @@ export const defaultVault = {
 };
 
 export interface Strategy {
+	type: 'strategy' | 'vault',
 	address: string,
 	apiVersion: string,
 	name: string,

@@ -265,6 +265,7 @@ query Query {
 		performanceFee
 		depositLimit
 		deposit_limit
+		strategies
 		withdrawalQueue
 		get_default_queue
 		inceptTime
@@ -442,7 +443,8 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 					[-30]: vault.apy?.monthlyNet,
 					inception: vault.apy?.inceptionNet
 				},
-				withdrawalQueue: getWithdrawalQueue(vault, json.data.vaults, json.data.strategies),
+				strategies: transformStrategies(vault.strategies ?? [], vault, json.data.vaults, json.data.strategies),
+				withdrawalQueue: transformStrategies(vault.withdrawalQueue ?? vault.get_default_queue ?? [], vault, json.data.vaults, json.data.strategies),
 				meta: vault.meta
 			} as Seafood.Vault;
 		});
@@ -483,23 +485,24 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 	}
 }
 
-function getWithdrawalQueue(vault2: Kong.Vault, vaults: Kong.Vault[], strategies: Kong.Strategy[]) {
-	const addresses: `0x${string}`[] = vault2.withdrawalQueue || vault2.get_default_queue || [];
+function transformStrategies(addresses: `0x${string}`[], vault: Kong.Vault, vaults: Kong.Vault[], strategies: Kong.Strategy[]) {
 	const result = addresses.map((address: `0x${string}`, index: number) => {
 		let strategy = strategies.find((s: Kong.Strategy) => s.address === address);
+		if (strategy) strategy.type = 'strategy';
 		if (!strategy) strategy = Kong.toStrategy(vaults.find((v: Kong.Vault) => v.address === address));
 		if (!strategy) return null;
-		const debt = vault2.debts.find((debt: Kong.Debt) => debt.strategy === address);
+		const debt = vault.debts.find((debt: Kong.Debt) => debt.strategy === address);
 
-		const currentDebtRatio = toBigNumber(vault2.totalDebt ?? 0).gt(0)
-			? (toBigNumber(debt?.currentDebt ?? debt?.totalDebt ?? 0).mul(10_000)).div(toBigNumber(vault2.totalDebt))
+		const currentDebtRatio = toBigNumber(vault.totalDebt ?? 0).gt(0)
+			? (toBigNumber(debt?.currentDebt ?? debt?.totalDebt ?? 0).mul(10_000)).div(toBigNumber(vault.totalDebt))
 			: 0;
 
 		return {
 			network: {
-				chainId: vault2.chainId,
-				name: getChain(vault2.chainId).name
+				chainId: vault.chainId,
+				name: getChain(vault.chainId).name
 			},
+			type: strategy.type,
 			address,
 			name: strategy.name,
 			apiVersion: strategy.apiVersion,

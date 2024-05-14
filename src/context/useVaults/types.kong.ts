@@ -48,6 +48,7 @@ export type Vault = {
 	performanceFee: BigNumber;
 	depositLimit: BigNumber;
 	deposit_limit: BigNumber;
+	strategies: `0x${string}`[];
 	withdrawalQueue?: `0x${string}`[];
 	get_default_queue?: `0x${string}`[];
 	debts: Debt[];
@@ -76,6 +77,7 @@ export type Vault = {
 }
 
 export type Strategy = {
+	type: 'strategy' | 'vault',
 	chainId: number;
 	address: `0x${string}`;
 	name: string;
@@ -111,6 +113,7 @@ export type Strategy = {
 export function toStrategy(vault: Vault | undefined | null): Strategy | undefined {
 	if (!vault) return undefined;
 	return {
+		type: 'vault',
 		chainId: vault.chainId,
 		address: vault.address,
 		name: vault.name,
