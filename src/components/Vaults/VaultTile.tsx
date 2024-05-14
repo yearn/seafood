@@ -218,7 +218,7 @@ export default function VaultTile({vault, onClick}: {vault: Vault, onClick: (eve
 				<Tokens 
 					value={vault.depositLimit} 
 					decimals={vault.token.decimals || 18}
-					nonFinite={'na'}
+					nonFinite={'∞'}
 					className={'w-1/3'} />
 			</Row>
 			<Row label={<div className={'w-1/3'}>{'Strategies'}</div>}>

@@ -6,7 +6,6 @@
     "@floating-ui/react": "^0.19.1",
     "@octokit/core": "^4.0.5",
     "@octokit/graphql": "^5.0.4",
-    "@sentry/react": "^7.35.0",
     "@tailwindcss/forms": "^0.4.0",
     "@testing-library/react": "^14.0.0",
     "axios": "^0.26.0",

@@ -8,34 +8,6 @@ function computeDegradationTime(vault: Vault) {
 	return coefficient.div(vault.lockedProfitDegradation as BigNumber);
 }
 
-export async function fetchMetas(vault: Vault) {
-	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
-
-	const response = await fetch(process.env.REACT_APP_KONG_API_URL, {
-		method: 'POST',
-		headers: {'Content-Type': 'application/json'},
-		body: JSON.stringify({
-			query: `query Vault($chainId: Int!, $address: String!) {
-				vault(chainId: $chainId, address: $address) {
-					withdrawalQueue {
-						address
-						description
-					}
-					assetDescription
-				}
-			}
-			`,
-			variables: {chainId: vault.network.chainId, address: vault.address}
-		})
-	});
-
-	const json = await response.json();
-	return json.data.vault as {
-		assetDescription: string,
-		withdrawalQueue: {address: string, description: string}[]
-	};
-}
-
 export interface HarvestReport {
 	chain_id: string,
 	block: string,
@@ -62,30 +34,30 @@ async function fetchHarvestReportsForStrategy(chainId: number, vault: string, st
 		method: 'POST',
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify({
-			query: `query Harvest($chainId: Int, $address: String, $limit: Int) {
-				harvests(chainId: $chainId, address: $address, limit: $limit) {
+			query: `query Reports($chainId: Int, $address: String) {
+				strategyReports(chainId: $chainId, address: $address) {
 					chainId
 					blockNumber
 					blockTime
 					transactionHash
 					profit
 					profitUsd
-					totalProfit
 					loss
 					lossUsd
-					totalLoss
-					aprGross
-					aprNet
+					apr {
+						gross
+						net
+					}
 				}
 			}`,
-			variables: {chainId, address: strategy, limit: 1000}
+			variables: {chainId, address: strategy}
 		})
 	});
 
 	const json = await response.json();
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	harvests.push(...(json.data.harvests as any[]).map(harvest => ({
+	harvests.push(...(json.data.strategyReports as any[]).map(harvest => ({
 		chain_id: harvest.chainId,
 		block: harvest.blockNumber,
 		timestamp: harvest.blockTime,
@@ -94,23 +66,72 @@ async function fetchHarvestReportsForStrategy(chainId: number, vault: string, st
 		vault_address: vault,
 		strategy_address: strategy,
 		gain: harvest.profit,
-		total_gain: harvest.totalProfit,
 		loss: harvest.loss,
-		total_loss: harvest.totalLoss,
 		want_gain_usd: harvest.profitUsd,
-		rough_apr_pre_fee: harvest.aprGross
+		rough_apr_pre_fee: harvest.apr.gross
 	} as HarvestReport)));
 
 	return harvests;
+}
+
+async function fetchHarvestReportsForVault(chainId: number, vault: string, strategy: string) {
+	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
+
+	const harvests = [] as HarvestReport[];
+	const response = await fetch(process.env.REACT_APP_KONG_API_URL, {
+		method: 'POST',
+		headers: {'Content-Type': 'application/json'},
+		body: JSON.stringify({
+			query: `query Reports($chainId: Int, $address: String) {
+				vaultReports(chainId: $chainId, address: $address) {
+					chainId
+					blockNumber
+					blockTime
+					transactionHash
+					profit: gain
+					profitUsd: gainUsd
+					loss
+					lossUsd
+					apr {
+						gross
+						net
+					}
+				}
+			}`,
+			variables: {chainId, address: strategy}
+		})
+	});
+
+	const json = await response.json();
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	harvests.push(...(json.data.vaultReports as any[]).map(harvest => ({
+		chain_id: harvest.chainId,
+		block: harvest.blockNumber,
+		timestamp: harvest.blockTime,
+		date_string: '',
+		txn_hash: harvest.transactionHash,
+		vault_address: vault,
+		strategy_address: strategy,
+		gain: harvest.profit,
+		loss: harvest.loss,
+		want_gain_usd: harvest.profitUsd,
+		rough_apr_pre_fee: harvest.apr.gross
+	} as HarvestReport)));
+
+	return harvests;	
 }
 
 async function fetchHarvestReports(vault: Vault) {
 	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
 
 	const harvests = [] as HarvestReport[];
-	const strategies = vault.withdrawalQueue.map(strategy => strategy.address);
-	for(const strategy of strategies) {
-		harvests.push(...await fetchHarvestReportsForStrategy(vault.network.chainId, vault.address, strategy));
+	for(const strategy of vault.withdrawalQueue) {
+		if (strategy.type === 'strategy') {
+			harvests.push(...await fetchHarvestReportsForStrategy(vault.network.chainId, vault.address, strategy.address));
+		} else if (strategy.type === 'vault') {
+			harvests.push(...await fetchHarvestReportsForVault(vault.network.chainId, vault.address, strategy.address));
+		}
 	}
 
 	return harvests;

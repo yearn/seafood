@@ -60,8 +60,8 @@ export default function useHarvestProbe() {
 					};
 
 					const apr = computeHarvestApr(vault, strategy, latestReport, {
-						totalGain: report.args.totalGain,
-						totalLoss: report.args.totalLoss
+						gain: report.args.gain,
+						loss: report.args.loss
 					});
 
 					const contract = GetStrategyContract(strategy.address, provider);

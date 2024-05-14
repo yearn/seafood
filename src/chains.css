@@ -28,6 +28,21 @@
   dark:border-red-600;
 }
 
+.bg-gnosis {
+  @apply bg-teal-400
+  dark:bg-teal-600;
+}
+
+.bg-gnosis-40 {
+  @apply bg-teal-400/40
+  dark:bg-teal-600/40;
+}
+
+.border-gnosis {
+  @apply border-teal-400
+  dark:border-teal-600;
+}
+
 .bg-polygon {
   @apply bg-violet-400
   dark:bg-violet-600;

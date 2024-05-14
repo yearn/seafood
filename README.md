@@ -32,14 +32,9 @@ cp env.example .env
 
   - For data
   ```
-  REACT_APP_USE_KONG=true
-  REACT_APP_KONG_API_URL=https://kong-one.vercel.app/api/gql
+Setup and run [kong](https://github.com/murderteeth/kong) in your local environment, then in seafood's .env use:
   ```
-
-  Or if you like, setup and run [kong](https://github.com/murderteeth/kong) in your local environment and use:
-  ```
-  REACT_APP_USE_KONG=true
-  REACT_APP_KONG_API_URL=http://localhost:3000/api/gql
+  REACT_APP_KONG_API_URL=http://localhost:3001/api/gql
   ```
 
   - To run vault and strategy simulations, set a token for tenderly, explorer urls, and rps urls for each supported chain:

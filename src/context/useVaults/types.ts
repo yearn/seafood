@@ -2,8 +2,7 @@ import {BigNumber} from 'ethers';
 
 export interface Chain {
 	id: number,
-	name: string,
-	providers: string[]
+	name: string
 }
 
 export interface Network {
@@ -61,7 +60,16 @@ export interface Vault {
 	apy: Apy,
 	tvls: TVLHistory,
 	rewardsUsd: number,
-	warnings: Warning[]
+	warnings: Warning[],
+	meta: {
+		description: string;
+		token: {
+			displayName: string;
+			displaySymbol: string;
+			description: string;
+			icon: string;
+		}
+	}
 }
 
 export interface TVLHistory {
@@ -84,6 +92,7 @@ export const defaultVault = {
 };
 
 export interface Strategy {
+	type: 'strategy' | 'vault',
 	address: string,
 	apiVersion: string,
 	name: string,
@@ -110,6 +119,9 @@ export interface Strategy {
 	tradeFactory: string | undefined,
 	keeper: string | undefined,
 	rewards: Reward[],
+	meta: {
+		description: string;
+	}
 }
 
 export interface LendStatus {

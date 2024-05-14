@@ -18,8 +18,6 @@
 			"id": 1,
 			"name": "ethereum",
 			"explorer": "https://etherscan.io",
-			"explorerApi": "https://api.etherscan.io",
-			"registry": "0x50c1a2eA0a861A967D9d0FFE2AE4012c2E053804",
 			"providers": [
 				"https://ethereum.publicnode.com"
 			]
@@ -28,18 +26,22 @@
 			"id": 10,
 			"name": "optimism",
 			"explorer": "https://optimistic.etherscan.io",
-			"explorerApi": "https://api-optimistic.etherscan.io",
-			"registry": "0x1ba4eB0F44AB82541E56669e18972b0d6037dfE0",
 			"providers": [
 				"https://rpc.ankr.com/optimism"
+			]
+		},
+		{
+			"id": 100,
+			"name": "gnosis",
+			"explorer": "https://gnosisscan.io",
+			"providers": [
+				"https://rpc.ankr.com/gnosis"
 			]
 		},
 		{
 			"id": 137,
 			"name": "polygon",
 			"explorer": "https://polygonscan.com",
-			"explorerApi": "https://api.polygonscan.com",
-			"registry": "0xfF5e3A7C4cBfA9Dd361385c24C3a0A4eE63CE500",
 			"providers": [
 				"https://rpc.ankr.com/polygon"
 			]
@@ -48,8 +50,6 @@
 			"id": 250,
 			"name": "fantom",
 			"explorer": "https://ftmscan.com",
-			"explorerApi": "https://api.ftmscan.com",
-			"registry": "0x727fe1759430df13655ddb0731dE0D0FDE929b04",
 			"providers": [
 				"https://rpc.ankr.com/fantom"
 			]
@@ -58,8 +58,6 @@
 			"id": 8453,
 			"name": "base",
 			"explorer": "https://basescan.org/",
-			"explorerApi": "https://api.basescan.org/",
-			"registry": "0xF3885eDe00171997BFadAa98E01E167B53a78Ec5",
 			"multicall": "0xca11bde05977b3631167028862be2a173976ca11",
 			"providers": [
 				"https://rpc.ankr.com/base"
@@ -69,8 +67,6 @@
 			"id": 42161,
 			"name": "arbitrum",
 			"explorer": "https://arbiscan.io",
-			"explorerApi": "https://api.arbiscan.io",
-			"registry": "0x3199437193625DCcD6F9C9e98BDf93582200Eb1f",
 			"providers": [
 				"https://arb1.arbitrum.io/rpc"
 			]

@@ -23,7 +23,7 @@ export default function InfoTab() {
 	}, [vault]);
 
 	const getDescription = useCallback((address: string) => {
-		return metas.withdrawalQueue.find(v => v.address === address)?.description || 'No description found.';
+		return metas?.withdrawalQueue.find(v => v.address === address)?.description || 'No description found.';
 	}, [metas]);
 
 	return <div className={'px-2 pb-16 flex flex-col gap-3'}>
@@ -34,7 +34,7 @@ export default function InfoTab() {
 				</A>
 			</div>
 			<div className={'sm:text-sm'} 
-				dangerouslySetInnerHTML={{__html: parseMarkdown((metas.assetDescription || 'No description found.').replaceAll('{{token}}', vault.token.symbol))}} />
+				dangerouslySetInnerHTML={{__html: parseMarkdown((metas?.assetDescription || 'No description found.').replaceAll('{{token}}', vault.token.symbol))}} />
 		</div>
 		{activeStrategies.map(strategy => <div key={strategy.address}>
 			<div className={'flex items-center gap-2'}>
