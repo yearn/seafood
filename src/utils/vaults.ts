@@ -74,7 +74,7 @@ async function fetchHarvestReportsForStrategy(chainId: number, vault: string, st
 	return harvests;
 }
 
-async function fetchHarvestReportsForVault(chainId: number, vault: string, strategy: string) {
+async function fetchHarvestReportsForVault(chainId: number, vault: string) {
 	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
 
 	const harvests = [] as HarvestReport[];
@@ -85,6 +85,7 @@ async function fetchHarvestReportsForVault(chainId: number, vault: string, strat
 			query: `query Reports($chainId: Int, $address: String) {
 				vaultReports(chainId: $chainId, address: $address) {
 					chainId
+					strategy
 					blockNumber
 					blockTime
 					transactionHash
@@ -116,7 +117,7 @@ async function fetchHarvestReportsForVault(chainId: number, vault: string, strat
 		date_string: '',
 		txn_hash: harvest.transactionHash,
 		vault_address: vault,
-		strategy_address: strategy,
+		strategy_address: harvest.strategy,
 		gain: harvest.profit,
 		loss: harvest.loss,
 		want_gain_usd: harvest.profitUsd,
@@ -128,13 +129,7 @@ async function fetchHarvestReportsForVault(chainId: number, vault: string, strat
 
 async function fetchHarvestReports(vault: Vault) {
 	if(!process.env.REACT_APP_KONG_API_URL) throw new Error('!process.env.REACT_APP_KONG_API_URL');
-
-	const harvests = [] as HarvestReport[];
-	for(const strategy of vault.withdrawalQueue) {
-		harvests.push(...await fetchHarvestReportsForVault(vault.network.chainId, vault.address, strategy.address));
-	}
-
-	return harvests;
+	return await fetchHarvestReportsForVault(vault.network.chainId, vault.address);
 }
 
 async function fetchMeta(vault: Vault) {
