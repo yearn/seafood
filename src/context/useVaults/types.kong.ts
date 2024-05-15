@@ -30,6 +30,7 @@ export type Vault = {
 	address: `0x${string}`;
 	apiVersion: string;
 	name: string;
+	vaultType: number;
 	asset: {
 		address: `0x${string}`;
 		symbol: string;
@@ -73,7 +74,11 @@ export type Vault = {
 			description: string;
 			icon: string;
 		}
-	}
+	};
+	lastReportDetail: {
+		blockTime: BigNumber;
+		transactionHash: string;
+	};
 }
 
 export type Strategy = {

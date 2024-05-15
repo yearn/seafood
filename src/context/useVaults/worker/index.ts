@@ -247,6 +247,7 @@ query Query {
     address
 		apiVersion
     name
+		vaultType
 		asset {
       address,
       symbol,
@@ -315,6 +316,10 @@ query Query {
 				icon
 			}
 		}
+		lastReportDetail {
+			blockTime
+			transactionHash
+		}
   }
 
 	strategies {
@@ -355,6 +360,10 @@ query Query {
 		}
 		meta {
 			description
+		}
+		lastReportDetail {
+			blockTime
+			transactionHash
 		}
 	}
 
@@ -412,7 +421,7 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 				},
 				version: vault.apiVersion,
 				want: vault.asset.address,
-				type: 'vault',
+				type: vault.vaultType === 2 ? 'strategy' : 'vault',
 				token: {
 					address: vault.asset.address,
 					name: vault.asset.name,
@@ -445,7 +454,12 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 				},
 				strategies: transformStrategies(vault.strategies ?? [], vault, json.data.vaults, json.data.strategies),
 				withdrawalQueue: transformStrategies(vault.withdrawalQueue ?? vault.get_default_queue ?? [], vault, json.data.vaults, json.data.strategies),
-				meta: vault.meta
+				meta: vault.meta,
+				lastReportDetails: vault.lastReportDetail ? {
+					blockTime: toBigNumber(vault.lastReportDetail?.blockTime || 0),
+					datems: toBigNumber(vault.lastReportDetail?.blockTime || 0).toNumber() * 1000,
+					transactionHash: vault.lastReportDetail?.transactionHash
+				} : undefined,
 			} as Seafood.Vault;
 		});
 

@@ -69,6 +69,11 @@ export interface Vault {
 			description: string;
 			icon: string;
 		}
+	},
+	lastReportDetails: {
+		blockTime: BigNumber,
+		datems: number,
+		transactionHash: string
 	}
 }
 
