@@ -13,6 +13,7 @@ import {useApyProbeDelta, useApyProbeResults} from '../../context/useSimulator/P
 import {useAssetsProbeResults} from '../../context/useSimulator/ProbesProvider/useAssetsProbe';
 import {getTvlSeries} from '../../utils/vaults';
 import {FixedNumber} from 'ethers';
+import TimeAgo from '../controls/TimeAgo';
 
 function Chip({className, children}: {className: string, children: ReactNode}) {
 	return <div className={`
@@ -201,7 +202,10 @@ export default function StrategyTile({vault, onClick}: {vault: Vault, onClick: (
 			<Row label={'Idle'}>
 				<Percentage value={idle} />
 			</Row>
-			<Row label={<>&nbsp;</>} alt={true}></Row>
+			<Row label={'Last report'} alt={true}>
+				{vault.lastReportDetails && <TimeAgo date={new Date(vault.lastReportDetails.datems)} />}
+				{!vault.lastReportDetails && <div>{'na'}</div>}				
+			</Row>
 			<Row label={<>&nbsp;</>}></Row>
 			<Row label={<>&nbsp;</>} alt={true}></Row>
 		</TileButton>

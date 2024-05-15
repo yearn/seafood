@@ -1,11 +1,14 @@
 import React, {useMemo} from 'react';
 import {Vault} from '../../../context/useVaults/types';
 import {FixedNumber} from 'ethers';
-import {Row} from '../../controls';
+import {A, Row} from '../../controls';
 import TvlBars from '../TvlBars';
 import {useAssetsProbeResults} from '../../../context/useSimulator/ProbesProvider/useAssetsProbe';
 import {useSimulator} from '../../../context/useSimulator';
 import {Number, Percentage, Tokens} from '../../controls/Fields';
+import {getTxExplorer} from '../../../utils/utils';
+import TimeAgo from '../../controls/TimeAgo';
+import EigenPhi from '../EigenPhi';
 
 export default function StrategyAssets({vault}: {vault: Vault}) {
 	const simulator = useSimulator();
@@ -50,6 +53,20 @@ export default function StrategyAssets({vault}: {vault: Vault}) {
 			</Row>
 			<Row label={'Idle'}>
 				<Percentage value={idle} />
+			</Row>
+			<Row label={'Last report'} alt={true}>
+				<div>
+
+					{vault.lastReportDetails && <div className={'flex items-center gap-3'}>	
+						<A href={getTxExplorer(vault.network.chainId, vault.lastReportDetails.transactionHash)}
+							target={'_blank'} rel={'noreferrer'}>
+							<TimeAgo date={new Date(vault.lastReportDetails.datems)} />
+						</A>
+						<EigenPhi tx={vault.lastReportDetails.transactionHash} />
+					</div>}
+
+					{!vault.lastReportDetails && 'na'}
+				</div>
 			</Row>
 			{vault.rewardsUsd > 0 && <Row label={'Rewards (USD)'}>
 				<Number className={'font-bold'} value={vault.rewardsUsd} decimals={2} />

@@ -330,7 +330,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 					</div>
 				</Row>
 
-				{latestHarvest.tx && <Row label={'Last harvest'}>
+				{latestHarvest.tx && <Row label={'Last report to vault'}>
 					<div className={'flex items-center gap-3'}>	
 						<A href={getTxExplorer(strategy.network.chainId, latestHarvest.tx)}
 							target={'_blank'} rel={'noreferrer'}>

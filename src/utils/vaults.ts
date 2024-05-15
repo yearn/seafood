@@ -98,11 +98,15 @@ async function fetchHarvestReportsForVault(chainId: number, vault: string, strat
 					}
 				}
 			}`,
-			variables: {chainId, address: strategy}
+			variables: {chainId, address: vault}
 		})
 	});
 
 	const json = await response.json();
+
+	const oneYearAgo = new Date();
+	oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+	const oneYearAgoSeconds = Math.floor(oneYearAgo.getTime() / 1000);
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	harvests.push(...(json.data.vaultReports as any[]).map(harvest => ({
@@ -119,7 +123,7 @@ async function fetchHarvestReportsForVault(chainId: number, vault: string, strat
 		rough_apr_pre_fee: harvest.apr.gross
 	} as HarvestReport)));
 
-	return harvests;	
+	return harvests.filter(h => Number(h.timestamp) > oneYearAgoSeconds);
 }
 
 async function fetchHarvestReports(vault: Vault) {
@@ -127,11 +131,7 @@ async function fetchHarvestReports(vault: Vault) {
 
 	const harvests = [] as HarvestReport[];
 	for(const strategy of vault.withdrawalQueue) {
-		if (strategy.type === 'strategy') {
-			harvests.push(...await fetchHarvestReportsForStrategy(vault.network.chainId, vault.address, strategy.address));
-		} else if (strategy.type === 'vault') {
-			harvests.push(...await fetchHarvestReportsForVault(vault.network.chainId, vault.address, strategy.address));
-		}
+		harvests.push(...await fetchHarvestReportsForVault(vault.network.chainId, vault.address, strategy.address));
 	}
 
 	return harvests;
