@@ -38,6 +38,7 @@ function useStrategyReports() {
 		}).then(res => {
 			res.json().then(data => {
 				const result = [];
+				/* eslint-disable @typescript-eslint/no-explicit-any */
 				result.push(...(data.data.strategyReports as any[]).map(harvest => ({
 					chain_id: harvest.chainId,
 					block: harvest.blockNumber,
