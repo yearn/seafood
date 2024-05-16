@@ -21,7 +21,7 @@ function HarvestHistory({history}){
 	return <>
 		<SmallScreen>
 			<div className={'w-full overflow-x-auto'}>
-				<table>
+				<table className={'w-full'}>
 					<thead>
 						<tr>
 							<ColumnHeader>{'History'}</ColumnHeader>
@@ -54,7 +54,7 @@ function HarvestHistory({history}){
 			</div>
 		</SmallScreen>
 		<BiggerThanSmallScreen>
-			<table className={'mt-4'}>
+			<table className={'mt-4 w-full'}>
 				<thead>
 					<tr>
 						<ColumnHeader>{'Harvest history'}</ColumnHeader>

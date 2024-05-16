@@ -12,6 +12,7 @@ import StrategiesTab from './StrategiesTab';
 import Chips from './Chips';
 import Name from './Name';
 import {usePowertools} from '../Powertools';
+import StrategyReports from './StrategyReports';
 
 function Layout() {
 	const location = useLocation();
@@ -53,6 +54,7 @@ function Layout() {
 			<div className={'w-1/2'}></div>
 			<div className={'w-1/2'}>
 				{vault.type === 'vault' && <StrategiesTab />}
+				{vault.type === 'strategy' && <StrategyReports />}
 			</div>
 		</div>
 	</div>;
@@ -66,6 +68,7 @@ function Layout() {
 		</div>
 		<div className={'py-2'}>
 			<Tabs />
+			{vault.type === 'strategy' && <StrategyReports />}
 		</div>
 	</div>;
 }
