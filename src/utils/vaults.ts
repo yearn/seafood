@@ -17,11 +17,7 @@ export interface HarvestReport {
 	vault_address: string,
 	strategy_address: string,
 	gain: string,
-	total_gain: string,
 	loss: string,
-	total_loss: string,
-	debt_paid: string,
-	debt_added: string,
 	want_gain_usd: string,
 	rough_apr_pre_fee: string
 }

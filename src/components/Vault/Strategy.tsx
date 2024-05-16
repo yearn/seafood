@@ -222,7 +222,8 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 
 				<Row label={'Address'} alt={true} heading={true}>
 					<div className={'flex items-center gap-4'}>
-						<A target={'_blank'} href={getAddressExplorer(strategy.network.chainId, strategy.address)} rel={'noreferrer'}>{truncateAddress(strategy.address)}</A>
+						{gte3 && <A href={`/vault/${strategy.address}`} rel={'noreferrer'}>{truncateAddress(strategy.address)}</A>}
+						{!gte3 && <A target={'_blank'} href={getAddressExplorer(strategy.network.chainId, strategy.address)} rel={'noreferrer'}>{truncateAddress(strategy.address)}</A>}
 						<CopyButton clip={strategy.address}></CopyButton>
 					</div>
 				</Row>
@@ -427,7 +428,7 @@ export default function Strategy({index, strategy}: {index: number, strategy: TS
 			{strategyHarvestHistory.length > 0 && <div className={'w-full flex flex-col gap-2'}>
 				<div>
 					<InfoChart
-						name={'APR (capped at 200%)'}
+						name={'Report APR'}
 						x={strategyHarvestHistory.map(d => d.date_string).reverse()}
 						y={strategyHarvestHistory.map(d => {
 							let amount = parseFloat(d.rough_apr_pre_fee) * 100;
