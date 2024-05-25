@@ -143,7 +143,7 @@ export function toStrategy(vault: Vault | undefined | null): Strategy | undefine
 			testingScore: 0,
 		},
 		meta: {
-			description: vault.meta.description
+			description: vault.meta?.description
 		}
 	};
 }
