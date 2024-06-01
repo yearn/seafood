@@ -36,7 +36,7 @@ export function FilterProvider({children}) {
 			const strategyFilter = vault.strategies.reduce((accumulatedTest, strategy) => {
 				return queryRe.test(strategy.address) || accumulatedTest;
 			}, false);
-			
+
 			if(query && !queryRe.test(vault.name) && !queryRe.test(vault.address) && !strategyFilter) return false;
 			if(chips.favorites && !favorites.vaults?.includes(vault.address)) return false;
 			if(!chips[vault.network.name]) return false;
@@ -47,8 +47,9 @@ export function FilterProvider({children}) {
 			if(!chips.v3 && version >= 3) return false;
 
 			if(chips.tvlgtzero && getLatestTvl(vault) <= 0) return false;
-			if(chips.warnings && vault.warnings?.length === 0) return false;
+			if(chips.warnings && (vault.warnings?.length ?? 0) === 0) return false;
 			if(chips.rewardsgtzero && vault.rewardsUsd <= 0) return false;
+			if(!chips.nonendorsed && !vault.yearn) return false;
 			if(chips.curve && chips.factory) return true;
 			if(chips.curve && !chips.factory) return !factoryRe.test(vault.name);
 			if(!chips.curve && chips.factory) return factoryRe.test(vault.name);

@@ -40,6 +40,11 @@ export default function VaultOptions() {
 			long: 'Factory Vaults',
 			flag: Boolean(chips['factory'])
 		}, {
+			key: 'nonendorsed',
+			label: 'Non-Endorsed',
+			long: 'Non-Endorsed Vaults',
+			flag: Boolean(chips['nonendorsed'])
+		}, {
 			key: 'tvlgtzero',
 			label: 'TVL>0',
 			long: 'TVL > 0',

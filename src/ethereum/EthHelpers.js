@@ -177,6 +177,7 @@ function LockedProfitDegradationField(version) {
 }
 
 function GetVaultAbi(version) {
+	if(!version) return vault043;
 	if(compare(version, '0.3.5', '<')) return vault030;
 	if(compare(version, '0.3.5', '=')) return vault035;
 	return vault043;

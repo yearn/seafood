@@ -18,17 +18,19 @@ function Chip({className, children}: {className: string, children: ReactNode}) {
 }
 
 export default function Chips({vault}: {vault: Vault}) {
+	const displayType = vault.yearn ? vault.type === 'vault' ? 'vault' : 'tokenized strategy' : '4626';
+
 	return <ScrollContainer className={'flex items-center w-full'}>
 		<div className={'w-fit flex items-center justify-between gap-4 sm:gap-3'}>
 			<Chip className={`
 				bg-neutral-200/40 dark:bg-neutral-800/40
 				border border-neutral-200 dark:border-neutral-800
 				${vault.type === 'vault' ? '' : 'border-dashed text-neutral-600 dark:text-neutral-400'}
-				`}>{vault.type === 'vault' ? 'vault' : 'tokenized strategy'}</Chip>
-			<Chip className={`
-					bg-neutral-200/40 dark:bg-neutral-800/40
-					border border-neutral-200 dark:border-neutral-800
-					`}>{vault.version}</Chip>
+				`}>{displayType}</Chip>
+			{vault.yearn && <Chip className={`
+				bg-neutral-200/40 dark:bg-neutral-800/40
+				border border-neutral-200 dark:border-neutral-800
+				`}>{vault.version}</Chip>}		
 			<Chip className={`
 					bg-${vault.network.name}-40
 					border border-${vault.network.name}
@@ -37,7 +39,7 @@ export default function Chips({vault}: {vault: Vault}) {
 				{truncateAddress(vault.address)}
 			</A>
 			<CopyButton clip={vault.address}></CopyButton>
-			<Yearn vault={vault} />
+			{vault.yearn && <Yearn vault={vault} />}
 		</div>
 	</ScrollContainer>;
 }

@@ -227,16 +227,17 @@ function waitForAllTransactions(db: IDBDatabase): Promise<void> {
 function markupWarnings(vaults: Seafood.Vault[]) {
 	vaults.forEach(vault => {
 		vault.warnings = [];
-
-		if(vault.depositLimit.eq(0) && vault.type === 'vault') {
-			vault.warnings.push({key: 'noDepositLimit', message: 'This vault cannot take deposits until its limit is raised.'});
-		}
-
-		vault.withdrawalQueue.forEach(strategy => {
-			if(!strategy.healthCheck || strategy.healthCheck === ethers.constants.AddressZero) {
-				vault.warnings.push({key: 'noHealthCheck', message: `No health check set on ${strategy.name}`});
+		if(vault.yearn) {
+			if(vault.depositLimit.eq(0) && vault.type === 'vault') {
+				vault.warnings.push({key: 'noDepositLimit', message: 'This vault cannot take deposits until its limit is raised.'});
 			}
-		});
+	
+			vault.withdrawalQueue.forEach(strategy => {
+				if(!strategy.healthCheck || strategy.healthCheck === ethers.constants.AddressZero) {
+					vault.warnings.push({key: 'noHealthCheck', message: `No health check set on ${strategy.name}`});
+				}
+			});
+		}
 	});
 }
 
@@ -271,6 +272,7 @@ query Query {
 		get_default_queue
 		inceptTime
 		inceptBlock
+		yearn
 		debts {
 			strategy
 			debtRatio
@@ -440,6 +442,7 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 				performanceFee: toBigNumber(vault.performanceFee),
 				depositLimit: toBigNumber(vault.depositLimit || vault.deposit_limit),
 				activation: toBigNumber(vault.inceptTime || 0),
+				yearn: vault.yearn ?? false,
 				tvls: {
 					dates: vault.sparklines['tvl'].map(point => Number(point.blockTime)).reverse(),
 					tvls: vault.sparklines['tvl'].map(point => Number(point.close)).reverse()

@@ -59,6 +59,7 @@ export interface Vault {
 	withdrawalQueue: Strategy[],
 	apy: Apy,
 	tvls: TVLHistory,
+	yearn: boolean,
 	rewardsUsd: number,
 	warnings: Warning[],
 	meta: {
