@@ -4,6 +4,7 @@ import {useNavigate} from 'react-router-dom';
 import useKeypress from 'react-use-keypress';
 import VaultTile from './VaultTile';
 import StrategyTile from './StrategyTile';
+import Erc4626Tile from './Erc4626Tile';
 import {formatNumber} from '../../utils/utils';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -52,6 +53,14 @@ export default function List() {
 	const items = useMemo(() => {
 		const frame = filter.slice(0, (framePointer + 1) * FRAME_SIZE);
 		const result = frame.map((vault, index) => {
+			if(!vault.yearn) return <Erc4626Tile key={index} vault={vault} onClick={(event) => {
+				if (event.ctrlKey || event.shiftKey || event.metaKey) {
+					window.open(`/vault/${vault.address}`, '_blank');
+				}else{
+					navigate(`/vault/${vault.address}`);
+				}
+			}} />;
+
 			if(vault.type === 'vault') return <VaultTile key={index} vault={vault} onClick={(event) => {
 				if (event.ctrlKey || event.shiftKey || event.metaKey) {
 					window.open(`/vault/${vault.address}`, '_blank');

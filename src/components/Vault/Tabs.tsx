@@ -13,6 +13,10 @@ export default function Tabs({className}: {className?: string}) {
 
 	const tabs = useMemo(() => {
 		if(!vault) return [];
+		if(!vault.yearn) return [
+			{label: 'Assets', content: AssetsTab},
+			{label: 'APY', content: ApyTab},
+		];
 		if(!mediumBreakpoint && vault.type === 'vault') {
 			return [
 				{label: 'Assets', content: AssetsTab},

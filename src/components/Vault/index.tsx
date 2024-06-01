@@ -53,8 +53,8 @@ function Layout() {
 			</div>
 			<div className={'w-1/2'}></div>
 			<div className={'w-1/2'}>
-				{vault.type === 'vault' && <StrategiesTab />}
-				{vault.type === 'strategy' && <StrategyReports />}
+				{vault.yearn && vault.type === 'vault' && <StrategiesTab />}
+				{vault.yearn && vault.type === 'strategy' && <StrategyReports />}
 			</div>
 		</div>
 	</div>;

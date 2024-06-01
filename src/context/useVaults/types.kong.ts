@@ -55,6 +55,7 @@ export type Vault = {
 	debts: Debt[];
 	inceptTime: BigNumber;
 	inceptBlock: BigNumber;
+	yearn?: boolean;
 	sparklines: {
 		[key: string]: SparklinePoint[];
 	};
