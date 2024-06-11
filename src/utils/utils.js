@@ -1,6 +1,7 @@
 import React from 'react';
 import {ethers} from 'ethers';
 import config from '../config';
+import {compare} from 'compare-versions';
 
 const curveRe = /curve|crv/i;
 const factoryRe = /factory/i;
@@ -28,7 +29,11 @@ function getEigenTxExplorer(hash) {
 }
 
 function getYearnExplorer(vault) {
-	return `https://yearn.fi/vaults/${vault.network.chainId}/${vault.address}`;
+	if (compare(vault.version, '3.0.0', '>=')) {
+		return `https://yearn.fi/v3/${vault.network.chainId}/${vault.address}`;
+	} else {
+		return `https://yearn.fi/vaults/${vault.network.chainId}/${vault.address}`;
+	}
 }
 
 function truncateAddress(address) {
