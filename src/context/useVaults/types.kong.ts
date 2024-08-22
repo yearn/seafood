@@ -95,6 +95,7 @@ export type Strategy = {
 	keeper: `0x${string}`;
 	lastReport: BigNumber;
 	doHealthCheck: boolean;
+	healthCheck: `0x${string}`;
 	tradeFactory: `0x${string}`;
 	claims: {
 		address: `0x${string}`;
@@ -131,6 +132,7 @@ export function toStrategy(vault: Vault | undefined | null): Strategy | undefine
 		keeper: vault.governance,
 		lastReport: vault.inceptBlock,
 		doHealthCheck: false,
+		healthCheck: '0x0000000000000000000000000000000000000000',
 		tradeFactory: '0x0000000000000000000000000000000000000000',
 		claims: [],
 		lenderStatuses: [],

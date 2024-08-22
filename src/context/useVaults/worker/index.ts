@@ -336,6 +336,7 @@ query Query {
 		keeper
 		lastReport
 		doHealthCheck
+		healthCheck
 		tradeFactory
     claims {
       address
@@ -538,6 +539,7 @@ function transformStrategies(addresses: `0x${string}`[], vault: Kong.Vault, vaul
 			totalLoss: toBigNumber(0),
 			withdrawalQueuePosition: index,
 			doHealthCheck: strategy.doHealthCheck,
+			healthCheck: strategy.healthCheck,
 			keeper: strategy.keeper,
 			activation: toBigNumber(0),
 			tradeFactory: strategy.tradeFactory,
