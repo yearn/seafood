@@ -64,6 +64,14 @@
 			]
 		},
 		{
+			"id": 34443,
+			"name": "mode",
+			"explorer": "https://modescan.io",
+			"providers": [
+				"https://rpc.ankr.com/mode"
+			]
+		},
+		{
 			"id": 42161,
 			"name": "arbitrum",
 			"explorer": "https://arbiscan.io",

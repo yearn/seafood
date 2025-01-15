@@ -88,6 +88,21 @@
   dark:border-blue-600;
 }
 
+.bg-mode {
+  @apply bg-indigo-400
+  dark:bg-indigo-600;
+}
+
+.bg-mode-40 {
+  @apply bg-indigo-400/40
+  dark:bg-indigo-600/40;
+}
+
+.border-mode {
+  @apply border-indigo-400
+  dark:border-indigo-600;
+}
+
 .bg-arbitrum {
   @apply bg-[#28a1ef]
   dark:bg-[#28a1ef];
