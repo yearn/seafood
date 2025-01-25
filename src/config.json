@@ -47,6 +47,14 @@
 			]
 		},
 		{
+			"id": 146,
+			"name": "sonic",
+			"explorer": "https://sonicscan.org",
+			"providers": [
+				"https://rpc.ankr.com/sonic_mainnet"
+			]
+		},
+		{
 			"id": 250,
 			"name": "fantom",
 			"explorer": "https://ftmscan.com",

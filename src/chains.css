@@ -73,6 +73,21 @@
   dark:border-indigo-600;
 }
 
+.bg-sonic {
+  @apply bg-amber-400
+  dark:bg-neutral-600;
+}
+
+.bg-sonic-40 {
+  @apply bg-amber-400/40
+  dark:bg-neutral-600/40;
+}
+
+.border-sonic {
+  @apply border-amber-400
+  dark:border-neutral-600;
+}
+
 .bg-base {
   @apply bg-blue-400
   dark:bg-blue-500;
