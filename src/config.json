@@ -92,7 +92,7 @@
 			"name": "berachain",
 			"explorer": "https://berascan.com",
 			"providers": [
-				"https://berachain.gateway.tenderly.co/2jlP6zkWIXjbMBIhuNzxRt"
+				"https://rpc.berachain.com"
 			]
 		}
 	]
