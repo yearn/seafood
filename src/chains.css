@@ -132,3 +132,23 @@
   @apply border-[#28a1ef]
   dark:border-[#28a1ef];
 }
+
+
+
+
+
+
+.bg-berachain {
+  @apply bg-[#a15e28]
+  dark:bg-[#a15e28];
+}
+
+.bg-berachain-40 {
+  @apply bg-[#a15e28]/40
+  dark:bg-[#a15e28]/40;
+}
+
+.border-berachain {
+  @apply border-[#a15e28]
+  dark:border-[#a15e28];
+}

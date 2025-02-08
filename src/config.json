@@ -86,6 +86,14 @@
 			"providers": [
 				"https://arb1.arbitrum.io/rpc"
 			]
+		},
+		{
+			"id": 80094,
+			"name": "berachain",
+			"explorer": "https://berascan.com",
+			"providers": [
+				"https://rpc.berachain.com"
+			]
 		}
 	]
 }
