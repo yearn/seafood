@@ -414,7 +414,10 @@ async function fetchKongVaults(): Promise<Seafood.Vault[][]> {
 		const json = await response.json();
 		if (json.error) throw new Error(json.error);
 
-		let flat: Seafood.Vault[] = json.data.vaults.map((vault: Kong.Vault) => {
+		const sourceVaults = json.data.vaults;
+		const supportedVaults = sourceVaults.filter((vault: Kong.Vault) => config.chains.some(chain => chain.id === vault.chainId));
+
+		let flat: Seafood.Vault[] = supportedVaults.map((vault: Kong.Vault) => {
 			return {
 				address: vault.address,
 				name: vault.name,
