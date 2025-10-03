@@ -300,15 +300,6 @@ query Query {
 			inceptionNet
 			grossApr
 		}
-		risk {
-			label
-      auditScore
-      codeReviewScore
-      complexityScore
-      protocolSafetyScore
-      teamKnowledgeScore
-      testingScore
-		}
 		meta {
 			description
 			token {

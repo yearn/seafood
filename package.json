@@ -78,7 +78,8 @@
     "sw": "run-p sw:**",
     "sw:api": "cd api && npm start",
     "sw:app": "npx http-server ./build -p 3000 -P http://localhost:9000/",
-    "pag": "npx pwa-asset-generator public/icon.png public/icon -o false -p \"0%\" -m public/manifest.json -i public/index.html -t png -c true -w true -d true -n"
+    "pag": "npx pwa-asset-generator public/icon.png public/icon -o false -p \"0%\" -m public/manifest.json -i public/index.html -t png -c true -w true -d true -n",
+    "clean": "rm -rf node_modules **/node_modules"
   },
   "eslintConfig": {
     "extends": [
@@ -101,5 +102,6 @@
   "resolutions": {
     "autoprefixer": "10.4.5"
   },
-  "proxy": "http://localhost:9000/"
+  "proxy": "http://localhost:9000/",
+  "packageManager": "yarn@1.22.22"
 }
