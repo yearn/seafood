@@ -16,7 +16,7 @@ export default function Chips() {
 		};
 	}
 
-	return <div className={'flex flex-row items-center gap-3'}>
+	return <div className={'flex flex-row items-center gap-3 w-2/3'}>
 		<Chip icon={BsStarFill} onClick={toggle('favorites')} hot={chips.favorites} tall={true} />
 		<Network />
 		<VaultOptions />
